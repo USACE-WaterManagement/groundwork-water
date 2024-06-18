@@ -5,7 +5,7 @@ import pkg from "./package.json";
 export default defineConfig(({ mode }) => {
     const base =
         mode === "production"
-            ? "https://usace.github.io/groundwork/"
+            ? "https://USACE-WaterManagement.github.io/groundwork-water/"
             : "http://localhost:5173/";
     return {
         plugins: [react()],

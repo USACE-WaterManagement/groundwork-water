@@ -7,7 +7,7 @@ function Home() {
   return (
     <>
       <Hero
-        image={`${base}nww-lucky-peak-dam.jpg`}
+        image={`${base}FT_GIBSON_20181115.min.jpg`}
         title="Groundwork"
         subtitle="React Component Library"
       />
