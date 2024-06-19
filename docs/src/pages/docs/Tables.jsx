@@ -1,5 +1,5 @@
 import { Container, UsaceBox } from "@usace/groundwork";
-import  TSPlot  from "../../../../src/components/data/TSPlot";
+import TSTable from "../../../../src/components/data/TSTable";
 
 function Plots() {
   return (
@@ -7,12 +7,11 @@ function Plots() {
       <Container>
         <div className="mt-6">
           <UsaceBox title="Welcome">
-            <TSPlot
+            <TSTable
               queryParams={{
                 office: "SWT",
                 name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
               }}
-              className="mt-8"
             />
           </UsaceBox>
         </div>

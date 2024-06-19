@@ -8,8 +8,8 @@ function Home() {
     <>
       <Hero
         image={`${base}FT_GIBSON_20181115.min.jpg`}
-        title="Groundwork"
-        subtitle="React Component Library"
+        title="Groundwork Water"
+        subtitle="React Component Library for USACE Water Management"
       />
 
       <Container>
