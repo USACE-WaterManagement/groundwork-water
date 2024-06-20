@@ -1,0 +1,92 @@
+name: Create Release on PR Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  create_release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Auto-label unlabeled PRs
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = await github.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+            
+            if (labels.data.length === 0) {
+              await github.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['misc']
+              });
+
+      - name: Get Package Version
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Tag
+        run: |
+          git tag v${{ env.version }}
+          git push origin v${{ env.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create ZIP file
+        run: |
+          VERSION=$(jq -r .version package.json)
+          mkdir -p release
+          zip -r release/groundwork-water-v$VERSION.zip dist
+
+      - name: Draft Release Notes
+        id: draft_release_notes
+        uses: release-drafter/release-drafter@v5
+        with:
+          version: v${{ env.version }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.version }}
+          release_name: Release v${{ env.version }}
+          body: ${{ steps.draft_release_notes.outputs.release_notes }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/groundwork-water-v${{ env.version }}.zip
+          asset_name: groundwork-water-v${{ env.version }}.zip
+          asset_content_type: application/zip
+
