@@ -1,0 +1,17 @@
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+  - title: '🛠 Maintenance'
+    labels:
+      - 'chore'
+  - title: '📦 Miscellaneous'
+    labels:
+      - 'misc'
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
+version-resolver: 'increment'
