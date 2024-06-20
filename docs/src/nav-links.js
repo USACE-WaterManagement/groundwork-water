@@ -20,5 +20,22 @@ export default [
                 href: "/docs/client-side-routing",
             },
         ],
+    },
+    {
+        "id": "data-components",
+        "text": "Data Components",
+        "href": "#",
+        "children": [
+            {
+                "id": "ts-table",
+                "text": "Time Series Table",
+                "href": "/docs/tables",
+            },
+            {
+                "id": "ts-plot",
+                "text": "Time Series Plot",
+                "href": "/docs/plots",
+            }
+        ],
     }
 ];
