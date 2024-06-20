@@ -7,6 +7,9 @@ import "@usace/groundwork/dist/style.css";
 import DevWarning from "./components/DevWarning";
 const version = import.meta.env.PKG_VERSION;
 
+import externalLinks from "./external-links";
+import usaceLinks from "./usace-links";
+
 function App() {
   const {
     route: Route,
@@ -28,8 +31,8 @@ function App() {
         links={links}
         usaBanner={true}
         subtitle={`Groundwork Water React Components v${version}`}
-        missionText="We strive to provide the best React components for the USACE."
-        aboutText="This is the about text for the footer."
+        missionText="Creating React Components for the USACE Water Management Community."
+        aboutText="Created by the Water Management Community of Practice (WM COP) to provide a consistent look and feel for USACE Water Management applications."
         navRight={
           <>
             {/* <SearchDotGov
@@ -47,8 +50,8 @@ function App() {
             </Button>
           </>
         }
-        usaceLinks={[]}
-        externalLinks={[]}
+        usaceLinks={usaceLinks}
+        externalLinks={externalLinks}
         facebookUrl="#"
         twitterUrl="#"
         youtubeUrl="#"
