@@ -12,6 +12,7 @@ function Plots() {
                 office: "SWT",
                 name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
               }}
+              precision={2}
             />
           </UsaceBox>
         </div>

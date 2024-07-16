@@ -11,7 +11,7 @@ const V2_API = new Configuration({
 });
 
 const TS_API = new TimeSeriesApi(V2_API);
-const TSTable = ({ queryParams, ...props }) => {
+const TSTable = ({ queryParams, precision, ...props }) => {
   const [data, setData] = useState(null);
   const [loadTime, setLoadTime] = useState(null);
   // Load the timeseries when the component loads in
@@ -61,12 +61,13 @@ const TSTable = ({ queryParams, ...props }) => {
   }
   return (
     <>
-    <Table 
-        h1="Time Series Data" 
-        subTitle={`Loaded in ${loadTime} seconds`} 
-        heading={["Date-Time", "Value", "Quality Code"]} 
-        content={data?.values} 
-        />
+      <Table
+        h1="Time Series Data"
+        subTitle={`Loaded in ${loadTime} seconds`}
+        heading={["Date-Time", "Value", "Quality Code"]}
+        precision={precision}
+        content={data?.values}
+      />
       {/* <div className={`table-responsive ${props?.className}`} style={{ maxHeight: "500px" }}>
         <table className="table">
           

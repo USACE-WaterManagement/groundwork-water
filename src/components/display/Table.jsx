@@ -3,7 +3,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Table({h1, subTitle, heading, content, ...props}) {
+export default function Table({h1, subTitle, heading, content, precision=4, ...props}) {
   return (
     <div className={`gw-px-4 gw-sm:px-6 gw-lg:px-8 ${props?.className}`}>
       <div className="gw-sm:flex gw-sm:items-center">
@@ -57,7 +57,9 @@ export default function Table({h1, subTitle, heading, content, ...props}) {
                           key={`td.${r_idx}.${c_idx}`}
                           className="gw-px-4 gw-py-4 gw-whitespace-nowrap gw-text-sm gw-text-gray-900"
                         >
-                          {col}
+                          <th scope="row">
+                            {r_idx === 1 ?  col  : col.toFixed(precision)}
+                          </th>
                         </td>
                       );
                     })}
