@@ -1,5 +1,5 @@
 import { Container, UsaceBox } from "@usace/groundwork";
-import TSTable from "../../../../src/components/data/TSTable";
+import TSTable from "../../../../src/components/data/tables/TSTable";
 
 function Plots() {
   return (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TimeSeriesApi, Configuration } from "cwmsjs";
-import Table from "../display/Table";
+import Table from "../../display/Table";
 const V2_API = new Configuration({
   // basePath: "https://water.usace.army.mil/cwms-data",
   headers: {
