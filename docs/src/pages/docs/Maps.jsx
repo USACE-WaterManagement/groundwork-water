@@ -1,4 +1,4 @@
-import GageMap from "./GageMap";
+import GageMap from "../../../../src/components/data/maps/GageMap";
 
 export default function Maps() {
     return (

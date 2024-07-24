@@ -1,11 +1,15 @@
+/* eslint-disable react/prop-types */
 // MapComponent.js
-import React, { useState, useEffect, useRef } from 'react';
-import { Map, View } from 'ol';
+import { useEffect, useRef } from 'react';
 import TileLayer from 'ol/layer/Tile';
+import {Map, View} from 'ol';
 import OSM from 'ol/source/OSM';
 import 'ol/ol.css';
 
-function MapComponent() {
+import "../../../css/map.css"
+
+function GageMap({className}) {
+    const mapElement = useRef()
     useEffect(() => {
         const osmLayer = new TileLayer({
             preload: Infinity,
@@ -13,7 +17,7 @@ function MapComponent() {
         })
 
         const map = new Map({
-            target: "map",
+            target: mapElement.current,
             layers: [osmLayer],
             view: new View({
                 center: [0, 0],
@@ -24,8 +28,9 @@ function MapComponent() {
     }, []);
 
     return (
-      <div style={{height:'300px',width:'100px'}} id="map" className="map-container" />
+      <div id="map" className={`map-container w-full ${className}`} ref={mapElement} />
+    //   className="map-container absolute top-0 bottom-0 w-96" 
     );
 }
 
-export default MapComponent;
+export default GageMap;
