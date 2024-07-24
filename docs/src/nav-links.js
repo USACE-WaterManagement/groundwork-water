@@ -1,41 +1,37 @@
 export default [
     {
-        id: "getting-started",
-        text: "Getting Started",
-        href: "/docs",
-        children: [
-            {
-                id: "quick-start",
-                text: "Quick Start Guide",
-                href: "/docs/quick-start",
-            },
-            {
-                id: "adding-tailwind",
-                text: "Adding Tailwind CSS",
-                href: "/docs/adding-tailwind",
-            },
-            {
-                id: "client-side-routing",
-                text: "Client-Side Routing",
-                href: "/docs/client-side-routing",
-            },
-        ],
-    },
-    {
-        "id": "data-components",
-        "text": "Data Components",
+        "id": "plots",
+        "text": "Plots",
         "href": "#",
         "children": [
             {
-                "id": "ts-table",
-                "text": "Time Series Table",
-                "href": "/docs/tables",
-            },
-            {
                 "id": "ts-plot",
-                "text": "Time Series Plot",
+                "text": "Plots",
                 "href": "/docs/plots",
             }
         ],
-    }
+    },
+    {
+        "id": "tables",
+        "text": "Tables",
+        "href": "#",
+        children: [
+            {
+                "id": "ts-table",
+                "text": "Time Table",
+                "href": "/docs/tables",
+            }
+        ]
+    }, {
+        "id": "maps",
+        "text": "Maps",
+        "href": "#",
+        "children": [
+            {
+                "id": "map",
+                "text": "Generalized",
+                "href": "/docs/maps",
+            }
+        ],
+    },
 ];

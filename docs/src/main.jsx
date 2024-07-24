@@ -4,7 +4,7 @@ import { ReduxBundlerProvider } from "redux-bundler-hook";
 import getStore from "./bundles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.jsx";
-import "./index.css";
+import "./css/index.css";
 
 const store = getStore();
 

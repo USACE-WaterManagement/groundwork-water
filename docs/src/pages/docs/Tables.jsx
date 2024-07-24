@@ -1,5 +1,5 @@
 import { Container, UsaceBox } from "@usace/groundwork";
-import TSTable from "../../../../src/components/data/TSTable";
+import TSTable from "../../../../src/components/data/tables/TSTable";
 
 function Plots() {
   return (
@@ -12,6 +12,7 @@ function Plots() {
                 office: "SWT",
                 name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
               }}
+              precision={2}
             />
           </UsaceBox>
         </div>

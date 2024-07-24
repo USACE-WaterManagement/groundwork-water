@@ -40,9 +40,7 @@ const TSPlot = ({ queryParams, ...props }) => {
             return data;
           })
           .then((d) => {
-            console.log(d);
             d.query_str = d.url;
-            console.log(d);
             setData(d);
             setLoadTime(
               ((window.performance.now() - startTime) / 1000).toFixed(2)
@@ -63,9 +61,7 @@ const TSPlot = ({ queryParams, ...props }) => {
 
   // Plot the data with Plotly
   useEffect(() => {
-    console.log({ data }, plotContainerRef.current);
     if (data && data.values) {
-      console.log("values", data.values);
       const plotData = [
         {
           x: data.values.map((value) => new Date(value[0])),
@@ -81,7 +77,6 @@ const TSPlot = ({ queryParams, ...props }) => {
         xaxis: { title: "Date" },
         yaxis: { title: queryParams?.name.split(".")[1] },
       };
-
       Plotly.newPlot(plotContainerRef.current, plotData, layout);
     }
   }, [data, queryParams]); // Re-plot when data changes
