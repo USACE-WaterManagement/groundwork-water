@@ -62,6 +62,7 @@ export default function CWMSPlot({
     let values = await Promise.all(promises);
     let _data = { ts: {}, dates: [] };
   
+    // TODO: This should probably be the parameter not the units
     values.forEach((result) => {
       if (result && result.units) {
         if (!_data.ts[result.units]) {
