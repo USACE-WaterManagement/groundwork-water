@@ -1,6 +1,6 @@
 {
     "name": "@usace-watermanagement/groundwork-water",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "author": "Various",
     "description": "A library of react components for use with USACE Water Management Webpages",
@@ -21,7 +21,7 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prepublishOnly": "npm run build",
+        "prepublishOnly": "vite build",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
         "build": "vite build && npm run link",
         "build-docs-prod": "vite build",
@@ -43,12 +43,12 @@
         "cwms"
     ],
     "dependencies": {
+        "cwmsjs": "^1.14.0",
         "dayjs": "^1.11.11",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
         "ol": "^4.6.5",
         "plotly.js-basic-dist": "^2.33.0",
-        "cwmsjs": "^1.14.0"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     },
     "devDependencies": {
         "@types/ol": "^7.0.0",

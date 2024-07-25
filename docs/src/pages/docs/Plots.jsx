@@ -1,5 +1,6 @@
 import { UsaceBox } from "@usace/groundwork";
 import { TSPlot, CWMSPlot } from "@usace-watermanagement/groundwork-water";
+// import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
 function Plots() {
   return (
     <div className="mt-6">
@@ -15,9 +16,13 @@ function Plots() {
       <UsaceBox title="CWMS Plot">
         <CWMSPlot
           tsids={[
-            "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-            "KEYS.Flow-Res Out.Inst.1Hour.0.Rev-Regi-Flowgroup",
-          ]}
+            ".Elev.Inst.1Hour.0.Ccp-Rev",
+            ".Elev-Tailwater.Inst.1Hour.0.Ccp-Rev",
+            ".Precip-Inc.Total.1Hour.1Hour.Ccp-Rev",
+            ".Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed",
+            ".Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup",
+            ".Stor.Inst.1Hour.0.Ccp-Rev"
+          ].map(ts=>"KEYS"+ts)}
           office="SWT"
         />
       </UsaceBox>

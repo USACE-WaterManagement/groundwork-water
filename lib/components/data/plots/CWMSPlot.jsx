@@ -20,7 +20,11 @@ export default function CWMSPlot({
   fontSize,
   unit = "EN",
   className="",
-  
+  plotHeight = 550,
+  autoSize=true,
+  shapes=[],
+  annotations=[],
+  responsive=true,
 }) {
   const plotElement = useRef(null);
   const [metaData, setMetaData] = useState(null);
@@ -42,42 +46,57 @@ export default function CWMSPlot({
   }, [title, tsids, office]);
 
   const fetchData = async () => {
-    let promises = plotTSIDs.map(name =>
-      ts_api.getCwmsDataTimeseries({ name, end, unit, begin, office })
-    );
+    let promises = plotTSIDs.map(async (name) => {
+      try {
+        return await ts_api.getCwmsDataTimeseries({ name, end, unit, begin, office });
+      } catch (error) {
+        if (error.response?.status === 404) {
+          console.warn(`Data for ${name} not found: 404`);
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    });
+  
     let values = await Promise.all(promises);
     let _data = { ts: {}, dates: [] };
-
+  
     values.forEach((result) => {
-      if (result?.units) {
+      if (result && result.units) {
         if (!_data.ts[result.units]) {
           _data.ts[result.units] = [];
         }
         _data.ts[result.units].push(result);
+      } else if (result === null) {
+        console.warn(`Skipping as no data was found.`);
       } else {
         console.warn(`No unit found for ${result?.name}`);
       }
     });
-
+  
     return _data;
   };
 
-  const { data: tsData } = useQuery({
+  const { data: tsData, error, isLoading } = useQuery({
     queryKey: ["timeseries", plotTSIDs, begin, end, unit, office],
     queryFn: fetchData,
     enabled: !!plotElement.current, // Only run the query when plotElement is available
   });
-
+  console.log(error)
   useEffect(() => {
     if (!plotElement.current || !tsData) {
       return;
     }
+
     let unit_keys = Object.keys(tsData.ts);
     let grid_col_cnt = unit_keys.length;
+
+
     let layout = {
-      autosize: true,
-      shapes: [],
-      annotations: [],
+      autosize: autoSize,
+      shapes: shapes,
+      annotations: annotations,
       title: {
         text: `${plotTitle}<br>Units: ${unit_keys.join(", ")}`,
         font: {
@@ -97,12 +116,14 @@ export default function CWMSPlot({
     let domain_delta = 1 / unit_keys.length;
     let domain_end = domain_delta;
 
+    // Force the font size if specified
     if (plotFontSize) 
       layout["font"] = { size: plotFontSize };
     else if (unit_keys.length > 4) {
       layout["font"] = { size: 8 };
     }
 
+    // Create traces keyed to the unit
     let ts;
     for (let k_idx = 0; k_idx < unit_keys.length; k_idx++) {
       const key = unit_keys[k_idx];
@@ -130,7 +151,7 @@ export default function CWMSPlot({
         ],
         title: { text: title_text },
       };
-
+      // Alter if there are more than 4 units / view ports
       if (unit_keys.length > 4) {
         layout["yaxis" + trace_cnt]["nticks"] = 1;
         layout["yaxis" + trace_cnt]["tickvals"] = [
@@ -145,13 +166,13 @@ export default function CWMSPlot({
       trace_cnt++;
     }
 
-    Plotly.newPlot(plotElement.current, traces, layout, { responsive: true });
+    Plotly.newPlot(plotElement.current, traces, layout, { responsive: responsive });
   }, [tsData, title]);
 
   return (
-    <div className={`h-full w-full ${className}`} style={{ height: "500px" }}>
-      <div ref={plotElement} id="plot" className="h-full w-full"  style={{ height: "500px" }}>
-        {tsData ? <div>Loading...</div> : <div>No Data</div>}
+    <div className={`h-full w-full ${className}`} style={{ height: plotHeight }}>
+      <div ref={plotElement} id="plot" className="h-full w-full"  style={{ height: plotHeight }}>
+        {isLoading ? <div>Loading...</div> : error ? <div>Error: {error.message}</div> : <></>}
       </div>
     </div>
   );

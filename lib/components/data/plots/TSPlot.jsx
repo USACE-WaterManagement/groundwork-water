@@ -20,7 +20,7 @@ const TS_API = new TimeSeriesApi(V2_API);
  * @param {Function} props.setLoadTime - Function to set the time taken to load the data.
  * @returns {JSX.Element} The rendered component.
  */
-const TSPlot = ({ queryParams, ...props }) => {
+const TSPlot = ({ queryParams, responsive=true, ...props }) => {
   const [data, setData] = useState(null);
   const [loadTime, setLoadTime] = useState(null);
   const plotContainerRef = useRef(null);
@@ -77,7 +77,7 @@ const TSPlot = ({ queryParams, ...props }) => {
         xaxis: { title: "Date" },
         yaxis: { title: queryParams?.name.split(".")[1] },
       };
-      Plotly.newPlot(plotContainerRef.current, plotData, layout);
+      Plotly.newPlot(plotContainerRef.current, plotData, layout, { responsive: responsive });
     }
   }, [data, queryParams]); // Re-plot when data changes
 
