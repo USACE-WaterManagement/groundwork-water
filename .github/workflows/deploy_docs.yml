@@ -28,16 +28,18 @@ jobs:
 
       - name: Install dependencies
         run: cd docs && npm ci
+        working-directory: ./docs
 
       - name: Build project
         env:
           VITE_HOMEPAGE: "https://usace-watermanagement.github.io/groundwork-water"
         run: npx vite build
+        working-directory: ./docs
 
       - name: Upload production-ready build files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./docs/dist
 
   # Deploy job
   deploy:
