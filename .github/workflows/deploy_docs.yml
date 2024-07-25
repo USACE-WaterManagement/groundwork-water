@@ -27,7 +27,7 @@ jobs:
         uses: stevenbenitez/get-package-version-action@v1
 
       - name: Install dependencies
-        run: cd docs && npm ci
+        run: npm ci
         working-directory: ./docs
 
       - name: Build project
