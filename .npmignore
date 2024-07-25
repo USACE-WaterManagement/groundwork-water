@@ -4,3 +4,4 @@ src
 .babelrc
 webpack.config.js
 .gitignore
+vite.config.js
