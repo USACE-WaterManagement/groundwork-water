@@ -24,7 +24,7 @@ jobs:
         uses: stevenbenitez/get-package-version-action@v1
 
       - name: Install dependencies
-        run: npm ci
+        run: cd docs && npm ci
 
       - name: Build project
         env:
@@ -34,7 +34,7 @@ jobs:
       - name: Upload production-ready build files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./docs/dist
 
   # Deploy job
   deploy:
