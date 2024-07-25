@@ -45,21 +45,21 @@
     "dependencies": {
         "dayjs": "^1.11.11",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-dom": "^18.2.0",
+        "ol": "^4.6.5",
+        "plotly.js-basic-dist": "^2.33.0",
+        "cwmsjs": "^1.14.0"
     },
     "devDependencies": {
         "@types/ol": "^7.0.0",
         "@types/react": "^18.2.66",
         "@types/react-dom": "^18.2.22",
         "@vitejs/plugin-react": "^4.3.1",
-        "cwmsjs": "^1.14.0",
         "eslint": "^8.57.0",
         "eslint-plugin-react": "^7.34.1",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.6",
         "gh-pages": "^6.1.1",
-        "ol": "^4.6.5",
-        "plotly.js-basic-dist": "^2.33.0",
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.4",
         "vite": "^5.3.1"
