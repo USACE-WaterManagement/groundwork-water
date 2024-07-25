@@ -1,7 +1,10 @@
 name: Deploy to GH Pages
 
 on:
-  push:
+   push:
+    branches:
+      - main
+   pull_request:
     branches:
       - main
 
@@ -29,7 +32,7 @@ jobs:
       - name: Build project
         env:
           VITE_HOMEPAGE: "https://usace-watermanagement.github.io/groundwork-water"
-        run: npm run build-docs-prod
+        run: npx vite build
 
       - name: Upload production-ready build files
         uses: actions/upload-pages-artifact@v3
