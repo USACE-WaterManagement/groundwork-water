@@ -24,7 +24,7 @@
         "prepublishOnly": "vite build",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
         "build": "vite build && npm run link",
-        "build-docs-prod": "vite build",
+        "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
         "publish": "npm publish --access public"
     },
