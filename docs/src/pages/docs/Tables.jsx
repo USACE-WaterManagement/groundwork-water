@@ -1,24 +1,20 @@
-import { Container, UsaceBox } from "@usace/groundwork";
-import TSTable from "../../../../src/components/data/tables/TSTable";
+import { UsaceBox } from "@usace/groundwork";
+import {TSTable} from "@usace-watermanagement/groundwork-water";
 
-function Plots() {
+function Tables() {
   return (
-    <>
-      <Container>
-        <div className="mt-6">
-          <UsaceBox title="Welcome">
-            <TSTable
-              queryParams={{
-                office: "SWT",
-                name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-              }}
-              precision={2}
-            />
-          </UsaceBox>
-        </div>
-      </Container>
-    </>
+    <div className="mt-6">
+      <UsaceBox title="Welcome">
+        <TSTable
+          queryParams={{
+            office: "SWT",
+            name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+          }}
+          precision={2}
+        />
+      </UsaceBox>
+    </div>
   );
 }
 
-export default Plots;
+export default Tables;

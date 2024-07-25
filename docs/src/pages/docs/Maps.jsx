@@ -1,9 +1,9 @@
-import GageMap from "../../../../src/components/data/maps/GageMap";
+import { GageMap } from "@usace-watermanagement/groundwork-water";
 
 export default function Maps() {
-    return (
-        <div className="map-container">
-        <GageMap className="w-50" />
-        </div>
-    )
+  return (
+    <div className="map-container">
+      <GageMap className="w-50" />
+    </div>
+  );
 }

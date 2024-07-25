@@ -1,38 +1,44 @@
 import dayjs from "dayjs";
+import { useMemo } from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-const people = [
-    { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-    { name: 'Lindsay Walton2', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-  ]
-  
+
+function formatNumber(number, precision) {
+  return Number(number).toFixed(precision);
+}
+
 export default function Table({
   h1,
   subTitle,
   heading,
   content,
+  order="desc",
   precision = 4,
-  dateFormat = "MM-DD-YYYY HH:MM",
+  dateFormat = "MM-DD-YYYY HH:mm",
   ...props
 }) {
+  // Use a memoized version of the content array to avoid unnecessary re-renders
+  const sortedContent = useMemo(() => {
+    return [...content].sort((a, b) => {
+      if (a[1] < b[1]) {
+        return order === "asc" ? -1 : 1;
+      }
+      if (a[1] > b[1]) {
+        return order === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [content, order]);
+
+
   return (
     <div className="gw-px-4 gw-sm:px-6 gw-lg:px-8">
       <div className="gw-sm:flex gw-sm:items-center">
         <div className="gw-sm:flex-auto">
-          <h1 className="gw-text-base gw-font-semibold gw-leading-6 gw-text-gray-900">Users</h1>
-          <p className="gw-mt-2 gw-text-sm gw-text-gray-700">
-            A list of all the users in your account including their name, title, email and role.
-          </p>
-        </div>
-        <div className="gw-mt-4 gw-sm:ml-16 gw-sm:mt-0 gw-sm:flex-none">
-          <button
-            type="button"
-            className="gw-block gw-rounded-md gw-bg-indigo-600 gw-px-3 gw-py-2 gw-text-center gw-text-sm gw-font-semibold gw-text-white gw-shadow-sm gw-hover:bg-indigo-500 gw-focus-visible:outline gw-focus-visible:outline-2 gw-focus-visible:outline-offset-2 gw-focus-visible:outline-indigo-600"
-          >
-            Add user
-          </button>
+          {h1 && <h1 className="gw-text-base gw-font-semibold gw-leading-6 gw-text-gray-900">{h1}</h1>}
+          {subTitle && <p className="gw-mt-2 gw-text-sm gw-text-gray-700">{subTitle}</p>}
         </div>
       </div>
       <div className="gw-mt-8 gw-flow-root">
@@ -41,36 +47,25 @@ export default function Table({
             <table className="gw-min-w-full gw-divide-y gw-divide-gray-300">
               <thead>
                 <tr>
+                {heading.map((heading) => (
                   <th scope="col" className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3">
-                    Name
+                    {heading}
                   </th>
-                  <th scope="col" className="gw-px-3 gw-py-3.5 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900">
-                    Title
-                  </th>
-                  <th scope="col" className="gw-px-3 gw-py-3.5 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900">
-                    Email
-                  </th>
-                  <th scope="col" className="gw-px-3 gw-py-3.5 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900">
-                    Role
-                  </th>
-                  <th scope="col" className="gw-relative gw-py-3.5 gw-pl-3 gw-pr-4 gw-sm:pr-3">
-                    <span className="gw-sr-only">Edit</span>
-                  </th>
+                ))}
                 </tr>
               </thead>
               <tbody className="gw-bg-white">
-                {people.map((person) => (
-                  <tr key={person.email} className="gw-even:bg-gray-50">
+               
+                {sortedContent.map((dataPoint) => (
+                  <tr key={dataPoint[0]} className="gw-even:bg-gray-50">
                     <td className="gw-whitespace-nowrap gw-py-4 gw-pl-4 gw-pr-3 gw-text-sm gw-font-medium gw-text-gray-900 gw-sm:pl-3">
-                      {person.name}
+                      {dayjs(dataPoint[0]).format(dateFormat)}
                     </td>
-                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">{person.title}</td>
-                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">{person.email}</td>
-                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">{person.role}</td>
-                    <td className="gw-relative gw-whitespace-nowrap gw-py-4 gw-pl-3 gw-pr-4 gw-text-right gw-text-sm gw-font-medium gw-sm:pr-3">
-                      <a href="#" className="gw-text-indigo-600 gw-hover:text-indigo-900">
-                        Edit<span className="gw-sr-only">, {person.name}</span>
-                      </a>
+                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">
+                      {formatNumber(dataPoint[1], precision)}
+                    </td>
+                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">
+                      {dataPoint[2]}
                     </td>
                   </tr>
                 ))}
