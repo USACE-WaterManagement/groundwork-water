@@ -1,19 +1,6 @@
 import { clsx } from "clsx";
-import { Prism } from "react-syntax-highlighter";
 // import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-
-// https://github.com/react-syntax-highlighter/react-syntax-highlighter?tab=readme-ov-file#light-build
-import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
-// Import only the languages we need
-import jsx from 'react-syntax-highlighter/dist/esm/languages/prism/jsx';
-import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
-
-SyntaxHighlighter.registerLanguage('bash', bash);
-SyntaxHighlighter.registerLanguage('javascript', js);
-SyntaxHighlighter.registerLanguage('jsx', jsx);
-SyntaxHighlighter.registerLanguage('json', json);
+import SyntaxHighlighter, { syntaxStyle } from '../utils/SyntaxHighlighter';
 
 export function Code({
   className,
@@ -27,7 +14,7 @@ export function Code({
   );
   {console.log(SyntaxHighlighter.supportedLanguages)}
   return syntaxHighlight ? (
-    <Prism language={language} {...props} className={codeClassName} />
+    <SyntaxHighlighter language="javascript" style={syntaxStyle} {...props} className={codeClassName} />
   ) : (
     <code {...props} className={codeClassName} />
   );
