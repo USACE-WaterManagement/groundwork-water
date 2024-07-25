@@ -9,7 +9,7 @@ export default defineConfig({
         lib: {
             name: "GroundworkWater",
             fileName: (format) => `groundwork-water.${format}.js`,
-            entry: "./src/index.jsx",
+            entry: "./lib/index.jsx",
             formats: ['es', 'umd']
         },
         rollupOptions: {
