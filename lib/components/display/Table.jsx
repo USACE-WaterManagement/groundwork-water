@@ -48,7 +48,7 @@ export default function Table({
               <thead>
                 <tr>
                 {heading.map((heading) => (
-                  <th scope="col" className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3">
+                  <th key={heading} scope="col" className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3">
                     {heading}
                   </th>
                 ))}

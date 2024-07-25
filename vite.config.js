@@ -13,12 +13,14 @@ export default defineConfig({
             formats: ['es', 'umd']
         },
         rollupOptions: {
-            external: ["react", "react-dom", "@tanstack/react-query"],
+            external: ["react", "react-dom", "@tanstack/react-query", "ol", "plotly.js-basic-dist"],
             output: {
                 globals: {
                     react: "React",
                     "react-dom": "ReactDOM",
                     "@tanstack/react-query": "ReactQuery",
+                    ol: "ol",
+                    "plotly.js-basic-dist": "Plotly",
                 },
             },
         },
