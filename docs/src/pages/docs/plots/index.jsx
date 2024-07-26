@@ -1,9 +1,16 @@
 import { UsaceBox } from "@usace/groundwork";
 import { TSPlot, CWMSPlot } from "@usace-watermanagement/groundwork-water";
+import DocsPage from "../_docs-wrapper";
 // import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
 function Plots() {
   return (
-    <div className="mt-6">
+    <DocsPage 
+      prevUrl="/docs/tables" 
+      nextUrl="/docs/maps" 
+      middleText="Plots" 
+      prevText="Return to Tables Page" 
+      nextText="Go to Maps Page"
+    >
       <UsaceBox title="Generic">
         <TSPlot
           queryParams={{
@@ -26,7 +33,7 @@ function Plots() {
           office="SWT"
         />
       </UsaceBox>
-    </div>
+    </DocsPage>
   );
 }
 

@@ -1,0 +1,26 @@
+
+.navigation-buttons {
+    position: relative;
+  }
+  
+  .middle-text {
+    position: relative;
+    z-index: 20;
+    background-color: white; /* Adjust as needed */
+    padding-left: 0.5rem; /* Adjust as needed */
+    padding-right: 0.5rem; /* Adjust as needed */
+  }
+  
+  .navigation-buttons::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #D1D5DB; /* Adjust color as needed */
+    top: 50%;
+    z-index: -10;
+  }
+  
+  .relative.z-20 {
+    z-index: 20;
+  }
