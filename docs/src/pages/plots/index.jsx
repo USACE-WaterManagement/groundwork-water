@@ -8,12 +8,12 @@ import { cwmsPlotProps } from "../../props-declarations/plots";
 // import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
 function Plots() {
   return (
-    <DocsPage 
-    nextUrl="/docs/tables"
-    prevUrl="/docs/react-query"
-    middleText="Plots"
-    prevText="Return to React Query Page"
-    nextText="Go to Tables Page"
+    <DocsPage
+      nextUrl="/docs/tables"
+      prevUrl="/docs/react-query"
+      middleText="Plots"
+      prevText="Return to React Query Page"
+      nextText="Go to Tables Page"
     >
       <UsaceBox title="Generic">
         <TSPlot
@@ -32,8 +32,8 @@ function Plots() {
             ".Precip-Inc.Total.1Hour.1Hour.Ccp-Rev",
             ".Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed",
             ".Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup",
-            ".Stor.Inst.1Hour.0.Ccp-Rev"
-          ].map(ts=>"KEYS"+ts)}
+            ".Stor.Inst.1Hour.0.Ccp-Rev",
+          ].map((ts) => "KEYS" + ts)}
           office="SWT"
         />
       </UsaceBox>
@@ -69,10 +69,10 @@ export default function Example() {
 `}
       </Code>
       <div className="gw-font-bold gw-text-lg gw-pt-6">
-        Component API - <Code className="gw-p-2" language={"jsx"}>{`<Breadcrumbs />`}</Code>
+        Component API -{" "}
+        <Code className="gw-p-2" language={"jsx"}>{`<Breadcrumbs />`}</Code>
       </div>
       <PropsTable propsList={cwmsPlotProps} showReq={false} />
-
     </DocsPage>
   );
 }

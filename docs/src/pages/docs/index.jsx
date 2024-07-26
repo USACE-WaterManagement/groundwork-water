@@ -17,10 +17,11 @@ export default function Docs() {
           <Text>
             Similar to{" "}
             <a href="https://usace.github.io/groundwork">Groundwork</a>,{" "}
-            <b>Groundwork-Water </b>is a set of React <b>DATA</b> components that are designed to be
-            used by USACE Developers building internal and externally facing web
-            pages and web apps. If you are just getting started with Groundwork
-            for the first time we suggest you start with the{" "}
+            <b>Groundwork-Water </b>is a set of React <b>DATA</b> components
+            that are designed to be used by USACE Developers building internal
+            and externally facing web pages and web apps. If you are just
+            getting started with Groundwork for the first time we suggest you
+            start with the{" "}
             <a href="https://usace.github.io/groundwork">Groundwork</a>{" "}
             documentation. If you are ready to start creating data components
             for your site you are in the right place! See the{" "}

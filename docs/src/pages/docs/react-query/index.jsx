@@ -61,8 +61,9 @@ export default function Docs() {
         title="NOTE"
         message={
           <span>
-            Use the <b>refetchOnWindowFocus: true</b> option sparingly, as it will
-            cause <em>EVERY</em> query to be re-run every time the user navigates back to the tab or window.
+            Use the <b>refetchOnWindowFocus: true</b> option sparingly, as it
+            will cause <em>EVERY</em> query to be re-run every time the user
+            navigates back to the tab or window.
           </span>
         }
       />

@@ -3,7 +3,6 @@ import { Code } from "../../components/code";
 import CopyButton from "../../../components/CopyButton";
 import DocsPage from "../_docs-wrapper";
 
-
 export default function Docs() {
   return (
     <DocsPage
