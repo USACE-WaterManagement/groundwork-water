@@ -84,7 +84,6 @@ export default function CWMSPlot({
     queryFn: fetchData,
     enabled: !!plotElement.current, // Only run the query when plotElement is available
   });
-  console.log(error)
   useEffect(() => {
     if (!plotElement.current || !tsData) {
       return;

@@ -1,15 +1,17 @@
 import { UsaceBox } from "@usace/groundwork";
 import { TSPlot, CWMSPlot } from "@usace-watermanagement/groundwork-water";
-import DocsPage from "../_docs-wrapper";
+import { Code } from "../components/code";
+import Divider from "../components/divider";
+import DocsPage from "../docs/_docs-wrapper";
 // import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
 function Plots() {
   return (
     <DocsPage 
-      prevUrl="/docs/tables" 
-      nextUrl="/docs/maps" 
-      middleText="Plots" 
-      prevText="Return to Tables Page" 
-      nextText="Go to Maps Page"
+    nextUrl="/docs/tables"
+    prevUrl="/docs/react-query"
+    middleText="Plots"
+    prevText="Return to React Query Page"
+    nextText="Go to Tables Page"
     >
       <UsaceBox title="Generic">
         <TSPlot

@@ -1,17 +1,15 @@
 import { H3 } from "@usace/groundwork";
 import { GageMap } from "@usace-watermanagement/groundwork-water";
-import { Code } from "../../components/code";
-import Divider from "../../components/divider";
-import DocsPage from "../_docs-wrapper";
+import { Code } from "../components/code";
+import Divider from "../components/divider";
+import DocsPage from "../docs/_docs-wrapper";
 
 export default function Maps() {
   return (
     <DocsPage
-      prevUrl="/docs/maps"
-      nextUrl="/docs/css"
+      prevUrl="/docs/tables"
       middleText="Maps"
-      prevText="Return to Maps Page"
-      nextText="Go to CSS Page"
+      prevText="Return to Tables Page"
     >
       {" "}
       <div className="map-container">
