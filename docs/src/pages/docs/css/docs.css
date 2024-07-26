@@ -16,7 +16,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    border-top: 1px solid #D1D5DB; /* Adjust color as needed */
+    border-top: 1px solid #dbd1d1; /* Adjust color as needed */
     top: 50%;
     z-index: -10;
   }

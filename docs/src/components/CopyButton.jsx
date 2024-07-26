@@ -2,7 +2,6 @@ import { Button } from "@usace/groundwork";
 import { BsCopy } from "react-icons/bs";
 import { GoThumbsup } from "react-icons/go";
 import { useState } from "react";
-import clsx from "clsx";
 
 function CopyButton({ className, text }) {
   const [copying, setCopying] = useState(false);
@@ -11,10 +10,9 @@ function CopyButton({ className, text }) {
       text.replace(/\\`/gi, "`").replace(/\\$/gi, "$")
     );
   };
-  const btnClass = clsx("", className);
   return (
     <Button
-      className={btnClass}
+      className={className}
       outline={!copying}
       color={copying ? "green" : undefined}
       onClick={() => {

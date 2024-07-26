@@ -1,5 +1,27 @@
 export default [
     {
+        "id": "get-started",
+        "text": "Getting Started",
+        "href": "/docs",
+        "children": [
+            {
+                "id": "quick-start",
+                "text": "Quick Start",
+                "href": "/docs/quick-start",
+            },
+            {
+                "id": "add-components",
+                "text": "Add Components",
+                "href": "/docs/add-components",
+            },
+            {
+                "id": "react-query",
+                "text": "React Query",
+                "href": "/docs/react-query",
+            }
+        ],
+    },
+    {
         "id": "plots",
         "text": "Plots",
         "href": "#",

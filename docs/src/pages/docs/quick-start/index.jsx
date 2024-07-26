@@ -1,15 +1,16 @@
 import { UsaceBox, Text, H4 } from "@usace/groundwork";
-import { Code } from "../components/code";
-import CopyButton from "../../components/CopyButton";
-import DocsPage from "./_docs-wrapper";
+import { Code } from "../../components/code";
+import CopyButton from "../../../components/CopyButton";
+import DocsPage from "../_docs-wrapper";
 
 export default function Docs() {
   return (
     <DocsPage
-      nextUrl="/docs/quick-start"
-      middleText="Getting Started"
+      nextUrl="/docs/react-query"
+      prevUrl="/docs/quick-start"
+      middleText="Quick Start"
+      nextText="Go to Add Components Page"
       prevText="Return to Quick Start"
-      nextText="Go to Quick Start Page"
     >
       <UsaceBox title="Getting Started">
         <H4>Project Setup</H4>

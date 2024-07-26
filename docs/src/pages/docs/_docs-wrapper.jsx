@@ -27,7 +27,7 @@ function DocsPage({
         >
           { prevUrl ? <Prev url={prevUrl} className="relative z-10 hover:text-white" /> : null }
         </div>
-        <span className="middle-text relative bg-white px-2">
+        <span className="middle-text relative bg-white px-2 font-bold">
           {hoverText}
         </span>
         <div
@@ -36,7 +36,7 @@ function DocsPage({
         >
           { nextUrl ? <Next url={nextUrl} className="relative z-10 hover:text-white" /> : null }
         </div>
-        <div className="absolute left-0 right-0 border-t border-gray-300 top-1/2 -z-10"></div>
+        <div className="absolute left-0 right-0 border-t border-red-200 top-1/2 -z-10"></div>
       </div>
       <div className="flex flex-row flex-between">
         <div className="flex flex-col flex-grow">{children}</div>
