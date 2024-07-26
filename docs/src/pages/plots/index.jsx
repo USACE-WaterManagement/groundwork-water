@@ -47,8 +47,6 @@ export default function Example() {
   // Set a default project ID
   const [projectId, setProjectId] = useState("KEYS");
   // Alternatively you could pass a Project ID as a prop
-
-
   return (
     <div>
      {/*Set a static list for the example and map the project to the start of each TSID*/}
@@ -70,7 +68,11 @@ export default function Example() {
       </Code>
       <div className="gw-font-bold gw-text-lg gw-pt-6">
         Component API -{" "}
-        <Code className="gw-p-2" language={"jsx"}>{`<Breadcrumbs />`}</Code>
+        <Code
+          className="gw-p-2"
+          enableCopy={false}
+          language={"jsx"}
+        >{`<Breadcrumbs />`}</Code>
       </div>
       <PropsTable propsList={cwmsPlotProps} showReq={false} />
     </DocsPage>

@@ -22,7 +22,7 @@ export function Code({
         className={`relative ${inline ? "inline-flex" : "flex"} items-start`}
       >
         {language && (
-          <div className="z-20 absolute bottom-0 right-0 bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded-tr rounded-bl">
+          <div className="z-20 relative top-3 right-0 bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded-tr rounded-bl">
             {language.toUpperCase()}
           </div>
         )}

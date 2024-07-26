@@ -38,10 +38,10 @@ export default function Maps() {
 `}
       </Code>
       <div className="gw-font-bold gw-text-lg gw-pt-6">
-        Component API -{" "}
-        <Code className="gw-p-2" language={"jsx"}>{`<Breadcrumbs />`}</Code>
+        CWMSPlot Parameters API -{" "}
+        <Code className="gw-p-2" language={"jsx"}>{`<Maps />`}</Code>
       </div>
-      <PropsTable propsList={mapProps} showReq={false} />
+      <PropsTable enableCopy={false} propsList={mapProps} showReq={false} />
     </DocsPage>
   );
 }
