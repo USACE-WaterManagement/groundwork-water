@@ -1,10 +1,10 @@
 import { UsaceBox, H3 } from "@usace/groundwork";
 import { TSPlot, CWMSPlot } from "@usace-watermanagement/groundwork-water";
-import { Code } from "../components/code";
-import Divider from "../components/divider";
-import DocsPage from "../docs/_docs-wrapper";
-import PropsTable from "../components/props-table";
-import { cwmsPlotProps } from "../../props-declarations/plots";
+import { Code } from "../../components/code";
+import Divider from "../../components/divider";
+import DocsPage from "../_docs-wrapper";
+import PropsTable from "../../components/props-table";
+import { cwmsPlotProps } from "../../../props-declarations/plots";
 // import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
 function Plots() {
   return (

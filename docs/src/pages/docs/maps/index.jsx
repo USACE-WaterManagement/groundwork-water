@@ -1,11 +1,11 @@
 import { H3 } from "@usace/groundwork";
 import { GageMap } from "@usace-watermanagement/groundwork-water";
-import { Code } from "../components/code";
-import Divider from "../components/divider";
-import DocsPage from "../docs/_docs-wrapper";
+import { Code } from "../../components/code";
+import Divider from "../../components/divider";
+import DocsPage from "../_docs-wrapper";
 
-import PropsTable from "../components/props-table";
-import mapProps from "../../props-declarations/maps";
+import PropsTable from "../../components/props-table";
+import mapProps from "../../../props-declarations/maps";
 
 export default function Maps() {
   return (

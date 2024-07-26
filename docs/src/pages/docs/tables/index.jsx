@@ -1,8 +1,8 @@
 import { UsaceBox } from "@usace/groundwork";
 import { TSTable } from "@usace-watermanagement/groundwork-water";
-import { Code } from "../components/code";
-import Divider from "../components/divider";
-import DocsPage from "../docs/_docs-wrapper";
+import { Code } from "../../components/code";
+import Divider from "../../components/divider";
+import DocsPage from "../_docs-wrapper";
 
 function Tables() {
   return (
