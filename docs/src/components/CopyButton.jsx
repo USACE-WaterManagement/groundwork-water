@@ -3,7 +3,7 @@ import { BsCopy } from "react-icons/bs";
 import { GoThumbsup } from "react-icons/go";
 import { useState } from "react";
 
-function CopyButton({ className, text, ignoreComments=false }) {
+function CopyButton({ className, text, ignoreComments=true }) {
   const [copying, setCopying] = useState(false);
   const handleCopy = () => {
     text = text.replace(/\\`/gi, "`").replace(/\\$/gi, "$");
@@ -12,6 +12,7 @@ function CopyButton({ className, text, ignoreComments=false }) {
       ? text
           .split("\n") // Split string by lines
           .map((line) => line.replace(/\/\/.*/g, "")) // Remove Commented Line
+          .map((line) => line.replace(/{\/\*.*\*\/}/g, "")) // Remove React comments
           .filter((line) => line.trim() !== "") // Remove Empty Lines
           .join("\n") // Join lines back into string
       : text
