@@ -1,4 +1,9 @@
-import { SiteWrapper, Button } from "@usace/groundwork";
+import {
+  SiteWrapper,
+  Button,
+  Breadcrumbs,
+  BreadcrumbItem,
+} from "@usace/groundwork";
 import { getNavHelper } from "internal-nav-helper";
 import { useConnect } from "redux-bundler-hook";
 import links from "./nav-links";
@@ -58,7 +63,17 @@ function App() {
         flickrUrl="#"
       >
         <DevWarning />
-        <Route />
+        <Breadcrumbs className="px-5">
+          {hash
+            .split("/")
+            .filter(Boolean) // Remove empty paths
+            .map((path) => (
+              <BreadcrumbItem key={path} href={path} text={path} />
+            ))}
+        </Breadcrumbs>
+        <div className="p-4">
+          <Route />
+        </div>
       </SiteWrapper>
     </div>
   );
