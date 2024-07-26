@@ -1,0 +1,79 @@
+import { UsaceBox, Text, H4 } from "@usace/groundwork";
+import { Code } from "../components/code";
+import CopyButton from "../../components/CopyButton";
+import DocsPage from "./_docs-wrapper";
+
+export default function Docs() {
+  return (
+    <DocsPage 
+    nextUrl="/docs/plots" 
+    middleText="Getting Started" 
+    prevText="Return to Quick Start" 
+    nextText="Go to Plots Page">
+      <UsaceBox title="Getting Started">
+        <H4>Project Setup</H4>
+        <div className="gw-mt-3 gw-mb-3">
+          <Text>
+            Groundwork is a set of React components that are designed to be used
+            by USACE Developers building internal and externally facing web
+            pages and web apps. The library should be compatible with any React
+            project using a build step. We test the framework and only support
+            using the Vite build tool. See the{" "}
+            <a
+              className="gw-underline"
+              href="https://vitejs.dev/guide/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Vite documentation
+            </a>{" "}
+            for more details on getting started or visit the{" "}
+            <a className="gw-underline" href="/docs/quick-start">
+              quick start guide
+            </a>{" "}
+            for a step by step guide for getting set up using Vite with
+            Groundwork.
+          </Text>
+          <Text className="gw-mt-3">
+            Set up a new project with Vite using the following command:
+          </Text>
+          <div className="gw-mt-3">
+            <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
+              <Code className="gw-block gw-p-1 gw-px-2" language="bash">
+                {`npm create vite@latest <app-name> --template react`}
+              </Code>
+              <CopyButton text="npm create vite@latest <app-name> --template react" />
+            </div>
+          </div>
+        </div>
+
+        <H4>Installation</H4>
+        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
+          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
+            npm install @usace/groundwork
+          </Code>
+          <CopyButton text="npm install @usace/groundwork" />
+        </div>
+        <H4>Import Components and Styles</H4>
+        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
+          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
+            {`import { SiteWrapper } from "@usace/groundwork"`}
+          </Code>
+          <CopyButton
+            text={`import { SiteWrapper } from "@usace/groundwork"`}
+          />
+        </div>
+        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
+          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
+            import "@usace/groundwork/dist/style.css"
+          </Code>
+          <CopyButton text={`import "@usace/groundwork/dist/style.css"`} />
+        </div>
+        <Text>
+          Make sure to import style.css from Groundwork into your top-level
+          component (i.e. App.jsx), then go build stuff with the components
+        </Text>
+      </UsaceBox>
+    </DocsPage>
+  );
+}
