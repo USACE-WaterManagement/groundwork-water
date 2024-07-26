@@ -1,7 +1,5 @@
 import { clsx } from "clsx";
-import SyntaxHighlighter, {
-  syntaxStyle,
-} from "../../../../lib/components/utils/SyntaxHighlighter";
+import SyntaxHighlighter, { syntaxStyle } from "../../utils/SyntaxHighlighter";
 import CopyButton from "../../components/CopyButton";
 
 export function Code({
