@@ -6,7 +6,10 @@ const _className =
 export function Next({ url, className = { className } }) {
   return (
     <div className="inline-flex">
-      <Button className={`${_className + " " + className} rounded-r`} href={url}>
+      <Button
+        className={`${_className + " " + className} rounded-r`}
+        href={url}
+      >
         Next
       </Button>
     </div>
@@ -16,9 +19,12 @@ export function Next({ url, className = { className } }) {
 export function Prev({ url, className = { className } }) {
   return (
     <div className="inline-flex">
-        <Button className={`${_className + " " + className}  rounded-l`} href={url}>
-          Prev
-        </Button>
+      <Button
+        className={`${_className + " " + className}  rounded-l`}
+        href={url}
+      >
+        Prev
+      </Button>
     </div>
   );
 }

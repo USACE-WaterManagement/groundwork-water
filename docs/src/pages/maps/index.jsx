@@ -4,6 +4,9 @@ import { Code } from "../components/code";
 import Divider from "../components/divider";
 import DocsPage from "../docs/_docs-wrapper";
 
+import PropsTable from "../components/props-table";
+import mapProps from "../../props-declarations/maps";
+
 export default function Maps() {
   return (
     <DocsPage
@@ -34,6 +37,11 @@ export default function Maps() {
 }
 `}
       </Code>
+      <div className="gw-font-bold gw-text-lg gw-pt-6">
+        Component API -{" "}
+        <Code className="gw-p-2" language={"jsx"}>{`<Breadcrumbs />`}</Code>
+      </div>
+      <PropsTable propsList={mapProps} showReq={false} />
     </DocsPage>
   );
 }
