@@ -17,8 +17,7 @@ export default function Docs() {
           <Text>
             Similar to{" "}
             <a href="https://usace.github.io/groundwork">Groundwork</a>,{" "}
-            <b>Groundwork-Water</b>
-            is a set of React <b>DATA</b> components that are designed to be
+            <b>Groundwork-Water </b>is a set of React <b>DATA</b> components that are designed to be
             used by USACE Developers building internal and externally facing web
             pages and web apps. If you are just getting started with Groundwork
             for the first time we suggest you start with the{" "}
@@ -43,42 +42,12 @@ export default function Docs() {
           <Text className="gw-mt-3">
             Set up a new project with Vite using the following command:
           </Text>
-          <div className="gw-mt-3">
-            <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
-              <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-                {`npm create vite@latest <app-name> --template react`}
-              </Code>
-              <CopyButton text="npm create vite@latest <app-name> --template react" />
-            </div>
-          </div>
         </div>
 
         <H4>Installation</H4>
-        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
-          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-            npm install @usace/groundwork
-          </Code>
-          <CopyButton text="npm install @usace/groundwork" />
-        </div>
-        <H4>Import Components and Styles</H4>
-        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
-          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-            {`import { SiteWrapper } from "@usace/groundwork"`}
-          </Code>
-          <CopyButton
-            text={`import { SiteWrapper } from "@usace/groundwork"`}
-          />
-        </div>
-        <div className="gw-flex gw-flex-row gw-justify-start gw-space-between gw-items-center gw-gap-2 gw-mt-3 gw-mb-3">
-          <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-            import "@usace/groundwork/dist/style.css"
-          </Code>
-          <CopyButton text={`import "@usace/groundwork/dist/style.css"`} />
-        </div>
-        <Text>
-          Make sure to import style.css from Groundwork into your top-level
-          component (i.e. App.jsx), then go build stuff with the components
-        </Text>
+        <Code className="gw-block gw-p-1 gw-px-2" language="bash">
+          npm install @usace-watermanagement/groundwork-water
+        </Code>
       </UsaceBox>
     </DocsPage>
   );

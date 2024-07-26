@@ -17,10 +17,8 @@ function DocsPage({
 
   const handleNextMouseEnter = () => setHoverText(nextText);
   const handleNextMouseLeave = () => setHoverText(middleText);
-
-  return (
-    <Container>
-      <div className="select-none mb-5 flex flex-row justify-between items-center navigation-buttons relative">
+  const navigationButtons = () => {
+    return <div className="select-none mb-5 flex flex-row justify-between items-center navigation-buttons relative">
         <div
           onMouseEnter={handlePrevMouseEnter}
           onMouseLeave={handlePrevMouseLeave}
@@ -36,11 +34,16 @@ function DocsPage({
         >
           { nextUrl ? <Next url={nextUrl} className="relative z-10 hover:text-white" /> : null }
         </div>
-        <div className="absolute left-0 right-0 border-t border-red-200 top-1/2 -z-10"></div>
+        <div className="absolute left-0 right-0 border-t border-gray-200 top-1/2 -z-10"></div>
       </div>
-      <div className="flex flex-row flex-between">
+  }
+  return (
+    <Container>
+      {navigationButtons()}
+      <div className="flex flex-row flex-between mb-5">
         <div className="flex flex-col flex-grow">{children}</div>
       </div>
+      {navigationButtons()}
     </Container>
   );
 }

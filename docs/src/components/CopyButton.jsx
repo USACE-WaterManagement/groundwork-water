@@ -19,7 +19,7 @@ function CopyButton({ className, text, ignoreComments=false }) {
   };
   return (
     <Button
-      className={className}
+      className={className + " py-1 rounded-md"}
       outline={!copying}
       color={copying ? "green" : undefined}
       onClick={() => {
