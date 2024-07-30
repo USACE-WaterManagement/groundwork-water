@@ -41,6 +41,11 @@ export default [
         text: "CDA Time Series",
         href: "/docs/hooks/use-cda-time-series",
       },
+      {
+        id: "use-nwps-gauge",
+        text: "NWPS Gauge",
+        href: "/docs/hooks/use-nwps-gauge",
+      },
     ],
   },
   {

@@ -11,6 +11,7 @@ import QuickStart from "../pages/docs/quick-start";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaTimeSeries from "../pages/docs/hooks/use-cda-time-series";
+import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 
 export default createRouteBundle(
   {
@@ -19,6 +20,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-location": UseCdaLocation,
     "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
+    "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/plots": Plots,
     "/docs/tables": Tables,
     "/docs/maps": Maps,
