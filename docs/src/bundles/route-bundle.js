@@ -9,11 +9,13 @@ import ReactQuery from "../pages/docs/react-query";
 import AddComponents from "../pages/docs/add-components";
 import QuickStart from "../pages/docs/quick-start";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
+import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 
 export default createRouteBundle(
   {
     "/": Home,
     "/docs": Docs,
+    "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-location": UseCdaLocation,
     "/docs/plots": Plots,
     "/docs/tables": Tables,

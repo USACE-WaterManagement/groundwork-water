@@ -27,6 +27,11 @@ export default [
     href: "#",
     children: [
       {
+        id: "use-cda-catalog",
+        text: "CDA Catalog",
+        href: "/docs/hooks/use-cda-catalog",
+      },
+      {
         id: "use-cda-location",
         text: "CDA Location",
         href: "/docs/hooks/use-cda-location",
