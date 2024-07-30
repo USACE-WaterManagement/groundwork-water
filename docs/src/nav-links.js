@@ -46,6 +46,11 @@ export default [
         text: "NWPS Gauge",
         href: "/docs/hooks/use-nwps-gauge",
       },
+      {
+        id: "use-nwps-gauge-data",
+        text: "NWPS Gauge Data",
+        href: "/docs/hooks/use-nwps-gauge-data",
+      },
     ],
   },
   {
