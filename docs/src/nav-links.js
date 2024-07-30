@@ -32,6 +32,11 @@ export default [
         href: "/docs/hooks/use-cda-catalog",
       },
       {
+        id: "use-cda-latest-value",
+        text: "CDA Latest Value",
+        href: "/docs/hooks/use-cda-latest-value",
+      },
+      {
         id: "use-cda-location",
         text: "CDA Location",
         href: "/docs/hooks/use-cda-location",
