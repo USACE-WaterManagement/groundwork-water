@@ -4,6 +4,7 @@ import TSTable from "./components/data/tables/TSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import useCdaCatalog from "./components/data/hooks/useCdaCatalog";
+import useCdaLatestValue from "./components/data/hooks/useCdaLatestValue";
 import useCdaLocation from "./components/data/hooks/useCdaLocation";
 import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
@@ -16,6 +17,7 @@ export {
   GageMap,
   CWMSPlot,
   useCdaCatalog,
+  useCdaLatestValue,
   useCdaLocation,
   useCdaTimeSeries,
   useNwpsGauge,
