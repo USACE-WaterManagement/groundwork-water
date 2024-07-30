@@ -14,11 +14,13 @@ import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
 import UseCdaTimeSeries from "../pages/docs/hooks/use-cda-time-series";
 import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 import UseNwpsGaugeData from "../pages/docs/hooks/use-nwps-gauge-data";
+import DataHooks from "../pages/docs/hooks";
 
 export default createRouteBundle(
   {
     "/": Home,
     "/docs": Docs,
+    "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,

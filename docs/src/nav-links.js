@@ -24,7 +24,7 @@ export default [
   {
     id: "hooks",
     text: "Data Hooks",
-    href: "#",
+    href: "/docs/hooks",
     children: [
       {
         id: "use-cda-catalog",
