@@ -22,6 +22,18 @@ export default [
     ],
   },
   {
+    id: "hooks",
+    text: "Data Hooks",
+    href: "#",
+    children: [
+      {
+        id: "use-cda-location",
+        text: "CDA Location",
+        href: "/docs/hooks/use-cda-location",
+      },
+    ],
+  },
+  {
     id: "plots",
     text: "Plots",
     href: "#",
