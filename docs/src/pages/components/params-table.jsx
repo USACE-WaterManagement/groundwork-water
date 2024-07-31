@@ -7,7 +7,7 @@ import {
   TableCell,
   Text,
   Code,
-} from "../../lib";
+} from "@usace/groundwork";
 
 // Borrowed from Groundwork
 
