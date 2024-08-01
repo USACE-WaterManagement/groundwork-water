@@ -1,4 +1,4 @@
-import { UsaceBox, Text, H2, H4 } from "@usace/groundwork";
+import { Text, H2 } from "@usace/groundwork";
 import { Code } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Alert from "../../components/alert";
@@ -7,11 +7,9 @@ import Divider from "../../components/divider";
 export default function Docs() {
   return (
     <DocsPage
-      nextUrl="/docs/plots"
       prevUrl="/docs/add-components"
       middleText="React Query"
       prevText="Return to Add Components"
-      nextText="Go to Plots Page"
     >
       <H2>React Query Installation</H2>
       <Alert
@@ -96,6 +94,13 @@ export default function Docs() {
       <Text>
         Make sure to import style.css from Groundwork into your top-level
         component (i.e. App.jsx), then go build stuff with the components
+      </Text>
+      <Divider title="Where to Next?" />
+      <Text>
+        {/* List of components to build */}
+        {/* Build a plot */}
+
+        {/* etc */}
       </Text>
     </DocsPage>
   );
