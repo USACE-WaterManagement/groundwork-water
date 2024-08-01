@@ -22,6 +22,43 @@ export default [
     ],
   },
   {
+    id: "hooks",
+    text: "Data Hooks",
+    href: "/docs/hooks",
+    children: [
+      {
+        id: "use-cda-catalog",
+        text: "CDA Catalog",
+        href: "/docs/hooks/use-cda-catalog",
+      },
+      {
+        id: "use-cda-latest-value",
+        text: "CDA Latest Value",
+        href: "/docs/hooks/use-cda-latest-value",
+      },
+      {
+        id: "use-cda-location",
+        text: "CDA Location",
+        href: "/docs/hooks/use-cda-location",
+      },
+      {
+        id: "use-cda-time-series",
+        text: "CDA Time Series",
+        href: "/docs/hooks/use-cda-time-series",
+      },
+      {
+        id: "use-nwps-gauge",
+        text: "NWPS Gauge",
+        href: "/docs/hooks/use-nwps-gauge",
+      },
+      {
+        id: "use-nwps-gauge-data",
+        text: "NWPS Gauge Data",
+        href: "/docs/hooks/use-nwps-gauge-data",
+      },
+    ],
+  },
+  {
     id: "plots",
     text: "Plots",
     href: "#",
