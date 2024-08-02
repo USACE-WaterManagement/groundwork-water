@@ -1,6 +1,6 @@
 {
     "name": "@usace-watermanagement/groundwork-water",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "license": "MIT",
     "author": "Various",
     "description": "A library of react components for use with USACE Water Management Webpages",
@@ -26,6 +26,7 @@
         "build": "vite build && npm run link",
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
+        "login": "npm login",
         "publish": "npm publish --access public"
     },
     "repository": {
