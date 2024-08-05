@@ -12,7 +12,8 @@
     "exports": {
         ".": {
             "import": "./dist/groundwork-water.es.js",
-            "require": "./dist/groundwork-water.umd.cjs"
+            "require": "./dist/groundwork-water.umd.cjs",
+            "types": "./dist/index.d.ts"
         },
         "./dist/*.css": {
             "import": "./dist/*.css",
@@ -21,9 +22,9 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prepublishOnly": "vite build",
+        "prepublishOnly": "tsc && vite build",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
-        "build": "vite build && npm run link",
+        "build": "tsc && vite build && npm run link",
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
         "login": "npm login",
@@ -55,8 +56,10 @@
     },
     "devDependencies": {
         "@types/ol": "^7.0.0",
-        "@types/react": "^18.2.66",
-        "@types/react-dom": "^18.2.22",
+        "@types/react": "^18.3.3",
+        "@types/react-dom": "^18.3.0",
+        "@typescript-eslint/eslint-plugin": "^8.0.0",
+        "@typescript-eslint/parser": "^8.0.0",
         "@vitejs/plugin-react": "^4.3.1",
         "eslint": "^8.57.0",
         "eslint-plugin-react": "^7.34.1",
@@ -65,7 +68,9 @@
         "gh-pages": "^6.1.1",
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.4",
-        "vite": "^5.3.1"
+        "typescript": "^5.5.4",
+        "vite": "^5.3.1",
+        "vite-plugin-dts": "^4.0.0-beta.2"
     },
     "peerDependencies": {
         "@tanstack/react-query": "^5.51.15"
