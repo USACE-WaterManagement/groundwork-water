@@ -12,7 +12,8 @@
     "exports": {
         ".": {
             "import": "./dist/groundwork-water.es.js",
-            "require": "./dist/groundwork-water.umd.cjs"
+            "require": "./dist/groundwork-water.umd.cjs",
+            "types": "./dist/index.d.ts"
         },
         "./dist/*.css": {
             "import": "./dist/*.css",
