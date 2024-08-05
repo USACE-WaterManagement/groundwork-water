@@ -2,9 +2,22 @@ import { useEffect, useState } from "react";
 import useCdaCatalog from "./useCdaCatalog";
 import useCdaTimeSeries from "./useCdaTimeSeries";
 import { getLatestEntry } from "../helpers/cda";
+import { TimeseriesCatalogEntry } from "cwmsjs";
 
-const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }) => {
-  const [latestDate, setLatestDate] = useState();
+interface useCdaLatestValueParams {
+  tsId: string;
+  office: string;
+  unit?: string;
+  cdaUrl?: string;
+}
+
+const useCdaLatestValue = ({
+  tsId,
+  office,
+  unit,
+  cdaUrl,
+}: useCdaLatestValueParams) => {
+  const [latestDate, setLatestDate] = useState("");
   const begin = latestDate;
   const end = latestDate;
   const ts = useCdaTimeSeries({
@@ -18,7 +31,7 @@ const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }) => {
     cdaUrl: cdaUrl,
   });
 
-  const enableCatalog = !ts.isPending && ts.data?.values.length === 0;
+  const enableCatalog = !ts.isPending && ts.data?.values?.length === 0;
 
   const catalog = useCdaCatalog({
     cdaParams: { dataset: "TIMESERIES", office, like: tsId },
@@ -29,10 +42,14 @@ const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }) => {
   });
 
   useEffect(() => {
-    if (!catalog.data) {
+    if (!catalog.data || !catalog.data.entries) {
       return;
     }
-    setLatestDate(catalog.data.entries[0].extents[0].latestTime?.toISOString());
+    const firstEntry: TimeseriesCatalogEntry = catalog.data.entries?.[0];
+    if (!firstEntry.extents?.[0].latestTime) {
+      return;
+    }
+    setLatestDate(firstEntry.extents?.[0].latestTime?.toISOString());
   }, [catalog]);
 
   const isPending =
@@ -47,7 +64,7 @@ const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }) => {
         datetime: latestEntry[0],
         value: latestEntry[1],
         qualityCode: latestEntry[2],
-        units: ts.data.units,
+        units: ts.data?.units,
       }
     : undefined;
 
