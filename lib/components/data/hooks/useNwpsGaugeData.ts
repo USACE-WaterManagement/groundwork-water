@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { NWPS_URL } from "../helpers/nwps";
+import { GaugeGetStageFlowAllResponse } from "../../../types/nwps";
 
-const getNwpsGaugeData = async (sid, product) => {
+const getNwpsGaugeData = async (sid: string, product: string) => {
   let fullUrl = NWPS_URL + `/v1/gauges/${sid}/stageflow`;
   if (product == "observed" || product == "forecast") fullUrl += `/${product}`;
   const response = await fetch(fullUrl);
@@ -11,7 +12,17 @@ const getNwpsGaugeData = async (sid, product) => {
   return response.json();
 };
 
-const useNwpsGaugeData = ({ sid, product, queryOptions }) => {
+interface useNwpsGaugeDataParams {
+  sid: string;
+  product: string;
+  queryOptions: Partial<UseQueryOptions<GaugeGetStageFlowAllResponse>>;
+}
+
+const useNwpsGaugeData = ({
+  sid,
+  product,
+  queryOptions,
+}: useNwpsGaugeDataParams) => {
   return useQuery({
     queryKey: ["nwps", "gauge", sid, "data", `${product}`],
     queryFn: async () => {
