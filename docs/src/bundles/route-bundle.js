@@ -12,6 +12,7 @@ import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
 import UseCdaTimeSeries from "../pages/docs/hooks/use-cda-time-series";
+import UseCdaTimeSeriesGroup from "../pages/docs/hooks/use-cda-time-series-group";
 import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 import UseNwpsGaugeData from "../pages/docs/hooks/use-nwps-gauge-data";
 import DataHooks from "../pages/docs/hooks";
@@ -27,6 +28,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,
     "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
+    "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
     "/docs/plots": Plots,
