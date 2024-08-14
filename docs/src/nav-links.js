@@ -94,4 +94,9 @@ export default [
       },
     ],
   },
+  {
+    id: "help",
+    text: "Help",
+    href: "/docs/help",
+  },
 ];
