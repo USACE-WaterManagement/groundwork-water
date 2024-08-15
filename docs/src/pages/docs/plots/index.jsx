@@ -15,15 +15,48 @@ function Plots() {
       prevText="Return to React Query Page"
       nextText="Go to Tables Page"
     >
-      <UsaceBox title="Generic">
+      <UsaceBox title="Generic Timeseries Plot">
         <TSPlot
-          queryParams={{
-            office: "SWT",
-            name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-          }}
+          office="SWT"
+          name="KEYS.Elev.Inst.1Hour.0.Ccp-Rev"
           className="mt-8"
         />
       </UsaceBox>
+      <Divider text="Code Example:" className="gw-mt-8" />
+      <H3>Code Example:</H3>
+      <Code className="gw-mt-8" language="jsx">
+        {`import { TSPlot, Code} from "@usace-watermanagement/groundwork-water";
+import { useState } from "react";
+
+export default function Example() {
+  // Set a default project ID
+  const [projectId, setProjectId] = useState("KEYS");
+  // Alternatively you could pass a Project ID as a prop
+  return (
+    <div>
+     {/*Set a static list for the example and map the project to the start of each TSID*/}
+        <TSPlot
+          office="SWT"
+          name="KEYS.Elev.Inst.1Hour.0.Ccp-Rev"
+          className="mt-8"
+        />
+    </div>
+  );
+}
+`}
+      </Code>
+      <div className="gw-font-bold gw-text-lg gw-pt-6">
+        Component API -{" "}
+        <Code className="gw-p-2" language={"jsx"}>{`<TSPlot tsids={[]} 
+    office={null} begin={null} 
+    end={null}  title={null} 
+    fontSize={null} unit={null} 
+    className={null} plotHeight={550} 
+    autoSize={true} shapes={[]} 
+    annotations={[]} responsive={true}
+        />`}</Code>
+      </div>
+      <PropsTable propsList={cwmsPlotProps} showReq={false} />
       <UsaceBox title="CWMS Plot">
         <CWMSPlot
           tsids={[
@@ -40,7 +73,7 @@ function Plots() {
       <Divider text="Code Example:" className="mt-8" />
       <H3>Code Example:</H3>
       <Code className="mt-8" language="jsx">
-        {`import { GageMap, Code} from "@usace-watermanagement/groundwork-water";
+        {`import { CWMSPlot, Code } from "@usace-watermanagement/groundwork-water";
 import { useState } from "react";
 
 export default function Example() {
@@ -68,11 +101,14 @@ export default function Example() {
       </Code>
       <div className="gw-font-bold gw-text-lg gw-pt-6">
         Component API -{" "}
-        <Code
-          className="gw-p-2"
-          enableCopy={false}
-          language={"jsx"}
-        >{`<Breadcrumbs />`}</Code>
+        <Code className="gw-p-2" language={"jsx"}>{`<CWMSPlot tsids={[]} 
+    office={null} begin={null} 
+    end={null}  title={null} 
+    fontSize={null} unit={null} 
+    className={null} plotHeight={550} 
+    autoSize={true} shapes={[]} 
+    annotations={[]} responsive={true}
+        />`}</Code>
       </div>
       <PropsTable propsList={cwmsPlotProps} showReq={false} />
     </DocsPage>

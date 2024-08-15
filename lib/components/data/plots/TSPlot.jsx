@@ -20,7 +20,17 @@ const TS_API = new TimeSeriesApi(V2_API);
  * @param {Function} props.setLoadTime - Function to set the time taken to load the data.
  * @returns {JSX.Element} The rendered component.
  */
-const TSPlot = ({ queryParams, responsive=true, ...props }) => {
+const TSPlot = ({
+  queryParams,
+  title = "Timeseries Plot",
+  begin = null,
+  end = null,
+  responsive = true,
+  grid = null,
+  shapes = [],
+  annotations = [],
+  ...props
+}) => {
   const [data, setData] = useState(null);
   const [loadTime, setLoadTime] = useState(null);
   const plotContainerRef = useRef(null);
@@ -71,13 +81,17 @@ const TSPlot = ({ queryParams, responsive=true, ...props }) => {
           marker: { color: "blue" },
         },
       ];
-
       const layout = {
-        title: queryParams?.name || "Timeseries Plot",
+        title: title,
+        shapes: shapes,
+        annotations: annotations,
         xaxis: { title: "Date" },
         yaxis: { title: queryParams?.name.split(".")[1] },
       };
-      Plotly.newPlot(plotContainerRef.current, plotData, layout, { responsive: responsive });
+      Plotly.newPlot(plotContainerRef.current, plotData, layout, {
+        responsive: responsive,
+      });
+      if (layoutGrid) layout.grid = layoutGrid;
     }
   }, [data, queryParams]); // Re-plot when data changes
 
@@ -92,7 +106,8 @@ const TSPlot = ({ queryParams, responsive=true, ...props }) => {
     <div
       ref={plotContainerRef}
       title={`Loaded in ${loadTime} seconds`}
-      style={{ width: "100%", height: "500px" }}
+      className="h-full w-full"
+      style={{ width: "100%", height: plotHeight }}
       {...props}
     ></div>
   );
