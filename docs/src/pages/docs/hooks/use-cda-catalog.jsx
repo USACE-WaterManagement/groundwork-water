@@ -7,27 +7,7 @@ import { Code as CodeBlock } from "../../components/code";
 import { Code } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
-
-const cdaParams = [
-  {
-    name: "dataset",
-    type: "string",
-    required: true,
-    desc: "Data type to catalog. Options: 'TIMESERIES', 'LOCATIONS'",
-  },
-  {
-    name: "like",
-    type: "string",
-    required: true,
-    desc: "Posix regular expression matching against the id.",
-  },
-  {
-    name: "office",
-    type: "string",
-    required: false,
-    desc: "3-4 letter office name representing the district you want to isolate data to.",
-  },
-];
+import { cdaCatalogParams } from "../../../props-declarations/data-hooks";
 
 const CatalogCard = () => {
   const { data, isPending, isError } = useCdaCatalog({
@@ -111,7 +91,7 @@ const CatalogCard = () => {
         cwmsJsType="GetCwmsDataCatalogWithDatasetRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
-      <ParamsTable paramsList={cdaParams} />
+      <ParamsTable paramsList={cdaCatalogParams} />
     </DocsPage>
   );
 }
