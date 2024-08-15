@@ -1,7 +1,7 @@
 {
     "name": "groundwork-water-docs",
     "license": "MIT",
-    "private": false,
+    "private": true,
     "version": "1.0.2",
     "type": "module",
     "scripts": {
