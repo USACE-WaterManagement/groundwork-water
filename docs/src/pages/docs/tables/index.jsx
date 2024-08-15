@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TSTable } from "@usace-watermanagement/groundwork-water";
+// import TSTable from "../../../../../lib/components/data/tables/TSTable";
 
 import { Code } from "../../components/code";
 import Divider from "../../components/divider";
@@ -24,7 +25,7 @@ function Tables() {
       <div className="mt-6">
         <TSTable
           title="Simple Timeseries Table"
-          queryParams={{
+          cdaParams={{
             office: "SWT",
             name: tsid,
             begin: dayjs()
@@ -49,7 +50,7 @@ function Tables() {
     return (
     <TSTable
         title="Simple Timeseries Table"
-        queryParams={{
+        cdaParams={{
         office: "SWT",
         name: tsid,
         begin: dayjs()

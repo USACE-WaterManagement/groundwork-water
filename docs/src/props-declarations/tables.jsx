@@ -27,7 +27,7 @@ const tsTableParams = [
     name: "content",
     type: "array",
     required: false,
-    desc: "An array of arrays representing the data for the table. You can either provide this or use the queryParams prop. QueryParams performs the call for you, whereas content expects a 2D array of TS Data. i.e. [[Date, Value, Quality Code], [Date, Value, Quality Code]]",
+    desc: "An array of arrays representing the data for the table. You can either provide this or use the cdaParams prop. Using cdaParams performs the call for you, whereas content expects a 2D array of TS Data. i.e. [[Date, Value, Quality Code], [Date, Value, Quality Code]]",
   },
   {
     name: "order",
