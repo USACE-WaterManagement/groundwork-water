@@ -1,17 +1,9 @@
 /* eslint-disable react/prop-types */
 
-import { useEffect, useState, useRef } from "react";
-import { TimeSeriesApi, Configuration } from "cwmsjs";
+import { useEffect, useRef } from "react";
+import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
 import Plotly from "plotly.js-basic-dist";
 
-const V2_API = new Configuration({
-  // basePath: "https://water.usace.army.mil/cwms-data",
-  headers: {
-    accept: "application/json;version=2",
-  },
-});
-
-const TS_API = new TimeSeriesApi(V2_API);
 /**
  * Component to fetch and plot timeseries data from the USACE CDA endpoint.
  *
@@ -21,54 +13,25 @@ const TS_API = new TimeSeriesApi(V2_API);
  * @returns {JSX.Element} The rendered component.
  */
 const TSPlot = ({
-  queryParams,
   title = "Timeseries Plot",
-  begin = null,
-  end = null,
+  cdaParams = null,
+  cdaUrl = null,
+  queryOptions = null,
   responsive = true,
   grid = null,
   shapes = [],
   annotations = [],
+  autoSize: autoSize,
+  plotHeight = 550,
+  loadingComponent = null,
+  layoutGrid = null,
   ...props
 }) => {
-  const [data, setData] = useState(null);
-  const [loadTime, setLoadTime] = useState(null);
   const plotContainerRef = useRef(null);
-
-  // Load the timeseries when the component loads in
-  useEffect(() => {
-    /**
-     * Fetch timeseries data from the CDA endpoint.
-     */
-    const fetchData = async () => {
-      const startTime = window.performance.now();
-      try {
-        TS_API.getCwmsDataTimeseriesRaw(queryParams)
-          .then(async (r) => {
-            let data = await r.raw.json();
-            data.url = r.raw.url;
-            return data;
-          })
-          .then((d) => {
-            d.query_str = d.url;
-            setData(d);
-            setLoadTime(
-              ((window.performance.now() - startTime) / 1000).toFixed(2)
-            );
-          })
-          .catch((e) => {
-            console.error(e);
-            setData({ error: e.message });
-          });
-      } catch (error) {
-        console.error("Failed to fetch: ", error);
-        setData({ error: error.message });
-      }
-    };
-
-    fetchData();
-  }, [queryParams, setLoadTime]);
-
+  const { data, isPending, error } = useCdaTimeSeries({
+    cdaParams: cdaParams,
+    cdaUrl: cdaUrl,
+  });
   // Plot the data with Plotly
   useEffect(() => {
     if (data && data.values) {
@@ -83,29 +46,30 @@ const TSPlot = ({
       ];
       const layout = {
         title: title,
+        autosize: autoSize,
         shapes: shapes,
         annotations: annotations,
         xaxis: { title: "Date" },
-        yaxis: { title: queryParams?.name.split(".")[1] },
+        yaxis: { title: cdaParams?.name.split(".")[1] },
       };
+      if (layoutGrid) layout.grid = layoutGrid;
       Plotly.newPlot(plotContainerRef.current, plotData, layout, {
         responsive: responsive,
       });
-      if (layoutGrid) layout.grid = layoutGrid;
     }
-  }, [data, queryParams]); // Re-plot when data changes
+  }, [data, cdaParams, title, shapes, annotations, layoutGrid, responsive]); // Re-plot when data changes
 
-  if (!data) {
-    return <div>Loading...</div>;
-  } else if (data.error) {
-    return <div>Error: {data.error}</div>;
+  if (isPending) {
+    return loadingComponent ? <>{loadingComponent}</> : <div>Loading...</div>;
+  } else if (error) {
+    return <div>Error: {error?.message}</div>;
   } else if (data.values && data.values.length === 0) {
     return <div>No data found for the query {data.url}</div>;
   }
   return (
     <div
       ref={plotContainerRef}
-      title={`Loaded in ${loadTime} seconds`}
+      title={title}
       className="h-full w-full"
       style={{ width: "100%", height: plotHeight }}
       {...props}

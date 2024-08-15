@@ -19,36 +19,44 @@ export default function CWMSPlot({
   title,
   fontSize,
   unit = "EN",
-  className="",
+  className = "",
   plotHeight = 550,
-  autoSize=true,
-  shapes=[],
-  annotations=[],
-  responsive=true,
+  shapes = [],
+  autoSize = true,
+  annotations = [],
+  responsive = true,
+  loadingComponent = null,
+  layoutGrid = null,
 }) {
   const plotElement = useRef(null);
   const [metaData, setMetaData] = useState(null);
-  const [ plotTitle, setPlotTitle] = useState(null);
+  const [plotTitle, setPlotTitle] = useState(null);
   const [plotTSIDs, setPlotTSIDs] = useState(null);
   const [plotFontSize, setPlotFontSize] = useState(fontSize);
-
 
   useEffect(() => {
     if (!title) {
       setPlotTitle((Array.isArray(tsids) ? tsids[0] : tsids).split(".")[0]);
     }
-    if (!tsids.length) throw Error("You must specify one or more Timeseries IDs to plot.");
+    if (!tsids.length)
+      throw Error("You must specify one or more Timeseries IDs to plot.");
     if (!office) throw Error("You must specify a 3 letter ID for the office");
     if (typeof tsids == "string") {
-      tsids = [tsids]
+      tsids = [tsids];
     }
-    setPlotTSIDs(tsids)
+    setPlotTSIDs(tsids);
   }, [title, tsids, office]);
 
   const fetchData = async () => {
     let promises = plotTSIDs.map(async (name) => {
       try {
-        return await ts_api.getCwmsDataTimeseries({ name, end, unit, begin, office });
+        return await ts_api.getCwmsDataTimeseries({
+          name,
+          end,
+          unit,
+          begin,
+          office,
+        });
       } catch (error) {
         if (error.response?.status === 404) {
           console.warn(`Data for ${name} not found: 404`);
@@ -58,10 +66,8 @@ export default function CWMSPlot({
         }
       }
     });
-  
     let values = await Promise.all(promises);
     let _data = { ts: {}, dates: [] };
-  
     // TODO: This should probably be the parameter not the units
     values.forEach((result) => {
       if (result && result.units) {
@@ -75,11 +81,14 @@ export default function CWMSPlot({
         console.warn(`No unit found for ${result?.name}`);
       }
     });
-  
     return _data;
   };
 
-  const { data: tsData, error, isLoading } = useQuery({
+  const {
+    data: tsData,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["timeseries", plotTSIDs, begin, end, unit, office],
     queryFn: fetchData,
     enabled: !!plotElement.current, // Only run the query when plotElement is available
@@ -91,24 +100,23 @@ export default function CWMSPlot({
 
     let unit_keys = Object.keys(tsData.ts);
     let grid_col_cnt = unit_keys.length;
-
-
-    let layout = {
+    const layout = {
       autosize: autoSize,
+      title: title,
       shapes: shapes,
       annotations: annotations,
-      title: {
+    };
+    if (title) layout.title = title;
+    else
+      layout.title = {
         text: `${plotTitle}<br>Units: ${unit_keys.join(", ")}`,
         font: {
           family: "DejaVuSansMono, monospace",
         },
-      },
-      grid: {
-        rows: grid_col_cnt,
-        columns: 1,
-        pattern: "independent",
-      },
-    };
+      };
+    if (layoutGrid) layout.grid = layoutGrid;
+    else
+      layout.grid = { rows: grid_col_cnt, columns: 1, pattern: "independent" };
 
     let traces = [];
     let trace_cnt = 1;
@@ -117,8 +125,7 @@ export default function CWMSPlot({
     let domain_end = domain_delta;
 
     // Force the font size if specified
-    if (plotFontSize) 
-      layout["font"] = { size: plotFontSize };
+    if (plotFontSize) layout["font"] = { size: plotFontSize };
     else if (unit_keys.length > 4) {
       layout["font"] = { size: 8 };
     }
@@ -130,8 +137,8 @@ export default function CWMSPlot({
       for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
         ts = tsData.ts[key][ts_idx];
         const trace = {
-          x: ts.values.map(value => new Date(value[0])),
-          y: ts.values.map(value => value[1]),
+          x: ts.values.map((value) => new Date(value[0])),
+          y: ts.values.map((value) => value[1]),
           yaxis: "y" + trace_cnt,
           type: "scatter",
           mode: "lines",
@@ -166,13 +173,33 @@ export default function CWMSPlot({
       trace_cnt++;
     }
 
-    Plotly.newPlot(plotElement.current, traces, layout, { responsive: responsive });
+    Plotly.newPlot(plotElement.current, traces, layout, {
+      responsive: responsive,
+    });
   }, [tsData, title]);
 
   return (
-    <div className={`h-full w-full ${className}`} style={{ height: plotHeight }}>
-      <div ref={plotElement} id="plot" className="h-full w-full"  style={{ height: plotHeight }}>
-        {isLoading ? <div>Loading...</div> : error ? <div>Error: {error.message}</div> : <></>}
+    <div
+      className={`h-full w-full ${className}`}
+      style={{ height: plotHeight }}
+    >
+      <div
+        ref={plotElement}
+        id="plot"
+        className="h-full w-full"
+        style={{ height: plotHeight }}
+      >
+        {isLoading ? (
+          loadingComponent ? (
+            <>{loadingComponent}</>
+          ) : (
+            <div>Loading...</div>
+          )
+        ) : error ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
