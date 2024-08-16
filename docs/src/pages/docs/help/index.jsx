@@ -17,13 +17,24 @@ export default function HelpPage() {
             <br />
             If you are just getting started with Groundwork for the first time
             we suggest you start with the{" "}
-            <a href="https://usace.github.io/groundwork">Groundwork</a>{" "}
+            <a
+              className="gw-underline"
+              href="https://usace.github.io/groundwork"
+            >
+              Groundwork
+            </a>{" "}
             documentation.
           </article>
           <article>
-            The blocks below provide you with a flow chart to help you decide.{" "}
-            Start with the first option and work your way down as you determine
-            what you need. If something is missing, please request it.
+            The blocks below provide you with a flow chart to help you decide.
+            <br />
+            <br />
+            <b>
+              Start with the first option and work your way down as you
+              determine what you need.
+            </b>{" "}
+            If something is missing, please request it. <br />
+            <em>(see requests/issues below each section)</em>
             <br />
             <Alert
               className="my-3"
