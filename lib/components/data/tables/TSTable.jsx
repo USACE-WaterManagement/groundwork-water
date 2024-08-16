@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import { useEffect, useState } from "react";
 import { TimeSeriesApi, Configuration } from "cwmsjs";
-import { useQuery } from "@tanstack/react-query";
 import Table from "../../display/Table";
 import useCdaTimeSeries from "../hooks/useCdaTimeSeries";
 

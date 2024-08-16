@@ -43,7 +43,10 @@ function Tables() {
       <Divider text="Code Example:" className="mt-8" />
       <div className="mt-8">
         <Code className="mt-8" language="jsx">
-          {`default export function Example() {
+          {`import dayjs from "dayjs";
+import { TSTable } from "@usace-watermanagement/groundwork-water";
+import { useState } from "react";
+default export function Example() {
     const LOOKBACK_HOURS = 24;
     const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
 

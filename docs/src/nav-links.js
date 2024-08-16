@@ -77,5 +77,42 @@ export default [
     id: "help",
     text: "Help",
     href: "/docs/help",
+    children: [
+      {
+        id: "help-overview",
+        text: "Help Overview",
+        href: "/docs/help",
+      },
+      {
+        id: "report-issue",
+        text: "Report Issue / Request Help",
+        href: "https://github.com/USACE-WaterManagement/groundwork-water/issues",
+      },
+      {
+        id: "javascript-basics",
+        text: "JavaScript Basics",
+        href: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics",
+      },
+      {
+        id: "template-literal",
+        text: "Template Literal",
+        href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals",
+      },
+      {
+        id: "react-basics",
+        text: "React Basics",
+        href: "https://react.dev/learn",
+      },
+      {
+        id: "groundwork-basics",
+        text: "Getting Started - Groundwork - Themes/Styles",
+        href: "https://usace.github.io/groundwork/#",
+      },
+      {
+        id: "cwms-js-docs",
+        text: "CWMSjs Developer Docs",
+        href: "https://hydrologicengineeringcenter.github.io/cwms-data-api-client-javascript/",
+      },
+    ],
   },
 ];
