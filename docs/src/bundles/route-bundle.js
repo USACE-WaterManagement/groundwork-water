@@ -15,11 +15,13 @@ import UseCdaTimeSeries from "../pages/docs/hooks/use-cda-time-series";
 import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 import UseNwpsGaugeData from "../pages/docs/hooks/use-nwps-gauge-data";
 import DataHooks from "../pages/docs/hooks";
+import HelpPage from "../pages/docs/help";
 
 export default createRouteBundle(
   {
     "/": Home,
     "/docs": Docs,
+    "/docs/help": HelpPage,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
@@ -28,8 +30,8 @@ export default createRouteBundle(
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
     "/docs/plots": Plots,
-    "/docs/tables": Tables,
     "/docs/maps": Maps,
+    "/docs/tables": Tables,
     "/docs/react-query": ReactQuery,
     "/docs/add-components": AddComponents,
     "/docs/quick-start": QuickStart,

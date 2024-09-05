@@ -10,11 +10,11 @@ function formatNumber(number, precision) {
 }
 
 export default function Table({
-  h1,
+  title,
   subTitle,
   heading,
   content,
-  order="desc",
+  order = "desc",
   precision = 4,
   dateFormat = "MM-DD-YYYY HH:mm",
   ...props
@@ -32,13 +32,18 @@ export default function Table({
     });
   }, [content, order]);
 
-
   return (
     <div className="gw-px-4 gw-sm:px-6 gw-lg:px-8">
       <div className="gw-sm:flex gw-sm:items-center">
         <div className="gw-sm:flex-auto">
-          {h1 && <h1 className="gw-text-base gw-font-semibold gw-leading-6 gw-text-gray-900">{h1}</h1>}
-          {subTitle && <p className="gw-mt-2 gw-text-sm gw-text-gray-700">{subTitle}</p>}
+          {title && (
+            <h1 className="gw-text-base gw-font-semibold gw-leading-6 gw-text-gray-900">
+              {title}
+            </h1>
+          )}
+          {subTitle && (
+            <p className="gw-mt-2 gw-text-sm gw-text-gray-700">{subTitle}</p>
+          )}
         </div>
       </div>
       <div className="gw-mt-8 gw-flow-root">
@@ -47,15 +52,18 @@ export default function Table({
             <table className="gw-min-w-full gw-divide-y gw-divide-gray-300">
               <thead>
                 <tr>
-                {heading.map((heading) => (
-                  <th key={heading} scope="col" className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3">
-                    {heading}
-                  </th>
-                ))}
+                  {heading.map((heading) => (
+                    <th
+                      key={heading}
+                      scope="col"
+                      className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3"
+                    >
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="gw-bg-white">
-               
                 {sortedContent.map((dataPoint) => (
                   <tr key={dataPoint[0]} className="gw-even:bg-gray-50">
                     <td className="gw-whitespace-nowrap gw-py-4 gw-pl-4 gw-pr-3 gw-text-sm gw-font-medium gw-text-gray-900 gw-sm:pl-3">

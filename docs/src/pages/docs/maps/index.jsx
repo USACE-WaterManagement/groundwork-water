@@ -6,6 +6,7 @@ import DocsPage from "../_docs-wrapper";
 
 import PropsTable from "../../components/props-table";
 import mapProps from "../../../props-declarations/maps";
+import Alert from "../../components/alert";
 
 export default function Maps() {
   return (
@@ -15,6 +16,16 @@ export default function Maps() {
       prevText="Return to Tables Page"
     >
       {" "}
+      <Alert
+        title="Notice"
+        status="error"
+        message={
+          <span>
+            This component is currently in development and is not yet ready for
+            use. But it does serve as a placeholder!
+          </span>
+        }
+      />
       <div className="map-container">
         <GageMap className="w-50" />
       </div>

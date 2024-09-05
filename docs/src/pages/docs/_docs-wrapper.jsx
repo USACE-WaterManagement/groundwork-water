@@ -18,6 +18,7 @@ function DocsPage({
   const handleNextMouseEnter = () => setHoverText(nextText);
   const handleNextMouseLeave = () => setHoverText(middleText);
   const navigationButtons = () => {
+    if (!prevUrl && !nextUrl) return null;
     return (
       <div className="select-none mb-5 flex flex-row justify-between items-center navigation-buttons relative">
         <div

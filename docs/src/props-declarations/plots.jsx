@@ -1,10 +1,7 @@
+import { cdaTSHookParams } from "./data-hooks";
+
 const tsPlotProps = [
-  {
-    name: "queryParams",
-    type: "object",
-    default: "undefined",
-    desc: "Object containing the query parameters for the timeseries data",
-  },
+  ...cdaTSHookParams,
   {
     name: "responsive",
     type: "boolean",
@@ -36,19 +33,29 @@ const cwmsPlotProps = [
     name: "begin",
     type: "string",
     default: "undefined",
-    desc: "Beginning of the time range to plot",
+    desc: "Beginning of the time range to plot 'YYYY-MM-DDThh:mm:ssZ' or '2021-06-10T13:00:00-07:00'.",
   },
   {
     name: "end",
     type: "string",
     default: "undefined",
-    desc: "End of the time range to plot",
+    desc: "End of the time range to plot 'YYYY-MM-DDThh:mm:ssZ' or '2021-06-12T13:00:00-07:00'.",
   },
   {
     name: "title",
     type: "string",
     default: "undefined",
-    desc: "Title of the plot",
+    desc: (
+      <>
+        The plotly js defined title of the plot seen here:{" "}
+        <a
+          className="gw-underline"
+          href="https://plotly.com/javascript/reference/layout/#title"
+        >
+          Plotly Object Keys for Title
+        </a>
+      </>
+    ),
   },
   {
     name: "fontSize",
