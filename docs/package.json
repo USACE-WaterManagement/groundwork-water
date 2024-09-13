@@ -11,6 +11,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@usace-watermanagement/groundwork-water": "^2.2.0",
         "@usace/groundwork": "^3.0.1",
         "clsx": "^2.1.0",
         "cwmsjs": "^1.15.0",
