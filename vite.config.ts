@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
             plugins: [react(), tailwindcss()],
             publicDir: false,
             build: {
+                minify: false,
                 lib: {
                     name: "GroundworkWater",
                     fileName: (format) => `groundwork-water.${format}.js`,
