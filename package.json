@@ -6,14 +6,16 @@
     "description": "A library of react components for use with USACE Water Management Webpages",
     "main": "./dist/groundwork-water.umd.cjs",
     "module": "./dist/groundwork-water.es.js",
+    "types": "types/lib/index.d.ts",
     "files": [
-        "dist"
+        "dist",
+        "types"
     ],
     "exports": {
         ".": {
             "import": "./dist/groundwork-water.es.js",
             "require": "./dist/groundwork-water.umd.cjs",
-            "types": "./dist/index.d.ts"
+            "types": "./types/lib/index.d.ts"
         },
         "./dist/*.css": {
             "import": "./dist/*.css",
@@ -24,7 +26,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
         "build": "npm run build-lib",
-        "build-lib": "vite build --mode lib && npm run link",
+        "build-lib": "tsc && vite build --mode lib && npm run link",
         "build-docs": "cd docs && vite build",
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
