@@ -24,7 +24,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
         "build": "npm run build-lib",
-        "build-lib": "vite build --mode lib && npm run link",
+        "build-lib": "tsc && vite build --mode lib && npm run link",
         "build-docs": "cd docs && vite build",
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",

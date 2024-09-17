@@ -2,9 +2,12 @@
   "compilerOptions": {
     "allowJs": true,
     "declaration": true,
+    "declarationDir": "types",
+    "emitDeclarationOnly": true,
+    "rootDir": ".",
+    "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "noEmit": true,
     "skipLibCheck": true,
     "target": "ES6",
 
@@ -14,5 +17,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["lib", "vite.config.ts"]
+  "include": ["lib", "declarejs.d.ts"],
+  "exclude": ["dist", "docs"]
 }
