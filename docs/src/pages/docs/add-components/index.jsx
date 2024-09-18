@@ -7,10 +7,10 @@ export default function Docs() {
   return (
     <DocsPage
       prevUrl={"/docs/quick-start"}
-      nextUrl="/docs/plots"
+      nextUrl="/docs/react-query"
       middleText="Add Components"
       prevText="Return to Quick Start"
-      nextText="Go to Plots Page"
+      nextText="Go to React Query Page"
     >
       <UsaceBox title="Add Components">
         <H4>Project Setup</H4>
