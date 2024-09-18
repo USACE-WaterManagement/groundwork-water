@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Configuration, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
 import dayjs from "dayjs";
+import { gwMerge } from "@usace/groundwork";
 
 const config_v2 = new Configuration({
   headers: {
@@ -180,7 +181,7 @@ export default function CWMSPlot({
 
   return (
     <div
-      className={`gww-h-full gww-w-full ${className}`}
+      className={gwMerge("gww-h-full gww-w-full", className)}
       style={{ height: plotHeight }}
     >
       <div
