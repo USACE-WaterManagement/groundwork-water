@@ -31,7 +31,7 @@ function GageMap({className}) {
     }, []);
 
     return (
-      <div id="map" className={`map-container w-full ${className}`} ref={mapElement} />
+      <div id="map" className={`map-container gww-w-full ${className}`} ref={mapElement} />
     //   className="map-container absolute top-0 bottom-0 w-96" 
     );
 }

@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./lib/**/*.{js,ts,jsx,tsx}"],
+  prefix: "gww-",
   theme: {
     extend: {
       gridTemplateRows: {

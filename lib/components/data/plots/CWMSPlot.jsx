@@ -180,13 +180,13 @@ export default function CWMSPlot({
 
   return (
     <div
-      className={`h-full w-full ${className}`}
+      className={`gww-h-full gww-w-full ${className}`}
       style={{ height: plotHeight }}
     >
       <div
         ref={plotElement}
         id="plot"
-        className="h-full w-full"
+        className="gww-h-full gww-w-full"
         style={{ height: plotHeight }}
       >
         {isLoading ? (

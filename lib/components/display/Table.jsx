@@ -33,46 +33,46 @@ export default function Table({
   }, [content, order]);
 
   return (
-    <div className="gw-px-4 gw-sm:px-6 gw-lg:px-8">
-      <div className="gw-sm:flex gw-sm:items-center">
-        <div className="gw-sm:flex-auto">
+    <div className="gww-px-4 gww-sm:px-6 gww-lg:px-8">
+      <div className="gww-sm:flex gww-sm:items-center">
+        <div className="gww-sm:flex-auto">
           {title && (
-            <h1 className="gw-text-base gw-font-semibold gw-leading-6 gw-text-gray-900">
+            <h1 className="gww-text-base gww-font-semibold gww-leading-6 gww-text-gray-900">
               {title}
             </h1>
           )}
           {subTitle && (
-            <p className="gw-mt-2 gw-text-sm gw-text-gray-700">{subTitle}</p>
+            <p className="gww-mt-2 gww-text-sm gww-text-gray-700">{subTitle}</p>
           )}
         </div>
       </div>
-      <div className="gw-mt-8 gw-flow-root">
-        <div className="gw--mx-4 gw--my-2 gw-overflow-x-auto gw-sm:-mx-6 gw-lg:-mx-8">
-          <div className="gw-inline-block gw-min-w-full gw-py-2 gw-align-middle gw-sm:px-6 gw-lg:px-8">
-            <table className="gw-min-w-full gw-divide-y gw-divide-gray-300">
+      <div className="gww-mt-8 gww-flow-root">
+        <div className="gww--mx-4 gww--my-2 gww-overflow-x-auto gww-sm:-mx-6 gww-lg:-mx-8">
+          <div className="gww-inline-block gww-min-w-full gww-py-2 gww-align-middle gww-sm:px-6 gww-lg:px-8">
+            <table className="gww-min-w-full gww-divide-y gww-divide-gray-300">
               <thead>
                 <tr>
                   {heading.map((heading) => (
                     <th
                       key={heading}
                       scope="col"
-                      className="gw-py-3.5 gw-pl-4 gw-pr-3 gw-text-left gw-text-sm gw-font-semibold gw-text-gray-900 gw-sm:pl-3"
+                      className="gww-py-3.5 gww-pl-4 gww-pr-3 gww-text-left gww-text-sm gww-font-semibold gww-text-gray-900 gww-sm:pl-3"
                     >
                       {heading}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="gw-bg-white">
+              <tbody className="gww-bg-white">
                 {sortedContent.map((dataPoint) => (
-                  <tr key={dataPoint[0]} className="gw-even:bg-gray-50">
-                    <td className="gw-whitespace-nowrap gw-py-4 gw-pl-4 gw-pr-3 gw-text-sm gw-font-medium gw-text-gray-900 gw-sm:pl-3">
+                  <tr key={dataPoint[0]} className="gww-even:bg-gray-50">
+                    <td className="gww-whitespace-nowrap gww-py-4 gww-pl-4 gww-pr-3 gww-text-sm gww-font-medium gww-text-gray-900 gww-sm:pl-3">
                       {dayjs(dataPoint[0]).format(dateFormat)}
                     </td>
-                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">
+                    <td className="gww-whitespace-nowrap gww-px-3 gww-py-4 gww-text-sm gww-text-gray-500">
                       {formatNumber(dataPoint[1], precision)}
                     </td>
-                    <td className="gw-whitespace-nowrap gw-px-3 gw-py-4 gw-text-sm gw-text-gray-500">
+                    <td className="gww-whitespace-nowrap gww-px-3 gww-py-4 gww-text-sm gww-text-gray-500">
                       {dataPoint[2]}
                     </td>
                   </tr>
