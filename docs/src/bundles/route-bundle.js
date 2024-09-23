@@ -1,5 +1,6 @@
 import { createRouteBundle } from "redux-bundler";
 import Home from "../pages/home";
+import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
 import Plots from "../pages/docs/plots";
 import Tables from "../pages/docs/tables";
@@ -22,6 +23,7 @@ export default createRouteBundle(
   {
     "/": Home,
     "/docs": Docs,
+    "/docs/cards/cda-latest-value-card": CdaLatestValueCardDocs,
     "/docs/help": HelpPage,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
