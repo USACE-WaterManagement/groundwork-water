@@ -64,6 +64,18 @@ export default [
     ],
   },
   {
+    id: "cards",
+    text: "Cards",
+    href: "/docs/cards",
+    children: [
+      {
+        id: "cda-latest-value-card",
+        text: "CDA Latest Value Card",
+        href: "/docs/cards/cda-latest-value-card",
+      },
+    ],
+  },
+  {
     id: "plots",
     text: "Plots",
     href: "/docs/plots",
