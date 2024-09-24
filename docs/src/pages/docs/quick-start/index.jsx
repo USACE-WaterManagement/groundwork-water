@@ -6,11 +6,9 @@ import DocsPage from "../_docs-wrapper";
 export default function Docs() {
   return (
     <DocsPage
-      nextUrl="/docs/react-query"
-      prevUrl="/docs/quick-start"
+      nextUrl="/docs/add-components"
       middleText="Quick Start"
       nextText="Go to Add Components Page"
-      prevText="Return to Quick Start"
     >
       <div className="gw-mt-3 gw-mb-3">
         <Text>

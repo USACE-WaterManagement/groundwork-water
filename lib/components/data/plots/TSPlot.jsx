@@ -70,7 +70,7 @@ const TSPlot = ({
     <div
       ref={plotContainerRef}
       title={title}
-      className="h-full w-full"
+      className="gww-h-full gww-w-full"
       style={{ width: "100%", height: plotHeight }}
       {...props}
     ></div>

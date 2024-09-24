@@ -7,10 +7,10 @@ export default function Docs() {
   return (
     <DocsPage
       prevUrl={"/docs/quick-start"}
-      nextUrl="/docs/plots"
+      nextUrl="/docs/react-query"
       middleText="Add Components"
       prevText="Return to Quick Start"
-      nextText="Go to Plots Page"
+      nextText="Go to React Query Page"
     >
       <UsaceBox title="Add Components">
         <H4>Project Setup</H4>
@@ -63,18 +63,24 @@ export default function Docs() {
 
         <H4>Installation</H4>
         <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-          npm install @usace/groundwork
+          {`npm install @usace-watermanagement/groundwork-water`}
         </Code>
         <H4>Import Components and Styles</H4>
-        <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-          {`import { SiteWrapper } from "@usace/groundwork"`}
+        <Code className="gw-block gw-p-1 gw-px-2" language="jsx">
+          {`import { TSPlot } from "@usace-watermanagement/groundwork-water"`}
         </Code>
-        <Code className="gw-block gw-p-1 gw-px-2" language="bash">
-          import "@usace/groundwork/dist/style.css"
+        <Code className="gw-block gw-p-1 gw-px-2" language="jsx">
+          {`import "@usace-watermanagement/groundwork-water/dist/style.css";`}
         </Code>
         <Text>
-          Make sure to import style.css from Groundwork into your top-level
-          component (i.e. App.jsx), then go build stuff with the components
+          Make sure to import style.css from Groundwork-Water into your
+          top-level component (i.e. App.jsx), then go build stuff with the
+          components!
+        </Text>
+        <br />
+        <Text>
+          Note: The Groundwork-Water styles include all of the base Groundwork
+          styles.
         </Text>
       </UsaceBox>
     </DocsPage>

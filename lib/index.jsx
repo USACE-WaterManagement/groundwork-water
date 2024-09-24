@@ -1,3 +1,9 @@
+// Bundle tailwind
+import "./css/tailwind.css";
+
+// Bundle groundwork-water styles
+import "@usace/groundwork/dist/style.css";
+
 // Import components
 import TSPlot from "./components/data/plots/TSPlot";
 import TSTable from "./components/data/tables/TSTable";

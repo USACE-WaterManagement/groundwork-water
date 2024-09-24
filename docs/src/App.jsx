@@ -8,7 +8,7 @@ import { getNavHelper } from "internal-nav-helper";
 import { useConnect } from "redux-bundler-hook";
 import links from "./nav-links";
 import { FaGithub } from "react-icons/fa";
-import "@usace/groundwork/dist/style.css";
+import "@usace-watermanagement/groundwork-water/dist/style.css";
 import DevWarning from "./components/DevWarning";
 const version = import.meta.env.PKG_VERSION;
 
