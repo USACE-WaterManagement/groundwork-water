@@ -1,5 +1,5 @@
 import { Skeleton, UsaceBox, H3 } from "@usace/groundwork";
-import { CWMSPlot, TSPlot } from "@usace-watermanagement/groundwork-water";
+// import { CWMSPlot, TSPlot } from "@usace-watermanagement/groundwork-water";
 import Alert from "../../components/alert";
 import { Code } from "../../components/code";
 import Divider from "../../components/divider";
@@ -10,7 +10,8 @@ import {
   tsPlotProps,
 } from "../../../props-declarations/plots.jsx";
 import dayjs from "dayjs";
-// import  CWMSPlot  from "../../../../lib/components/data/plots/CWMSPlot";
+import CWMSPlot from "../../../../../lib/components/data/plots/CWMSPlot";
+import TSPlot from "../../../../../lib/components/data/plots/TSPlot.jsx";
 function Plots() {
   const plotHeight = 550;
   return (
@@ -28,6 +29,15 @@ function Plots() {
             office: "SWT",
             begin: dayjs().subtract(30, "day").format("YYYY-MM-DDTHH:mm:ss"),
             plotHeight: plotHeight,
+          }}
+          plotParams={{
+            title: "Keystone Lake",
+            legend: "Water Level",
+            levels: [
+              { levelName: "Top of Flood", levelValue: "754", levelColor: "red" },
+              { levelName: "Spillway Crest", levelValue: "719", levelColor: "orange" },
+              { levelName: "Bottom of Conservation", levelValue: "706", levelColor: "green" }
+            ],
           }}
           loadingComponent={
             <Skeleton
@@ -75,6 +85,15 @@ export default function Example() {
             name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
             office: "SWT",
             begin: dayjs().subtract(30, "day").format("YYYY-MM-DDTHH:mm:ss"),
+          }}
+          plotParams={{
+            title: "Keystone Lake",
+            legend: "Water Level",
+            levels: [
+              { levelName: "Top of Flood", levelValue: "754", levelColor: "red" },
+              { levelName: "Spillway Crest", levelValue: "719", levelColor: "orange" },
+              { levelName: "Bottom of Conservation", levelValue: "706", levelColor: "green" }
+            ],
           }}
           plotHeight={plotHeight}
           loadingComponent={
