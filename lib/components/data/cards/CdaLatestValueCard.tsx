@@ -4,13 +4,13 @@ import { PiClockThin } from "react-icons/pi";
 import useCdaLatestValue from "../hooks/useCdaLatestValue";
 
 interface CdaLatestValueCardProps {
-  label: string;
+  label?: string;
   tsId: string;
   office: string;
-  unit: string;
-  digits: number;
-  className: string;
-  cdaUrl: string;
+  unit?: string;
+  digits?: number;
+  className?: string;
+  cdaUrl?: string;
 }
 
 const CdaLatestValueCard = ({
