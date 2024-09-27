@@ -91,6 +91,18 @@ export default [
     href: "/docs/maps",
   },
   {
+    id: "utilities",
+    text: "Utilities",
+    href: "/docs/utilities",
+    children: [
+      {
+        id: "cda-url-provider",
+        text: "CDA URL Provider",
+        href: "/docs/utilities/cda-url-provider",
+      },
+    ],
+  },
+  {
     id: "help",
     text: "Help",
     href: "/docs/help",
