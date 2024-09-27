@@ -1,11 +1,10 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import {
-  Configuration,
-  ConfigurationParameters,
   GetCwmsDataTimeseriesGroupWithGroupIdRequest,
   TimeSeriesGroup,
   TimeseriesGroupsApi,
 } from "cwmsjs";
+import { useCdaConfig } from "../helpers/cda";
 
 interface useCdaTimeSeriesGroupParams {
   cdaParams: GetCwmsDataTimeseriesGroupWithGroupIdRequest;
@@ -18,14 +17,8 @@ const useCdaTimeSeriesGroup = ({
   cdaUrl,
   queryOptions,
 }: useCdaTimeSeriesGroupParams) => {
-  const configOptions: ConfigurationParameters = {
-    headers: {
-      accept: "application/json",
-    },
-  };
-  if (cdaUrl) configOptions.basePath = cdaUrl;
-  const configV2 = new Configuration(configOptions);
-  const timeseriesGroupsApi = new TimeseriesGroupsApi(configV2);
+  const config = useCdaConfig("v1", cdaUrl);
+  const timeseriesGroupsApi = new TimeseriesGroupsApi(config);
 
   return useQuery({
     queryKey: ["cda", "timeseries-group", cdaParams.groupId],
