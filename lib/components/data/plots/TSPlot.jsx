@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { useEffect, useRef } from "react";
-import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
+import useCdaTimeSeries from "../hooks/useCdaTimeSeries";
 import Plotly from "plotly.js-basic-dist";
 
 /**
