@@ -34,9 +34,21 @@ function Plots() {
             title: "Keystone Lake",
             legend: "Water Level",
             levels: [
-              { levelName: "Top of Flood", levelValue: "754", levelColor: "red" },
-              { levelName: "Spillway Crest", levelValue: "719", levelColor: "orange" },
-              { levelName: "Bottom of Conservation", levelValue: "706", levelColor: "green" }
+              {
+                levelName: "Top of Flood",
+                levelValue: "754",
+                levelColor: "red",
+              },
+              {
+                levelName: "Top of Conservation",
+                levelValue: "723",
+                levelColor: "orange",
+              },
+              {
+                levelName: "Bottom of Conservation",
+                levelValue: "706",
+                levelColor: "green",
+              },
             ],
           }}
           loadingComponent={
@@ -91,7 +103,7 @@ export default function Example() {
             legend: "Water Level",
             levels: [
               { levelName: "Top of Flood", levelValue: "754", levelColor: "red" },
-              { levelName: "Spillway Crest", levelValue: "719", levelColor: "orange" },
+              { levelName: "Top of Conservation", levelValue: "719", levelColor: "orange" },
               { levelName: "Bottom of Conservation", levelValue: "706", levelColor: "green" }
             ],
           }}

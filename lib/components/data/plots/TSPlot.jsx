@@ -17,7 +17,7 @@ const TSPlot = ({
   cdaUrl = null,
   queryOptions = null,
   responsive = true,
-  plotParams = null,
+  plotParams = {},
   grid = null,
   shapes = [],
   annotations = [],
@@ -37,22 +37,24 @@ const TSPlot = ({
     if (data && data.values) {
       // Check for user inputs or use defaults
       // Set Defaults
-      var plotTitle = data.name.split(".")[0]
-      var yaxisText = `${data.name.split(".")[1]} (${data.verticalDatumInfo?.unit})`
-      var xaxisText = "Date"
-      var legendItem = null
-      var plotType = "scatter"
-      var plotMode = "lines"
-      var plotColor = "blue"
+      let plotTitle = data.name.split(".")[0];
+      let yaxisText = `${data.name.split(".")[1]} (${
+        data.verticalDatumInfo?.unit
+      })`;
+      let xaxisText = "Date";
+      let legendItem = null;
+      let plotType = "scatter";
+      let plotMode = "lines";
+      let plotColor = "blue";
       // Update with user inputs
-      if (plotParams.title) { plotTitle = plotParams.title }
-      if (plotParams.legend) { legendItem = plotParams.legend }
-      if (plotParams.type) { plotType = plotParams.type }
-      if (plotParams.mode) { plotMode = plotParams.mode }
-      if (plotParams.color) { plotColor = plotParams.color }
-      if (plotParams.xaxis) { xaxisText = plotParams.xaxis }
-      if (plotParams.yaxis) { yaxisText = plotParams.yaxis }
-      var plotData = [
+      if (plotParams?.title) plotTitle = plotParams.title;
+      if (plotParams?.legend) legendItem = plotParams.legend;
+      if (plotParams?.type) plotType = plotParams.type;
+      if (plotParams?.mode) plotMode = plotParams.mode;
+      if (plotParams?.color) plotColor = plotParams.color;
+      if (plotParams?.xaxis) xaxisText = plotParams.xaxis;
+      if (plotParams?.yaxis) yaxisText = plotParams.yaxis;
+      let plotData = [
         {
           name: legendItem,
           x: data.values.map((value) => new Date(value[0])),
@@ -65,20 +67,18 @@ const TSPlot = ({
       // Check for any Location Levels
       if (plotParams.levels) {
         plotParams.levels.map((level) => {
-          plotData.push(
-            {
-              name: `${level.levelName} (${level.levelValue})`,
-              x: [
-                new Date(data.values[0][0]),
-                new Date(data.values[data.values.length - 1][0])
-              ],
-              y: [level.levelValue, level.levelValue],
-              type: "scatter",
-              mode: "lines",
-              line: { color: level.levelColor }
-            }
-          )
-        })
+          plotData.push({
+            name: `${level.levelName} (${level.levelValue})`,
+            x: [
+              new Date(data.values[0][0]),
+              new Date(data.values[data.values.length - 1][0]),
+            ],
+            y: [level.levelValue, level.levelValue],
+            type: "scatter",
+            mode: "lines",
+            line: { color: level.levelColor },
+          });
+        });
       }
 
       const layout = {
@@ -94,7 +94,15 @@ const TSPlot = ({
         responsive: responsive,
       });
     }
-  }, [data, cdaParams, shapes, annotations, layoutGrid, responsive]); // Re-plot when data changes
+  }, [
+    data,
+    cdaParams,
+    plotParams,
+    shapes,
+    annotations,
+    layoutGrid,
+    responsive,
+  ]); // Re-plot when data changes
 
   if (isPending) {
     return loadingComponent ? <>{loadingComponent}</> : <div>Loading...</div>;
