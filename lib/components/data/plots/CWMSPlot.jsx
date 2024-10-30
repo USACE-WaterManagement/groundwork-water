@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Configuration, TimeSeriesApi } from "cwmsjs";
+import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
 import { gwMerge } from "@usace/groundwork";
 
@@ -11,6 +11,7 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
+
 export default function CWMSPlot({
   tsids,
   office,
@@ -18,28 +19,23 @@ export default function CWMSPlot({
   end,
   title,
   unit = "EN",
+  pageSize,
   timeseriesParams,
+  locationLevelParams,
   layoutParams,
   className = "",
   responsive = true,
   loadingComponent = null,
 }) {
+
   const plotElement = useRef(null);
-  const [plotTitle, setPlotTitle] = useState(null);
   const [plotTSIDs, setPlotTSIDs] = useState(null);
 
 
   const layout = layoutParams
 
 
-  const pageSize = 500
-
-
-
   useEffect(() => {
-    if (!title) {
-      setPlotTitle(layout.title.text);
-    }
     if (!tsids.length)
       throw Error("You must specify one or more Timeseries IDs to plot.");
     if (!office) throw Error("You must specify a 3 letter ID for the office");
@@ -49,17 +45,24 @@ export default function CWMSPlot({
     setPlotTSIDs(tsids);
   }, [title, tsids, office]);
 
+
   const fetchData = async () => {
     let promises = plotTSIDs.map(async (name) => {
+
       try {
-        return await ts_api.getCwmsDataTimeseries({
-          name,
-          begin,
-          end,
-          //pageSize,
-          unit,
-          office,
-        });
+
+        if (timeseriesParams.map(item => item.tsid).includes(name)) {
+          console.log("TS Call", name)
+          return await ts_api.getCwmsDataTimeseries({
+            name,
+            begin,
+            end,
+            pageSize,
+            unit,
+            office,
+          });
+        }
+
       } catch (error) {
         if (error.response?.status === 404) {
           console.warn(`Data for ${name} not found: 404`);
@@ -69,19 +72,21 @@ export default function CWMSPlot({
         }
       }
     });
+
     let values = await Promise.all(promises);
+    console.log(values)
     let _data = { ts: {}, dates: [] };
-    // TODO: This should probably be the parameter not the units
     values.forEach((result) => {
-      if (result && result.units) {
-        if (!_data.ts[result.units]) {
-          _data.ts[result.units] = [];
+      console.log(result)
+      if (result && result.name) {
+        if (!_data.ts[result.name]) {
+          _data.ts[result.name] = [];
         }
-        _data.ts[result.units].push(result);
+        _data.ts[result.name].push(result);
       } else if (result === null) {
         console.warn(`Skipping as no data was found.`);
       } else {
-        console.warn(`No unit found for ${result?.name}`);
+        console.warn(`No data found for ${result?.name}`);
       }
     });
     return _data;
@@ -92,28 +97,31 @@ export default function CWMSPlot({
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["timeseries", plotTSIDs, begin, end, unit, //pageSize, 
-      office],
+    queryKey: ["timeseries", plotTSIDs, begin, end, unit, office],
     queryFn: fetchData,
     enabled: !!plotElement.current, // Only run the query when plotElement is available
   });
+
+
   useEffect(() => {
     if (!plotElement.current || !tsData) {
       return;
     }
 
-    let unit_keys = Object.keys(tsData.ts);
+    let ts_keys = Object.keys(tsData.ts);
 
-    // Create traces keyed to the unit
+    // Create traces keyed to the ts
     let traces = [];
-    let trace_cnt = 1;
     let ts;
-    for (let k_idx = 0; k_idx < unit_keys.length; k_idx++) {
-      const key = unit_keys[k_idx];
+
+    for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
+      const key = ts_keys[k_idx];
       for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
         ts = tsData.ts[key][ts_idx];
+        ts.values.map((value) => {
+          if (!dates.includes(value[0])) { dates.push(value[0]) }
+        })
         const params = timeseriesParams.filter((item) => item.tsid == ts.name)
-
         const trace = {
           x: ts.values.map((value) => new Date(value[0])),
           y: ts.values.map((value) => value[1]),
@@ -127,13 +135,9 @@ export default function CWMSPlot({
           yaxis: params[0].yaxis,
         };
         traces.push(trace);
-
       }
-
-
-      trace_cnt++;
     }
-
+    dates.sort()
 
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
