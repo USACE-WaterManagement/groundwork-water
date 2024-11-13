@@ -12,7 +12,7 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
-const pageSize = 500
+const pageSize = 100000
 
 export default function CWMSTable({
     tsids,
@@ -22,7 +22,7 @@ export default function CWMSTable({
     end,
     interval,
     title,
-    unit = "EN",
+    unit,
     className = "",
     responsive = true,
     loadingComponent = null,
@@ -51,7 +51,7 @@ export default function CWMSTable({
                     name,
                     begin,
                     end,
-                    // pageSize,
+                    pageSize,
                     unit,
                     office,
                 });
@@ -68,7 +68,7 @@ export default function CWMSTable({
         let values = await Promise.all(promises);
         let _data = { ts: {}, dates: [] };
         let dates = []
-        if (!interval) { interval = 15 }
+        if (!interval) { interval = 1 }
 
         values.forEach((result) => {
             if (result && result.values) {
@@ -78,7 +78,8 @@ export default function CWMSTable({
                 _data.ts[result.name].push(result);
                 result.values.forEach((item) => {
                     const dt = item[0]
-                    if (!dates.includes(dt)) {
+                    const val = item[1]
+                    if (!dates.includes(dt) && val != null) {
                         if (dt % (interval * 1000 * 60) == 0) {
                             dates.push(dt)
                         }
@@ -90,7 +91,9 @@ export default function CWMSTable({
                 console.warn(`No unit found for ${result?.name}`);
             }
         });
-        _data.dates = dates.reverse()
+        dates.sort()
+        dates.reverse()
+        _data.dates = dates
         return _data;
     };
     const {
@@ -144,7 +147,8 @@ export default function CWMSTable({
                         {/* Loop over values */}
                         {item[1].map((val, indx) => (
                             <TableCell key={`cell${indx}`}>{
-                                val?.toFixed(timeseriesParams[indx].rounding)
+                                val === null ? val?.toFixed(timeseriesParams[indx].rounding)
+                                    : missingString
                             }</TableCell>
                         ))}
 
