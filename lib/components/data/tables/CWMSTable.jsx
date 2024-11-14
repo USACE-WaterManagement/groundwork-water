@@ -12,6 +12,7 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
+// Currently, large page size calls are blocked, so the default of 500 is used
 const pageSize = 500
 
 export default function CWMSTable({
@@ -23,6 +24,7 @@ export default function CWMSTable({
     interval,
     title,
     unit,
+    missingString,
     className = "",
     responsive = true,
     loadingComponent = null,
@@ -123,6 +125,8 @@ export default function CWMSTable({
 
     }, [tsData, title]);
 
+
+    if (!missingString) { missingString = "" }
 
 
     return (
