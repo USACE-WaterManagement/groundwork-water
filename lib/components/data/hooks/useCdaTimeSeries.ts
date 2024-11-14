@@ -1,13 +1,9 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import {
-  GetCwmsDataTimeseriesRequest,
-  TimeSeries,
-  TimeSeriesApi,
-} from "cwmsjs";
+import { GetTimeSeriesRequest, TimeSeries, TimeSeriesApi } from "cwmsjs";
 import { useCdaConfig } from "../helpers/cda";
 
 interface useCdaTimeSeriesParams {
-  cdaParams: GetCwmsDataTimeseriesRequest;
+  cdaParams: GetTimeSeriesRequest;
   cdaUrl?: string;
   queryOptions?: Partial<UseQueryOptions<TimeSeries>>;
 }
@@ -22,7 +18,7 @@ const useCdaTimeSeries = ({
 
   return useQuery({
     queryKey: ["cda", "timeseries", cdaParams.name],
-    queryFn: async () => timeseriesApi.getCwmsDataTimeseries(cdaParams),
+    queryFn: async () => timeseriesApi.getTimeSeries(cdaParams),
     ...queryOptions,
   });
 };
