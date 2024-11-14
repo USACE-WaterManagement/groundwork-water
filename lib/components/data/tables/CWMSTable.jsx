@@ -147,8 +147,8 @@ export default function CWMSTable({
                         {/* Loop over values */}
                         {item[1].map((val, indx) => (
                             <TableCell key={`cell${indx}`}>{
-                                val === null ? val?.toFixed(timeseriesParams[indx].rounding)
-                                    : missingString
+                                val === null ? missingString :
+                                    val?.toFixed(timeseriesParams[indx].rounding)
                             }</TableCell>
                         ))}
 
