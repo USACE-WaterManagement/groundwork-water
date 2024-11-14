@@ -74,7 +74,6 @@ export default function CWMSPlot({
     });
 
     let values = await Promise.all(promises);
-    console.log(values)
     let _data = { ts: {}, dates: [] };
     values.forEach((result) => {
       console.log(result)
