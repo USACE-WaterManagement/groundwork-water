@@ -12,7 +12,7 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
-const pageSize = 100000
+const pageSize = 500
 
 export default function CWMSTable({
     tsids,
