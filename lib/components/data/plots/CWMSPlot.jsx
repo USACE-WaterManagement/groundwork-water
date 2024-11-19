@@ -12,16 +12,13 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
-
 const config_level = new Configuration({
   headers: {
     accept: "*/*",
   },
 });
 
-const level_api = new LevelsApi(config_level)
-
-
+const level_api = new LevelsApi(config_level);
 
 export default function CWMSPlot({
   tsids,
@@ -38,25 +35,26 @@ export default function CWMSPlot({
   responsive = true,
   loadingComponent = null,
 }) {
-
   const plotElement = useRef(null);
   const [plotTSIDs, setPlotTSIDs] = useState(null);
   const [plotLevelIDs, setPlotLevels] = useState(null);
-
-  let layout
-  if (layoutParams) { layout = layoutParams }
+  const [error, setError] = useState(null);
+  let layout;
+  if (layoutParams) {
+    layout = layoutParams;
+  }
   if (!layoutParams) {
     layout = {
       title: {
         text: timeseriesParams[0].tsid.split(".")[0],
         font: {
-          family: 'Arial, sans-serif',
+          family: "Arial, sans-serif",
           size: 16,
         },
       },
       height: 750,
       grid: {
-        rows: timeseriesParams.length,
+        rows: timeseriesParams?.length ? timeseriesParams.length : 1,
         columns: 1,
       },
       xaxis: {
@@ -64,47 +62,46 @@ export default function CWMSPlot({
         showline: true,
         mirror: "ticks",
         linecolor: "black",
-        linewidth: 1
+        linewidth: 1,
       },
-    }
+    };
 
     timeseriesParams.map((item, index) => {
-      let yaxis_id
-      index == 0 ? yaxis_id = "yaxis" : yaxis_id = "yaxis" + index
+      let yaxis_id;
+      index == 0 ? (yaxis_id = "yaxis") : (yaxis_id = "yaxis" + index);
       if (!layout.yaxis_id) {
         layout[yaxis_id] = {
           title: {
             text: item.tsid.split(".")[1],
             font: {
-              family: 'Arial, sans-serif',
+              family: "Arial, sans-serif",
               size: 14,
-            }
-          }
-        }
+            },
+          },
+        };
       }
-    })
-    layoutParams = layout
+    });
+    layoutParams = layout;
   }
 
-
   useEffect(() => {
-    if (!tsids.length)
-      throw Error("You must specify one or more Timeseries IDs to plot.");
-    if (!office) throw Error("You must specify a 3 letter ID for the office");
+    if (!tsids?.length) {
+      setError("You must specify one or more Timeseries IDs to plot.");
+      return;
+    }
+    if (!office) setError("You must specify a 3 letter ID for the office");
     if (typeof tsids == "string") {
       tsids = [tsids];
     }
     setPlotTSIDs(tsids);
-    setPlotLevels(levels)
+    setPlotLevels(levels);
   }, [title, tsids, levels, office]);
 
-
   const fetchData = async () => {
-
     let ts_promises = plotTSIDs.map(async (tsid) => {
       try {
         // Currently, large page size calls are blocked, so the default of 500 is used
-        let pageSize = 500
+        let pageSize = 500;
         // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
         // let interval = tsid.split(".")[3]
         // if (interval.includes("Minute")) {
@@ -119,34 +116,34 @@ export default function CWMSPlot({
           end: end,
           pageSize: pageSize,
           office: office,
-          unit: unit
-        })
+          unit: unit,
+        });
       } catch (error) {
-        console.error("Error fetching timeseries data:", error)
+        console.error("Error fetching timeseries data:", error);
       }
-    })
+    });
 
     let lev_promises = plotLevelIDs?.map(async (item) => {
-      let level
-      // The Level API doesn't accept the same date format 
+      let level;
+      // The Level API doesn't accept the same date format
       try {
         level = await level_api.getCwmsDataLevels({
           levelIdMask: item,
-          begin: begin.slice(0, 10),
-          end: end.slice(0, 10),
+          begin: begin?.slice(0, 10),
+          end: end?.slice(0, 10),
           office: office,
           format: "json",
-          unit: unit
-        })
+          unit: unit,
+        });
       } catch (error) {
-        console.error("Error fetching location level data:", error)
+        console.error("Error fetching location level data:", error);
       }
-      return level
-    })
+      return level;
+    });
 
     let tsdata = { ts: {} };
 
-    let values = await Promise.all(ts_promises)
+    let values = await Promise.all(ts_promises);
     values.forEach((result) => {
       if (result && result.name) {
         if (!tsdata.ts[result.name]) {
@@ -158,18 +155,16 @@ export default function CWMSPlot({
       } else {
         console.warn(`No timeseries data found for ${result?.name}`);
       }
-    })
+    });
 
-
-
-    let lev_values
+    let lev_values;
     if (lev_promises) {
-      lev_values = await Promise.all(lev_promises)
+      lev_values = await Promise.all(lev_promises);
     }
 
-    lev_values?.forEach(result => {
-      const name = result["location-levels"]["location-levels"][0]?.name
-      const levels = result["location-levels"]["location-levels"][0]?.values
+    lev_values?.forEach((result) => {
+      const name = result["location-levels"]["location-levels"][0]?.name;
+      const levels = result["location-levels"]["location-levels"][0]?.values;
       if (result && name) {
         if (!tsdata.ts[name]) {
           tsdata.ts[name] = [];
@@ -180,14 +175,14 @@ export default function CWMSPlot({
       } else {
         console.warn(`No location level data found for ${result?.name}`);
       }
-    })
+    });
 
     return tsdata;
   };
 
   const {
     data: tsData,
-    error,
+    error: tsError,
     isLoading,
   } = useQuery({
     queryKey: ["timeseries", plotTSIDs, begin, end, unit, office],
@@ -195,12 +190,10 @@ export default function CWMSPlot({
     enabled: !!plotElement.current, // Only run the query when plotElement is available
   });
 
-
   useEffect(() => {
     if (!plotElement.current || !tsData) {
       return;
     }
-
 
     let ts_keys = Object.keys(tsData.ts);
 
@@ -222,13 +215,15 @@ export default function CWMSPlot({
             y: ts.values.map((value) => value[1]),
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
-          }
+          };
           // Add all other parameters
-          const params = timeseriesParams?.filter((item) => item.tsid == ts.name)[0]
-          Object.keys(params).map(key => {
-            trace[key] = params[key]
-          })
-          traces.push(trace)
+          const params = timeseriesParams?.filter(
+            (item) => item.tsid == ts.name
+          )[0];
+          Object.keys(params).map((key) => {
+            trace[key] = params[key];
+          });
+          traces.push(trace);
         }
       }
 
@@ -238,22 +233,22 @@ export default function CWMSPlot({
           ts = tsData.ts[key][ts_idx];
           // Defaults for trace
           const trace = {
-            x: ts.segments[0].values.map(value => new Date(value[0])),
-            y: ts.segments[0].values.map(value => value[1]),
+            x: ts.segments[0].values.map((value) => new Date(value[0])),
+            y: ts.segments[0].values.map((value) => value[1]),
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
-          }
+          };
           // Add all other parameters
-          const params = locationLevelParams?.filter((item) => item.levelid == key)[0]
-          Object.keys(params).map(key => {
-            trace[key] = params[key]
-          })
-          traces.push(trace)
+          const params = locationLevelParams?.filter(
+            (item) => item.levelid == key
+          )[0];
+          Object.keys(params).map((key) => {
+            trace[key] = params[key];
+          });
+          traces.push(trace);
         }
       }
     }
-
-
 
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
@@ -271,14 +266,14 @@ export default function CWMSPlot({
         className="gww-h-full gww-w-full"
         style={{ height: layoutParams.height }}
       >
-        {isLoading ? (
+        {error || tsError ? (
+          <div>Error: {error || tsError}</div>
+        ) : isLoading ? (
           loadingComponent ? (
             <>{loadingComponent}</>
           ) : (
             <div>Loading...</div>
           )
-        ) : error ? (
-          <div>Error: {error.message}</div>
         ) : (
           <></>
         )}

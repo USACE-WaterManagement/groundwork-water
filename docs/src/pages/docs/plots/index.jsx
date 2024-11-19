@@ -1,5 +1,5 @@
 import { Skeleton, UsaceBox, H3 } from "@usace/groundwork";
-// import { CWMSPlot, TSPlot } from "@usace-watermanagement/groundwork-water";
+import { CWMSPlot, TSPlot } from "@usace-watermanagement/groundwork-water";
 import Alert from "../../components/alert";
 import { Code } from "../../components/code";
 import Divider from "../../components/divider";
@@ -10,10 +10,160 @@ import {
   tsPlotProps,
 } from "../../../props-declarations/plots.jsx";
 import dayjs from "dayjs";
-import CWMSPlot from "../../../../../lib/components/data/plots/CWMSPlot";
-import TSPlot from "../../../../../lib/components/data/plots/TSPlot.jsx";
+//import CWMSPlot from "../../../../../lib/components/data/plots/CWMSPlot";
+//import TSPlot from "../../../../../lib/components/data/plots/TSPlot.jsx";
 function Plots() {
   const plotHeight = 550;
+  const dam = "KEYS";
+
+  const timeseriesParams = [
+    {
+      tsid: `${dam}.Elev.Inst.1Hour.0.Ccp-Rev`,
+      name: "Pool Level",
+      mode: "lines",
+      type: "scatter",
+      marker: {
+        color: "red",
+        size: "12",
+      },
+      line: {
+        color: "red",
+        width: 3,
+      },
+      yaxis: "y1",
+    },
+    {
+      tsid: `${dam}.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev`,
+      name: "Precip",
+      mode: "lines",
+      // type: "bar",
+      marker: {
+        color: "green",
+        size: "12",
+      },
+      line: {
+        color: "green",
+        width: 3,
+      },
+      yaxis: "y3",
+    },
+    {
+      tsid: `${dam}.Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed`,
+      name: "Outflow",
+      mode: "lines",
+      type: "scatter",
+      marker: {
+        color: "blue",
+        size: "12",
+      },
+      line: {
+        color: "blue",
+        width: 3,
+      },
+      yaxis: "y2",
+    },
+    {
+      tsid: `${dam}.Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup`,
+      name: "Inflow",
+      mode: "lines",
+      type: "scatter",
+      marker: {
+        color: "orange",
+        size: "12",
+      },
+      line: {
+        color: "orange",
+        width: 3,
+      },
+      yaxis: "y2",
+    },
+  ];
+
+  const locationLevelParams = [
+    {
+      levelid: `${dam}.Elev.Inst.0.Top of Flood`,
+      name: "Spillway",
+      mode: "lines",
+      type: "scatter",
+      marker: {
+        color: "red",
+        size: "12",
+      },
+      line: {
+        color: "red",
+        width: 3,
+      },
+      yaxis: "y1",
+      visible: "legendonly",
+    },
+    {
+      levelid: `${dam}.Elev.Inst.0.Top of Normal`,
+      name: "Normal Pool",
+      mode: "lines",
+      type: "scatter",
+      marker: {
+        color: "gray",
+        size: "12",
+      },
+      line: {
+        color: "gray",
+        width: 3,
+      },
+      yaxis: "y1",
+      visible: "legendonly",
+    },
+  ];
+
+  const layoutParams = {
+    title: {
+      text: "Example",
+      font: {
+        family: "Arial, sans-serif",
+        size: 16,
+      },
+    },
+    height: 750,
+    grid: {
+      rows: timeseriesParams.length,
+      columns: 1,
+    },
+    yaxis: {
+      title: {
+        text: "Pool Level (ft)",
+        font: {
+          family: "Arial, sans-serif",
+          size: 14,
+        },
+      },
+    },
+    yaxis2: {
+      title: {
+        text: "Flow (cfs)",
+        font: {
+          family: "Arial, sans-serif",
+          size: 14,
+        },
+      },
+    },
+    yaxis3: {
+      title: {
+        text: "Precip (in)",
+        font: {
+          family: "Arial, sans-serif",
+          size: 14,
+        },
+      },
+    },
+    showlegend: true,
+    legend: {
+      font: {
+        family: "Arial, sans-serif",
+        size: 10,
+      },
+    },
+    responsive: true,
+  };
+
   return (
     <DocsPage
       nextUrl="/docs/tables"
@@ -133,14 +283,11 @@ export default function Example() {
       <Divider text="CWMS Themed Plot - How To" className="my-8" />
       <UsaceBox title="CWMS Plot">
         <CWMSPlot
-          tsids={[
-            ".Elev.Inst.1Hour.0.Ccp-Rev",
-            ".Elev-Tailwater.Inst.1Hour.0.Ccp-Rev",
-            ".Precip-Inc.Total.1Hour.1Hour.Ccp-Rev",
-            ".Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed",
-            ".Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup",
-            ".Stor.Inst.1Hour.0.Ccp-Rev",
-          ].map((ts) => "KEYS" + ts)}
+          tsids={timeseriesParams.map((item) => item.tsid)}
+          levels={locationLevelParams.map((item) => item.levelid)}
+          timeseriesParams={timeseriesParams}
+          locationLevelParams={locationLevelParams}
+          layoutParams={layoutParams}
           office="SWT"
         />
       </UsaceBox>
