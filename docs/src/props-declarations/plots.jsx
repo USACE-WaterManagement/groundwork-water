@@ -118,16 +118,28 @@ const cwmsPlotProps = [
     ),
   },
   {
-    name: "fontSize",
-    type: "number",
-    default: "undefined",
-    desc: "Font size of the plot",
-  },
-  {
     name: "unit",
     type: "string",
     default: "undefined",
     desc: "Unit of the plot",
+  },
+  {
+    name: "layoutParams",
+    type: "string",
+    default: "undefined",
+    required: false,
+    desc: (
+      <>
+        The layoutParams can take any of the plotlyjs layout properties:{" "}
+        <a
+          href="https://plotly.com/javascript/reference/layout/"
+          className="gw-underline"
+        >
+          PlotlyJS Layout Reference
+        </a>
+        .
+      </>
+    ),
   },
   {
     name: "className",
@@ -142,16 +154,16 @@ const cwmsPlotProps = [
     desc: "Height of the plot",
   },
   {
-    name: "autoSize",
-    type: "boolean",
-    default: "true",
-    desc: "Auto-size the plot",
-  },
-  {
     name: "shapes",
     type: "array",
     default: "undefined",
     desc: "Array of shapes to add to the plot",
+  },
+  {
+    name: "autoSize",
+    type: "boolean",
+    default: "true",
+    desc: "Auto-size the plot",
   },
   {
     name: "annotations",
