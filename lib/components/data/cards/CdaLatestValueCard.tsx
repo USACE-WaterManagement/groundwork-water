@@ -48,7 +48,6 @@ const CdaLatestValueCard = ({
           </span>
         ) : data ? (
           <CardValue
-            // @ts-expect-error cwmsjs TimeSeries values typing is erroneous
             value={data.value}
             units={data.units ?? ""}
             digits={digits}
@@ -64,7 +63,6 @@ const CdaLatestValueCard = ({
           <span>No data found</span>
         ) : data ? (
           <>
-            {/* @ts-expect-error cwmsjs TimeSeries values typing is erroneous */}
             <CardTimestamp datetime={new Date(data.datetime)} />
             {/* {change ? <Parameter24hrChange change={change} /> : customBotRight} */}
           </>

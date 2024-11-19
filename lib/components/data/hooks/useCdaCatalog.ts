@@ -1,13 +1,9 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import {
-  Catalog,
-  CatalogApi,
-  GetCwmsDataCatalogWithDatasetRequest,
-} from "cwmsjs";
+import { Catalog, CatalogApi, GetCatalogWithDatasetRequest } from "cwmsjs";
 import { useCdaConfig } from "../helpers/cda";
 
 interface UseCdaCatalogParams {
-  cdaParams: GetCwmsDataCatalogWithDatasetRequest;
+  cdaParams: GetCatalogWithDatasetRequest;
   cdaUrl?: string;
   queryOptions?: Partial<UseQueryOptions<Catalog>>;
 }
@@ -22,7 +18,7 @@ const useCdaCatalog = ({
 
   return useQuery({
     queryKey: ["cda", "catalog", cdaParams.like],
-    queryFn: async () => catalogApi.getCwmsDataCatalogWithDataset(cdaParams),
+    queryFn: async () => catalogApi.getCatalogWithDataset(cdaParams),
     ...queryOptions,
   });
 };
