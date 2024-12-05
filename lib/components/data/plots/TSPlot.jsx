@@ -6,11 +6,6 @@ import Plotly from "plotly.js-basic-dist";
 
 /**
  * Component to fetch and plot timeseries data from the USACE CDA endpoint.
- *
- * @param {Object} props - The component props.
- * @param {Object} props.params - Parameters for the timeseries query.
- * @param {Function} props.setLoadTime - Function to set the time taken to load the data.
- * @returns {JSX.Element} The rendered component.
  */
 const TSPlot = ({
   cdaParams = null,
