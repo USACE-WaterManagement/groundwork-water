@@ -61,8 +61,7 @@ export default function CWMSPlot({
     };
 
     timeseriesParams.map((item, index) => {
-      const yaxis_id =
-        index == 0 ? (yaxis_id = "yaxis") : (yaxis_id = "yaxis" + index);
+      const yaxis_id = index == 0 ? "yaxis" : "yaxis" + index;
       if (!layout.yaxis_id) {
         layout[yaxis_id] = {
           title: {
