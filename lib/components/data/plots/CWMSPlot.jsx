@@ -10,15 +10,12 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
-
 const config_level = new Configuration({
   headers: {
     accept: "*/*",
   },
 });
-const level_api = new LevelsApi(config_level)
-
-
+const level_api = new LevelsApi(config_level);
 
 export default function CWMSPlot({
   begin,
@@ -32,20 +29,20 @@ export default function CWMSPlot({
   responsive = true,
   loadingComponent = null,
 }) {
-
   const [isLoading, setIsLoading] = useState(true);
   const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);
 
-
-  let layout
-  if (layoutParams) { layout = layoutParams }
+  let layout;
+  if (layoutParams) {
+    layout = layoutParams;
+  }
   if (!layoutParams) {
     layout = {
       title: {
         text: timeseriesParams[0].tsid.split(".")[0],
         font: {
-          family: 'Arial, sans-serif',
+          family: "Arial, sans-serif",
           size: 16,
         },
       },
@@ -59,37 +56,37 @@ export default function CWMSPlot({
         showline: true,
         mirror: "ticks",
         linecolor: "black",
-        linewidth: 1
+        linewidth: 1,
       },
-    }
+    };
 
     timeseriesParams.map((item, index) => {
-      const yaxis_id = index == 0 ? yaxis_id = "yaxis" : yaxis_id = "yaxis" + index
+      const yaxis_id =
+        index == 0 ? (yaxis_id = "yaxis") : (yaxis_id = "yaxis" + index);
       if (!layout.yaxis_id) {
         layout[yaxis_id] = {
           title: {
             text: item.tsid.split(".")[1],
             font: {
-              family: 'Arial, sans-serif',
+              family: "Arial, sans-serif",
               size: 14,
-            }
-          }
-        }
+            },
+          },
+        };
       }
-    })
-    layoutParams = layout
+    });
+    layoutParams = layout;
   }
 
+  let tsids = [];
+  Object.entries(timeseriesParams).map((item) => tsids.push(item[1].tsid));
 
-  let tsids = []
-  Object.entries(timeseriesParams).map(item => tsids.push(item[1].tsid))
-
-  let levels = []
-  Object.entries(locationLevelParams).map(item => levels.push(item[1].levelid))
-
+  let levels = [];
+  Object.entries(locationLevelParams).map((item) =>
+    levels.push(item[1].levelid)
+  );
 
   useEffect(() => {
-
     if (!tsids.length)
       throw Error("You must specify one or more Timeseries IDs to plot.");
 
@@ -99,7 +96,7 @@ export default function CWMSPlot({
       let ts_promises = tsids.map(async (tsid) => {
         try {
           // Currently, large page size calls are blocked, so the default of 500 is used
-          let pageSize = 500
+          let pageSize = 500;
           // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
           // let interval = tsid.split(".")[3]
           // if (interval.includes("Minute")) {
@@ -114,16 +111,16 @@ export default function CWMSPlot({
             end: end,
             pageSize: pageSize,
             office: office,
-            unit: unit
-          })
+            unit: unit,
+          });
         } catch (error) {
-          console.error("Error fetching timeseries data:", error)
+          console.error("Error fetching timeseries data:", error);
         }
-      })
+      });
 
       let lev_promises = levels?.map(async (item) => {
-        let level
-        // The Level API doesn't accept the same date format 
+        let level;
+        // The Level API doesn't accept the same date format
         try {
           level = await level_api.getCwmsDataLevels({
             levelIdMask: item,
@@ -131,17 +128,17 @@ export default function CWMSPlot({
             end: end.slice(0, 10),
             office: office,
             format: "json",
-            unit: unit
-          })
+            unit: unit,
+          });
         } catch (error) {
-          console.error("Error fetching location level data:", error)
+          console.error("Error fetching location level data:", error);
         }
-        return level
-      })
+        return level;
+      });
 
       let _data = { ts: {} };
 
-      let values = await Promise.all(ts_promises)
+      let values = await Promise.all(ts_promises);
       values.forEach((result) => {
         if (result && result.name) {
           if (!_data.ts[result.name]) {
@@ -153,18 +150,16 @@ export default function CWMSPlot({
         } else {
           console.warn(`No timeseries data found for ${result?.name}`);
         }
-      })
+      });
 
-
-
-      let lev_values
+      let lev_values;
       if (lev_promises) {
-        lev_values = await Promise.all(lev_promises)
+        lev_values = await Promise.all(lev_promises);
       }
 
-      lev_values?.forEach(result => {
-        const name = result["location-levels"]["location-levels"][0]?.name
-        const levels = result["location-levels"]["location-levels"][0]?.values
+      lev_values?.forEach((result) => {
+        const name = result["location-levels"]["location-levels"][0]?.name;
+        const levels = result["location-levels"]["location-levels"][0]?.values;
         if (result && name) {
           if (!_data.ts[name]) {
             _data.ts[name] = [];
@@ -175,23 +170,20 @@ export default function CWMSPlot({
         } else {
           console.warn(`No location level data found for ${result?.name}`);
         }
-      })
+      });
 
       setTsData(_data);
     };
 
     fetchData();
-
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     if (!plotElement.current || !tsData) {
       return;
     }
 
-    setIsLoading(true)
-
+    setIsLoading(true);
 
     let ts_keys = Object.keys(tsData.ts);
 
@@ -209,19 +201,21 @@ export default function CWMSPlot({
           ts = tsData.ts[key][ts_idx];
           // Defaults for trace
           const trace = {
-            x: ts.values.map(value => new Date(value[0])),
-            y: ts.values.map(value => value[1]),
+            x: ts.values.map((value) => new Date(value[0])),
+            y: ts.values.map((value) => value[1]),
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
-          }
+          };
           // Add all other parameters
-          const params = timeseriesParams?.filter(item => item.tsid == ts.name)
-          Object.entries(params[0]).map(param => {
+          const params = timeseriesParams?.filter(
+            (item) => item.tsid == ts.name
+          );
+          Object.entries(params[0]).map((param) => {
             if (param[0] != "tsid") {
-              trace[param[0]] = param[1]
+              trace[param[0]] = param[1];
             }
-          })
-          traces.push(trace)
+          });
+          traces.push(trace);
         }
       }
 
@@ -231,31 +225,31 @@ export default function CWMSPlot({
           ts = tsData.ts[key][ts_idx];
           // Defaults for trace
           const trace = {
-            x: ts.segments[0].values.map(value => new Date(value[0])),
-            y: ts.segments[0].values.map(value => value[1]),
+            x: ts.segments[0].values.map((value) => new Date(value[0])),
+            y: ts.segments[0].values.map((value) => value[1]),
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
-          }
+          };
           // Add all other parameters
-          const params = locationLevelParams?.filter(item => item.levelid == key)
-          Object.entries(params[0]).map(param => {
+          const params = locationLevelParams?.filter(
+            (item) => item.levelid == key
+          );
+          Object.entries(params[0]).map((param) => {
             if (param[0] != "levelid") {
-              trace[param[0]] = param[1]
+              trace[param[0]] = param[1];
             }
-          })
-          traces.push(trace)
+          });
+          traces.push(trace);
         }
       }
     }
 
-
-    setIsLoading(false)
+    setIsLoading(false);
 
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
   }, [tsData]);
-
 
   return (
     <div
