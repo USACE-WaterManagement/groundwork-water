@@ -77,13 +77,8 @@ export default function CWMSPlot({
     layoutParams = layout;
   }
 
-  let tsids = [];
-  Object.entries(timeseriesParams).map((item) => tsids.push(item[1].tsid));
-
-  let levels = [];
-  Object.entries(locationLevelParams).map((item) =>
-    levels.push(item[1].levelid)
-  );
+  const tsids = timeseriesParams.map((ts) => ts.tsid);
+  const levels = locationLevelParams.map((level) => level.levelid);
 
   useEffect(() => {
     if (!tsids.length)
