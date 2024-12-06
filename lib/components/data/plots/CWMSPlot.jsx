@@ -123,8 +123,8 @@ export default function CWMSPlot({
         try {
           level = await level_api.getCwmsDataLevels({
             levelIdMask: item,
-            begin: begin.slice(0, 10),
-            end: end.slice(0, 10),
+            begin: begin?.slice(0, 10),
+            end: end?.slice(0, 10),
             office: office,
             format: "json",
             unit: unit,
