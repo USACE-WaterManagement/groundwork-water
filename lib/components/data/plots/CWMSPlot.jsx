@@ -77,10 +77,10 @@ export default function CWMSPlot({
     layoutParams = layout;
   }
 
-  const tsids = timeseriesParams.map((ts) => ts.tsid);
-  const levels = locationLevelParams.map((level) => level.levelid);
-
   useEffect(() => {
+    const tsids = timeseriesParams.map((ts) => ts.tsid);
+    const levels = locationLevelParams.map((level) => level.levelid);
+
     if (!tsids.length)
       throw Error("You must specify one or more Timeseries IDs to plot.");
 
@@ -170,9 +170,12 @@ export default function CWMSPlot({
     };
 
     fetchData();
-  }, []);
+  }, [begin, end, locationLevelParams, office, timeseriesParams, unit]);
 
   useEffect(() => {
+    const tsids = timeseriesParams.map((ts) => ts.tsid);
+    const levels = locationLevelParams.map((level) => level.levelid);
+
     if (!plotElement.current || !tsData) {
       return;
     }
@@ -243,7 +246,7 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [tsData]);
+  }, [layout, locationLevelParams, responsive, timeseriesParams, tsData]);
 
   return (
     <div
