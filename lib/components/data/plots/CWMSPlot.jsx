@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
-import { gwMerge } from "@usace/groundwork";
+import { gwMerge, Skeleton } from "@usace/groundwork";
 
 const config_v2 = new Configuration({
   headers: {
@@ -263,7 +263,9 @@ export default function CWMSPlot({
           loadingComponent ? (
             <>{loadingComponent}</>
           ) : (
-            <div>Loading...</div>
+            <div style={{ height: `${layoutParams.height}px` }}>
+              <Skeleton className="gww-h-full gww-w-full" />
+            </div>
           )
         ) : (
           <></>
