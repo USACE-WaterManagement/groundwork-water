@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
+import deepmerge from "deepmerge";
 
 const config_v2 = new Configuration({
   headers: {
@@ -33,49 +34,44 @@ export default function CWMSPlot({
   const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);
 
-  let layout;
-  if (layoutParams) {
-    layout = layoutParams;
-  }
-  if (!layoutParams) {
-    layout = {
-      title: {
-        text: timeseriesParams[0].tsid.split(".")[0],
-        font: {
-          family: "Arial, sans-serif",
-          size: 16,
-        },
+  const defaultLayout = {
+    title: {
+      text: timeseriesParams[0].tsid.split(".")[0],
+      font: {
+        family: "Arial, sans-serif",
+        size: 16,
       },
-      height: 750,
-      grid: {
-        rows: timeseriesParams.length,
-        columns: 1,
-      },
-      xaxis: {
-        showgrid: true,
-        showline: true,
-        mirror: "ticks",
-        linecolor: "black",
-        linewidth: 1,
-      },
-    };
+    },
+    height: 750,
+    grid: {
+      rows: timeseriesParams.length,
+      columns: 1,
+    },
+    xaxis: {
+      showgrid: true,
+      showline: true,
+      mirror: "ticks",
+      linecolor: "black",
+      linewidth: 1,
+    },
+  };
 
-    timeseriesParams.map((item, index) => {
-      const yaxis_id = index == 0 ? "yaxis" : "yaxis" + index;
-      if (!layout.yaxis_id) {
-        layout[yaxis_id] = {
-          title: {
-            text: item.tsid.split(".")[1],
-            font: {
-              family: "Arial, sans-serif",
-              size: 14,
-            },
+  timeseriesParams.forEach((item, index) => {
+    const yaxis_id = index == 0 ? "yaxis" : "yaxis" + index;
+    if (!defaultLayout.yaxis_id) {
+      defaultLayout[yaxis_id] = {
+        title: {
+          text: item.tsid.split(".")[1],
+          font: {
+            family: "Arial, sans-serif",
+            size: 14,
           },
-        };
-      }
-    });
-    layoutParams = layout;
-  }
+        },
+      };
+    }
+  });
+
+  const layout = deepmerge(defaultLayout, layoutParams);
 
   useEffect(() => {
     const tsids = timeseriesParams.map((ts) => ts.tsid);
