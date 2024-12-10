@@ -7,7 +7,7 @@ import deepmerge from "deepmerge";
 const getYAxisId = (timeseriesParam) => {
   const yaxis = timeseriesParam?.traceOptions?.yaxis;
   if (!yaxis) return undefined;
-  if (yaxis == "y") return "yaxis";
+  if ((yaxis == "y") | (yaxis == "y1")) return "yaxis";
   const re = /^y(\d+)$/;
   const match = yaxis.match(re);
   if (match) {
