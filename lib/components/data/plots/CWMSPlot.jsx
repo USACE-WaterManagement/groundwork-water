@@ -5,7 +5,7 @@ import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 
 const getYAxisId = (timeseriesParam) => {
-  const yaxis = timeseriesParam?.yaxis;
+  const yaxis = timeseriesParam?.traceOptions?.yaxis;
   if (!yaxis) return undefined;
   if (yaxis == "y") return "yaxis";
   const re = /^y(\d+)$/;
@@ -37,7 +37,7 @@ export default function CWMSPlot({
   end,
   unit,
   office,
-  timeseriesParams,
+  timeSeries,
   locationLevelParams,
   layoutParams,
   className = "",
@@ -51,7 +51,7 @@ export default function CWMSPlot({
 
   const defaultLayout = {
     title: {
-      text: timeseriesParams[0].tsid.split(".")[0],
+      text: timeSeries[0].id.split(".")[0],
       font: {
         family: "Arial, sans-serif",
         size: 16,
@@ -70,13 +70,13 @@ export default function CWMSPlot({
     },
   };
 
-  timeseriesParams.forEach((item, index) => {
+  timeSeries.forEach((item, index) => {
     const yaxis_id =
       getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
     if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
-          text: item.tsid.split(".")[1],
+          text: item.id.split(".")[1],
           font: {
             family: "Arial, sans-serif",
             size: 14,
@@ -93,7 +93,7 @@ export default function CWMSPlot({
   const layout = deepmerge(defaultLayout, layoutParams);
 
   useEffect(() => {
-    const tsids = timeseriesParams.map((ts) => ts.tsid);
+    const tsids = timeSeries.map((ts) => ts.id);
     const levels = locationLevelParams.map((level) => level.levelid);
 
     if (!tsids?.length) {
@@ -187,10 +187,10 @@ export default function CWMSPlot({
     };
 
     fetchData();
-  }, [begin, end, locationLevelParams, office, timeseriesParams, unit]);
+  }, [begin, end, locationLevelParams, office, timeSeries, unit]);
 
   useEffect(() => {
-    const tsids = timeseriesParams.map((ts) => ts.tsid);
+    const tsids = timeSeries.map((ts) => ts.id);
     const levels = locationLevelParams.map((level) => level.levelid);
 
     if (!plotElement.current || !tsData) {
@@ -221,15 +221,11 @@ export default function CWMSPlot({
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const params = timeseriesParams?.filter(
-            (item) => item.tsid == ts.name
-          );
-          Object.entries(params[0]).map((param) => {
-            if (param[0] != "tsid") {
-              trace[param[0]] = param[1];
-            }
-          });
-          traces.push(trace);
+          const tsObj = timeSeries?.filter((item) => item.id === ts.name)[0];
+          const fullTrace = tsObj?.traceOptions
+            ? deepmerge(trace, tsObj?.traceOptions)
+            : trace;
+          traces.push(fullTrace);
         }
       }
 
@@ -263,7 +259,7 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [layout, locationLevelParams, responsive, timeseriesParams, tsData]);
+  }, [layout, locationLevelParams, responsive, timeSeries, tsData]);
 
   return (
     <div
