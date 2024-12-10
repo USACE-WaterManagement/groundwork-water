@@ -49,10 +49,6 @@ export default function CWMSPlot({
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
 
-  const yaxisCount = timeseriesParams?.length
-    ? new Set(timeseriesParams.map((ts) => ts.yaxis)).size
-    : 1;
-
   const defaultLayout = {
     title: {
       text: timeseriesParams[0].tsid.split(".")[0],
@@ -63,7 +59,6 @@ export default function CWMSPlot({
     },
     height: 750,
     grid: {
-      rows: yaxisCount,
       columns: 1,
     },
     xaxis: {
@@ -90,6 +85,10 @@ export default function CWMSPlot({
       };
     }
   });
+
+  defaultLayout.grid.rows = Object.keys(defaultLayout).filter((key) =>
+    key.includes("yaxis")
+  ).length;
 
   const layout = deepmerge(defaultLayout, layoutParams);
 
