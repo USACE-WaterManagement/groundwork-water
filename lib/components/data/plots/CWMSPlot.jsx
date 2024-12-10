@@ -4,6 +4,20 @@ import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 
+const getYAxisId = (timeseriesParam) => {
+  const yaxis = timeseriesParam?.yaxis;
+  if (!yaxis) return undefined;
+  if (yaxis == "y") return "yaxis";
+  const re = /^y(\d+)$/;
+  const match = yaxis.match(re);
+  if (match) {
+    const axisInt = match[1];
+    return `yaxis${axisInt}`;
+  } else {
+    return undefined;
+  }
+};
+
 const config_v2 = new Configuration({
   headers: {
     accept: "application/json;version=2",
@@ -35,6 +49,10 @@ export default function CWMSPlot({
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
 
+  const yaxisCount = timeseriesParams?.length
+    ? new Set(timeseriesParams.map((ts) => ts.yaxis)).size
+    : 1;
+
   const defaultLayout = {
     title: {
       text: timeseriesParams[0].tsid.split(".")[0],
@@ -45,7 +63,7 @@ export default function CWMSPlot({
     },
     height: 750,
     grid: {
-      rows: timeseriesParams?.length ? timeseriesParams.length : 1,
+      rows: yaxisCount,
       columns: 1,
     },
     xaxis: {
@@ -58,8 +76,9 @@ export default function CWMSPlot({
   };
 
   timeseriesParams.forEach((item, index) => {
-    const yaxis_id = index == 0 ? "yaxis" : "yaxis" + index;
-    if (!defaultLayout.yaxis_id) {
+    const yaxis_id =
+      getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
+    if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
           text: item.tsid.split(".")[1],
