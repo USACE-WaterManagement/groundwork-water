@@ -33,6 +33,7 @@ export default function CWMSPlot({
   const [isLoading, setIsLoading] = useState(true);
   const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);
+  const [error, setError] = useState(null);
 
   const defaultLayout = {
     title: {
@@ -44,7 +45,7 @@ export default function CWMSPlot({
     },
     height: 750,
     grid: {
-      rows: timeseriesParams.length,
+      rows: timeseriesParams?.length ? timeseriesParams.length : 1,
       columns: 1,
     },
     xaxis: {
@@ -77,10 +78,12 @@ export default function CWMSPlot({
     const tsids = timeseriesParams.map((ts) => ts.tsid);
     const levels = locationLevelParams.map((level) => level.levelid);
 
-    if (!tsids.length)
-      throw Error("You must specify one or more Timeseries IDs to plot.");
+    if (!tsids?.length) {
+      setError("You must specify one or more Timeseries IDs to plot.");
+      return;
+    }
 
-    if (!office) throw Error("You must specify a 3 letter ID for the office");
+    if (!office) setError("You must specify a 3 letter ID for the office");
 
     const fetchData = async () => {
       let ts_promises = tsids.map(async (tsid) => {
@@ -255,7 +258,9 @@ export default function CWMSPlot({
         className="gww-h-full gww-w-full"
         style={{ height: layoutParams.height }}
       >
-        {isLoading ? (
+        {error ? (
+          <div>Error: {error}</div>
+        ) : isLoading ? (
           loadingComponent ? (
             <>{loadingComponent}</>
           ) : (
