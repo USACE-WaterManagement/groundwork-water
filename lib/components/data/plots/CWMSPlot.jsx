@@ -3,6 +3,32 @@ import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
+import { useMemo } from "react";
+
+/**
+ * Normalize a data prop to an array of objects
+ *
+ * This function provides support for data props entered as a single element
+ * or as an array as well as support for data points entered as strings or as
+ * objects.  Data is adjusted as necessary to return a normalized prop formatted
+ * as an array of data objects in the format {id, ...additionalOptions}.
+ * @param prop The data prop to be normalized.
+ * @returns An array of data objects in the format {id, ...additionalOptions}
+ */
+const normalizeDataProp = (prop) => {
+  if (!prop) return [];
+  if (Array.isArray(prop))
+    return prop.map((datum) => {
+      if (Array.isArray(datum))
+        console.error("Nested array not valid in plot data props");
+      else if (typeof datum === "string") return { id: datum };
+      else if (typeof datum === "object") return datum;
+      else console.error(`Unrecognized data format: ${datum}`);
+    });
+  else if (typeof prop === "string") return [{ id: prop }];
+  else if (typeof prop === "object") return [prop];
+  else console.error(`Unrecognized data format: ${prop}`);
+};
 
 const getYAxisId = (timeseriesParam) => {
   const yaxis = timeseriesParam?.traceOptions?.yaxis;
@@ -49,9 +75,14 @@ export default function CWMSPlot({
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
 
+  const timeSeriesArray = useMemo(
+    () => normalizeDataProp(timeSeries),
+    [timeSeries]
+  );
+
   const defaultLayout = {
     title: {
-      text: timeSeries[0].id.split(".")[0],
+      text: timeSeriesArray[0].id.split(".")[0],
       font: {
         family: "Arial, sans-serif",
         size: 16,
@@ -70,7 +101,7 @@ export default function CWMSPlot({
     },
   };
 
-  timeSeries.forEach((item, index) => {
+  timeSeriesArray.forEach((item, index) => {
     const yaxis_id =
       getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
     if (!(yaxis_id in defaultLayout)) {
@@ -93,7 +124,7 @@ export default function CWMSPlot({
   const layout = deepmerge(defaultLayout, layoutParams);
 
   useEffect(() => {
-    const tsids = timeSeries.map((ts) => ts.id);
+    const tsids = timeSeriesArray.map((ts) => ts.id);
     const levels = locationLevelParams.map((level) => level.levelid);
 
     if (!tsids?.length) {
@@ -187,10 +218,10 @@ export default function CWMSPlot({
     };
 
     fetchData();
-  }, [begin, end, locationLevelParams, office, timeSeries, unit]);
+  }, [begin, end, locationLevelParams, office, timeSeriesArray, unit]);
 
   useEffect(() => {
-    const tsids = timeSeries.map((ts) => ts.id);
+    const tsids = timeSeriesArray.map((ts) => ts.id);
     const levels = locationLevelParams.map((level) => level.levelid);
 
     if (!plotElement.current || !tsData) {
@@ -221,7 +252,9 @@ export default function CWMSPlot({
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const tsObj = timeSeries?.filter((item) => item.id === ts.name)[0];
+          const tsObj = timeSeriesArray?.filter(
+            (item) => item.id === ts.name
+          )[0];
           const fullTrace = tsObj?.traceOptions
             ? deepmerge(trace, tsObj?.traceOptions)
             : trace;
@@ -259,7 +292,7 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [layout, locationLevelParams, responsive, timeSeries, tsData]);
+  }, [layout, locationLevelParams, responsive, timeSeriesArray, tsData]);
 
   return (
     <div
