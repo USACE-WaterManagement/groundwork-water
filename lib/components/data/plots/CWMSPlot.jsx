@@ -65,7 +65,7 @@ export default function CWMSPlot({
   office,
   timeSeries,
   locationLevels,
-  layoutParams,
+  layoutOptions,
   className = "",
   responsive = true,
   loadingComponent = null,
@@ -126,7 +126,7 @@ export default function CWMSPlot({
     key.includes("yaxis")
   ).length;
 
-  const layout = deepmerge(defaultLayout, layoutParams);
+  const layout = deepmerge(defaultLayout, layoutOptions);
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
@@ -300,13 +300,13 @@ export default function CWMSPlot({
   return (
     <div
       className={gwMerge("gww-h-full gww-w-full", className)}
-      style={{ height: layoutParams.height }}
+      style={{ height: layoutOptions.height }}
     >
       <div
         ref={plotElement}
         id="plot"
         className="gww-h-full gww-w-full"
-        style={{ height: layoutParams.height }}
+        style={{ height: layoutOptions.height }}
       >
         {error ? (
           <div>Error: {error}</div>
@@ -314,7 +314,7 @@ export default function CWMSPlot({
           loadingComponent ? (
             <>{loadingComponent}</>
           ) : (
-            <div style={{ height: `${layoutParams.height}px` }}>
+            <div style={{ height: `${layoutOptions.height}px` }}>
               <Skeleton className="gww-h-full gww-w-full" />
             </div>
           )
