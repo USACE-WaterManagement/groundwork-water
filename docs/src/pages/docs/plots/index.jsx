@@ -1,5 +1,6 @@
 import { Skeleton, UsaceBox, H3 } from "@usace/groundwork";
 import { CWMSPlot, TSPlot } from "@usace-watermanagement/groundwork-water";
+// import CWMSPlot from "../../../../../lib/components/data/plots/CWMSPlot.jsx";
 import Alert from "../../components/alert";
 import { Code } from "../../components/code";
 import Divider from "../../components/divider";
@@ -16,105 +17,121 @@ function Plots() {
   const plotHeight = 550;
   const dam = "KEYS";
 
-  const timeseriesParams = [
+  const timeSeries = [
     {
-      tsid: `${dam}.Elev.Inst.1Hour.0.Ccp-Rev`,
-      name: "Pool Level",
-      mode: "lines",
-      type: "scatter",
-      marker: {
-        color: "red",
-        size: "12",
+      id: `${dam}.Elev.Inst.1Hour.0.Ccp-Rev`,
+      traceOptions: {
+        name: "Pool Level",
+        mode: "lines",
+        type: "scatter",
+        marker: {
+          color: "red",
+          size: "12",
+        },
+        line: {
+          color: "red",
+          width: 3,
+        },
+        yaxis: "y1",
       },
-      line: {
-        color: "red",
-        width: 3,
-      },
-      yaxis: "y1",
     },
     {
-      tsid: `${dam}.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev`,
-      name: "Precip",
-      mode: "lines",
-      // type: "bar",
-      marker: {
-        color: "green",
-        size: "12",
-      },
-      line: {
-        color: "green",
-        width: 3,
-      },
-      yaxis: "y3",
+      id: "KAWL.Elev.Inst.1Hour.0.Ccp-Rev",
+      traceOptions: { name: "Buckhorn Flow", yaxis: "y1" },
     },
     {
-      tsid: `${dam}.Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed`,
-      name: "Outflow",
-      mode: "lines",
-      type: "scatter",
-      marker: {
-        color: "blue",
-        size: "12",
+      id: `${dam}.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev`,
+      traceOptions: {
+        name: "Precip",
+        mode: "lines",
+        // type: "bar",
+        marker: {
+          color: "green",
+          size: "12",
+        },
+        line: {
+          color: "green",
+          width: 3,
+        },
+        yaxis: "y3",
       },
-      line: {
-        color: "blue",
-        width: 3,
-      },
-      yaxis: "y2",
     },
     {
-      tsid: `${dam}.Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup`,
-      name: "Inflow",
-      mode: "lines",
-      type: "scatter",
-      marker: {
-        color: "orange",
-        size: "12",
+      id: `${dam}.Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed`,
+      traceOptions: {
+        name: "Outflow",
+        mode: "lines",
+        type: "scatter",
+        marker: {
+          color: "blue",
+          size: "12",
+        },
+        line: {
+          color: "blue",
+          width: 3,
+        },
+        yaxis: "y2",
       },
-      line: {
-        color: "orange",
-        width: 3,
-      },
-      yaxis: "y2",
-    },
-  ];
-
-  const locationLevelParams = [
-    {
-      levelid: `${dam}.Elev.Inst.0.Top of Flood`,
-      name: "Spillway",
-      mode: "lines",
-      type: "scatter",
-      marker: {
-        color: "red",
-        size: "12",
-      },
-      line: {
-        color: "red",
-        width: 3,
-      },
-      yaxis: "y1",
-      visible: "legendonly",
     },
     {
-      levelid: `${dam}.Elev.Inst.0.Top of Normal`,
-      name: "Normal Pool",
-      mode: "lines",
-      type: "scatter",
-      marker: {
-        color: "gray",
-        size: "12",
+      id: `${dam}.Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup`,
+      traceOptions: {
+        name: "Inflow",
+        mode: "lines",
+        type: "scatter",
+        marker: {
+          color: "orange",
+          size: "12",
+        },
+        line: {
+          color: "orange",
+          width: 3,
+        },
+        yaxis: "y2",
       },
-      line: {
-        color: "gray",
-        width: 3,
-      },
-      yaxis: "y1",
-      visible: "legendonly",
     },
   ];
 
-  const layoutParams = {
+  const locationLevels = [
+    {
+      id: `${dam}.Elev.Inst.0.Top of Flood`,
+      traceOptions: {
+        name: "Spillway",
+        mode: "lines",
+        type: "scatter",
+        marker: {
+          color: "red",
+          size: "12",
+        },
+        line: {
+          color: "red",
+          width: 3,
+        },
+        yaxis: "y1",
+        visible: "legendonly",
+      },
+    },
+    {
+      id: `${dam}.Elev.Inst.0.Top of Normal`,
+      traceOptions: {
+        name: "Normal Pool",
+        mode: "lines",
+        type: "scatter",
+        marker: {
+          color: "gray",
+          size: "12",
+        },
+        line: {
+          color: "gray",
+          width: 3,
+        },
+        yaxis: "y1",
+        visible: "legendonly",
+      },
+    },
+  ];
+
+  const layoutOptions = {
     title: {
       text: "Example",
       font: {
@@ -122,9 +139,8 @@ function Plots() {
         size: 16,
       },
     },
-    height: 750,
+    height: plotHeight,
     grid: {
-      rows: timeseriesParams.length,
       columns: 1,
     },
     yaxis: {
@@ -283,11 +299,9 @@ export default function Example() {
       <Divider text="CWMS Themed Plot - How To" className="my-8" />
       <UsaceBox title="CWMS Plot">
         <CWMSPlot
-          tsids={timeseriesParams.map((item) => item.tsid)}
-          levels={locationLevelParams.map((item) => item.levelid)}
-          timeseriesParams={timeseriesParams}
-          locationLevelParams={locationLevelParams}
-          layoutParams={layoutParams}
+          timeSeries={timeSeries}
+          locationLevels={locationLevels}
+          layoutOptions={layoutOptions}
           office="SWT"
         />
       </UsaceBox>
