@@ -64,7 +64,7 @@ export default function CWMSPlot({
   unit,
   office,
   timeSeries,
-  locationLevelParams,
+  locationLevels,
   layoutParams,
   className = "",
   responsive = true,
@@ -78,6 +78,11 @@ export default function CWMSPlot({
   const timeSeriesArray = useMemo(
     () => normalizeDataProp(timeSeries),
     [timeSeries]
+  );
+
+  const locationLevelsArray = useMemo(
+    () => normalizeDataProp(locationLevels),
+    [locationLevels]
   );
 
   const defaultLayout = {
@@ -125,7 +130,7 @@ export default function CWMSPlot({
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
-    const levels = locationLevelParams.map((level) => level.levelid);
+    const levels = locationLevelsArray.map((level) => level.id);
 
     if (!tsids?.length) {
       setError("You must specify one or more Timeseries IDs to plot.");
@@ -218,11 +223,11 @@ export default function CWMSPlot({
     };
 
     fetchData();
-  }, [begin, end, locationLevelParams, office, timeSeriesArray, unit]);
+  }, [begin, end, locationLevelsArray, office, timeSeriesArray, unit]);
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
-    const levels = locationLevelParams.map((level) => level.levelid);
+    const levels = locationLevelsArray.map((level) => level.id);
 
     if (!plotElement.current || !tsData) {
       return;
@@ -274,15 +279,13 @@ export default function CWMSPlot({
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const params = locationLevelParams?.filter(
-            (item) => item.levelid == key
-          );
-          Object.entries(params[0]).map((param) => {
-            if (param[0] != "levelid") {
-              trace[param[0]] = param[1];
-            }
-          });
-          traces.push(trace);
+          const levelObj = locationLevelsArray?.filter(
+            (item) => item.id == key
+          )[0];
+          const fullTrace = levelObj?.traceOptions
+            ? deepmerge(trace, levelObj?.traceOptions)
+            : trace;
+          traces.push(fullTrace);
         }
       }
     }
@@ -292,7 +295,7 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [layout, locationLevelParams, responsive, timeSeriesArray, tsData]);
+  }, [layout, locationLevelsArray, responsive, timeSeriesArray, tsData]);
 
   return (
     <div
