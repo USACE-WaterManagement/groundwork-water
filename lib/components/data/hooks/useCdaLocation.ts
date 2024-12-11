@@ -1,14 +1,13 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import {
-  Configuration,
-  ConfigurationParameters,
-  GetCwmsDataLocationsWithLocationIdRequest,
+  GetLocationsWithLocationIdRequest,
   Location,
   LocationsApi,
 } from "cwmsjs";
+import { useCdaConfig } from "../helpers/cda";
 
 interface useCdaLocationParams {
-  cdaParams: GetCwmsDataLocationsWithLocationIdRequest;
+  cdaParams: GetLocationsWithLocationIdRequest;
   cdaUrl?: string;
   queryOptions?: Partial<UseQueryOptions<Location>>;
 }
@@ -18,19 +17,12 @@ const useCdaLocation = ({
   cdaUrl,
   queryOptions,
 }: useCdaLocationParams) => {
-  const configOptions: ConfigurationParameters = {
-    headers: {
-      accept: "application/json;version=2",
-    },
-  };
-  if (cdaUrl) configOptions.basePath = cdaUrl;
-  const configV2 = new Configuration(configOptions);
-  const locationsApi = new LocationsApi(configV2);
+  const config = useCdaConfig("v2", cdaUrl);
+  const locationsApi = new LocationsApi(config);
 
   return useQuery({
     queryKey: ["cda", "location", cdaParams.locationId],
-    queryFn: async () =>
-      locationsApi.getCwmsDataLocationsWithLocationId(cdaParams),
+    queryFn: async () => locationsApi.getLocationsWithLocationId(cdaParams),
     ...queryOptions,
   });
 };

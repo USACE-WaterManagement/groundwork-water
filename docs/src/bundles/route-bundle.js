@@ -18,6 +18,8 @@ import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 import UseNwpsGaugeData from "../pages/docs/hooks/use-nwps-gauge-data";
 import DataHooks from "../pages/docs/hooks";
 import HelpPage from "../pages/docs/help";
+import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
+import UtilitiesDocs from "../pages/docs/utilities";
 
 export default createRouteBundle(
   {
@@ -36,6 +38,8 @@ export default createRouteBundle(
     "/docs/plots": Plots,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/utilities": UtilitiesDocs,
+    "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,
     "/docs/add-components": AddComponents,
     "/docs/quick-start": QuickStart,

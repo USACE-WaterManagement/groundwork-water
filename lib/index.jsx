@@ -10,6 +10,7 @@ import TSTable from "./components/data/tables/TSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
+import CdaUrlProvider from "./components/data/utilities/CdaUrlProvider";
 import useCdaCatalog from "./components/data/hooks/useCdaCatalog";
 import useCdaLatestValue from "./components/data/hooks/useCdaLatestValue";
 import useCdaLocation from "./components/data/hooks/useCdaLocation";
@@ -25,6 +26,7 @@ export {
   GageMap,
   CWMSPlot,
   CdaLatestValueCard,
+  CdaUrlProvider,
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
