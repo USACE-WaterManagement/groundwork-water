@@ -152,7 +152,7 @@ export default function CWMSPlot({
           // }
           // if (interval.includes("Hour")) { pageSize = delta * 10 }
           // if (interval.includes("Day")) { pageSize = delta * 1 }
-          return await ts_api.getCwmsDataTimeseries({
+          return await ts_api.getTimeSeries({
             name: tsid,
             begin: begin,
             end: end,
@@ -169,7 +169,7 @@ export default function CWMSPlot({
         let level;
         // The Level API doesn't accept the same date format
         try {
-          level = await level_api.getCwmsDataLevels({
+          level = await level_api.getLevels({
             levelIdMask: item,
             begin: begin?.slice(0, 10),
             end: end?.slice(0, 10),
