@@ -105,7 +105,7 @@ const LocationCard = () => {
       <CdaParamsTable
         requestObject="Location"
         requestType="GET"
-        cwmsJsType="GetCwmsDataLocationsWithLocationIdRequest"
+        cwmsJsType="GetLocationsWithLocationIdRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaParams} />

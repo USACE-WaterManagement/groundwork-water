@@ -48,7 +48,7 @@
         "cwms"
     ],
     "dependencies": {
-        "cwmsjs": "^2.1.5-2024.11.14",
+        "cwmsjs": "^2.3.0-2024.12.10",
         "dayjs": "^1.11.11",
         "ol": "^10.0.0",
         "plotly.js-basic-dist": "^2.33.0",

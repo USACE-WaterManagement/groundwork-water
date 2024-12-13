@@ -24,7 +24,7 @@ function Tables() {
     >
       <div className="mt-6">
         <TSTable
-          title="Simple Timeseries Table"
+          title="Simple TimeSeries Table"
           cdaParams={{
             office: "SWT",
             name: tsid,
@@ -52,7 +52,7 @@ default export function Example() {
 
     return (
     <TSTable
-        title="Simple Timeseries Table"
+        title="Simple TimeSeries Table"
         cdaParams={{
         office: "SWT",
         name: tsid,

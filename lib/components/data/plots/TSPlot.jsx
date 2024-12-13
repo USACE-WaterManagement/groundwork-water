@@ -13,7 +13,7 @@ import Plotly from "plotly.js-basic-dist";
  * @returns {JSX.Element} The rendered component.
  */
 const TSPlot = ({
-  title = "Timeseries Plot",
+  title = "TimeSeries Plot",
   cdaParams = null,
   cdaUrl = null,
   queryOptions = null,
