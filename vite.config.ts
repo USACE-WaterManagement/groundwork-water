@@ -25,6 +25,8 @@ export default defineConfig(({ mode }) => {
             "@tanstack/react-query",
             "ol",
             "plotly.js-basic-dist",
+            "cwmsjs",
+            "@usace/groundwork",
           ],
           output: {
             globals: {
@@ -33,6 +35,7 @@ export default defineConfig(({ mode }) => {
               "@tanstack/react-query": "ReactQuery",
               ol: "ol",
               "plotly.js-basic-dist": "Plotly",
+              cwmsjs: "cwmsjs",
             },
           },
         },
