@@ -51,7 +51,7 @@ export default function CWMSPlot({
   const fetchData = async () => {
     let promises = plotTSIDs.map(async (name) => {
       try {
-        return await ts_api.getCwmsDataTimeSeries({
+        return await ts_api.getTimeSeries({
           name,
           end,
           unit,

@@ -110,7 +110,7 @@ const OutflowCard = () => {
       <CdaParamsTable
         requestObject="TimeSeries"
         requestType="GET"
-        cwmsJsType="GetCwmsDataTimeSeriesRequest"
+        cwmsJsType="GetTimeSeriesRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaTSHookParams} />

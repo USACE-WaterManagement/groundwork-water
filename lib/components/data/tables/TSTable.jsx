@@ -15,7 +15,7 @@ const TS_API = new TimeSeriesApi(V2_API);
 
 const fetchData = async ({ queryKey }) => {
   const [, cdaParams] = queryKey;
-  const response = await TS_API.getCwmsDataTimeSeriesRaw(cdaParams);
+  const response = await TS_API.getTimeSeriesRaw(cdaParams);
   const data = await response.raw.json();
   data.url = response.raw.url;
   return data;
