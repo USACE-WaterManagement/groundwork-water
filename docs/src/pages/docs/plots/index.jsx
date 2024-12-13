@@ -21,7 +21,7 @@ function Plots() {
       prevText="Return to React Query Page"
       nextText="Go to Tables Page"
     >
-      <UsaceBox title="Generic Timeseries Plot">
+      <UsaceBox title="Generic TimeSeries Plot">
         <TSPlot
           cdaParams={{
             name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",

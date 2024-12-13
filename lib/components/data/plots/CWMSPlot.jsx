@@ -40,7 +40,7 @@ export default function CWMSPlot({
       setPlotTitle((Array.isArray(tsids) ? tsids[0] : tsids).split(".")[0]);
     }
     if (!tsids.length)
-      throw Error("You must specify one or more Timeseries IDs to plot.");
+      throw Error("You must specify one or more TimeSeries IDs to plot.");
     if (!office) throw Error("You must specify a 3 letter ID for the office");
     if (typeof tsids == "string") {
       tsids = [tsids];
@@ -51,7 +51,7 @@ export default function CWMSPlot({
   const fetchData = async () => {
     let promises = plotTSIDs.map(async (name) => {
       try {
-        return await ts_api.getCwmsDataTimeseries({
+        return await ts_api.getCwmsDataTimeSeries({
           name,
           end,
           unit,

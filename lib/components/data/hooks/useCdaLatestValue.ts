@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useCdaCatalog from "./useCdaCatalog";
 import useCdaTimeSeries from "./useCdaTimeSeries";
 import { getLatestEntry } from "../helpers/cda";
-import { TimeseriesCatalogEntry } from "cwmsjs";
+import { TimeSeriesCatalogEntry } from "cwmsjs";
 
 interface useCdaLatestValueParams {
   tsId: string;
@@ -45,7 +45,7 @@ const useCdaLatestValue = ({
     if (!catalog.data || !catalog.data.entries) {
       return;
     }
-    const firstEntry: TimeseriesCatalogEntry = catalog.data.entries?.[0];
+    const firstEntry: TimeSeriesCatalogEntry = catalog.data.entries?.[0];
     if (!firstEntry.extents?.[0].latestTime) {
       return;
     }

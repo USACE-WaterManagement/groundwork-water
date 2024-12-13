@@ -114,7 +114,7 @@ const TimeSeriesGroupList = () => {
       <CdaParamsTable
         requestObject="TimeSeries Group"
         requestType="GET"
-        cwmsJsType="GetCwmsDataTimeseriesGroupWithGroupIdRequest"
+        cwmsJsType="GetCwmsDataTimeSeriesGroupWithGroupIdRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaParams} />
