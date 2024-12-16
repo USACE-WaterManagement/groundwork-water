@@ -1,12 +1,12 @@
 import { UsaceBox, H3 } from "@usace/groundwork";
 import { CWMSPlot } from "@usace-watermanagement/groundwork-water";
-import { Code } from "../../components/code";
-import Divider from "../../components/divider";
-import DocsPage from "../_docs-wrapper";
-import PropsTable from "../../components/props-table";
+import { Code } from "../../components/code.jsx";
+import Divider from "../../components/divider.jsx";
+import DocsPage from "../_docs-wrapper.jsx";
+import PropsTable from "../../components/props-table.jsx";
 import { cwmsPlotProps } from "../../../props-declarations/plots.jsx";
 
-function Plots() {
+function CWMSPlotDocs() {
   const plotHeight = 550;
   const dam = "KEYS";
 
@@ -179,4 +179,4 @@ export default function Example() {
   );
 }
 
-export default Plots;
+export default CWMSPlotDocs;

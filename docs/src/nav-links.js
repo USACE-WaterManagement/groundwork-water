@@ -79,6 +79,13 @@ export default [
     id: "plots",
     text: "Plots",
     href: "/docs/plots",
+    children: [
+      {
+        id: "cwms-plot",
+        text: "CWMS Plot",
+        href: "/docs/plots/cwms-plot",
+      },
+    ],
   },
   {
     id: "tables",
