@@ -1,81 +1,3 @@
-import { cdaTSHookParams } from "./data-hooks";
-
-const tsPlotProps = [
-  ...cdaTSHookParams,
-  {
-    name: "title",
-    type: "string",
-    default: "none",
-    desc: "Title of the plot",
-  },
-  {
-    name: "legend",
-    type: "string",
-    default: "none",
-    desc: "Legend entry for tsid",
-  },
-  {
-    name: "type",
-    type: "string",
-    default: "none",
-    desc: "Type of plot",
-  },
-  {
-    name: "mode",
-    type: "string",
-    default: "none",
-    desc: "Mode of plot",
-  },
-  {
-    name: "color",
-    type: "string",
-    default: "none",
-    desc: "Color of tsid trace",
-  },
-  {
-    name: "xaxis",
-    type: "string",
-    default: "none",
-    desc: "X-Axis title for plot",
-  },
-  {
-    name: "yaxis",
-    type: "string",
-    default: "none",
-    desc: "Y-Axis title for plot",
-  },
-  {
-    name: "levelName",
-    type: "string",
-    default: "none",
-    desc: "Legend entry for location level",
-  },
-  {
-    name: "levelvalue",
-    type: "string",
-    default: "none",
-    desc: "Plot value for location level",
-  },
-  {
-    name: "levelColor",
-    type: "string",
-    default: "none",
-    desc: "Plot line color for location level",
-  },
-  {
-    name: "responsive",
-    type: "boolean",
-    default: "true",
-    desc: "Responsive mode for the plot",
-  },
-  {
-    name: "className",
-    type: "string",
-    default: "undefined",
-    desc: "Add custom className to the fieldset",
-  },
-];
-
 const cwmsPlotProps = [
   {
     name: "tsids",
@@ -179,4 +101,4 @@ const cwmsPlotProps = [
   },
 ];
 
-export { tsPlotProps, cwmsPlotProps };
+export { cwmsPlotProps };
