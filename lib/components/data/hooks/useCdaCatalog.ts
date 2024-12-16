@@ -17,7 +17,7 @@ const useCdaCatalog = ({
   const catalogApi = new CatalogApi(config);
 
   return useQuery({
-    queryKey: ["cda", "catalog", cdaParams.like],
+    queryKey: ["cda", "catalog", ...Object.values(cdaParams)],
     queryFn: async () => catalogApi.getCatalogWithDataset(cdaParams),
     ...queryOptions,
   });
