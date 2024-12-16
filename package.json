@@ -1,6 +1,6 @@
 {
     "name": "@usace-watermanagement/groundwork-water",
-    "version": "2.5.0",
+    "version": "2.6.0",
     "license": "MIT",
     "author": "Various",
     "description": "A library of react components for use with USACE Water Management Webpages",
@@ -48,7 +48,7 @@
         "cwms"
     ],
     "dependencies": {
-        "cwmsjs": "^2.1.5-2024.11.14",
+        "cwmsjs": "^2.3.0-2024.12.10",
         "dayjs": "^1.11.11",
         "deepmerge": "^4.3.1",
         "ol": "^10.0.0",

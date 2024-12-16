@@ -28,7 +28,10 @@ const CatalogCard = () => {
         <li>TimeSeries ID: Latest Timestamp</li>
         {data.entries.map((entry) => (
           <li key={entry.name}>
-            {entry.name}: {entry.extents?.[0]?.latestTime.toISOString()}
+            {entry.name}:{" "}
+            {entry.extents?.[0]?.latestTime
+              ? entry.extents[0].latestTime.toISOString()
+              : "No data"}
           </li>
         ))}
       </ul>
@@ -88,7 +91,7 @@ const CatalogCard = () => {
       <CdaParamsTable
         requestObject="Catalog"
         requestType="GET"
-        cwmsJsType="GetCwmsDataCatalogWithDatasetRequest"
+        cwmsJsType="GetCatalogWithDatasetRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaCatalogParams} />
