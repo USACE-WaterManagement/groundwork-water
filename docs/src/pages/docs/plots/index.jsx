@@ -15,72 +15,28 @@ function Plots() {
       id: `${dam}.Elev.Inst.1Hour.0.Ccp-Rev`,
       traceOptions: {
         name: "Pool Level",
-        mode: "lines",
-        type: "scatter",
-        marker: {
-          color: "red",
-          size: "12",
-        },
-        line: {
-          color: "red",
-          width: 3,
-        },
         yaxis: "y1",
-      },
-    },
-    {
-      id: "KAWL.Elev.Inst.1Hour.0.Ccp-Rev",
-      traceOptions: { name: "Buckhorn Flow", yaxis: "y1" },
-    },
-    {
-      id: `${dam}.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev`,
-      traceOptions: {
-        name: "Precip",
-        mode: "lines",
-        // type: "bar",
-        marker: {
-          color: "green",
-          size: "12",
-        },
-        line: {
-          color: "green",
-          width: 3,
-        },
-        yaxis: "y3",
-      },
-    },
-    {
-      id: `${dam}.Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed`,
-      traceOptions: {
-        name: "Outflow",
-        mode: "lines",
-        type: "scatter",
-        marker: {
-          color: "blue",
-          size: "12",
-        },
-        line: {
-          color: "blue",
-          width: 3,
-        },
-        yaxis: "y2",
       },
     },
     {
       id: `${dam}.Flow-Res Out.Ave.1Hour.1Hour.Rev-Regi-Flowgroup`,
       traceOptions: {
-        name: "Inflow",
-        mode: "lines",
-        type: "scatter",
-        marker: {
-          color: "orange",
-          size: "12",
-        },
-        line: {
-          color: "orange",
-          width: 3,
-        },
+        name: "Outflow",
         yaxis: "y2",
+      },
+    },
+    {
+      id: `${dam}.Flow-Res In.Ave.1Hour.1Hour.Rev-Regi-Computed`,
+      traceOptions: {
+        name: "Inflow",
+        yaxis: "y2",
+      },
+    },
+    {
+      id: `${dam}.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev`,
+      traceOptions: {
+        name: "Precip",
+        yaxis: "y3",
       },
     },
   ];
@@ -139,28 +95,16 @@ function Plots() {
     yaxis: {
       title: {
         text: "Pool Level (ft)",
-        font: {
-          family: "Arial, sans-serif",
-          size: 14,
-        },
       },
     },
     yaxis2: {
       title: {
         text: "Flow (cfs)",
-        font: {
-          family: "Arial, sans-serif",
-          size: 14,
-        },
       },
     },
     yaxis3: {
       title: {
         text: "Precip (in)",
-        font: {
-          family: "Arial, sans-serif",
-          size: 14,
-        },
       },
     },
     showlegend: true,
