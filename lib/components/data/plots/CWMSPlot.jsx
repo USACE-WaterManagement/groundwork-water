@@ -85,13 +85,6 @@ export default function CWMSPlot({
   );
 
   const defaultLayout = {
-    title: {
-      text: timeSeriesArray[0].id.split(".")[0],
-      font: {
-        family: "Arial, sans-serif",
-        size: 16,
-      },
-    },
     height: 750,
     grid: {
       columns: 1,
