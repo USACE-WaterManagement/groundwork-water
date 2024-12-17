@@ -7,8 +7,10 @@ import Divider from "../../components/divider";
 export default function Docs() {
   return (
     <DocsPage
+      nextUrl="/docs/plots"
       prevUrl="/docs/add-components"
       middleText="React Query"
+      nextText="Go to Plots"
       prevText="Return to Add Components"
     >
       <H2>React Query Installation</H2>

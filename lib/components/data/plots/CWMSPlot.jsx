@@ -1,9 +1,48 @@
 import { useEffect, useState, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Configuration, TimeSeriesApi } from "cwmsjs";
+import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
-import dayjs from "dayjs";
-import { gwMerge } from "@usace/groundwork";
+import { gwMerge, Skeleton } from "@usace/groundwork";
+import deepmerge from "deepmerge";
+import { useMemo } from "react";
+
+/**
+ * Normalize a data prop to an array of objects
+ *
+ * This function provides support for data props entered as a single element
+ * or as an array as well as support for data points entered as strings or as
+ * objects.  Data is adjusted as necessary to return a normalized prop formatted
+ * as an array of data objects in the format {id, ...additionalOptions}.
+ * @param prop The data prop to be normalized.
+ * @returns An array of data objects in the format {id, ...additionalOptions}
+ */
+const normalizeDataProp = (prop) => {
+  if (!prop) return [];
+  if (Array.isArray(prop))
+    return prop.map((datum) => {
+      if (Array.isArray(datum))
+        console.error("Nested array not valid in plot data props");
+      else if (typeof datum === "string") return { id: datum };
+      else if (typeof datum === "object") return datum;
+      else console.error(`Unrecognized data format: ${datum}`);
+    });
+  else if (typeof prop === "string") return [{ id: prop }];
+  else if (typeof prop === "object") return [prop];
+  else console.error(`Unrecognized data format: ${prop}`);
+};
+
+const getYAxisId = (timeseriesParam) => {
+  const yaxis = timeseriesParam?.traceOptions?.yaxis;
+  if (!yaxis) return undefined;
+  if ((yaxis == "y") | (yaxis == "y1")) return "yaxis";
+  const re = /^y(\d+)$/;
+  const match = yaxis.match(re);
+  if (match) {
+    const axisInt = match[1];
+    return `yaxis${axisInt}`;
+  } else {
+    return undefined;
+  }
+};
 
 const config_v2 = new Configuration({
   headers: {
@@ -12,192 +51,261 @@ const config_v2 = new Configuration({
 });
 const ts_api = new TimeSeriesApi(config_v2);
 
+const config_level = new Configuration({
+  headers: {
+    accept: "*/*",
+  },
+});
+const level_api = new LevelsApi(config_level);
+
 export default function CWMSPlot({
-  tsids,
-  office,
   begin,
   end,
-  title,
-  fontSize,
-  unit = "EN",
+  unit,
+  office,
+  timeSeries,
+  locationLevels,
+  layoutOptions,
   className = "",
-  plotHeight = 550,
-  shapes = [],
-  autoSize = true,
-  annotations = [],
   responsive = true,
-  loadingComponent = null,
-  layoutGrid = null,
 }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);
-  const [metaData, setMetaData] = useState(null);
-  const [plotTitle, setPlotTitle] = useState(null);
-  const [plotTSIDs, setPlotTSIDs] = useState(null);
-  const [plotFontSize, setPlotFontSize] = useState(fontSize);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!title) {
-      setPlotTitle((Array.isArray(tsids) ? tsids[0] : tsids).split(".")[0]);
-    }
-    if (!tsids.length)
-      throw Error("You must specify one or more TimeSeries IDs to plot.");
-    if (!office) throw Error("You must specify a 3 letter ID for the office");
-    if (typeof tsids == "string") {
-      tsids = [tsids];
-    }
-    setPlotTSIDs(tsids);
-  }, [title, tsids, office]);
+  const timeSeriesArray = useMemo(
+    () => normalizeDataProp(timeSeries),
+    [timeSeries]
+  );
 
-  const fetchData = async () => {
-    let promises = plotTSIDs.map(async (name) => {
-      try {
-        return await ts_api.getTimeSeries({
-          name,
-          end,
-          unit,
-          begin,
-          office,
-        });
-      } catch (error) {
-        if (error.response?.status === 404) {
-          console.warn(`Data for ${name} not found: 404`);
-          return null;
-        } else {
-          throw error;
-        }
-      }
-    });
-    let values = await Promise.all(promises);
-    let _data = { ts: {}, dates: [] };
-    // TODO: This should probably be the parameter not the units
-    values.forEach((result) => {
-      if (result && result.units) {
-        if (!_data.ts[result.units]) {
-          _data.ts[result.units] = [];
-        }
-        _data.ts[result.units].push(result);
-      } else if (result === null) {
-        console.warn(`Skipping as no data was found.`);
-      } else {
-        console.warn(`No unit found for ${result?.name}`);
-      }
-    });
-    return _data;
+  const locationLevelsArray = useMemo(
+    () => normalizeDataProp(locationLevels),
+    [locationLevels]
+  );
+
+  const defaultLayout = {
+    height: 750,
+    grid: {
+      columns: 1,
+    },
+    xaxis: {
+      showgrid: true,
+      showline: true,
+      mirror: "ticks",
+      linecolor: "black",
+      linewidth: 1,
+    },
   };
 
-  const {
-    data: tsData,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["timeseries", plotTSIDs, begin, end, unit, office],
-    queryFn: fetchData,
-    enabled: !!plotElement.current, // Only run the query when plotElement is available
+  timeSeriesArray.forEach((item, index) => {
+    const yaxis_id =
+      getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
+    if (!(yaxis_id in defaultLayout)) {
+      defaultLayout[yaxis_id] = {
+        title: {
+          text: item.id.split(".")[1],
+          font: {
+            family: "Arial, sans-serif",
+            size: 14,
+          },
+        },
+      };
+    }
   });
+
+  defaultLayout.grid.rows = Object.keys(defaultLayout).filter((key) =>
+    key.includes("yaxis")
+  ).length;
+
+  const layout = deepmerge(defaultLayout, layoutOptions);
+
   useEffect(() => {
+    const tsids = timeSeriesArray.map((ts) => ts.id);
+    const levels = locationLevelsArray.map((level) => level.id);
+
+    if (!tsids?.length) {
+      setError("You must specify one or more Timeseries IDs to plot.");
+      return;
+    }
+
+    if (!office) setError("You must specify a 3 letter ID for the office");
+
+    const fetchData = async () => {
+      let ts_promises = tsids.map(async (tsid) => {
+        try {
+          // Currently, large page size calls are blocked, so the default of 500 is used
+          let pageSize = 500;
+          // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
+          // let interval = tsid.split(".")[3]
+          // if (interval.includes("Minute")) {
+          //   if (interval.includes("15")) { pageSize = delta * 100 }
+          //   if (interval.includes("1Minute")) { pageSize = delta * 1500 }
+          // }
+          // if (interval.includes("Hour")) { pageSize = delta * 10 }
+          // if (interval.includes("Day")) { pageSize = delta * 1 }
+          return await ts_api.getTimeSeries({
+            name: tsid,
+            begin: begin,
+            end: end,
+            pageSize: pageSize,
+            office: office,
+            unit: unit,
+          });
+        } catch (error) {
+          console.error("Error fetching timeseries data:", error);
+        }
+      });
+
+      let lev_promises = levels?.map(async (item) => {
+        let level;
+        // The Level API doesn't accept the same date format
+        try {
+          level = await level_api.getLevels({
+            levelIdMask: item,
+            begin: begin?.slice(0, 10),
+            end: end?.slice(0, 10),
+            office: office,
+            format: "json",
+            unit: unit,
+          });
+        } catch (error) {
+          console.error("Error fetching location level data:", error);
+        }
+        return level;
+      });
+
+      let _data = { ts: {} };
+
+      let values = await Promise.all(ts_promises);
+      values.forEach((result) => {
+        if (result && result.name) {
+          if (!_data.ts[result.name]) {
+            _data.ts[result.name] = [];
+          }
+          _data.ts[result.name].push(result);
+        } else if (result === null) {
+          console.warn(`Skipping as no data was found.`);
+        } else {
+          console.warn(`No timeseries data found for ${result?.name}`);
+        }
+      });
+
+      let lev_values;
+      if (lev_promises) {
+        lev_values = await Promise.all(lev_promises);
+      }
+
+      lev_values?.forEach((result) => {
+        const name = result["location-levels"]["location-levels"][0]?.name;
+        const levels = result["location-levels"]["location-levels"][0]?.values;
+        if (result && name) {
+          if (!_data.ts[name]) {
+            _data.ts[name] = [];
+          }
+          _data.ts[name].push(levels);
+        } else if (result === null) {
+          console.warn(`Skipping as no data was found.`);
+        } else {
+          console.warn(`No location level data found for ${result?.name}`);
+        }
+      });
+
+      setTsData(_data);
+    };
+
+    fetchData();
+  }, [begin, end, locationLevelsArray, office, timeSeriesArray, unit]);
+
+  useEffect(() => {
+    const tsids = timeSeriesArray.map((ts) => ts.id);
+    const levels = locationLevelsArray.map((level) => level.id);
+
     if (!plotElement.current || !tsData) {
       return;
     }
 
-    let unit_keys = Object.keys(tsData.ts);
-    let grid_col_cnt = unit_keys.length;
-    const layout = {
-      autosize: autoSize,
-      title: title,
-      shapes: shapes,
-      annotations: annotations,
-    };
-    if (title) layout.title = title;
-    else
-      layout.title = {
-        text: `${plotTitle}<br>Units: ${unit_keys.join(", ")}`,
-        font: {
-          family: "DejaVuSansMono, monospace",
-        },
-      };
-    if (layoutGrid) layout.grid = layoutGrid;
-    else
-      layout.grid = { rows: grid_col_cnt, columns: 1, pattern: "independent" };
+    setIsLoading(true);
 
+    let ts_keys = Object.keys(tsData.ts);
+
+    // Create traces keyed to the tsdata
     let traces = [];
-    let trace_cnt = 1;
-    let domain_start = 0;
-    let domain_delta = 1 / unit_keys.length;
-    let domain_end = domain_delta;
-
-    // Force the font size if specified
-    if (plotFontSize) layout["font"] = { size: plotFontSize };
-    else if (unit_keys.length > 4) {
-      layout["font"] = { size: 8 };
-    }
-
-    // Create traces keyed to the unit
     let ts;
-    for (let k_idx = 0; k_idx < unit_keys.length; k_idx++) {
-      const key = unit_keys[k_idx];
-      for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
-        ts = tsData.ts[key][ts_idx];
-        const trace = {
-          x: ts.values.map((value) => new Date(value[0])),
-          y: ts.values.map((value) => value[1]),
-          yaxis: "y" + trace_cnt,
-          type: "scatter",
-          mode: "lines",
-          showlegend: true,
-          legend: { x: 1, xanchor: "right", y: 1 },
-          name: `${ts.name.split(".")[1]}<br>${ts.name.split(".")[5]}`,
-        };
-        traces.push(trace);
-      }
-      let title_text = `${ts.name.split(".")[1]}<br>(${key})`;
-      if (unit_keys.length > 3) title_text = key;
 
-      layout["yaxis" + trace_cnt] = {
-        domain: [
-          Math.round(domain_start * 100) / 100,
-          Math.round(domain_end * 100) / 100,
-        ],
-        title: { text: title_text },
-      };
-      // Alter if there are more than 4 units / view ports
-      if (unit_keys.length > 4) {
-        layout["yaxis" + trace_cnt]["nticks"] = 1;
-        layout["yaxis" + trace_cnt]["tickvals"] = [
-          ts.values[ts.values.length / 2],
-        ];
-        layout["yaxis" + trace_cnt]["dtick"] = 1;
-        layout["yaxis" + trace_cnt]["tick0"] = 0.5;
+    // Loop thru TS Data for timeseries and location levels
+    for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
+      const key = ts_keys[k_idx];
+
+      // Add Timeseries to list of traces
+      if (tsids.includes(key)) {
+        for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
+          ts = tsData.ts[key][ts_idx];
+          // Defaults for trace
+          const trace = {
+            x: ts.values.map((value) => new Date(value[0])),
+            y: ts.values.map((value) => value[1]),
+            showlegend: true,
+            legend: { x: 1, xanchor: "right", y: 1 },
+          };
+          // Add all other parameters
+          const tsObj = timeSeriesArray?.filter(
+            (item) => item.id === ts.name
+          )[0];
+          const fullTrace = tsObj?.traceOptions
+            ? deepmerge(trace, tsObj?.traceOptions)
+            : trace;
+          traces.push(fullTrace);
+        }
       }
 
-      domain_start += domain_delta;
-      domain_end += domain_delta;
-      trace_cnt++;
+      // Add Location Levels to list of traces
+      if (levels?.includes(key)) {
+        for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
+          ts = tsData.ts[key][ts_idx];
+          // Defaults for trace
+          const trace = {
+            x: ts.segments[0].values.map((value) => new Date(value[0])),
+            y: ts.segments[0].values.map((value) => value[1]),
+            showlegend: true,
+            legend: { x: 1, xanchor: "right", y: 1 },
+          };
+          // Add all other parameters
+          const levelObj = locationLevelsArray?.filter(
+            (item) => item.id == key
+          )[0];
+          const fullTrace = levelObj?.traceOptions
+            ? deepmerge(trace, levelObj?.traceOptions)
+            : trace;
+          traces.push(fullTrace);
+        }
+      }
     }
+
+    setIsLoading(false);
 
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [tsData, title]);
+  }, [layout, locationLevelsArray, responsive, timeSeriesArray, tsData]);
 
   return (
     <div
       className={gwMerge("gww-h-full gww-w-full", className)}
-      style={{ height: plotHeight }}
+      style={{ height: layoutOptions.height }}
     >
       <div
         ref={plotElement}
         id="plot"
         className="gww-h-full gww-w-full"
-        style={{ height: plotHeight }}
+        style={{ height: layoutOptions.height }}
       >
-        {isLoading ? (
-          loadingComponent ? (
-            <>{loadingComponent}</>
-          ) : (
-            <div>Loading...</div>
-          )
-        ) : error ? (
-          <div>Error: {error.message}</div>
+        {error ? (
+          <div>Error: {error}</div>
+        ) : isLoading ? (
+          <div style={{ height: `${layoutOptions.height}px` }}>
+            <Skeleton className="gww-h-full gww-w-full" />
+          </div>
         ) : (
           <></>
         )}
