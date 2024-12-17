@@ -24,7 +24,7 @@ export function Code({
             {language.toUpperCase()}
           </div>
         )}
-        <div className="mr-2 mt-1 flex-shrink-0">
+        <div className="mr-2 mt-1 flex-shrink-0 overflow-y-auto h-[70vh]">
           {language ? (
             <SyntaxHighlighter
               language={language}
