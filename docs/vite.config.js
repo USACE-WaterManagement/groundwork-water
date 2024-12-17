@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import pkg from "./package.json";
+import pkg from "../package.json";
 import tailwindcss from "tailwindcss";
 
 export default defineConfig(({ mode }) => {
