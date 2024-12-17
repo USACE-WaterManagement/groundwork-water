@@ -68,7 +68,6 @@ export default function CWMSPlot({
   layoutOptions,
   className = "",
   responsive = true,
-  loadingComponent = null,
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [tsData, setTsData] = useState(null);
@@ -311,13 +310,9 @@ export default function CWMSPlot({
         {error ? (
           <div>Error: {error}</div>
         ) : isLoading ? (
-          loadingComponent ? (
-            <>{loadingComponent}</>
-          ) : (
-            <div style={{ height: `${layoutOptions.height}px` }}>
-              <Skeleton className="gww-h-full gww-w-full" />
-            </div>
-          )
+          <div style={{ height: `${layoutOptions.height}px` }}>
+            <Skeleton className="gww-h-full gww-w-full" />
+          </div>
         ) : (
           <></>
         )}
