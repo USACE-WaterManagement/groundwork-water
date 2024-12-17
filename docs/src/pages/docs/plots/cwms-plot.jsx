@@ -118,13 +118,7 @@ function CWMSPlotDocs() {
   };
 
   return (
-    <DocsPage
-      nextUrl="/docs/tables"
-      prevUrl="/docs/react-query"
-      middleText="Plots"
-      prevText="Return to React Query Page"
-      nextText="Go to Tables Page"
-    >
+    <DocsPage middleText="CWMS Plot">
       <Divider text="CWMS Themed Plot - How To" className="my-8" />
       <UsaceBox title="CWMS Plot">
         <CWMSPlot
