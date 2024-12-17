@@ -1,17 +1,5 @@
 const cwmsPlotProps = [
   {
-    name: "tsids",
-    type: "array",
-    default: "undefined",
-    desc: "Array of timeseries IDs to plot",
-  },
-  {
-    name: "office",
-    type: "string",
-    default: "undefined",
-    desc: "Office to plot",
-  },
-  {
     name: "begin",
     type: "string",
     default: "undefined",
@@ -24,35 +12,38 @@ const cwmsPlotProps = [
     desc: "End of the time range to plot 'YYYY-MM-DDThh:mm:ssZ' or '2021-06-12T13:00:00-07:00'.",
   },
   {
-    name: "title",
-    type: "string",
-    default: "undefined",
-    desc: (
-      <>
-        The plotly js defined title of the plot seen here:{" "}
-        <a
-          className="gw-underline"
-          href="https://plotly.com/javascript/reference/layout/#title"
-        >
-          Plotly Object Keys for Title
-        </a>
-      </>
-    ),
-  },
-  {
     name: "unit",
     type: "string",
     default: "undefined",
-    desc: "Unit of the plot",
+    desc: "Specifies the unit or unit system of the response. Options: 'EN', 'SI', specific units (e.g. 'ft')",
   },
   {
-    name: "layoutParams",
+    name: "office",
     type: "string",
+    default: "undefined",
+    desc: "The owning office of the data to be plotted",
+  },
+  {
+    name: "timeSeries",
+    type: "TraceData[]",
+    default: "undefined",
+    desc: "An array of objects that define the time series ids to plot and, optionally, styling options.  Details below.",
+  },
+  {
+    name: "locationLevels",
+    type: "TraceData[]",
+    default: "undefined",
+    desc: "An array of objects that define the location level ids to plot and, optionally, styling options.  Details below.",
+  },
+  {
+    name: "layoutOptions",
+    type: "object",
     default: "undefined",
     required: false,
     desc: (
       <>
-        The layoutParams can take any of the plotlyjs layout properties:{" "}
+        Optional styling options for the plot. Can take any of the plotlyjs
+        layout properties:{" "}
         <a
           href="https://plotly.com/javascript/reference/layout/"
           className="gw-underline"
@@ -67,38 +58,41 @@ const cwmsPlotProps = [
     name: "className",
     type: "string",
     default: "undefined",
-    desc: "Add custom className to the fieldset",
-  },
-  {
-    name: "plotHeight",
-    type: "number",
-    default: "550",
-    desc: "Height of the plot",
-  },
-  {
-    name: "shapes",
-    type: "array",
-    default: "undefined",
-    desc: "Array of shapes to add to the plot",
-  },
-  {
-    name: "autoSize",
-    type: "boolean",
-    default: "true",
-    desc: "Auto-size the plot",
-  },
-  {
-    name: "annotations",
-    type: "array",
-    default: "undefined",
-    desc: "Array of annotations to add to the plot",
+    desc: "Custom className to add to the containing div",
   },
   {
     name: "responsive",
     type: "boolean",
     default: "true",
-    desc: "Responsive mode for the plot",
+    desc: "Responsive mode toggle for the plot",
   },
 ];
 
-export { cwmsPlotProps };
+const traceDataProps = [
+  {
+    name: "id",
+    type: "string",
+    default: "undefined",
+    desc: "The id of the CWMS data to be plotted",
+  },
+  {
+    name: "traceOptions",
+    type: "object",
+    default: "undefined",
+    desc: (
+      <>
+        Optional styling options for the data. Can take any of the plotlyjs
+        scatter trace properties:{" "}
+        <a
+          href="https://plotly.com/javascript/reference/scatter/"
+          className="gw-underline"
+        >
+          PlotlyJS Scatter Trace Reference
+        </a>
+        .
+      </>
+    ),
+  },
+];
+
+export { cwmsPlotProps, traceDataProps };
