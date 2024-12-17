@@ -21,7 +21,7 @@ const useCdaLocation = ({
   const locationsApi = new LocationsApi(config);
 
   return useQuery({
-    queryKey: ["cda", "location", cdaParams.locationId],
+    queryKey: ["cda", "location", ...Object.values(cdaParams)],
     queryFn: async () => locationsApi.getLocationsWithLocationId(cdaParams),
     ...queryOptions,
   });

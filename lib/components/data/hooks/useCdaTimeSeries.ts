@@ -17,7 +17,7 @@ const useCdaTimeSeries = ({
   const timeseriesApi = new TimeSeriesApi(config);
 
   return useQuery({
-    queryKey: ["cda", "timeseries", cdaParams.name],
+    queryKey: ["cda", "timeseries", ...Object.values(cdaParams)],
     queryFn: async () => timeseriesApi.getTimeSeries(cdaParams),
     ...queryOptions,
   });
