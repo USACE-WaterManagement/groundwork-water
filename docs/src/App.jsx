@@ -14,6 +14,7 @@ const version = import.meta.env.PKG_VERSION;
 
 import externalLinks from "./external-links";
 import usaceLinks from "./usace-links";
+import Alert from "./pages/components/alert";
 
 function App() {
   const {
@@ -61,8 +62,14 @@ function App() {
         twitterUrl="#"
         youtubeUrl="#"
         flickrUrl="#"
+        msgBanner={
+          <Alert
+            title="Notice"
+            message="This website and it's components are under ACTIVE development. Check back often for updates and improvements."
+            status="warning"
+          />
+        }
       >
-        <DevWarning />
         <Breadcrumbs className="px-5">
           {hash
             .split("/")
