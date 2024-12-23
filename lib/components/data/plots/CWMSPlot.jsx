@@ -4,6 +4,7 @@ import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 import { useMemo } from "react";
+import { useCdaConfig } from "../helpers/cda";
 
 /**
  * Normalize a data prop to an array of objects
@@ -44,20 +45,6 @@ const getYAxisId = (timeseriesParam) => {
   }
 };
 
-const config_v2 = new Configuration({
-  headers: {
-    accept: "application/json;version=2",
-  },
-});
-const ts_api = new TimeSeriesApi(config_v2);
-
-const config_level = new Configuration({
-  headers: {
-    accept: "*/*",
-  },
-});
-const level_api = new LevelsApi(config_level);
-
 export default function CWMSPlot({
   begin,
   end,
@@ -69,6 +56,11 @@ export default function CWMSPlot({
   className = "",
   responsive = true,
 }) {
+  const ts_config = useCdaConfig("v2");
+  const ts_api = new TimeSeriesApi(ts_config);
+  const level_config = useCdaConfig("v2", null, { accept: "*/*" });
+  const level_api = new LevelsApi(level_config);
+
   const [isLoading, setIsLoading] = useState(true);
   const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);

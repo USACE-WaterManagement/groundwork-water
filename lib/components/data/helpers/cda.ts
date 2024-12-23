@@ -25,12 +25,16 @@ export const getLatestEntry = (cdaTimeSeries: TimeSeries) => {
  * @param hookCdaUrl The cdaUrl passed to the CDA data hook as an argument.
  * @returns
  */
-export const useCdaConfig = (version: "v1" | "v2", hookCdaUrl?: string) => {
+export const useCdaConfig = (
+  version: "v1" | "v2",
+  hookCdaUrl?: string,
+  headers?: Record<string, string>
+) => {
   let accept = "application/json";
   if (version == "v2") accept += ";version=2";
 
   const configOptions: ConfigurationParameters = {
-    headers: { accept },
+    headers: { accept, ...headers },
   };
 
   const providedCdaUrl = useCdaUrl();
