@@ -52,13 +52,13 @@ function CdaUrlProviderDocs() {
           </a>
           .
         </Text>
-        <Text className="mt-4">
+        <Text className="mt-1">
           If components or data hooks within the {cdaUrlProvider} utilize a
           custom CDA URL (e.g. the {cdaUrl} parameter) it will override the URL
           provided by this component. For reference, the CDA URL will use this
           priority list:
         </Text>
-        <Text className="mt-4">
+        <Text className="mt-1">
           <ol className="list-decimal ml-12">
             <li>
               {cdaUrl} parameter assigned directly to the component and/or data
@@ -69,7 +69,13 @@ function CdaUrlProviderDocs() {
           </ol>
         </Text>
       </div>
-      <Divider text="Example Usage" className="mt-8" />
+      <Divider text="Example Usage" />
+      <Text>
+        Import the CdaUrlProvider at the top of your component file with:
+      </Text>
+      <CodeBlock language="jsx">
+        {`import { CdaUrlProvider } from "@usace-watermanagement/groundwork-water";`}
+      </CodeBlock>
       <Text>An entire application wrapped within a {cdaUrlProvider}:</Text>
       <CodeBlock language="jsx">
         {`<React.StrictMode>
@@ -92,7 +98,7 @@ function CdaUrlProviderDocs() {
 </CdaUrlProvider>
 `}
       </CodeBlock>
-      <Divider text="API Reference" className="mt-8" />
+      <Divider text="API Reference" />
       <div className="font-bold text-lg pt-6">
         Component API - <Code className="p-2">{`<CdaUrlProvider />`}</Code>
       </div>
