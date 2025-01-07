@@ -19,6 +19,34 @@ You can read the current Groundwork Water Documentation:
 
 There are two directories of interest in this repository for Groundwork Water developers:
 
+### Contribution Guidelines
+
+- #### Workflow Recommendations
+
+  - Use `npm link` to connect your project or the `docs` to the local generated `groundwork-water`
+    - See the `link` script in `package.json` for details
+  - Commit Often - [Atomic Commits](https://en.wikipedia.org/wiki/Atomic_commit)
+    - i.e. if you update style of plot, do a commit related to "Update plotxyz style" then move on to next item/commit
+  - Use VSCode or Similar Featured Editor to provide advanced features, save time, and integrate various utilities:
+    - Command Prompt in VSCode : [Integrated Terminal](https://code.visualstudio.com/docs/terminal/getting-started)
+    - [Tips & Tricks](https://code.visualstudio.com/docs/getstarted/tips-and-tricks)
+
+- #### Extensions
+
+  - [TailwindCSS](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) -> Provides you inline tailwind options in your `className` blocks
+  - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) -> Industry standard for styling, large community, and works in many programming languages
+  - [Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments) -> Highlight TODO and other type comments
+  - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) -> Don't let the typos win
+  - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph) -> Adds a graph icon on your "Source Control" line to let you view a visual representation of your git state
+
+- #### Styling / formatting
+
+  - Style often and consider [Format on Save for Workspace](![Format on Save in Workspace](./_images/save_workspace_format.png))
+  - Use the Prettier extension mentioned before to format with
+    1. Press F1 to open command pallette
+    2. Type "format", and then select "Format Document with..."
+    3. "Select Prettier"
+
 ### Docs Website
 
 The `/docs` directory contains the source code for the documentation website.
@@ -51,7 +79,7 @@ The `/lib` directory contains the source code for the package itself.
 
 These are the components that would be shared with the community but also within the docs themselves for testing and to showcase the components.
 
-## Publishing
+### Publishing
 
 **_NOTE:_** You will first need to be added as a collaborator to the package on NPM.
 
