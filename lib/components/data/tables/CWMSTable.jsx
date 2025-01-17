@@ -138,6 +138,9 @@ export default function CWMSTable({
     trim,
     page,
     pageSize,
+    sortAscending,
+    missingString,
+    interval,
   ]);
 
   useEffect(() => {
