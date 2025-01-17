@@ -36,8 +36,6 @@ export default function CWMSTable({
   const [tableData, setTableData] = useState(null);
   const [tsData, setTsData] = useState(null);
 
-  const table = [];
-
   useEffect(() => {
     const tsids = timeseriesParams.map((item) => item.tsid);
 
@@ -147,6 +145,8 @@ export default function CWMSTable({
     if (!tableElement.current || !tsData) {
       return;
     }
+
+    const table = [];
 
     tsData.dates.forEach((dt) => {
       const row = [];
