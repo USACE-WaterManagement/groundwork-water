@@ -152,12 +152,6 @@ export default function CWMSTable({
       const row = [];
 
       Object.keys(tsData.ts).forEach((item) => {
-        let rounding = 2;
-        timeseriesParams.map((entry) => {
-          if (entry.tsid == item && entry.precision != null) {
-            rounding = entry.precision;
-          }
-        });
         row.push(tsData.ts[item][dt]);
       });
       table.push([new Date(dt), row]);
