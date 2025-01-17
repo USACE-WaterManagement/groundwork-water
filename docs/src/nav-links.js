@@ -79,6 +79,13 @@ export default [
     id: "plots",
     text: "Plots",
     href: "/docs/plots",
+    children: [
+      {
+        id: "cwms-plot",
+        text: "CWMS Plot",
+        href: "/docs/plots/cwms-plot",
+      },
+    ],
   },
   {
     id: "tables",
@@ -89,6 +96,18 @@ export default [
     id: "maps",
     text: "Maps",
     href: "/docs/maps",
+  },
+  {
+    id: "utilities",
+    text: "Utilities",
+    href: "/docs/utilities",
+    children: [
+      {
+        id: "cda-url-provider",
+        text: "CDA URL Provider",
+        href: "/docs/utilities/cda-url-provider",
+      },
+    ],
   },
   {
     id: "help",

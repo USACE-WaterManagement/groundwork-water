@@ -2,7 +2,8 @@ import { createRouteBundle } from "redux-bundler";
 import Home from "../pages/home";
 import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
-import Plots from "../pages/docs/plots";
+import PlotsDocs from "../pages/docs/plots";
+import CWMSPlotDocs from "../pages/docs/plots/cwms-plot";
 import Tables from "../pages/docs/tables";
 import Maps from "../pages/docs/maps";
 import Docs from "../pages/docs/";
@@ -18,6 +19,8 @@ import UseNwpsGauge from "../pages/docs/hooks/use-nwps-gauge";
 import UseNwpsGaugeData from "../pages/docs/hooks/use-nwps-gauge-data";
 import DataHooks from "../pages/docs/hooks";
 import HelpPage from "../pages/docs/help";
+import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
+import UtilitiesDocs from "../pages/docs/utilities";
 
 export default createRouteBundle(
   {
@@ -33,9 +36,12 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
-    "/docs/plots": Plots,
+    "/docs/plots": PlotsDocs,
+    "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/utilities": UtilitiesDocs,
+    "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,
     "/docs/add-components": AddComponents,
     "/docs/quick-start": QuickStart,

@@ -18,7 +18,7 @@ const OutflowCard = () => {
   });
 
   if (isPending) return <span>Loading timeseries data...</span>;
-  if (isError) return <span>Timeseries error!</span>;
+  if (isError) return <span>TimeSeries error!</span>;
 
   return (
     <Card className="gw-w-96">
@@ -74,7 +74,7 @@ const OutflowCard = () => {
   });
 
   if (isPending) return <span>Loading timeseries data...</span>;
-  if (isError) return <span>Timeseries error!</span>;
+  if (isError) return <span>TimeSeries error!</span>;
 
   return (
     <Card className="w-96">
@@ -110,7 +110,7 @@ const OutflowCard = () => {
       <CdaParamsTable
         requestObject="TimeSeries"
         requestType="GET"
-        cwmsJsType="GetCwmsDataTimeseriesRequest"
+        cwmsJsType="GetTimeSeriesRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaTSHookParams} />

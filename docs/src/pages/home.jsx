@@ -27,15 +27,28 @@ function Home() {
           <div className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
             <UsaceBox title="Getting Started">
               <div className="flex flex-row justify-start space-between items-center gap-2 mb-3">
+                <Text>Install:</Text>
                 <Code className="block w-full p-1 px-2">
-                  npm install @usace/groundwork-water
+                  npm install @usace-watermanagement/groundwork-water
                 </Code>
                 <CopyButton text="npm install @usace/groundwork" />
               </div>
+              <div className="flex flex-row justify-start space-between items-center gap-2 mb-3">
+                <Text>Uninstall: </Text>
+                <Code className="block w-full p-1 px-2">
+                  npm uninstall @usace-watermanagement/groundwork-water
+                </Code>
+                <CopyButton text="npm install @usace/groundwork" />
+              </div>
+              <Text>
+                To update Groundwork Water, run the uninstall command and then
+                the install command. Confirm in your package.json that the
+                version number has been updated.
+              </Text>
 
               <Text>
                 Then, import the components you need and our CSS, and start
-                building your application
+                building your application!
               </Text>
               <div className="mt-3">
                 <TextLink href="/docs" className="text-lg font-bold">

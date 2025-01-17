@@ -5,11 +5,11 @@ import "./css/tailwind.css";
 import "@usace/groundwork/dist/style.css";
 
 // Import components
-import TSPlot from "./components/data/plots/TSPlot";
 import TSTable from "./components/data/tables/TSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
+import CdaUrlProvider from "./components/data/utilities/CdaUrlProvider";
 import useCdaCatalog from "./components/data/hooks/useCdaCatalog";
 import useCdaLatestValue from "./components/data/hooks/useCdaLatestValue";
 import useCdaLocation from "./components/data/hooks/useCdaLocation";
@@ -20,11 +20,11 @@ import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 // import { helperFunction } from './utils/helpers';
 
 export {
-  TSPlot,
   TSTable,
   GageMap,
   CWMSPlot,
   CdaLatestValueCard,
+  CdaUrlProvider,
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,

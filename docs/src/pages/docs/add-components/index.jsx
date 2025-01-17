@@ -67,7 +67,7 @@ export default function Docs() {
         </Code>
         <H4>Import Components and Styles</H4>
         <Code className="gw-block gw-p-1 gw-px-2" language="jsx">
-          {`import { TSPlot } from "@usace-watermanagement/groundwork-water"`}
+          {`import { CWMSPlot } from "@usace-watermanagement/groundwork-water"`}
         </Code>
         <Code className="gw-block gw-p-1 gw-px-2" language="jsx">
           {`import "@usace-watermanagement/groundwork-water/dist/style.css";`}
