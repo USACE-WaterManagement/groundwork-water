@@ -17,9 +17,22 @@ You can read the current Groundwork Water Documentation:
 
 ## Dev Notes
 
-There are two directories of interest in this repository for Groundwork Water developers:
-
 ### Contribution Guidelines
+
+- #### Pull Requests
+
+  - Where possible, commits and pull requests should be [atomic](https://en.wikipedia.org/wiki/Atomic_commit):  
+    _Keeping commits and PRs to one topic at a time_
+    - To ensure reviewers can more easily review code revisions and not miss anything
+    - Reduces the frequency of merge conflicts
+    - Provides separation of concern (for bugs) when only one issue is merged at a time
+  - You _must_ rebase your branch to main before you submit Pull Requests:
+    - [ Terminal ] _From your branch run_
+      1. `git fetch origin`
+      2. `git rebase origin/main`
+    - [ GUI ] In VSCode:  
+      This can also be done in VSCode using the `Version Control` menu:  
+       ![rebase from main](_images/rebase-main.png)
 
 - #### Workflow Recommendations
 
@@ -47,7 +60,13 @@ There are two directories of interest in this repository for Groundwork Water de
     2. Type "format", and then select "Format Document with..."
     3. "Select Prettier"
 
-### Docs Website
+## Working Directories
+
+_There are two directories of interest in this repository for Groundwork Water developers_
+
+### /Docs
+
+_Documentation Website_
 
 The `/docs` directory contains the source code for the documentation website.
 
@@ -74,6 +93,8 @@ import { CWMSPlot } from "../path/to/lib/path/to/component";
 This will install the dependencies, and then run the docs in development mode.
 
 ### Lib
+
+_groundwork-water npm library_
 
 The `/lib` directory contains the source code for the package itself.
 
