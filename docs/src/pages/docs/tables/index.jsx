@@ -6,25 +6,30 @@ import { Code } from "../../components/code";
 import Divider from "../../components/divider";
 import DocsPage from "../_docs-wrapper";
 import ParamsTable from "../../components/params-table";
-import { tsTableParams } from "../../../props-declarations/tables.jsx";
+import {
+  tsTableParams,
+  cwmsTableParams,
+  timeseriesParams,
+} from "../../../props-declarations/tables.jsx";
 import dayjs from "dayjs";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
 import { Text, UsaceBox } from "@usace/groundwork";
+import CdaParamsTable from "../../components/cda-params-table.jsx";
 
 function Tables() {
   const LOOKBACK_HOURS = 24;
   const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
 
   const [dateRange, setDateRange] = useState({
-    start: dayjs().startOf("day").subtract(4, "day"),
+    start: dayjs().startOf("day"),
     end: dayjs(),
   });
 
   const [datum, setDatum] = useState("NGVD29");
   const [offsetValue, setOffsetValue] = useState();
   const cdaParams = {
-    begin: dayjs(dateRange.start).format("YYYY-MM-DDTHH:mm:ssZZ"),
-    end: dayjs(dateRange.end).format("YYYY-MM-DDTHH:mm:ssZZ"),
+    begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
+    end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
     office: "NAE",
     unit: "EN",
   };
@@ -72,12 +77,109 @@ function Tables() {
           begin={cdaParams.begin}
           end={cdaParams.end}
           office={cdaParams.office}
+          timeseriesParams={tableTimeseriesParams}
+          interval="5"
+          missingString="---"
+          sortAscending={false}
+          trim={true}
+        />
+        <Divider text="Code Example:" className="mt-8" />
+        <div className="mt-8">
+          <Code className="mt-8" language="jsx">
+            {`import dayjs from "dayjs";
+import { CWMSTable } from "@usace-watermanagement/groundwork-water";
+import { useState } from "react";
+default export function Example() {
+  // Sets the initial to midnight today (start of day)
+  const [dateRange, setDateRange] = useState({
+    start: dayjs().startOf("day"),
+    end: dayjs(),
+  });
+
+  // Explicitly define a default datum
+  const [datum, setDatum] = useState("NGVD29");
+  const [offsetValue, setOffsetValue] = useState();
+
+  const cdaParams = {
+    begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
+    end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
+    office: "NAE",
+    unit: "EN",
+  };
+
+  const tableTimeseriesParams = [
+    {
+      tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
+      header: \`SHB.Stage-Ocean (ft ${datum})\`,
+      rounding: 2,
+      offset: offsetValue,
+    },
+    {
+      tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
+      header: \`SHB.Stage-Pred (ft ${datum})\`,
+      rounding: 2,
+      offset: offsetValue,
+    },
+    {
+      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
+      header: "SHB.Temp-Air (F)",
+      rounding: 0,
+    },
+  ];
+    const LOOKBACK_HOURS = 24;
+    const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
+
+    return (
+     <CWMSTable
+          begin={cdaParams.begin}
+          end={cdaParams.end}
+          office={cdaParams.office}
           tsids={tableTimeseriesParams.map((item) => item.tsid)}
           timeseriesParams={tableTimeseriesParams}
           interval="5"
           missingString="---"
           sortAscending={false}
           trim={true}
+        />
+    );
+} 
+`}
+          </Code>
+        </div>
+        <Divider text="API Reference" className="mt-8" />
+        <div className="font-bold text-lg pt-6">
+          Table Hook Parameters
+          <Code
+            enableCopy={false}
+            className="p-2"
+            language="jsx"
+          >{`<CWMSTable ... />`}</Code>
+        </div>
+        <ParamsTable paramsList={cwmsTableParams} showReq={true} />
+        <div className="font-bold text-lg pt-6">
+          timeseriesParams -{" "}
+          <em className="text-sm font-normal">
+            Array of timeseries objects seen below
+          </em>
+          <Code
+            enableCopy={false}
+            className="p-2"
+            language="jsx"
+          >{`<CWMSTable timeseriesParams={ [{tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev"}] } />`}</Code>
+        </div>
+        <ParamsTable paramsList={timeseriesParams} showReq={true} />
+        <div className="font-bold text-lg pt-6">
+          cdaParams
+          <Code
+            enableCopy={false}
+            className="p-2"
+            language="jsx"
+          >{`<CWMSTable cdaParams={{name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev"}} />`}</Code>
+        </div>
+        <CdaParamsTable
+          requestObject="TimeSeries"
+          requestType="GET"
+          cwmsJsType="GetTimeSeriesRequest"
         />
       </UsaceBox>
       <UsaceBox title="TSTable">
@@ -146,9 +248,14 @@ default export function Example() {
             enableCopy={false}
             className="p-2"
             language="jsx"
-          >{`<TSTable cdaParams={{name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev"}}/>`}</Code>
+          >{`<TSTable cdaParams={{name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev"}} office="SWT" />`}</Code>
         </div>
         <ParamsTable paramsList={cdaTSHookParams} />
+        <CdaParamsTable
+          requestObject="TimeSeries"
+          requestType="GET"
+          cwmsJsType="GetTimeSeriesRequest"
+        />
       </UsaceBox>
     </DocsPage>
   );
