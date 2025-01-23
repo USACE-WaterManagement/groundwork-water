@@ -6,6 +6,7 @@ import "@usace/groundwork/dist/style.css";
 
 // Import components
 import TSTable from "./components/data/tables/TSTable";
+import CWMSTable from "./components/data/tables/CWMSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
@@ -21,6 +22,7 @@ import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 
 export {
   TSTable,
+  CWMSTable,
   GageMap,
   CWMSPlot,
   CdaLatestValueCard,
