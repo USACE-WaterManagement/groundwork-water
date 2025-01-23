@@ -9,13 +9,7 @@ import {
   TableHeader,
   TableCell,
 } from "@usace/groundwork";
-
-const config_v2 = new Configuration({
-  headers: {
-    accept: "application/json;version=2",
-  },
-});
-const ts_api = new TimeSeriesApi(config_v2);
+import { useCdaConfig } from "../helpers/cda";
 
 export default function CWMSTable({
   timeseriesParams,
@@ -31,10 +25,13 @@ export default function CWMSTable({
   interval = 1,
   sortAscending = true,
   missingString = "",
+  cdaUrl,
 }) {
   const tableElement = useRef([]);
   const [tableData, setTableData] = useState(null);
   const [tsData, setTsData] = useState(null);
+  const config = useCdaConfig("v2", cdaUrl);
+  const ts_api = new TimeSeriesApi(config);
 
   useEffect(() => {
     const tsids = timeseriesParams.map((item) => item.tsid);
