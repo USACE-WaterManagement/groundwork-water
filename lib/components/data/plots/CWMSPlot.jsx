@@ -44,20 +44,6 @@ const getYAxisId = (timeseriesParam) => {
   }
 };
 
-const config_v2 = new Configuration({
-  headers: {
-    accept: "application/json;version=2",
-  },
-});
-const ts_api = new TimeSeriesApi(config_v2);
-
-const config_level = new Configuration({
-  headers: {
-    accept: "*/*",
-  },
-});
-const level_api = new LevelsApi(config_level);
-
 export default function CWMSPlot({
   begin,
   end,
@@ -65,9 +51,16 @@ export default function CWMSPlot({
   office,
   timeSeries,
   locationLevels,
-  layoutOptions,
+  layoutOptions = {},
   className = "",
   responsive = true,
+  datum,
+  timezone,
+  trim,
+  page,
+  pageSize,
+  staticTraces,
+  cdaUrl,
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [tsData, setTsData] = useState(null);
@@ -84,6 +77,22 @@ export default function CWMSPlot({
     [locationLevels]
   );
 
+  const config_v2 = new Configuration({
+    basePath: cdaUrl,
+    headers: {
+      accept: "application/json;version=2",
+    },
+  });
+  const ts_api = new TimeSeriesApi(config_v2);
+
+  const config_level = new Configuration({
+    basePath: cdaUrl,
+    headers: {
+      accept: "*/*",
+    },
+  });
+  const level_api = new LevelsApi(config_level);
+
   const defaultLayout = {
     height: 750,
     grid: {
@@ -92,7 +101,7 @@ export default function CWMSPlot({
     xaxis: {
       showgrid: true,
       showline: true,
-      mirror: "ticks",
+      mirror: "all",
       linecolor: "black",
       linewidth: 1,
     },
@@ -132,10 +141,10 @@ export default function CWMSPlot({
     if (!office) setError("You must specify a 3 letter ID for the office");
 
     const fetchData = async () => {
-      let ts_promises = tsids.map(async (tsid) => {
+      let ts_promises = tsids.map(async (name) => {
         try {
           // Currently, large page size calls are blocked, so the default of 500 is used
-          let pageSize = 500;
+          // let pageSize = 500;
           // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
           // let interval = tsid.split(".")[3]
           // if (interval.includes("Minute")) {
@@ -145,12 +154,16 @@ export default function CWMSPlot({
           // if (interval.includes("Hour")) { pageSize = delta * 10 }
           // if (interval.includes("Day")) { pageSize = delta * 1 }
           return await ts_api.getTimeSeries({
-            name: tsid,
-            begin: begin,
-            end: end,
-            pageSize: pageSize,
-            office: office,
-            unit: unit,
+            name,
+            office,
+            unit,
+            datum,
+            begin,
+            end,
+            timezone,
+            trim,
+            page,
+            pageSize,
           });
         } catch (error) {
           console.error("Error fetching timeseries data:", error);
@@ -215,7 +228,19 @@ export default function CWMSPlot({
     };
 
     fetchData();
-  }, [begin, end, locationLevelsArray, office, timeSeriesArray, unit]);
+  }, [
+    begin,
+    datum,
+    end,
+    locationLevelsArray,
+    office,
+    page,
+    pageSize,
+    timeSeriesArray,
+    timezone,
+    trim,
+    unit,
+  ]);
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
@@ -229,9 +254,14 @@ export default function CWMSPlot({
 
     let ts_keys = Object.keys(tsData.ts);
 
-    // Create traces keyed to the tsdata
+    // Create traces keyed to the ts data
     let traces = [];
     let ts;
+
+    // Add Static Data first to the list of traces so they show up behind
+    if (staticTraces) {
+      staticTraces.map((trace) => traces.push(trace));
+    }
 
     // Loop thru TS Data for timeseries and location levels
     for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
@@ -287,7 +317,14 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [layout, locationLevelsArray, responsive, timeSeriesArray, tsData]);
+  }, [
+    layout,
+    locationLevelsArray,
+    responsive,
+    staticTraces,
+    timeSeriesArray,
+    tsData,
+  ]);
 
   return (
     <div
