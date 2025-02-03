@@ -138,7 +138,7 @@ const cwmsTableParams = [
     type: "string",
     required: false,
     default: "true",
-    desc: "The order of the table. Can be 'asc' or 'desc'.",
+    desc: "The order of the table sorted by date. Can be 'true' or 'false'.",
   },
   {
     name: "missingString",
