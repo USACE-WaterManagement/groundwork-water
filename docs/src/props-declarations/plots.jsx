@@ -100,18 +100,6 @@ const cwmsPlotProps = [
     desc: "Specifies whether to trim missing values from the beginning and end of the retrieved values.",
   },
   {
-    name: "page",
-    type: "string",
-    default: "undefined",
-    desc: "This parameter is used to describes the current location in the response stream for CDA.",
-  },
-  {
-    name: "pageSize",
-    type: "string",
-    default: "500",
-    desc: "How many entries per page returned. If you notice you are missing data, try increasing this.",
-  },
-  {
     name: "staticTraces",
     type: "string",
     default: "undefined",
