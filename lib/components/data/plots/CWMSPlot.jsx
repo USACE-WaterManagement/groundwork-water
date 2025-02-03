@@ -57,8 +57,6 @@ export default function CWMSPlot({
   datum,
   timezone,
   trim,
-  page,
-  pageSize,
   staticTraces,
   cdaUrl,
 }) {
@@ -162,8 +160,6 @@ export default function CWMSPlot({
             end,
             timezone,
             trim,
-            page,
-            pageSize,
           });
         } catch (error) {
           console.error("Error fetching timeseries data:", error);
@@ -234,8 +230,6 @@ export default function CWMSPlot({
     end,
     locationLevelsArray,
     office,
-    page,
-    pageSize,
     timeSeriesArray,
     timezone,
     trim,
