@@ -57,14 +57,71 @@ const cwmsPlotProps = [
   {
     name: "className",
     type: "string",
-    default: "undefined",
-    desc: "Custom className to add to the containing div",
+    default: '""',
+    desc: "Custom className to add to the containing div.",
   },
   {
     name: "responsive",
     type: "boolean",
     default: "true",
-    desc: "Responsive mode toggle for the plot",
+    desc: "Responsive mode toggle for the plot.",
+  },
+  {
+    name: "datum",
+    type: "string",
+    default: "undefined",
+    desc: (
+      <div>
+        Specifies the elevation datum of the response. This field affects only
+        elevation location levels.
+        <ul>
+          <li>
+            <b>NAVD88</b>: The elevation values will in the specified or default
+            units above the NAVD-88 datum.
+          </li>
+          <li>
+            <b>NGVD29</b>: The elevation values will be in the specified or
+            default units above the NGVD-29 datum.
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    name: "timezone",
+    type: "string",
+    default: "undefined",
+    desc: "Specifies the time zone of the values of the begin and end fields (unless otherwise specified).",
+  },
+  {
+    name: "trim",
+    type: "string",
+    default: "true",
+    desc: "Specifies whether to trim missing values from the beginning and end of the retrieved values.",
+  },
+  {
+    name: "page",
+    type: "string",
+    default: "undefined",
+    desc: "This parameter is used to describes the current location in the response stream for CDA.",
+  },
+  {
+    name: "pageSize",
+    type: "string",
+    default: "500",
+    desc: "How many entries per page returned. If you notice you are missing data, try increasing this.",
+  },
+  {
+    name: "staticTraces",
+    type: "string",
+    default: "undefined",
+    desc: "Adds static trace data to the plots first to ensure they show up behind the dynamic data.",
+  },
+  {
+    name: "cdaUrl",
+    type: "string",
+    default: "https://cwms-data.usace.army.mil/cwms-data",
+    desc: "Allows overriding the default domain to a different CDA endpoint.",
   },
 ];
 
