@@ -50,6 +50,7 @@ export default function CWMSPlot({
   unit,
   office,
   timeSeries,
+  pageSize,
   locationLevels,
   layoutOptions = {},
   className = "",
@@ -158,6 +159,7 @@ export default function CWMSPlot({
             datum,
             begin,
             end,
+            pageSize,
             timezone,
             trim,
           });
@@ -234,6 +236,7 @@ export default function CWMSPlot({
     timezone,
     trim,
     unit,
+    pageSize,
   ]);
 
   useEffect(() => {

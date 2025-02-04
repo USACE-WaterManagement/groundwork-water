@@ -36,6 +36,12 @@ const cwmsPlotProps = [
     desc: "An array of objects that define the location level ids to plot and, optionally, styling options.  Details below.",
   },
   {
+    name: "pageSize",
+    type: "string",
+    default: "500",
+    desc: "How many entries per page returned. If you notice you are missing data, try increasing this.",
+  },
+  {
     name: "layoutOptions",
     type: "object",
     default: "undefined",
