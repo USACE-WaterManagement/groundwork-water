@@ -1,3 +1,5 @@
+import { cdaUrlParam } from "../pages/components/shared-docs";
+
 const tsTableParams = [
   {
     name: "precision",
@@ -54,4 +56,110 @@ const tsTableParams = [
   },
 ];
 
-export { tsTableParams };
+const cwmsTableParams = [
+  {
+    name: "office",
+    type: "string",
+    required: false,
+    desc: "Specifies the owning office of the time series whose data is to be included in the response.",
+  },
+  {
+    name: "unit",
+    type: "string",
+    required: false,
+    desc: "Specifies the unit or unit system of the response. Options: 'EN', 'SI', specific units (e.g. 'ft')",
+  },
+  {
+    name: "datum",
+    type: "string",
+    default: "undefined",
+    desc: (
+      <div>
+        Specifies the elevation datum of the response. This field affects only
+        elevation location levels.
+        <ul>
+          <li>
+            <b>NAVD88</b>: The elevation values will in the specified or default
+            units above the NAVD-88 datum.
+          </li>
+          <li>
+            <b>NGVD29</b>: The elevation values will be in the specified or
+            default units above the NGVD-29 datum.
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    name: "begin",
+    type: "string",
+    default: "undefined",
+    desc: "Beginning of the time range to plot 'YYYY-MM-DDThh:mm:ssZ' or '2021-06-10T13:00:00-07:00'.",
+  },
+  {
+    name: "end",
+    type: "string",
+    default: "undefined",
+    desc: "End of the time range to plot 'YYYY-MM-DDThh:mm:ssZ' or '2021-06-12T13:00:00-07:00'.",
+  },
+  {
+    name: "timezone",
+    type: "string",
+    default: "undefined",
+    desc: "Specifies the time zone of the values of the begin and end fields (unless otherwise specified).",
+  },
+  {
+    name: "trim",
+    type: "string",
+    default: "true",
+    desc: "Specifies whether to trim missing values from the beginning and end of the retrieved values.",
+  },
+  {
+    name: "interval",
+    type: "string",
+    required: false,
+    default: 1,
+    desc: "Interval in minutes to use for the table. This is useful for reducing the number of data points in the table.",
+  },
+  {
+    name: "sortAscending",
+    type: "string",
+    required: false,
+    default: "true",
+    desc: "The order of the table sorted by date. Can be 'true' or 'false'.",
+  },
+  {
+    name: "missingString",
+    type: "string",
+    required: false,
+    default: '""',
+    desc: "The string to display when a value is missing.",
+  },
+  cdaUrlParam,
+];
+
+const timeseriesParams = [
+  {
+    name: "tsid",
+    type: "string",
+    required: true,
+    desc: "Fully qualified time series ID.",
+  },
+  {
+    name: "header",
+    desc: "The header for the table column.",
+    type: "string",
+  },
+  {
+    name: "rounding",
+    type: "number",
+    desc: "The number of decimal places to round the values to.",
+  },
+  {
+    name: "offset",
+    type: "number",
+    desc: "An offset to apply to the values in the table.",
+  },
+];
+
+export { tsTableParams, cwmsTableParams, timeseriesParams };
