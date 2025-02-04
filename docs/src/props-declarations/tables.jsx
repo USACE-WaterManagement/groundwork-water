@@ -115,18 +115,6 @@ const cwmsTableParams = [
     desc: "Specifies whether to trim missing values from the beginning and end of the retrieved values.",
   },
   {
-    name: "page",
-    type: "string",
-    default: "undefined",
-    desc: "This parameter is used to describes the current location in the response stream for CDA.",
-  },
-  {
-    name: "pageSize",
-    type: "string",
-    default: "500",
-    desc: "How many entries per page returned. If you notice you are missing data, try increasing this.",
-  },
-  {
     name: "interval",
     type: "string",
     required: false,
@@ -155,22 +143,22 @@ const timeseriesParams = [
     name: "tsid",
     type: "string",
     required: true,
-    desc: "Fully qualified time series ID",
+    desc: "Fully qualified time series ID.",
   },
   {
     name: "header",
-    desc: "The header for the table column",
+    desc: "The header for the table column.",
     type: "string",
   },
   {
     name: "rounding",
     type: "number",
-    desc: "The number of decimal places to round the values to",
+    desc: "The number of decimal places to round the values to.",
   },
   {
     name: "offset",
     type: "number",
-    desc: "An offset to apply to the values in the table",
+    desc: "An offset to apply to the values in the table.",
   },
 ];
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Configuration, TimeSeriesApi } from "cwmsjs";
+import { TimeSeriesApi } from "cwmsjs";
 import dayjs from "dayjs";
 import {
   Table,
@@ -20,8 +20,6 @@ export default function CWMSTable({
   end,
   timezone,
   trim = true,
-  page,
-  pageSize,
   interval = 1,
   sortAscending = true,
   missingString = "",
@@ -56,8 +54,6 @@ export default function CWMSTable({
             end,
             timezone,
             trim,
-            page,
-            pageSize,
           });
         } catch (error) {
           if (error.response?.status === 404) {
@@ -131,8 +127,6 @@ export default function CWMSTable({
     end,
     timezone,
     trim,
-    page,
-    pageSize,
     sortAscending,
     missingString,
     interval,
