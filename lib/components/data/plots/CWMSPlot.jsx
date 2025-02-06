@@ -50,6 +50,7 @@ export default function CWMSPlot({
   unit,
   office,
   timeSeries,
+  pageSize,
   locationLevels,
   layoutOptions = {},
   className = "",
@@ -57,8 +58,6 @@ export default function CWMSPlot({
   datum,
   timezone,
   trim,
-  page,
-  pageSize,
   staticTraces,
   cdaUrl,
 }) {
@@ -160,10 +159,9 @@ export default function CWMSPlot({
             datum,
             begin,
             end,
+            pageSize,
             timezone,
             trim,
-            page,
-            pageSize,
           });
         } catch (error) {
           console.error("Error fetching timeseries data:", error);
@@ -234,12 +232,11 @@ export default function CWMSPlot({
     end,
     locationLevelsArray,
     office,
-    page,
-    pageSize,
     timeSeriesArray,
     timezone,
     trim,
     unit,
+    pageSize,
   ]);
 
   useEffect(() => {
