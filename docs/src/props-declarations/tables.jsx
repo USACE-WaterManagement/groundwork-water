@@ -122,6 +122,12 @@ const cwmsTableParams = [
     desc: "Interval in minutes to use for the table. This is useful for reducing the number of data points in the table.",
   },
   {
+    name: "pageSize",
+    type: "string",
+    default: "500",
+    desc: "How many entries per page returned. If you notice you are missing data, try increasing this.",
+  },
+  {
     name: "sortAscending",
     type: "string",
     required: false,

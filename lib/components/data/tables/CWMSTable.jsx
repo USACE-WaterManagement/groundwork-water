@@ -20,6 +20,7 @@ export default function CWMSTable({
   end,
   timezone,
   trim = true,
+  pageSize,
   interval = 1,
   sortAscending = true,
   missingString = "",
@@ -54,6 +55,7 @@ export default function CWMSTable({
             end,
             timezone,
             trim,
+            pageSize,
           });
         } catch (error) {
           if (error.response?.status === 404) {
@@ -127,6 +129,7 @@ export default function CWMSTable({
     end,
     timezone,
     trim,
+    pageSize,
     sortAscending,
     missingString,
     interval,
