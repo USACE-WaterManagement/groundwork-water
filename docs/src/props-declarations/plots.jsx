@@ -107,9 +107,9 @@ const cwmsPlotProps = [
   },
   {
     name: "staticTraces",
-    type: "string",
+    type: "TraceData[]",
     default: "undefined",
-    desc: "Adds static trace data to the plots first to ensure they show up behind the dynamic data.",
+    desc: "Adds static trace data to the plots. These are the same as regular traces only they show up after/below other traces.",
   },
   {
     name: "cdaUrl",
