@@ -46,10 +46,17 @@ const useCdaLatestValue = ({
       return;
     }
     const firstEntry: TimeSeriesCatalogEntry = catalog.data.entries?.[0];
-    if (!firstEntry.extents?.[0].latestTime) {
+    const latestTime = firstEntry.extents?.[0].latestTime;
+    if (!latestTime) {
       return;
     }
-    setLatestDate(firstEntry.extents?.[0].latestTime?.toISOString());
+
+    // Need to check if latestTime is already a string because React Query's
+    // persister returns Date types as strings upon retrieval
+    const latestTimeIso =
+      typeof latestTime == "string" ? latestTime : latestTime.toISOString();
+
+    setLatestDate(latestTimeIso);
   }, [catalog]);
 
   const isPending =
