@@ -48,6 +48,7 @@ import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
 import GetPrecisionPage from "../pages/docs/utilities/get-precision";
+import DataStatus from "../pages/docs/summary/data-status";
 
 export default createRouteBundle(
   {
@@ -79,6 +80,7 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/summary/data-status": DataStatus,
     "/docs/forms": FormsDocs,
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,
