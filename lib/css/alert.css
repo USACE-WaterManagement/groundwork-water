@@ -1,0 +1,29 @@
+/* ----------------- */
+/* DCP Status Colors */
+/* ----------------- */
+
+.okay {
+    stroke: green;
+    background-color: #7fbf7f;
+}
+
+.missing {
+    stroke: black;
+    background-color: #7f7f7f;
+    color: white;
+}
+
+.questionable {
+    stroke: yellow;
+    background-color: #ffff7f;
+}
+
+.unknown {
+    stroke: magenta;
+    background-color: #ff7fff;
+}
+
+.undefined {
+    stroke: magenta;
+    background-color: #ff7fff;
+}

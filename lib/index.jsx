@@ -11,6 +11,7 @@ import CWMSTable from "./components/data/tables/CWMSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
+import DataStatus from "./components/data/summary/DataStatus";
 
 // Import input components
 import CWMSInput from "./components/data/forms/inputs/CWMSInput";
@@ -82,6 +83,7 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
+  DataStatus,
   OfficeDropdown,
   useCdaBlob,
   useCdaBlobs,
