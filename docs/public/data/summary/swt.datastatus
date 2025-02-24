@@ -1,0 +1,35 @@
+ATOK.Elev.Inst.30Minutes.0.Decodes-Raw
+KEYS.Elev.Inst.30Minutes.0.Ccp-Rev
+KEYS.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev
+: OOLO.Elev.Inst.30Minutes.0.Ccp-Rev
+: OOLO.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev
+: DENI.Elev.Inst.1Hour.0.Ccp-Rev
+: DENI.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev
+: JOHN.Elev.Inst.1Hour.0.Ccp-Rev
+: JOHN.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev
+: INDX.Stage.Inst.1Hour.0.Ccp-Rev
+: FLOR.Stage.Inst.1Hour.0.Ccp-Rev
+: JOPL.Stage.Inst.1Hour.0.Ccp-Rev
+: UNGE.Stage.Inst.1Hour.0.Ccp-Rev
+: BART.Stage.Inst.1Hour.0.Ccp-Rev
+: RALS.Stage.Inst.1Hour.0.Ccp-Rev
+: DUND.Stage.Inst.1Hour.0.Ccp-Rev
+: FRIT.Precip-Cuml.Inst.1Hour.0.Ccp-Rev
+: AMES.Stage.Inst.1Hour.0.Ccp-Rev
+: CLDY.Stage.Inst.1Hour.0.Ccp-Rev
+ALTU.Precip-Inc.Total.15Minutes.15Minutes.Ccp-Rev
+CLRK.Precip-Inc.Total.15Minutes.15Minutes.Ccp-Rev
+: FSUP.Precip-Inc.Total.30Minutes.30Minutes.Ccp-Rev
+: PENS.Precip-Inc.Total.1Hour.1Hour.Ccp-Rev
+: THRA.Precip-Inc.Total.30Minutes.30Minutes.Ccp-Rev
+: WOO2.Precip-Inc.Total.30Minutes.30Minutes.Ccp-Rev
+: ALTA.Flow.Inst.15Minutes.0.Ccp-Rev
+: KANS.Flow.Inst.15Minutes.0.Ccp-Rev
+: PECK.Flow.Inst.15Minutes.0.Ccp-Rev
+: STIL.Flow.Inst.15Minutes.0.Ccp-Rev
+: WETU.Flow.Inst.30Minutes.0.Ccp-Rev
+: ARBU.Stor.Inst.30Minutes.0.Ccp-Rev
+: DENI.Stor.Inst.30Minutes.0.Ccp-Rev
+: MARI.Stor.Inst.1Hour.0.Ccp-Rev
+: TENK.Stor.Inst.1Hour.0.Ccp-Rev
+: WDMA.Stor.Inst.1Hour.0.Ccp-Rev
