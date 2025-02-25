@@ -1,4 +1,10 @@
-import { TextLink, TableRow, TableCell, Skeleton } from "@usace/groundwork";
+import {
+  Badge,
+  TextLink,
+  TableRow,
+  TableCell,
+  Skeleton,
+} from "@usace/groundwork";
 import dayjs from "dayjs";
 import { useCdaConfig } from "../../helpers/cda";
 import { TimeSeriesApi } from "cwmsjs";
@@ -28,6 +34,7 @@ export default function StatusRow({
   } = useQuery({
     queryKey: ["dataStatusTS", name, dayjs().format("YYYY-MM-DDTHH:mm:ss")],
     queryFn: async () => {
+      let returnData = { name: null, values: [null, [null]] };
       return tsApi
         .getTimeSeries({
           office,
@@ -37,7 +44,7 @@ export default function StatusRow({
           pageSize,
         })
         .then((data) => {
-          let returnData = { name: data?.name, values: [null, [null]] };
+          returnData = { name: data?.name, values: [null, [null]] };
           if (data?.name && data?.values) {
             if (data.values.length > 0) {
               let quality_array = [];
@@ -70,11 +77,14 @@ export default function StatusRow({
             }
           }
           return returnData;
+        })
+        .catch((e) => {
+          return { ...returnData, response: e.response };
         });
     },
     refetchOnWindowFocus: false,
     retry: false,
-    enabled: name != null,
+    enabled: name != null && office != null,
   });
   const cellRef = useRef(null);
 
@@ -87,10 +97,30 @@ export default function StatusRow({
         )
       );
   }, [tsPending]);
-  if (tsError) {
+  if (!office) {
     return (
       <TableRow>
-        <TableCell>Error: {tsError.message}</TableCell>
+        <TableCell>
+          <Badge color="red">Error</Badge>
+        </TableCell>
+        <TableCell colSpan={2}>No office provided</TableCell>
+      </TableRow>
+    );
+  }
+  if (tsError || tsData?.response) {
+    const STATUS_CODE = tsData?.response?.status;
+    return (
+      <TableRow>
+        <TableCell>
+          <Badge color={STATUS_CODE >= 500 ? "red" : "yellow"}>
+            Error {STATUS_CODE}
+          </Badge>
+        </TableCell>
+        <TableCell colSpan={2}>
+          <div title={tsError?.stack}>
+            {tsError?.message || tsData?.message || "CWMS Data API Unreachable"}
+          </div>
+        </TableCell>
       </TableRow>
     );
   }
