@@ -47,35 +47,10 @@ export default function StatusRow({
           returnData = { name: data?.name, values: [null, [null]] };
           if (data?.name && data?.values) {
             if (data.values.length > 0) {
-              let quality_array = [];
-              let dt = new Date(0);
-
-              // Catch missing data from lookback
-              const first_dt = data.values?.[0]?.[0];
-              if (first_dt > lookBack.valueOf()) {
-                const missing_count =
-                  dayjs(first_dt).diff(lookBack, "hours", true) * 4;
-                for (let i = 0; i < missing_count; i++) {
-                  quality_array.push("missing");
-                }
-              }
-
-              // Read response
-              data.values.map((val) => {
-                // Latest Date-time
-                if (val[0] > dt && val[1] != null) {
-                  dt = val[0];
-                }
-                // Quality
-                let quality = getQualityStr(val[2])?.toLowerCase();
-                if (val[1] === null) {
-                  quality = "missing";
-                }
-                quality_array.push(quality);
-              });
-              returnData.values = [dt, [quality_array]];
+              returnData.values = data?.values 
             }
           }
+          returnData.values = data?.values;
           return returnData;
         })
         .catch((e) => {
@@ -89,11 +64,11 @@ export default function StatusRow({
   const cellRef = useRef(null);
 
   useLayoutEffect(() => {
-    if (tsData?.values?.[1]?.[0])
+    if (tsData?.values)
       setStatusDelta(
         Math.round(
           cellRef.current?.getBoundingClientRect()?.width /
-            tsData?.values[1][0].length
+            tsData?.values.length
         )
       );
   }, [tsPending]);
@@ -145,21 +120,36 @@ export default function StatusRow({
             <svg
               ref={cellRef}
               key={`svg-${name}`}
-              width="full" //{lookBackHours / 24 * 96 * 2 + 10}
+              width="100%"
               height="10"
             >
-              {tsData?.values[1][0]
-                ? tsData?.values[1][0].map((val, idx) => {
-                    console.log({ idx });
+              {tsData?.values
+                ? tsData?.values.map((val, idx) => {
                     return (
                       <line
+                        onMouseEnter={(e) => {
+                            // Setup a tooltip to show date - value when a user hovers with a visible line to show which value is highlighted
+                            const tooltip = document.createElement("div");
+                            tooltip.className = "tooltip";
+                            tooltip.innerText = e.target.dataset.tooltip;
+                            tooltip.style.position = "absolute";
+                            tooltip.style.top = `${e.clientY + 4}px`;
+                            tooltip.style.left = `${e.clientX}px`;
+                            document.body.appendChild(tooltip);
+                            e.target.style.transform = "translateY(-4px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            document.querySelector(".tooltip")?.remove();
+                            e.target.style.transform = "translateY(0)";
+                        }}
                         key={`line-${name}-${idx}`}
                         x1={Math.round(statusDelta * idx)}
                         y1="0"
                         x2={Math.round(statusDelta * idx)}
                         y2="10"
                         strokeWidth={statusDelta + "px"}
-                        className={val}
+                        className={`alert-${getQualityStr(val)?.toLowerCase()}`}
+                        data-tooltip={dayjs(val[0]).format(dateFormat) + " " + val[1]?.toFixed(2)}
                       />
                     );
                   })
@@ -168,7 +158,7 @@ export default function StatusRow({
           </TableCell>
           <TableCell>
             {tsData?.values?.[0]
-              ? dayjs(tsData.values[0]).format(dateFormat)
+              ? dayjs(tsData.values[tsData.values.length - 1][0]).format(dateFormat)
               : "Missing"}
           </TableCell>
         </>
