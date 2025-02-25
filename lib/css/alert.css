@@ -1,0 +1,29 @@
+/* ----------------- */
+/* DCP Status Colors */
+/* ----------------- */
+
+.alert-okay {
+  stroke: green;
+  background-color: #7fbf7f;
+}
+
+.alert-missing {
+  stroke: black;
+  background-color: #7f7f7f;
+  color: white;
+}
+
+.alert-questionable {
+  stroke: yellow;
+  background-color: #ffff7f;
+}
+
+.alert-unknown {
+  stroke: magenta;
+  background-color: #ff7fff;
+}
+
+.alert-undefined {
+  stroke: magenta;
+  background-color: #ff7fff;
+}
