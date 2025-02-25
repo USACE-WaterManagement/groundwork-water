@@ -8,6 +8,12 @@ import DataStatus from "../../../../../lib/components/data/summary/DataStatus";
 
 const returnParams = [
   {
+    name: "office",
+    type: "string",
+    required: true,
+    desc: "The office code for the data status",
+  },
+  {
     name: "tsids",
     type: "array",
     desc: "An array of TimeSeries Identifiers to fetch data status for from CDA",
@@ -16,12 +22,6 @@ const returnParams = [
     name: "dataStatusUrl",
     type: "string",
     desc: "A DataStatusSummary file URL to fetch additional tsids from. Append to tsids prop. New line delimited. Comments start with ':'",
-  },
-  {
-    name: "office",
-    type: "string",
-    required: true,
-    desc: "The office code for the data status",
   },
   {
     name: "pageSize",
