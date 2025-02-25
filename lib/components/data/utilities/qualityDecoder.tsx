@@ -35,8 +35,9 @@ const QUALITY_CODES: { [key: number]: string } = {
     2497: "UNKNOWN",
 }
 
-function getQualityStr(quality_int: number) {
-    return QUALITY_CODES?.[quality_int]
+function getQualityStr(ts_value: (number | null)[]) {
+    if (ts_value?.[1] === null)  return QUALITY_CODES[37] 
+    return QUALITY_CODES?.[ts_value?.[2] ?? 0]
 }
 
 export default getQualityStr
