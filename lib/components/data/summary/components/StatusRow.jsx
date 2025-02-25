@@ -1,10 +1,4 @@
-import {
-  Text,
-  TextLink,
-  TableRow,
-  TableCell,
-  Skeleton,
-} from "@usace/groundwork";
+import { TextLink, TableRow, TableCell, Skeleton } from "@usace/groundwork";
 import dayjs from "dayjs";
 import { useCdaConfig } from "../../helpers/cda";
 import { TimeSeriesApi } from "cwmsjs";
@@ -25,7 +19,6 @@ export default function StatusRow({
   const config = useCdaConfig("v2", cdaUrl);
   const tsApi = new TimeSeriesApi(config);
   const lookBack = dayjs().subtract(lookBackHours, "hour");
-  let position = 0;
   const [statusDelta, setStatusDelta] = useState(null);
 
   const {
@@ -79,8 +72,8 @@ export default function StatusRow({
           return returnData;
         });
     },
-    refetchInterval: 60 * 1000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
+    retry: false,
     enabled: name != null,
   });
   const cellRef = useRef(null);
