@@ -18,6 +18,7 @@ import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
+import WMContainer from "./components/display/WMContainer";
 // import { helperFunction } from './utils/helpers';
 
 export {
@@ -34,5 +35,6 @@ export {
   useCdaTimeSeriesGroup,
   useNwpsGauge,
   useNwpsGaugeData,
+  WMContainer,
 };
 // export { helperFunction };
