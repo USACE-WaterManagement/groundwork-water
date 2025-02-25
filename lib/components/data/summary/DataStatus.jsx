@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+
 import {
   UsaceBox,
   Badge,
@@ -17,7 +17,6 @@ function DataStatus({
   office,
   pageSize,
   cdaUrl,
-  dataStatusUrl,
   linkPath,
   tsids = [],
   lookBackHours = 24,
@@ -27,32 +26,8 @@ function DataStatus({
 }) {
   // fetch the data status file from URL and parse it new line delimited
 
-  const {
-    data: fileTsids = [],
-    isPending: fileIsPending,
-    error: fileError,
-  } = useQuery({
-    queryKey: ["dataStatus", dataStatusUrl],
-    queryFn: async () => {
-      return fetch(dataStatusUrl)
-        .then((response) => {
-          if (response.ok) return response.text();
-          else return Promise.reject(response.statusText);
-        })
-        .then((text) => {
-          // Split by new lines and filter out lines starting with ":" (commented)
-          return text.split("\n").filter((line) => !line.startsWith(":"));
-        });
-    },
-    refetchOnWindowFocus: false,
-    enabled: dataStatusUrl != null,
-  });
 
-  if (fileTsids.length > 0) {
-    tsids = [...tsids, ...fileTsids];
-  }
-
-  if (!dataStatusUrl && !tsids) {
+  if (!tsids) {
     console.error(
       "Error: No data status URL or tsids provided to component <DataStatus />"
     );
