@@ -22,6 +22,8 @@ function DataStatus({
   tsids = [],
   lookBackHours = 24,
   dateFormat = "DD MMM HH:mm",
+  showBadges = true,
+  title = "Data Status",
 }) {
   // fetch the data status file from URL and parse it new line delimited
 
@@ -42,7 +44,6 @@ function DataStatus({
           return text.split("\n").filter((line) => !line.startsWith(":"));
         });
     },
-    refetchInterval: 60 * 1000,
     refetchOnWindowFocus: false,
     enabled: dataStatusUrl != null,
   });
@@ -61,20 +62,24 @@ function DataStatus({
   }
 
   return (
-    <UsaceBox title="DCP Data Quality Summary">
-      <Text key="info">Data Quality Flags are shown as: </Text>
-      <Badge key="missing" className="gww-ms-2 alert-missing">
-        Missing
-      </Badge>
-      <Badge key="questionable" className="gww-ms-2 alert-questionable">
-        Questionable
-      </Badge>
-      <Badge key="unknown" className="gww-ms-2 alert-unknown">
-        Unknown or Undefined
-      </Badge>
-      <Badge key="okay" className="gww-ms-2 alert-okay">
-        Passed Screening and/or Validated
-      </Badge>
+    <UsaceBox title={title}>
+      {showBadges && (
+        <>
+          <Text key="info">Data Quality Flags are shown as: </Text>
+          <Badge key="missing" className="gww-ms-2 alert-missing">
+            Missing
+          </Badge>
+          <Badge key="questionable" className="gww-ms-2 alert-questionable">
+            Questionable
+          </Badge>
+          <Badge key="unknown" className="gww-ms-2 alert-unknown">
+            Unknown or Undefined
+          </Badge>
+          <Badge key="okay" className="gww-ms-2 alert-okay">
+            Passed Screening and/or Validated
+          </Badge>
+        </>
+      )}
       <Table key="table">
         {/* Build list of dates for column headers */}
         <TableHead key="table-header">
