@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import useCdaCatalog from "./useCdaCatalog";
 import useCdaTimeSeries from "./useCdaTimeSeries";
 import { getLatestEntry } from "../helpers/cda";
-import { TimeSeriesCatalogEntry } from "cwmsjs";
+import { TimeSeriesCatalogEntry, TimeSeries } from "cwmsjs";
+import { UseQueryOptions } from "@tanstack/react-query";
 
 interface useCdaLatestValueParams {
   tsId: string;
   office: string;
   unit?: string;
   cdaUrl?: string;
+  queryOptions?: Partial<UseQueryOptions<TimeSeries>>;
 }
 
 const useCdaLatestValue = ({
@@ -16,6 +18,7 @@ const useCdaLatestValue = ({
   office,
   unit,
   cdaUrl,
+  queryOptions,
 }: useCdaLatestValueParams) => {
   const [latestDate, setLatestDate] = useState("");
   const begin = latestDate;
@@ -29,6 +32,10 @@ const useCdaLatestValue = ({
       ...(end && { end }),
     },
     cdaUrl: cdaUrl,
+    queryOptions: {
+      enabled: !!tsId && !!office,
+      ...queryOptions,
+    },
   });
 
   const enableCatalog = !ts.isPending && ts.data?.values?.length === 0;
@@ -38,15 +45,16 @@ const useCdaLatestValue = ({
     cdaUrl: cdaUrl,
     queryOptions: {
       enabled: enableCatalog,
+      ...queryOptions,
     },
   });
 
   useEffect(() => {
-    if (!catalog.data || !catalog.data.entries) {
+    if (!catalog?.data || !catalog?.data?.entries) {
       return;
     }
-    const firstEntry: TimeSeriesCatalogEntry = catalog.data.entries?.[0];
-    const latestTime = firstEntry.extents?.[0].latestTime;
+    const firstEntry: TimeSeriesCatalogEntry = catalog.data?.entries?.[0];
+    const latestTime = firstEntry?.extents?.[0].latestTime;
     if (!latestTime) {
       return;
     }
@@ -59,9 +67,7 @@ const useCdaLatestValue = ({
     setLatestDate(latestTimeIso);
   }, [catalog]);
 
-  const isPending =
-    ts.isPending || (enableCatalog && (catalog.isPending || !latestDate));
-
+  const isPending = catalog?.isPending || ts?.isPending;
   const isFetching = ts.isFetching || catalog.isFetching;
 
   const latestEntry = ts.data ? getLatestEntry(ts.data) : undefined;
@@ -74,7 +80,6 @@ const useCdaLatestValue = ({
         units: ts.data?.units,
       }
     : undefined;
-
   return { ...ts, data, isPending, isFetching };
 };
 
