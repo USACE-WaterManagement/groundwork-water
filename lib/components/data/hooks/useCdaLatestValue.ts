@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import useCdaCatalog from "./useCdaCatalog";
 import useCdaTimeSeries from "./useCdaTimeSeries";
 import { getLatestEntry } from "../helpers/cda";
-import { TimeSeriesCatalogEntry, TimeSeries } from "cwmsjs";
-import { UseQueryOptions } from "@tanstack/react-query";
+import { TimeSeriesCatalogEntry } from "cwmsjs";
 
 interface useCdaLatestValueParams {
   tsId: string;
