@@ -10,7 +10,6 @@ interface useCdaLatestValueParams {
   office: string;
   unit?: string;
   cdaUrl?: string;
-  queryOptions?: Partial<UseQueryOptions<TimeSeries>>;
 }
 
 const useCdaLatestValue = ({
@@ -18,7 +17,6 @@ const useCdaLatestValue = ({
   office,
   unit,
   cdaUrl,
-  queryOptions,
 }: useCdaLatestValueParams) => {
   const [latestDate, setLatestDate] = useState("");
   const begin = latestDate;
@@ -34,7 +32,6 @@ const useCdaLatestValue = ({
     cdaUrl: cdaUrl,
     queryOptions: {
       enabled: !!tsId && !!office,
-      ...queryOptions,
     },
   });
 
@@ -45,7 +42,6 @@ const useCdaLatestValue = ({
     cdaUrl: cdaUrl,
     queryOptions: {
       enabled: enableCatalog,
-      ...queryOptions,
     },
   });
 
@@ -53,7 +49,8 @@ const useCdaLatestValue = ({
     if (!catalog?.data || !catalog?.data?.entries) {
       return;
     }
-    const firstEntry: TimeSeriesCatalogEntry = catalog.data?.entries?.[0];
+    const firstEntry: TimeSeriesCatalogEntry | undefined =
+      catalog.data?.entries?.[0];
     const latestTime = firstEntry?.extents?.[0].latestTime;
     if (!latestTime) {
       return;
@@ -67,7 +64,9 @@ const useCdaLatestValue = ({
     setLatestDate(latestTimeIso);
   }, [catalog]);
 
-  const isPending = catalog?.isPending || ts?.isPending;
+  const isPending =
+    ts?.isPending || (enableCatalog ? catalog?.isPending : false);
+
   const isFetching = ts.isFetching || catalog.isFetching;
 
   const latestEntry = ts.data ? getLatestEntry(ts.data) : undefined;
