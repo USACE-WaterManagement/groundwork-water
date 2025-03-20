@@ -18,21 +18,23 @@ import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
+import OpenLayersMap from "./components/data/maps/OpenLayersMap";
 // import { helperFunction } from './utils/helpers';
 
 export {
-  TSTable,
-  CWMSTable,
-  GageMap,
-  CWMSPlot,
-  CdaLatestValueCard,
-  CdaUrlProvider,
-  useCdaCatalog,
-  useCdaLatestValue,
-  useCdaLocation,
-  useCdaTimeSeries,
-  useCdaTimeSeriesGroup,
-  useNwpsGauge,
-  useNwpsGaugeData,
+    TSTable,
+    CWMSTable,
+    GageMap,
+    CWMSPlot,
+    CdaLatestValueCard,
+    CdaUrlProvider,
+    useCdaCatalog,
+    useCdaLatestValue,
+    useCdaLocation,
+    useCdaTimeSeries,
+    useCdaTimeSeriesGroup,
+    useNwpsGauge,
+    useNwpsGaugeData,
+    OpenLayersMap
 };
 // export { helperFunction };

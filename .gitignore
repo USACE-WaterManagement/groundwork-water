@@ -31,3 +31,5 @@ types
 stats.html
 
 .eslintcache
+
+*.db

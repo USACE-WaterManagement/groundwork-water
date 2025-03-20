@@ -1,0 +1,12 @@
+{
+    "district": "LRH",
+    "cda_base": "https://wm.lrh.ds.usace.army.mil/lrh-data",
+    "timeseries_url": "timeseries?name=",
+    "lake_append_url": "-Lake.Elev.Inst.15Minutes.0.OBS&office=LRH&unit=EN&timezone=EST5EDT",
+    "lake_append_ts": "-Lake.Elev.Inst.15Minutes.0.OBS",
+    "inflow_append_ts": "-Lake.Flow.Inst.15Minutes.0.OBS",
+    "outflow_append_url": "-Outflow.",
+    "outflow_append_ts": "-Outflow.Flow.Inst.15Minutes.0.OBS",
+    "precip_append_url": ".Precip.Total.15Minutes.15Minutes.OBS&office=LRH&unit=EN&timezone=EST5EDT",
+    "precip_append_ts": ".Precip.Total.15Minutes.15Minutes.OBS"
+}

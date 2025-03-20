@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>ohi-arrows.kmz</name>
+	<StyleMap id="sn_RedSolidFill_Fill_FF0000FF">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF3</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF7</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF0">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="sn_RedSolidFill_Fill_FF0000FF1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF2</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF6</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF2">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF3">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="sn_RedSolidFill_Fill_FF0000FF4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF5</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF5">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF6">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_RedSolidFill_Fill_FF0000FF7">
+		<LineStyle>
+			<color>ff000000</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<outline>0</outline>
+		</PolyStyle>
+	</Style>
+	<Folder>
+		<name>OHI - Arrows</name>
+		<open>1</open>
+		<Placemark>
+			<name>a</name>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF4</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-81.05913884121914,39.57757054129001,7 -81.07968905924498,39.52450208009822,7 -81.00562440310976,39.51388114235148,7 -81.02349569064857,39.53508010784805,7 -80.96256908914718,39.57004244566866,7 -80.98831627816907,39.5933510827609,7 -81.04123617884982,39.55579466356104,7 -81.05913884121914,39.57757054129001,7 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+		<Placemark>
+			<name>b</name>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF1</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<altitudeMode>absolute</altitudeMode>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-82.1911379945355,38.94200023090406,7 -82.1578678708144,38.86758488398412,7 -82.05965744934586,38.89102386407695,7 -82.10142520632103,38.90938217466096,7 -82.0620020602274,38.97065448223188,7 -82.11602851205794,38.99236183330608,7 -82.15104243643008,38.92701956274507,7 -82.1911379945355,38.94200023090406,7 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+		<Placemark>
+			<name>c</name>
+			<styleUrl>#sn_RedSolidFill_Fill_FF0000FF</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<altitudeMode>absolute</altitudeMode>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-83.877640335462,38.80645351558849,7 -83.96353539851644,38.79134246581713,7 -83.92656219488065,38.72720957545162,7 -83.91062050801027,38.75406497164242,7 -83.82782721054551,38.71284401732503,7 -83.80135441779112,38.75460590246382,7 -83.88476697321748,38.78299026013133,7 -83.877640335462,38.80645351558849,7 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

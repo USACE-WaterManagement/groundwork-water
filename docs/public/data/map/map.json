@@ -1,0 +1,1368 @@
+{
+  "lakes": [
+    {
+      "id": "Dewey",
+      "projCode": "DWJ",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 645,
+        "summerPool": 650,
+        "alertPool": 670
+      }
+    },
+    {
+      "id": "Fishtrap",
+      "projCode": "FRL",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 735,
+        "summerPool": 757,
+        "alertPool": 775
+      }
+    },
+    {
+      "id": "JWFlannagan",
+      "projCode": "JFP",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 1380,
+        "summerPool": 1396,
+        "alertPool": 1415
+      }
+    },
+    {
+      "id": "NoFkPound",
+      "projCode": "NFP",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 1601.6,
+        "summerPool": 1611,
+        "alertPool": 1615
+      }
+    },
+    {
+      "id": "Paintsville",
+      "projCode": "PIV",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 709,
+        "summerPool": 709,
+        "alertPool": 720
+      }
+    },
+    {
+      "id": "Yatesville",
+      "projCode": "YBC",
+      "basin": "BSA",
+      "levels": {
+        "winterPool": 624,
+        "summerPool": 630,
+        "alertPool": 640
+      }
+    },
+    {
+      "id": "RDBailey",
+      "projCode": "RDB",
+      "basin": "GUY",
+      "levels": {
+        "winterPool": 1012,
+        "summerPool": 1035,
+        "alertPool": 1096
+      }
+    },
+    {
+      "id": "TomJenkins",
+      "projCode": "TJE",
+      "basin": "HOC",
+      "levels": {
+        "winterPool": 721,
+        "summerPool": 721,
+        "alertPool": 728
+      }
+    },
+    {
+      "id": "Bluestone",
+      "projCode": "BLN",
+      "basin": "KAN",
+      "levels": {
+        "winterPool": 1406,
+        "summerPool": 1410,
+        "alertPool": 1480
+      }
+    },
+    {
+      "id": "Sutton",
+      "projCode": "SUE",
+      "basin": "KAN",
+      "levels": {
+        "winterPool": 895,
+        "summerPool": 922,
+        "alertPool": 954
+      }
+    },
+    {
+      "id": "Summersville",
+      "projCode": "SUG",
+      "basin": "KAN",
+      "levels": {
+        "winterPool": 1575,
+        "summerPool": 1652,
+        "alertPool": 1680
+      }
+    },
+    {
+      "id": "Burnsville",
+      "projCode": "BUS",
+      "basin": "LKA",
+      "levels": {
+        "winterPool": 776,
+        "summerPool": 789,
+        "alertPool": 805
+      }
+    },
+    {
+      "id": "Grayson",
+      "projCode": "GRL",
+      "basin": "LSA",
+      "levels": {
+        "winterPool": 637,
+        "summerPool": 645,
+        "alertPool": 665
+      }
+    },
+    {
+      "id": "Atwood",
+      "projCode": "ATI",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 920,
+        "summerPool": 928,
+        "alertPool": 930
+      }
+    },
+    {
+      "id": "BeachCity",
+      "projCode": "BCS",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 948,
+        "summerPool": 948,
+        "alertPool": 968
+      }
+    },
+    {
+      "id": "Bolivar",
+      "projCode": "BOS",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 895,
+        "summerPool": 895,
+        "alertPool": 943
+      }
+    },
+    {
+      "id": "Clendening",
+      "projCode": "CLB",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 893,
+        "summerPool": 898,
+        "alertPool": 907
+      }
+    },
+    {
+      "id": "CharlesMill",
+      "projCode": "CMB",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 992,
+        "summerPool": 997,
+        "alertPool": 1008
+      }
+    },
+    {
+      "id": "Dillon",
+      "projCode": "DIL",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 734,
+        "summerPool": 737,
+        "alertPool": 763
+      }
+    },
+    {
+      "id": "Dover",
+      "projCode": "DOT",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 862,
+        "summerPool": 862,
+        "alertPool": 900
+      }
+    },
+    {
+      "id": "Leesville",
+      "projCode": "LEM",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 958,
+        "summerPool": 963,
+        "alertPool": 967
+      }
+    },
+    {
+      "id": "Mohawk",
+      "projCode": "MKW",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 799.2,
+        "summerPool": 799.2,
+        "alertPool": 855
+      }
+    },
+    {
+      "id": "Mohicanville",
+      "projCode": "MOL",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 932,
+        "summerPool": 932,
+        "alertPool": 950
+      }
+    },
+    {
+      "id": "NoBrKokosing",
+      "projCode": "NBK",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 1121,
+        "summerPool": 1121,
+        "alertPool": 1130
+      }
+    },
+    {
+      "id": "Piedmont",
+      "projCode": "PES",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 908,
+        "summerPool": 913,
+        "alertPool": 919
+      }
+    },
+    {
+      "id": "PleasantHill",
+      "projCode": "PHC",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 1012,
+        "summerPool": 1020,
+        "alertPool": 1038
+      }
+    },
+    {
+      "id": "Senecaville",
+      "projCode": "SES",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 824.2,
+        "summerPool": 832.2,
+        "alertPool": 838
+      }
+    },
+    {
+      "id": "Tappan",
+      "projCode": "TAL",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 894.3,
+        "summerPool": 899.3,
+        "alertPool": 902
+      }
+    },
+    {
+      "id": "WillsCr",
+      "projCode": "WCW",
+      "basin": "MUS",
+      "levels": {
+        "winterPool": 742,
+        "summerPool": 742,
+        "alertPool": 765
+      }
+    },
+    {
+      "id": "AlumCr",
+      "projCode": "ACS",
+      "basin": "SCI",
+      "levels": {
+        "winterPool": 885,
+        "summerPool": 888,
+        "alertPool": 892
+      }
+    },
+    {
+      "id": "DeerCr",
+      "projCode": "DCS",
+      "basin": "SCI",
+      "levels": {
+        "winterPool": 796,
+        "summerPool": 810,
+        "alertPool": 825
+      }
+    },
+    {
+      "id": "Delaware",
+      "projCode": "DDO",
+      "basin": "SCI",
+      "levels": {
+        "winterPool": 910,
+        "summerPool": 915,
+        "alertPool": 935
+      }
+    },
+    {
+      "id": "PaintCr",
+      "projCode": "PCS",
+      "basin": "SCI",
+      "levels": {
+        "winterPool": 787.5,
+        "summerPool": 798,
+        "alertPool": 833
+      }
+    },
+    {
+      "id": "BeechFk",
+      "projCode": "BBF",
+      "basin": "TWE",
+      "levels": {
+        "winterPool": 583.5,
+        "summerPool": 592,
+        "alertPool": 601
+      }
+    },
+    {
+      "id": "EastLynn",
+      "projCode": "ELT",
+      "basin": "TWE",
+      "levels": {
+        "winterPool": 656,
+        "summerPool": 662,
+        "alertPool": 680
+      }
+    }
+  ],
+  "precip": [
+    {
+      "usgsid": "None",
+      "name": "Gary",
+      "latitude": 37.38366,
+      "longitude": -81.56201,
+      "nwsid": "GRYW2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03212750",
+      "name": "Welch",
+      "latitude": 37.4411,
+      "longitude": -81.5833,
+      "nwsid": "WLCW2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03212980",
+      "name": "Bradshaw",
+      "latitude": 37.3952,
+      "longitude": -81.8027,
+      "nwsid": "BRSW2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03212700",
+      "name": "Williamson",
+      "latitude": 37.673,
+      "longitude": -82.2803,
+      "nwsid": "WILW2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03207800",
+      "name": "Big Rock",
+      "latitude": 37.3536,
+      "longitude": -82.1958,
+      "nwsid": "BIGV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03207995",
+      "name": "Fishtrap Lake",
+      "latitude": 37.4325,
+      "longitude": -82.4156,
+      "nwsid": "FTLK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03209500",
+      "name": "Pikeville",
+      "latitude": 37.46503,
+      "longitude": -82.52615,
+      "nwsid": "PKYK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03210000",
+      "name": "Meta",
+      "latitude": 37.5669,
+      "longitude": -82.4581,
+      "nwsid": "MTGK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03209800",
+      "name": "Prestonsburg",
+      "latitude": 37.6708,
+      "longitude": -82.7772,
+      "nwsid": "PSTK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03211000",
+      "name": "Dewey Lake",
+      "latitude": 37.7356,
+      "longitude": -82.7292,
+      "nwsid": "DWYK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03212500",
+      "name": "PaintsvilleKY",
+      "latitude": 37.8172,
+      "longitude": -82.7906,
+      "nwsid": "PTVK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03211990",
+      "name": "Paintsville Lake",
+      "latitude": 37.8403,
+      "longitude": -82.8742,
+      "nwsid": "PNTK2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "None",
+      "name": "Davenport",
+      "latitude": 37.09956,
+      "longitude": -82.13688,
+      "nwsid": "DVPV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03208850",
+      "name": "Pound Upper",
+      "latitude": 37.1239,
+      "longitude": -82.6078,
+      "nwsid": "PICV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03208700",
+      "name": "North Fork of Pound Outflow",
+      "latitude": 37.12568,
+      "longitude": -82.62659,
+      "nwsid": "NFPV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03208900",
+      "name": "Georges Fork",
+      "latitude": 37.1642,
+      "longitude": -82.525,
+      "nwsid": "GFPV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03209000",
+      "name": "J.W. Flannagan Outflow",
+      "latitude": 37.23711,
+      "longitude": -82.34286,
+      "nwsid": "HAYV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03209200",
+      "name": "Bartlick",
+      "latitude": 37.2453,
+      "longitude": -82.3242,
+      "nwsid": "BRFV2",
+      "basin": "BSA"
+  },
+  {
+      "usgsid": "03209410",
+      "name": "Elkhorn City",
+      "latitude": 37.31288,
+      "longitude": -82.35954,
+      "nwsid": "ELKK2",
+      "basin": "BSA"
+  },
+  {
+    "usgsid": "None",
+    "name": "Wolf Pen",
+    "latitude": 37.5167,
+    "longitude": -81.5844,
+    "nwsid": "WOLW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "None",
+    "name": "Pineville",
+    "latitude": 37.5772,
+    "longitude": -81.5375,
+    "nwsid": "PNVW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "03202750",
+    "name": "Clear Fork",
+    "latitude": 37.6231,
+    "longitude": -81.7075,
+    "nwsid": "CLFW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "03202915",
+    "name": "R.D. Bailey Outflow",
+    "latitude": 37.59791,
+    "longitude": -81.82702,
+    "nwsid": "RDBW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "None",
+    "name": "Kopperston",
+    "latitude": 37.7583,
+    "longitude": -81.575,
+    "nwsid": "KOPW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "03203600",
+    "name": "Logan",
+    "latitude": 37.8422,
+    "longitude": -81.9761,
+    "nwsid": "LOGW2",
+    "basin": "GUY"
+},
+{
+    "usgsid": "03204000",
+    "name": "Branchland",
+    "latitude": 38.2217,
+    "longitude": -82.2022,
+    "nwsid": "BRAW2",
+    "basin": "GUY"
+},
+{
+  "usgsid": "03157500",
+  "name": "Enterprise",
+  "latitude": 39.565,
+  "longitude": -82.475,
+  "nwsid": "ENTO1",
+  "basin": "HOC"
+},
+{
+  "usgsid": "None",
+  "name": "New Lexington",
+  "latitude": 39.7331,
+  "longitude": -82.2156,
+  "nwsid": "HITO1",
+  "basin": "HOC"
+},
+{
+  "usgsid": "03158500",
+  "name": "Tom Jenkins Lake",
+  "latitude": 39.5408,
+  "longitude": -82.0567,
+  "nwsid": "TJLO1",
+  "basin": "HOC"
+},
+  {
+    "usgsid": "None",
+    "name": "Ennice",
+    "latitude": 36.49972,
+    "longitude": -80.97806,
+    "nwsid": "GLCN7",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Laurel Fork",
+    "latitude": 36.71611,
+    "longitude": -80.52694,
+    "nwsid": "LFKV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Lansing",
+    "latitude": 36.49806,
+    "longitude": -81.51083,
+    "nwsid": "None",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03164000",
+    "name": "Galax",
+    "latitude": 36.6472,
+    "longitude": -80.9792,
+    "nwsid": "GAXV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Willis",
+    "latitude": 36.8617,
+    "longitude": -80.4819,
+    "nwsid": "WLLV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Troutdale",
+    "latitude": 36.7019,
+    "longitude": -81.4401,
+    "nwsid": "TRTV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03170000",
+    "name": "Graysontown",
+    "latitude": 37.0375,
+    "longitude": -80.5569,
+    "nwsid": "GRYV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Bland",
+    "latitude": 37.105,
+    "longitude": -81.1067,
+    "nwsid": "BNDV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Rock Camp",
+    "latitude": 37.4781,
+    "longitude": -80.595,
+    "nwsid": "RCPW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Bastian",
+    "latitude": 37.1525,
+    "longitude": -81.37833,
+    "nwsid": "CFKV2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03177120",
+    "name": "Willowton",
+    "latitude": 37.3485,
+    "longitude": -80.8861,
+    "nwsid": "ERVW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03177480",
+    "name": "Red Sulphur Springs",
+    "latitude": 37.52925,
+    "longitude": -80.77019,
+    "nwsid": "INCW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03179000",
+    "name": "Pipestem",
+    "latitude": 37.54,
+    "longitude": -81.0086,
+    "nwsid": "PIPW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03179800",
+    "name": "Bluestone Lake",
+    "latitude": 37.64,
+    "longitude": -80.8855,
+    "nwsid": "BLLW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Beckley",
+    "latitude": 37.7971,
+    "longitude": -81.21266,
+    "nwsid": "CRBW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03185400",
+    "name": "Thurmond",
+    "latitude": 37.955,
+    "longitude": -81.0767,
+    "nwsid": "THMW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "White Sulphur Springs",
+    "latitude": 37.7667,
+    "longitude": -80.3333,
+    "nwsid": "SUPW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Red Oak Knob",
+    "latitude": 38.3533,
+    "longitude": -80.4405,
+    "nwsid": "RHWW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Rainelle",
+    "latitude": 37.96848,
+    "longitude": -80.76339,
+    "nwsid": "ERHW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03187500",
+    "name": "Cranberry River",
+    "latitude": 38.2953,
+    "longitude": -80.5267,
+    "nwsid": "CRNW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03189100",
+    "name": "Craigsville",
+    "latitude": 38.2911,
+    "longitude": -80.6411,
+    "nwsid": "CRAW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03190000",
+    "name": "Nallen",
+    "latitude": 38.1126,
+    "longitude": -80.876,
+    "nwsid": "NALW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03189600",
+    "name": "Summersville Lake Outflow",
+    "latitude": 38.21506,
+    "longitude": -80.88837,
+    "nwsid": "SUMW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Sharps Knob",
+    "latitude": 38.4275,
+    "longitude": -80.1647,
+    "nwsid": "STYW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03195250",
+    "name": "Replete",
+    "latitude": 38.6886,
+    "longitude": -80.4336,
+    "nwsid": "RPLW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03195100",
+    "name": "Guardian",
+    "latitude": 38.6353,
+    "longitude": -80.4658,
+    "nwsid": "GUAW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03194700",
+    "name": "Webster Springs",
+    "latitude": 38.5983,
+    "longitude": -80.4889,
+    "nwsid": "WEBW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "None",
+    "name": "Birch River",
+    "latitude": 38.5,
+    "longitude": -80.75,
+    "nwsid": "IRCW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03195500",
+    "name": "Sutton Lake Outflow",
+    "latitude": 38.66275,
+    "longitude": -80.70939,
+    "nwsid": "SUSW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03196500",
+    "name": "Herold",
+    "latitude": 38.5747,
+    "longitude": -80.8011,
+    "nwsid": "HRLW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03196600",
+    "name": "Frametown",
+    "latitude": 38.5663,
+    "longitude": -80.8994,
+    "nwsid": "FRMW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03197000",
+    "name": "Queen Shoals",
+    "latitude": 38.4722,
+    "longitude": -81.2844,
+    "nwsid": "QUSW2",
+    "basin": "KAN"
+},
+{
+  "usgsid": "None",
+  "name": "Willard",
+  "latitude": 38.21397,
+  "longitude": -82.90482,
+  "nwsid": "WLLK2",
+  "basin": "LSA"
+},
+{
+  "usgsid": "03216350",
+  "name": "Grayson Outflow",
+  "latitude": 38.25388,
+  "longitude": -82.99111,
+  "nwsid": "GYLK2",
+  "basin": "LSA"
+},
+{
+  "usgsid": "03216500",
+  "name": "Grayson",
+  "latitude": 38.33,
+  "longitude": -82.9394,
+  "nwsid": "GYNK2",
+  "basin": "LSA"
+},
+{
+    "usgsid": "03200500",
+    "name": "Tornado",
+    "latitude": 38.3392,
+    "longitude": -81.8414,
+    "nwsid": "TORW2",
+    "basin": "KAN"
+},
+{
+    "usgsid": "03198000",
+    "name": "Charleston Lock 6",
+    "latitude": 38.36586,
+    "longitude": -81.66964,
+    "nwsid": "CHLW2",
+    "basin": "KAN"
+},
+  {
+    "usgsid": "03151400",
+    "name": "Wildcat",
+    "latitude": 38.7433,
+    "longitude": -80.5256,
+    "nwsid": "WLDW2",
+    "basin": "LKA"
+},
+{
+    "usgsid": "03151520",
+    "name": "Burnsville Lake Outflow",
+    "latitude": 38.845,
+    "longitude": -80.6281,
+    "nwsid": "BULW2",
+    "basin": "LKA"
+},
+{
+    "usgsid": "03152000",
+    "name": "Glenville",
+    "latitude": 38.9338,
+    "longitude": -80.8391,
+    "nwsid": "GLEW2",
+    "basin": "LKA"
+},
+{
+    "usgsid": "03153500",
+    "name": "Grantsville",
+    "latitude": 38.9219,
+    "longitude": -81.0977,
+    "nwsid": "GRTW2",
+    "basin": "LKA"
+},
+{
+    "usgsid": "None",
+    "name": "Galion",
+    "latitude": 40.7233,
+    "longitude": -82.7994,
+    "nwsid": "GAIO1",
+    "basin": "SCI"
+},
+        {
+            "usgsid": "None",
+            "name": "Delaware Lake",
+            "latitude": 40.3592,
+            "longitude": -83.0692,
+            "nwsid": "DLWO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "None",
+            "name": "Alum Creek Lake",
+            "latitude": 40.1858,
+            "longitude": -82.9668,
+            "nwsid": "ACRO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03228805",
+            "name": "Alum Creek Outflow",
+            "latitude": 40.18228,
+            "longitude": -82.96149,
+            "nwsid": "AFRO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03228500",
+            "name": "Central College",
+            "latitude": 40.1027,
+            "longitude": -82.8836,
+            "nwsid": "CSCO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03230500",
+            "name": "Darbyville",
+            "latitude": 39.7005,
+            "longitude": -83.1108,
+            "nwsid": "DBVO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "None",
+            "name": "London",
+            "latitude": 39.8767,
+            "longitude": -83.4417,
+            "nwsid": "LOOO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03230800",
+            "name": "Mt. Sterling",
+            "latitude": 39.7153,
+            "longitude": -83.2575,
+            "nwsid": "MSTO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03230900",
+            "name": "Deer Creek Outlfow",
+            "latitude": 39.62065,
+            "longitude": -83.21231,
+            "nwsid": "PCBO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03231000",
+            "name": "Williamsport",
+            "latitude": 39.5853,
+            "longitude": -83.1217,
+            "nwsid": "WMSO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "None",
+            "name": "Washington Courthouse",
+            "latitude": 39.53028,
+            "longitude": -83.45312,
+            "nwsid": "WCHO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03232000",
+            "name": "Greenfield",
+            "latitude": 39.3792,
+            "longitude": -83.375,
+            "nwsid": "GRFO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03232300",
+            "name": "Centerfield",
+            "latitude": 39.32895,
+            "longitude": -83.47518,
+            "nwsid": "CTFO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "None",
+            "name": "Hillsboro",
+            "latitude": 39.2333,
+            "longitude": -83.6092,
+            "nwsid": "HSPO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03232470",
+            "name": "Paint Creek Outflow",
+            "latitude": 39.2523,
+            "longitude": -83.34937,
+            "nwsid": "BBRO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03219500",
+            "name": "Prospect",
+            "latitude": 40.4194,
+            "longitude": -83.1972,
+            "nwsid": "PRGO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03220000",
+            "name": "Bellepoint",
+            "latitude": 40.2483,
+            "longitude": -83.1738,
+            "nwsid": "BLPO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03227500",
+            "name": "Columbus (Scioto)",
+            "latitude": 39.9094,
+            "longitude": -83.0092,
+            "nwsid": "COLO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "None",
+            "name": "Lithopolis",
+            "latitude": 39.8014,
+            "longitude": -82.82,
+            "nwsid": "LTHO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03230700",
+            "name": "Circleville",
+            "latitude": 39.6014,
+            "longitude": -82.9553,
+            "nwsid": "CRCO1",
+            "basin": "SCI"
+        },
+        {
+            "usgsid": "03234500",
+            "name": "Higby",
+            "latitude": 39.2125,
+            "longitude": -82.8641,
+            "nwsid": "HIGO1",
+            "basin": "SCI"
+        },
+        {
+          "usgsid": "None",
+          "name": "Magnolia Levee",
+          "latitude": 40.6511,
+          "longitude": -81.2994,
+          "nwsid": "MGLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03124000",
+          "name": "Beach City Outflow",
+          "latitude": 40.63561,
+          "longitude": -81.55403,
+          "nwsid": "BHLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Zoar Diversion Dam",
+          "latitude": 40.61383,
+          "longitude": -81.41768,
+          "nwsid": "None",
+          "altname" : "Zoar-Dam",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03122500",
+          "name": "Dover Outflow (White Bridge)",
+          "latitude": 40.5297,
+          "longitude": -81.4294,
+          "nwsid": "DVLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03124800",
+          "name": "New Philadelphia",
+          "latitude": 40.4805,
+          "longitude": -81.4483,
+          "nwsid": "NWPO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03127500",
+          "name": "Uhrichsville",
+          "latitude": 40.3863,
+          "longitude": -81.3466,
+          "nwsid": "URVO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03127000",
+          "name": "Tippecanoe",
+          "latitude": 40.27033,
+          "longitude": -81.29024,
+          "nwsid": "TPPO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03126000",
+          "name": "Piedmont Outflow",
+          "latitude": 40.1944,
+          "longitude": -81.2156,
+          "nwsid": "PIEO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03142000",
+          "name": "Cambridge",
+          "latitude": 40.0144,
+          "longitude": -81.5872,
+          "nwsid": "CDIO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03141000",
+          "name": "Senecaville Lake",
+          "latitude": 39.9255,
+          "longitude": -81.4341,
+          "nwsid": "SNLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03141700",
+          "name": "Derwent",
+          "latitude": 39.9189,
+          "longitude": -81.5314,
+          "nwsid": "DWTO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Charles Mill Lake",
+          "latitude": 40.7403,
+          "longitude": -82.3625,
+          "nwsid": "CHOO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03131200",
+          "name": "Melco",
+          "latitude": 40.69856,
+          "longitude": -82.35975,
+          "nwsid": "MEPO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Wooster",
+          "latitude": 40.78136,
+          "longitude": -81.91973,
+          "nwsid": "CIPO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03136300",
+          "name": "North Br Kokosing River Lake",
+          "latitude": 40.5039,
+          "longitude": -82.5775,
+          "nwsid": "FTNO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03136500",
+          "name": "Mt. Vernon",
+          "latitude": 40.40578,
+          "longitude": -82.49978,
+          "nwsid": "MVEO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03139000",
+          "name": "Killbuck",
+          "latitude": 40.4816,
+          "longitude": -81.9855,
+          "nwsid": "KILO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03138500",
+          "name": "Mohawk Outflow",
+          "latitude": 40.3414,
+          "longitude": -82.0655,
+          "nwsid": "NLLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Alexandria",
+          "latitude": 40.0869,
+          "longitude": -82.6106,
+          "nwsid": "ALZO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03146500",
+          "name": "Newark",
+          "latitude": 40.05907,
+          "longitude": -82.33848,
+          "nwsid": "NEAO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03147500",
+          "name": "Dillon Outflow",
+          "latitude": 39.9898,
+          "longitude": -82.07883,
+          "nwsid": "DLLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03143500",
+          "name": "Wills Creek Outflow",
+          "latitude": 40.1591,
+          "longitude": -81.8475,
+          "nwsid": "WLLO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Salt Fork Lake",
+          "latitude": 40.1044,
+          "longitude": -81.5544,
+          "nwsid": "SILO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "03148000",
+          "name": "Zanesville",
+          "latitude": 39.94,
+          "longitude": -82.0125,
+          "nwsid": "ZANO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Roseville",
+          "latitude": 39.8161,
+          "longitude": -82.0736,
+          "nwsid": "RSVO1",
+          "basin": "MUS"
+      },
+      {
+          "usgsid": "None",
+          "name": "Millport",
+          "latitude": 40.72222,
+          "longitude": -80.89804,
+          "nwsid": "MPOO1",
+          "basin": "MUS"
+      },
+      {
+        "usgsid": "03150700",
+        "name": "Marietta",
+        "latitude": 39.4094,
+        "longitude": -81.4577,
+        "nwsid": "MTAO1",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "03151000",
+        "name": "Parkersburg",
+        "latitude": 39.2681,
+        "longitude": -81.5639,
+        "nwsid": "PARW2",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "None",
+        "name": "Belleville Locks and Dam",
+        "latitude": 39.1187,
+        "longitude": -81.74348,
+        "nwsid": "None",
+        "altname": "BellevilleLD",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "03201500",
+        "name": "Point Pleasant",
+        "latitude": 38.8439,
+        "longitude": -82.1392,
+        "nwsid": "POPW2",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "None",
+        "name": "R.C. Byrd Locks and Dam",
+        "latitude": 38.6819,
+        "longitude": -82.1869,
+        "nwsid": "None",
+        "altname": "RCByrdLD",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "03206000",
+        "name": "Huntington",
+        "latitude": 38.4133,
+        "longitude": -82.5006,
+        "nwsid": "HNTW2",
+        "basin": "OHI"
+    },
+    {
+        "usgsid": "None",
+        "name": "Greenup Locks and Dam",
+        "latitude": 38.6475,
+        "longitude": -82.8608,
+        "nwsid": "None",
+        "altname": "GreenupLD",
+        "basin": "OHI"
+    },
+      {
+        "usgsid": "03206790",
+        "name": "East Lynn Lake Outflow",
+        "latitude": 38.14762,
+        "longitude": -82.38257,
+        "nwsid": "ELSW2",
+        "basin": "TWE"
+    },
+    {
+        "usgsid": "None",
+        "name": "Beech Fork Lake",
+        "latitude": 38.3039,
+        "longitude": -82.4164,
+        "nwsid": "BFLW2",
+        "basin": "TWE"
+    }
+    ]
+}
