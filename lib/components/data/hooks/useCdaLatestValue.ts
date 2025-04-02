@@ -45,12 +45,12 @@ const useCdaLatestValue = ({
   });
 
   useEffect(() => {
-    if (!catalog?.data || !catalog?.data?.entries) {
+    if (!catalog.data || !catalog.data?.entries) {
       return;
     }
-    const firstEntry: TimeSeriesCatalogEntry | undefined =
-      catalog.data?.entries?.[0];
-    const latestTime = firstEntry?.extents?.[0].latestTime;
+    const firstEntry: TimeSeriesCatalogEntry = catalog.data?.entries?.[0];
+    const latestTime =
+      firstEntry?.extents && firstEntry.extents?.[0].latestTime;
     if (!latestTime) {
       return;
     }
