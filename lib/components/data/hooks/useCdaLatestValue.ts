@@ -29,6 +29,9 @@ const useCdaLatestValue = ({
       ...(end && { end }),
     },
     cdaUrl: cdaUrl,
+    queryOptions: {
+      enabled: !!tsId && !!office,
+    },
   });
 
   const enableCatalog = !ts.isPending && ts.data?.values?.length === 0;
@@ -42,11 +45,12 @@ const useCdaLatestValue = ({
   });
 
   useEffect(() => {
-    if (!catalog.data || !catalog.data.entries) {
+    if (!catalog.data || !catalog.data?.entries) {
       return;
     }
-    const firstEntry: TimeSeriesCatalogEntry = catalog.data.entries?.[0];
-    const latestTime = firstEntry.extents?.[0].latestTime;
+    const firstEntry: TimeSeriesCatalogEntry = catalog.data?.entries?.[0];
+    const latestTime =
+      firstEntry?.extents && firstEntry.extents?.[0].latestTime;
     if (!latestTime) {
       return;
     }
@@ -60,7 +64,7 @@ const useCdaLatestValue = ({
   }, [catalog]);
 
   const isPending =
-    ts.isPending || (enableCatalog && (catalog.isPending || !latestDate));
+    ts?.isPending || (enableCatalog ? catalog?.isPending : false);
 
   const isFetching = ts.isFetching || catalog.isFetching;
 
@@ -74,7 +78,6 @@ const useCdaLatestValue = ({
         units: ts.data?.units,
       }
     : undefined;
-
   return { ...ts, data, isPending, isFetching };
 };
 
