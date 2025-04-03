@@ -31,14 +31,14 @@ function Home() {
                 <Code className="block w-full p-1 px-2">
                   npm install @usace-watermanagement/groundwork-water
                 </Code>
-                <CopyButton text="npm install @usace/groundwork" />
+                <CopyButton text="npm install @usace-watermanagement/groundwork-water" />
               </div>
               <div className="flex flex-row justify-start space-between items-center gap-2 mb-3">
                 <Text>Uninstall: </Text>
                 <Code className="block w-full p-1 px-2">
                   npm uninstall @usace-watermanagement/groundwork-water
                 </Code>
-                <CopyButton text="npm install @usace/groundwork" />
+                <CopyButton text="npm uninstall @usace-watermanagement/groundwork-water" />
               </div>
               <Text>
                 To update Groundwork Water, run the uninstall command and then
