@@ -111,3 +111,10 @@ npm run publish
 ```
 
 This will build the package, and then publish it to NPM.
+
+#### Steps:
+1. merge any PRs
+2. npm version --whatever (major,minor,patch)
+3. npm publish
+4. update docs GWW install version
+5. push main
