@@ -24,6 +24,7 @@ export default function CWMSTable({
   interval = 1,
   sortAscending = true,
   missingString = "",
+  dateFormat = "ddd MMM DD HH:mm",
   cdaUrl,
 }) {
   const tableElement = useRef([]);
@@ -169,7 +170,7 @@ export default function CWMSTable({
           <TableRow key={`row${index}`}>
             {/* Date-Time */}
             <TableCell key={`cell${index}`}>
-              {dayjs(item[0]).format("ddd MMM DD HH:mm")}
+              {dayjs(item[0]).format(dateFormat)}
             </TableCell>
 
             {/* Loop over columns */}
