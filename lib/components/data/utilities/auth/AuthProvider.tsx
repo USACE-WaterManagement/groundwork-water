@@ -10,7 +10,7 @@ export interface AuthMethod {
   refreshInterval?: number;
 }
 
-interface AuthContextValue {
+export interface AuthContextValue {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   isAuth: boolean;
