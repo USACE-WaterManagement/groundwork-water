@@ -8,6 +8,7 @@ export interface AuthMethod {
   isAuth: () => Promise<boolean>;
   refresh?: () => Promise<void>;
   refreshInterval?: number;
+  token?: string;
 }
 
 export interface AuthContextValue {
@@ -15,6 +16,7 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
   isAuth: boolean;
   isLoading: boolean;
+  token?: string;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,6 +67,7 @@ export const AuthProvider = ({
         logout: logout.mutateAsync,
         isAuth,
         isLoading: isAnyLoading,
+        token: method.token,
       }}
     >
       {children}

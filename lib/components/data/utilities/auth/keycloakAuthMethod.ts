@@ -132,6 +132,9 @@ export const createKeycloakAuthMethod = ({
     isAuth,
     refresh,
     refreshInterval,
+    get token() {
+      return accessToken;
+    },
   };
 
   return keycloakAuthMethod;
