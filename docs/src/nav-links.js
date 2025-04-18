@@ -25,6 +25,13 @@ export default [
     id: "auth",
     text: "Authentication",
     href: "/docs/auth",
+    children: [
+      {
+        id: "auth-provider",
+        text: "AuthProvider",
+        href: "/docs/auth/auth-provider",
+      },
+    ],
   },
   {
     id: "hooks",
