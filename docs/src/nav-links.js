@@ -41,6 +41,11 @@ export default [
         text: "CWMSLogin Method",
         href: "/docs/auth/cwms-login",
       },
+      {
+        id: "keycloak",
+        text: "Keycloak Method",
+        href: "/docs/auth/keycloak",
+      },
     ],
   },
   {
