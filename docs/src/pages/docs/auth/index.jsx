@@ -2,6 +2,7 @@ import { Code, H4, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+import QueryClientWarning from "../../../components/QueryClientWarning";
 
 const authMethod = (
   <a href="/docs/auth/auth-method" className="hover:underline">
@@ -55,8 +56,9 @@ function AuthenticationDocs() {
             functionality where needed
           </li>
         </ul>
+        <QueryClientWarning />
       </div>
-      <Divider text="Setup" className="mt-8 mb-4" />
+      <Divider text="Setup" className="mt-6 mb-4" />
       <Text>
         These examples provide a brief overview of authentication setup. Please
         refer to the individual component documentation pages for more detailed
