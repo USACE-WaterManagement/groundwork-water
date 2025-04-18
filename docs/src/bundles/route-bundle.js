@@ -10,6 +10,7 @@ import Docs from "../pages/docs/";
 import ReactQuery from "../pages/docs/react-query";
 import AddComponents from "../pages/docs/add-components";
 import QuickStart from "../pages/docs/quick-start";
+import AuthenticationDocs from "../pages/docs/auth";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -28,6 +29,7 @@ export default createRouteBundle(
     "/docs": Docs,
     "/docs/cards/cda-latest-value-card": CdaLatestValueCardDocs,
     "/docs/help": HelpPage,
+    "/docs/auth": AuthenticationDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,

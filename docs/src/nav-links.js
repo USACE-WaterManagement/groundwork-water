@@ -22,6 +22,11 @@ export default [
     ],
   },
   {
+    id: "auth",
+    text: "Authentication",
+    href: "/docs/auth",
+  },
+  {
     id: "hooks",
     text: "Data Hooks",
     href: "/docs/hooks",
