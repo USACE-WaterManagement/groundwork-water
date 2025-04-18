@@ -13,6 +13,7 @@ import QuickStart from "../pages/docs/quick-start";
 import AuthenticationDocs from "../pages/docs/auth";
 import AuthMethodDocs from "../pages/docs/auth/auth-method";
 import AuthProviderDocs from "../pages/docs/auth/auth-provider";
+import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -34,6 +35,7 @@ export default createRouteBundle(
     "/docs/auth": AuthenticationDocs,
     "/docs/auth/auth-method": AuthMethodDocs,
     "/docs/auth/auth-provider": AuthProviderDocs,
+    "/docs/auth/cwms-login": CwmsLoginDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,

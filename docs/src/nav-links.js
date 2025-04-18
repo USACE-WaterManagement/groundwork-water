@@ -36,6 +36,11 @@ export default [
         text: "AuthProvider",
         href: "/docs/auth/auth-provider",
       },
+      {
+        id: "cwms-login",
+        text: "CWMSLogin Method",
+        href: "/docs/auth/cwms-login",
+      },
     ],
   },
   {
