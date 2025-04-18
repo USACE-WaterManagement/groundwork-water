@@ -27,6 +27,11 @@ export default [
     href: "/docs/auth",
     children: [
       {
+        id: "auth-method",
+        text: "AuthMethod",
+        href: "/docs/auth/auth-method",
+      },
+      {
         id: "auth-provider",
         text: "AuthProvider",
         href: "/docs/auth/auth-provider",
