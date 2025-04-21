@@ -20,6 +20,45 @@ const useAuth = (
   </a>
 );
 
+export const AuthHookExample = () => (
+  <CodeBlock language="jsx">
+    {`import { LoginButton, ProfileDropdown } from "@usace/groundwork";
+import { useAuth } from "@usace-watermanagement/groundwork-water";
+
+function Component() {
+  const auth = useAuth();
+  
+  return (
+    <div className="flex justify-between items-center bg-usace-black text-white rounded-2 p-2">
+      {auth.isAuth ? (
+        <ProfileDropdown
+          showLogout
+          onLogout={auth.logout}
+          links={[
+            {
+              id: "profile",
+              text: "View Profile",
+              link: "#",
+            },
+          ]}
+        />
+      ) : (
+        <LoginButton
+          onClick={auth.login}
+        />
+      )}
+      {auth.isAuth && (
+        <span className="italic font-light text-sm">{"Logged in!"}</span>
+      )}
+    </div>
+  )
+}
+
+export default Component;
+`}
+  </CodeBlock>
+);
+
 function AuthenticationDocs() {
   return (
     <DocsPage middleText="Authentication">
@@ -121,42 +160,7 @@ const authMethod = createCwmsLoginAuthMethod({
         </a>{" "}
         by incorporating our built-in authentication handling:
       </Text>
-      <CodeBlock language="jsx">
-        {`import { LoginButton, ProfileDropdown } from "@usace/groundwork";
-import { useAuth } from "@usace-watermanagement/groundwork-water";
-
-function Component() {
-  const auth = useAuth();
-  
-  return (
-    <div className="flex justify-between items-center bg-usace-black text-white rounded-2 p-2">
-      {auth.isAuth ? (
-        <ProfileDropdown
-          showLogout
-          onLogout={auth.logout}
-          links={[
-            {
-              id: "profile",
-              text: "View Profile",
-              link: "#",
-            },
-          ]}
-        />
-      ) : (
-        <LoginButton
-          onClick={auth.login}
-        />
-      )}
-      {auth.isAuth && (
-        <span className="italic font-light text-sm">{"Logged in!"}</span>
-      )}
-    </div>
-  )
-}
-
-export default Component;
-`}
-      </CodeBlock>
+      <useAuthExample />
     </DocsPage>
   );
 }

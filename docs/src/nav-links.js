@@ -46,6 +46,11 @@ export default [
         text: "Keycloak Method",
         href: "/docs/auth/keycloak",
       },
+      {
+        id: "use-auth",
+        text: "useAuth Hook",
+        href: "/docs/auth/use-auth",
+      },
     ],
   },
   {
