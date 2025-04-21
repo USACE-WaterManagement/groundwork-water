@@ -1,3 +1,4 @@
+import { Code } from "../pages/components/code";
 import { cdaUrlParam } from "../pages/components/shared-docs";
 
 const tsTableParams = [
@@ -140,6 +141,24 @@ const cwmsTableParams = [
     required: false,
     default: '""',
     desc: "The string to display when a value is missing.",
+  },
+  {
+    name: "dateFormat",
+    type: "string",
+    required: false,
+    desc: (
+      <>
+        The format of the date in the table in any string available here:{" "}
+        <a
+          href="https://day.js.org/docs/en/display/format"
+          className="gw-underline"
+        >
+          Day.js Formatting
+        </a>
+        .<br />
+        Default is "ddd MMM DD HH:mm"
+      </>
+    ),
   },
   cdaUrlParam,
 ];
