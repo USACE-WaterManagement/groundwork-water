@@ -202,7 +202,7 @@ default export function Example() {
         </div>
 
         <Divider text="Code Example:" className="mt-8" />
-        <div className="mt-8">
+        <div className="mt-8  w-3/4">
           <Code className="mt-8" language="jsx">
             {`import dayjs from "dayjs";
 import { TSTable } from "@usace-watermanagement/groundwork-water";
@@ -235,11 +235,14 @@ default export function Example() {
         <Divider text="API Reference" className="mt-8" />
         <div className="font-bold text-lg pt-6">
           Table Hook Parameters
-          <Code
-            enableCopy={false}
-            className="p-2"
-            language="jsx"
-          >{`<TSTable precision={2} title="Title" subTitle="Subtitle" heading={["Heading1", "Heading2"]} order="asc" dateFormat="MM-DD-YYYY HH:mm"/>`}</Code>
+          <Code enableCopy={false} className="p-2" language="jsx">{`<TSTable 
+  precision={2} 
+  title="Title" 
+  subTitle="Subtitle"
+  heading={["Heading1", "Heading2"]} 
+  order="asc" 
+  dateFormat="MM-DD-YYYY HH:mm" 
+  />`}</Code>
         </div>
         <ParamsTable paramsList={tsTableParams} showReq={false} />
         <div className="font-bold text-lg pt-6">
