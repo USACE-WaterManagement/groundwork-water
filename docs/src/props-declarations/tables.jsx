@@ -1,4 +1,3 @@
-import { Code } from "../pages/components/code";
 import { cdaUrlParam } from "../pages/components/shared-docs";
 
 const tsTableParams = [
@@ -156,7 +155,7 @@ const cwmsTableParams = [
           Day.js Formatting
         </a>
         .<br />
-        Default is "ddd MMM DD HH:mm"
+        Default is &quot;ddd MMM DD HH:mm&quot;
       </>
     ),
   },

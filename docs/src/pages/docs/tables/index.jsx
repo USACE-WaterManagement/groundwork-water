@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { CWMSTable, TSTable } from "@usace-watermanagement/groundwork-water";
 // import TSTable from "../../../../../lib/components/data/tables/TSTable";
 
@@ -18,15 +17,13 @@ import CdaParamsTable from "../../components/cda-params-table.jsx";
 
 function Tables() {
   const LOOKBACK_HOURS = 24;
-  const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
-
-  const [dateRange, setDateRange] = useState({
-    start: dayjs().startOf("day"),
+  const tsid = "KEYS.Elev.Inst.1Hour.0.Ccp-Rev";
+  const dateRange = {
+    start: dayjs().subtract(LOOKBACK_HOURS, "hours"),
     end: dayjs(),
-  });
+  };
+  const datum = "NGVD29";
 
-  const [datum, setDatum] = useState("NGVD29");
-  const [offsetValue, setOffsetValue] = useState();
   const cdaParams = {
     begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
     end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
@@ -39,13 +36,13 @@ function Tables() {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: `SHB.Stage-Ocean (ft ${datum})`,
       rounding: 2,
-      offset: offsetValue,
+      offset: null,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
       header: `SHB.Stage-Pred (ft ${datum})`,
       rounding: 2,
-      offset: offsetValue,
+      offset: null,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
@@ -81,7 +78,10 @@ function Tables() {
           interval="5"
           missingString="---"
           sortAscending={false}
-          trim={true}
+          tableOptions={{
+            overflow: true,
+            trim: true,
+          }}
         />
         <Divider text="Code Example:" className="mt-8" />
         <div className="mt-8">
