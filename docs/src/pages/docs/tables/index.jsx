@@ -13,7 +13,7 @@ import {
 } from "../../../props-declarations/tables.jsx";
 import dayjs from "dayjs";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
-import { Text, UsaceBox } from "@usace/groundwork";
+import { Badge, Text, UsaceBox } from "@usace/groundwork";
 import CdaParamsTable from "../../components/cda-params-table.jsx";
 
 function Tables() {
@@ -43,7 +43,11 @@ function Tables() {
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
-      header: `SHB.Stage-Pred (ft ${datum})`,
+      header: (
+        <>
+          SHB.Stage-Ocean <br /> (ft {datum})
+        </>
+      ),
       rounding: 2,
       offset: offsetValue,
     },
@@ -83,6 +87,26 @@ function Tables() {
           sortAscending={false}
           trim={true}
         />
+        <Divider text="Header Line Breaks" className="mt-8" />
+        <Text className="mb-2">
+          The header for the table can be set to an HTML tag or component with
+          line breaks.
+          <Code enableCopy={false} className="p-2" language="jsx">
+            {`// For example:
+const datum = "NGVD29";
+const tableTimeseriesParams = [
+    {
+      tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
+      header: <>SHB.Stage-Ocean <br /> (ft {datum})</>,
+      rounding: 2,
+      offset: offsetValue,
+    }
+]`}
+          </Code>
+        </Text>
+        <Badge color="blue" className="mb-2">
+          Note: Using "\n" will NOT create a line break in the header.
+        </Badge>
         <Divider text="Code Example:" className="mt-8" />
         <div className="mt-8">
           <Code className="mt-8" language="jsx">
@@ -235,11 +259,14 @@ default export function Example() {
         <Divider text="API Reference" className="mt-8" />
         <div className="font-bold text-lg pt-6">
           Table Hook Parameters
-          <Code
-            enableCopy={false}
-            className="p-2"
-            language="jsx"
-          >{`<TSTable precision={2} title="Title" subTitle="Subtitle" heading={["Heading1", "Heading2"]} order="asc" dateFormat="MM-DD-YYYY HH:mm"/>`}</Code>
+          <Code enableCopy={false} className="p-2" language="jsx">{`<TSTable 
+precision={2} 
+title="Title" 
+subTitle="Subtitle"
+heading={["Heading1", "Heading2"]} 
+order="asc" 
+dateFormat="MM-DD-YYYY HH:mm"
+/>`}</Code>
         </div>
         <ParamsTable paramsList={tsTableParams} showReq={false} />
         <div className="font-bold text-lg pt-6">
