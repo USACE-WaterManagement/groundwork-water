@@ -21,6 +21,7 @@ import DataHooks from "../pages/docs/hooks";
 import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
+import DataStatus from "../pages/docs/summary/data-status";
 
 export default createRouteBundle(
   {
@@ -40,6 +41,7 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/summary/data-status": DataStatus,
     "/docs/utilities": UtilitiesDocs,
     "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,
