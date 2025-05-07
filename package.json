@@ -13,9 +13,9 @@
     ],
     "exports": {
         ".": {
+            "types": "./types/lib/index.d.ts",
             "import": "./dist/groundwork-water.es.js",
-            "require": "./dist/groundwork-water.umd.cjs",
-            "types": "./types/lib/index.d.ts"
+            "require": "./dist/groundwork-water.umd.cjs"
         },
         "./dist/*.css": {
             "import": "./dist/*.css",
