@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
           fileName: (format) => `groundwork-water.${format}.js`,
           entry: "lib/index.jsx",
           formats: ["es", "umd"],
+          cssFileName: "style",
         },
         rollupOptions: {
           external: [
