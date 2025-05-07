@@ -10,6 +10,12 @@ import Docs from "../pages/docs/";
 import ReactQuery from "../pages/docs/react-query";
 import AddComponents from "../pages/docs/add-components";
 import QuickStart from "../pages/docs/quick-start";
+import AuthenticationDocs from "../pages/docs/auth";
+import AuthMethodDocs from "../pages/docs/auth/auth-method";
+import AuthProviderDocs from "../pages/docs/auth/auth-provider";
+import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
+import KeycloakDocs from "../pages/docs/auth/keycloak";
+import UseAuthDocs from "../pages/docs/auth/use-auth";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -28,6 +34,12 @@ export default createRouteBundle(
     "/docs": Docs,
     "/docs/cards/cda-latest-value-card": CdaLatestValueCardDocs,
     "/docs/help": HelpPage,
+    "/docs/auth": AuthenticationDocs,
+    "/docs/auth/auth-method": AuthMethodDocs,
+    "/docs/auth/auth-provider": AuthProviderDocs,
+    "/docs/auth/cwms-login": CwmsLoginDocs,
+    "/docs/auth/keycloak": KeycloakDocs,
+    "/docs/auth/use-auth": UseAuthDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
