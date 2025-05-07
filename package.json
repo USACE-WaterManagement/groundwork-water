@@ -13,9 +13,9 @@
     ],
     "exports": {
         ".": {
+            "types": "./types/lib/index.d.ts",
             "import": "./dist/groundwork-water.es.js",
-            "require": "./dist/groundwork-water.umd.cjs",
-            "types": "./types/lib/index.d.ts"
+            "require": "./dist/groundwork-water.umd.cjs"
         },
         "./dist/*.css": {
             "import": "./dist/*.css",
@@ -71,7 +71,7 @@
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.4",
         "typescript": "^5.5.4",
-        "vite": "^5.3.1"
+        "vite": "^6.3.2"
     },
     "peerDependencies": {
         "@tanstack/react-query": "^5.51.23",
