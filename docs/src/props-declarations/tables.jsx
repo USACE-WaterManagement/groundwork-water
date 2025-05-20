@@ -1,4 +1,3 @@
-import { Code } from "../pages/components/code";
 import { cdaUrlParam } from "../pages/components/shared-docs";
 
 const tsTableParams = [
@@ -37,6 +36,13 @@ const tsTableParams = [
     type: "string",
     required: false,
     desc: "The order of the table. Can be 'asc' or 'desc'.",
+  },
+  {
+    name: "dateTimeTableColumnHeader",
+    type: "string",
+    required: false,
+    default: '"Date & Time (Local)"',
+    desc: "The header for the first column which represents the datetime value.",
   },
   {
     name: "dateFormat",
@@ -156,7 +162,7 @@ const cwmsTableParams = [
           Day.js Formatting
         </a>
         .<br />
-        Default is "ddd MMM DD HH:mm"
+        Default is &quot;ddd MMM DD HH:mm&quot;
       </>
     ),
   },
@@ -187,4 +193,63 @@ const timeseriesParams = [
   },
 ];
 
-export { tsTableParams, cwmsTableParams, timeseriesParams };
+const tableOptionsParams = [
+  {
+    name: "overflow",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Whether the table should allow vertical scrolling if it exceeds its container height.",
+  },
+  {
+    name: "stickyHeader",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Keeps the header row fixed at the top when scrolling.",
+  },
+  {
+    name: "overflowHeight",
+    type: "string",
+    required: false,
+    default: '"h-[65vh]"',
+    desc: "Tailwind-compatible height to constrain the scrollable area when `overflow` is enabled.",
+  },
+  {
+    name: "bleed",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Removes horizontal padding/margin for full-width appearance.",
+  },
+  {
+    name: "dense",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Reduces padding inside table cells for a more compact layout.",
+  },
+  {
+    name: "className",
+    type: "string",
+    required: false,
+    default: '""',
+    desc: "Additional TailwindCSS classes to apply to the table container.",
+  },
+  {
+    name: "grid",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Adds borders and outlines to table rows and cells for a grid-like appearance.",
+  },
+  {
+    name: "striped",
+    type: "boolean",
+    required: false,
+    default: "false",
+    desc: "Alternates background colors for rows to improve readability.",
+  },
+];
+
+export { tsTableParams, cwmsTableParams, timeseriesParams, tableOptionsParams };
