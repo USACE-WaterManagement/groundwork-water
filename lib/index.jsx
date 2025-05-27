@@ -14,6 +14,7 @@ import CdaUrlProvider from "./components/data/utilities/CdaUrlProvider";
 import useCdaCatalog from "./components/data/hooks/useCdaCatalog";
 import useCdaLatestValue from "./components/data/hooks/useCdaLatestValue";
 import useCdaLocation from "./components/data/hooks/useCdaLocation";
+import useCdaLevels from "./components/data/hooks/useCdaLevels";
 import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
@@ -37,6 +38,7 @@ export {
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
+  useCdaLevels,
   useCdaTimeSeries,
   useCdaTimeSeriesGroup,
   useNwpsGauge,
