@@ -1,5 +1,4 @@
-import { Badge, Card, H3, Skeleton, Text } from "@usace/groundwork";
-import ParamsTable from "../../components/params-table";
+import { Badge, Card, Skeleton, Text } from "@usace/groundwork";
 import CdaParamsTable from "../../components/cda-params-table";
 import QueryClientWarning from "../../../components/QueryClientWarning";
 import { Code as CodeBlock } from "../../components/code";
