@@ -21,6 +21,7 @@ const CdaLatestValueCard = ({
   digits = 0,
   className,
   cdaUrl,
+  datum,
   ...props
 }: CdaLatestValueCardProps) => {
   const { data, isPending, isError } = useCdaLatestValue({
@@ -51,6 +52,7 @@ const CdaLatestValueCard = ({
             value={data.value}
             units={data.units ?? ""}
             digits={digits}
+            datum={datum}
           />
         ) : null}
       </div>
@@ -109,25 +111,36 @@ interface CardValueProps {
   value: number;
   units: string;
   digits: number;
+  datum: string;
 }
 
-const CardValue = ({ value, units, digits = 0 }: CardValueProps) => {
-  return (
-    <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
-      <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
-        {typeof value === "number"
-          ? value.toLocaleString(undefined, {
-              minimumFractionDigits: digits,
-              maximumFractionDigits: digits,
-            })
-          : "-"}
-        <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
-          {units}
-        </span>
-      </p>
-    </div>
-  );
-};
+const CardValue = ({ value, units, digits = 0, datum=null }: CardValueProps) => {   const formattedValue = typeof value === "number" ? (
+      digits >= 0 ? (
+        value.toLocaleString(undefined, {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        })
+      ) : (
+        Math.round(value / Math.pow(10, Math.abs(digits))) * Math.pow(10, Math.abs(digits))
+      ).toLocaleString(undefined) // Remove fraction digits for rounded values
+    ) : "-";
+  
+    return (
+      <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
+        <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
+          {formattedValue}
+          <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+            {units}
+          </span>
+          {datum !== null && (
+            <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+              {datum}
+            </span>
+          )}
+        </p>
+      </div>
+    );
+  };
 
 export { CdaLatestValueCard };
 export default CdaLatestValueCard;
