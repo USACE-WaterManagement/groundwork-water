@@ -176,7 +176,7 @@ const timeseriesParams = [
     type: "string",
   },
   {
-    name: "rounding",
+    name: "precision",
     type: "number",
     desc: "The number of decimal places to round the values to.",
   },

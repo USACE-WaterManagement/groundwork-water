@@ -38,7 +38,7 @@ function Tables() {
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: `SHB.Stage-Ocean (ft ${datum})`,
-      rounding: 2,
+      precision: 2,
       offset: offsetValue,
     },
     {
@@ -48,13 +48,13 @@ function Tables() {
           SHB.Stage-Ocean <br /> (ft {datum})
         </>
       ),
-      rounding: 2,
+      precision: 2,
       offset: offsetValue,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
       header: "SHB.Temp-Air (F)",
-      rounding: 0,
+      precision: 0,
     },
   ];
 
@@ -98,7 +98,7 @@ const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: <>SHB.Stage-Ocean <br /> (ft {datum})</>,
-      rounding: 2,
+      precision: 2,
       offset: offsetValue,
     }
 ]`}
@@ -135,19 +135,19 @@ default export function Example() {
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: \`SHB.Stage-Ocean (ft ${datum})\`,
-      rounding: 2,
+      precision: 2,
       offset: offsetValue,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
       header: \`SHB.Stage-Pred (ft ${datum})\`,
-      rounding: 2,
+      precision: 2,
       offset: offsetValue,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
       header: "SHB.Temp-Air (F)",
-      rounding: 0,
+      precision: 0,
     },
   ];
     const LOOKBACK_HOURS = 24;
