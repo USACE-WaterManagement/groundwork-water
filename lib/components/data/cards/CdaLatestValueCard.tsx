@@ -114,33 +114,45 @@ interface CardValueProps {
   datum: string;
 }
 
-const CardValue = ({ value, units, digits = 0, datum=null }: CardValueProps) => {   const formattedValue = typeof value === "number" ? (
-      digits >= 0 ? (
-        value.toLocaleString(undefined, {
-          minimumFractionDigits: digits,
-          maximumFractionDigits: digits,
-        })
-      ) : (
-        Math.round(value / Math.pow(10, Math.abs(digits))) * Math.pow(10, Math.abs(digits))
-      ).toLocaleString(undefined) // Remove fraction digits for rounded values
-    ) : "-";
-  
-    return (
-      <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
-        <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
-          {formattedValue}
+const CardValue = ({ value, units, digits = 0, datum = null }: CardValueProps) => {
+  const roundedValue = typeof value === "number" ? (
+    digits >= 0 ? (
+      value // No rounding needed for positive digits
+    ) : (
+      Math.round(value / Math.pow(10, Math.abs(digits))) * Math.pow(10, Math.abs(digits))
+    )
+  ) : null; // Or some other default if 'value' is not a number
+
+  const formattedValue = typeof roundedValue === "number" ? (
+    digits >= 0 ? (
+      roundedValue.toLocaleString(undefined, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    ) : (
+      roundedValue.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+    )
+  ) : "-";
+
+  return (
+    <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
+      <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
+        {formattedValue}
+        <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+          {units}
+        </span>
+        {datum !== null && typeof datum === 'string' && (
           <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
-            {units}
+            {datum}
           </span>
-          {datum !== null && (
-            <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
-              {datum}
-            </span>
-          )}
-        </p>
-      </div>
-    );
-  };
+        )}
+      </p>
+    </div>
+  );
+};
 
 export { CdaLatestValueCard };
 export default CdaLatestValueCard;
