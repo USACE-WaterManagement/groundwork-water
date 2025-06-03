@@ -115,6 +115,10 @@ interface CardValueProps {
 }
 
 const CardValue = ({ value, units, digits = 0, datum = null }: CardValueProps) => {
+  if (!Number.isFinite(digits)) {
+    console.error("CardValue: 'digits' prop must be a finite number. Using default value of 0.");
+    digits = 0;
+  }
   const roundedValue = typeof value === "number" ? (
     digits >= 0 ? (
       value // No rounding needed for positive digits
