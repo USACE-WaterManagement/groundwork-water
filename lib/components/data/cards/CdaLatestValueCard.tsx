@@ -11,6 +11,7 @@ interface CdaLatestValueCardProps {
   digits?: number;
   className?: string;
   cdaUrl?: string;
+  datum?: string;
 }
 
 const CdaLatestValueCard = ({
