@@ -1,3 +1,4 @@
+import { Code } from "@usace/groundwork";
 import { cdaUrlParam } from "../pages/components/shared-docs";
 
 const tsTableParams = [
@@ -166,6 +167,30 @@ const cwmsTableParams = [
       </>
     ),
   },
+  {
+    name: "tableOptions",
+    type: "object",
+    required: false,
+    desc: (
+      <>
+        An object containing additional options for the table. See the component
+        API for <Code>{"<Table />"}</Code> on the Groundwork docs for details:{" "}
+        <a
+          href="https://usace.github.io/groundwork/#/docs/display/table"
+          className="underline"
+        >
+          Table Options
+        </a>
+      </>
+    ),
+  },
+  {
+    name: "dateTimeTableColumnHeader",
+    type: "string",
+    required: false,
+    default: '"Date & Time (Local)"',
+    desc: "The header for the first column. Default: 'Date & Time (Local)'.",
+  },
   cdaUrlParam,
 ];
 
@@ -193,63 +218,4 @@ const timeseriesParams = [
   },
 ];
 
-const tableOptionsParams = [
-  {
-    name: "overflow",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Whether the table should allow vertical scrolling if it exceeds its container height.",
-  },
-  {
-    name: "stickyHeader",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Keeps the header row fixed at the top when scrolling.",
-  },
-  {
-    name: "overflowHeight",
-    type: "string",
-    required: false,
-    default: '"h-[65vh]"',
-    desc: "Tailwind-compatible height to constrain the scrollable area when `overflow` is enabled.",
-  },
-  {
-    name: "bleed",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Removes horizontal padding/margin for full-width appearance.",
-  },
-  {
-    name: "dense",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Reduces padding inside table cells for a more compact layout.",
-  },
-  {
-    name: "className",
-    type: "string",
-    required: false,
-    default: '""',
-    desc: "Additional TailwindCSS classes to apply to the table container.",
-  },
-  {
-    name: "grid",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Adds borders and outlines to table rows and cells for a grid-like appearance.",
-  },
-  {
-    name: "striped",
-    type: "boolean",
-    required: false,
-    default: "false",
-    desc: "Alternates background colors for rows to improve readability.",
-  },
-];
-
-export { tsTableParams, cwmsTableParams, timeseriesParams, tableOptionsParams };
+export { tsTableParams, cwmsTableParams, timeseriesParams };

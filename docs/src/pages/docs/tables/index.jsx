@@ -9,7 +9,6 @@ import {
   tsTableParams,
   cwmsTableParams,
   timeseriesParams,
-  tableOptionsParams,
 } from "../../../props-declarations/tables.jsx";
 import dayjs from "dayjs";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
@@ -207,16 +206,6 @@ default export function Example() {
           >{`<CWMSTable timeseriesParams={ [{tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev"}] } />`}</Code>
         </div>
         <ParamsTable paramsList={timeseriesParams} showReq={true} />
-
-        <div className="font-bold text-lg pt-6">
-          tableOptionsParams
-          <Code
-            enableCopy={false}
-            className="p-2"
-            language="jsx"
-          >{`<CWMSTable tableOptions={{stickyHeader: true, overflow: true}} />`}</Code>
-        </div>
-        <ParamsTable paramsList={tableOptionsParams} showReq={false} />
 
         <div className="font-bold text-lg pt-6">
           cdaParams
