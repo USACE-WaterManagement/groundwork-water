@@ -11,6 +11,7 @@ interface CdaLatestValueCardProps {
   digits?: number;
   className?: string;
   cdaUrl?: string;
+  datum?: string;
 }
 
 const CdaLatestValueCard = ({
@@ -21,6 +22,7 @@ const CdaLatestValueCard = ({
   digits = 0,
   className,
   cdaUrl,
+  datum,
   ...props
 }: CdaLatestValueCardProps) => {
   const { data, isPending, isError } = useCdaLatestValue({
@@ -51,6 +53,7 @@ const CdaLatestValueCard = ({
             value={data.value}
             units={data.units ?? ""}
             digits={digits}
+            datum={datum}
           />
         ) : null}
       </div>
@@ -109,21 +112,48 @@ interface CardValueProps {
   value: number;
   units: string;
   digits: number;
+  datum: string;
 }
 
-const CardValue = ({ value, units, digits = 0 }: CardValueProps) => {
+const CardValue = ({ value, units, digits = 0, datum = null }: CardValueProps) => {
+  if (!Number.isFinite(digits)) {
+    console.error("CardValue: 'digits' prop must be a finite number. Using default value of 0.");
+    digits = 0;
+  }
+  const roundedValue = typeof value === "number" ? (
+    digits >= 0 ? (
+      value // No rounding needed for positive digits
+    ) : (
+      Math.round(value / Math.pow(10, Math.abs(digits))) * Math.pow(10, Math.abs(digits))
+    )
+  ) : null; // Or some other default if 'value' is not a number
+
+  const formattedValue = typeof roundedValue === "number" ? (
+    digits >= 0 ? (
+      roundedValue.toLocaleString(undefined, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    ) : (
+      roundedValue.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })
+    )
+  ) : "-";
+
   return (
     <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
       <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
-        {typeof value === "number"
-          ? value.toLocaleString(undefined, {
-              minimumFractionDigits: digits,
-              maximumFractionDigits: digits,
-            })
-          : "-"}
+        {formattedValue}
         <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
           {units}
         </span>
+        {datum !== null && typeof datum === 'string' && (
+          <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+            {datum}
+          </span>
+        )}
       </p>
     </div>
   );
