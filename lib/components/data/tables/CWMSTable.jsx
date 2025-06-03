@@ -26,6 +26,17 @@ export default function CWMSTable({
   missingString = "",
   dateFormat = "ddd MMM DD HH:mm",
   cdaUrl,
+  dateTimeTableColumnHeader = "Date & Time (Local)",
+  tableOptions = {
+    striped: false,
+    dense: false,
+    bleed: false,
+    stickyHeader: false,
+    overflow: false,
+    overflowHeight: "h-[65vh]",
+    grid: false,
+    className: "",
+  },
 }) {
   const tableElement = useRef([]);
   const [tableData, setTableData] = useState(null);
@@ -155,10 +166,10 @@ export default function CWMSTable({
   }, [tsData, timeseriesParams]);
 
   return (
-    <Table striped dense>
+    <Table {...tableOptions}>
       <TableHead>
         <TableRow>
-          <TableHeader>Date & Time (Local)</TableHeader>
+          <TableHeader>{dateTimeTableColumnHeader}</TableHeader>
           {timeseriesParams.map((item, index) => (
             <TableHeader key={`header${index}`}>{item.header}</TableHeader>
           ))}

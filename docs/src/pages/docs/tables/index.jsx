@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { CWMSTable, TSTable } from "@usace-watermanagement/groundwork-water";
 // import TSTable from "../../../../../lib/components/data/tables/TSTable";
 
@@ -18,15 +17,13 @@ import CdaParamsTable from "../../components/cda-params-table.jsx";
 
 function Tables() {
   const LOOKBACK_HOURS = 24;
-  const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
-
-  const [dateRange, setDateRange] = useState({
-    start: dayjs().startOf("day"),
+  const tsid = "KEYS.Elev.Inst.1Hour.0.Ccp-Rev";
+  const dateRange = {
+    start: dayjs().subtract(LOOKBACK_HOURS, "hours"),
     end: dayjs(),
-  });
+  };
+  const datum = "NGVD29";
 
-  const [datum, setDatum] = useState("NGVD29");
-  const [offsetValue, setOffsetValue] = useState();
   const cdaParams = {
     begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
     end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
@@ -38,8 +35,8 @@ function Tables() {
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: `SHB.Stage-Ocean (ft ${datum})`,
-      precision: 2,
-      offset: offsetValue,
+      rounding: 2,
+      offset: null,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
@@ -48,8 +45,8 @@ function Tables() {
           SHB.Stage-Ocean <br /> (ft {datum})
         </>
       ),
-      precision: 2,
-      offset: offsetValue,
+      rounding: 2,
+      offset: null,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
@@ -85,7 +82,16 @@ function Tables() {
           interval="5"
           missingString="---"
           sortAscending={false}
-          trim={true}
+          tableOptions={{
+            overflow: true,
+            stickyHeader: true,
+            overflowHeight: "h-[45vh]",
+            bleed: true,
+            dense: true,
+            className: "gw-mt-4",
+            grid: true,
+            striped: true,
+          }}
         />
         <Divider text="Header Line Breaks" className="mt-8" />
         <Text className="mb-2">
@@ -154,16 +160,24 @@ default export function Example() {
     const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
 
     return (
-     <CWMSTable
+      <CWMSTable
           begin={cdaParams.begin}
           end={cdaParams.end}
           office={cdaParams.office}
-          tsids={tableTimeseriesParams.map((item) => item.tsid)}
           timeseriesParams={tableTimeseriesParams}
           interval="5"
           missingString="---"
           sortAscending={false}
-          trim={true}
+          tableOptions={{
+            overflow: true,
+            stickyHeader: true,
+            overflowHeight: "h-[65vh]",
+            bleed: true,
+            dense: true,
+            className: "gw-mt-4",
+            grid: true,
+            striped: true,
+          }}
         />
     );
 } 
@@ -192,6 +206,7 @@ default export function Example() {
           >{`<CWMSTable timeseriesParams={ [{tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev"}] } />`}</Code>
         </div>
         <ParamsTable paramsList={timeseriesParams} showReq={true} />
+
         <div className="font-bold text-lg pt-6">
           cdaParams
           <Code
@@ -206,6 +221,7 @@ default export function Example() {
           cwmsJsType="GetTimeSeriesRequest"
         />
       </UsaceBox>
+      <Divider text="More Generic TimeSeries Table" className="my-8" />
       <UsaceBox title="TSTable">
         <div className="mt-6">
           <TSTable
@@ -226,7 +242,7 @@ default export function Example() {
         </div>
 
         <Divider text="Code Example:" className="mt-8" />
-        <div className="mt-8">
+        <div className="mt-8  w-3/4">
           <Code className="mt-8" language="jsx">
             {`import dayjs from "dayjs";
 import { TSTable } from "@usace-watermanagement/groundwork-water";
@@ -260,13 +276,13 @@ default export function Example() {
         <div className="font-bold text-lg pt-6">
           Table Hook Parameters
           <Code enableCopy={false} className="p-2" language="jsx">{`<TSTable 
-precision={2} 
-title="Title" 
-subTitle="Subtitle"
-heading={["Heading1", "Heading2"]} 
-order="asc" 
-dateFormat="MM-DD-YYYY HH:mm"
-/>`}</Code>
+  precision={2} 
+  title="Title" 
+  subTitle="Subtitle"
+  heading={["Heading1", "Heading2"]} 
+  order="asc" 
+  dateFormat="MM-DD-YYYY HH:mm" 
+  />`}</Code>
         </div>
         <ParamsTable paramsList={tsTableParams} showReq={false} />
         <div className="font-bold text-lg pt-6">
