@@ -85,7 +85,7 @@ function Tables() {
           tableOptions={{
             overflow: true,
             stickyHeader: true,
-            overflowHeight: "h-[65vh]",
+            overflowHeight: "h-[45vh]",
             bleed: true,
             dense: true,
             className: "gw-mt-4",
