@@ -22,7 +22,7 @@ const CdaLatestValueCard = ({
   digits = 0,
   className,
   cdaUrl,
-  datum,
+  datum = "",
   ...props
 }: CdaLatestValueCardProps) => {
   const { data, isPending, isError } = useCdaLatestValue({
@@ -115,7 +115,7 @@ interface CardValueProps {
   datum: string;
 }
 
-const CardValue = ({ value, units, digits = 0, datum = null }: CardValueProps) => {
+const CardValue = ({ value, units, digits = 0, datum = "" }: CardValueProps) => {
   if (!Number.isFinite(digits)) {
     console.error("CardValue: 'digits' prop must be a finite number. Using default value of 0.");
     digits = 0;
@@ -149,7 +149,7 @@ const CardValue = ({ value, units, digits = 0, datum = null }: CardValueProps) =
         <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
           {units}
         </span>
-        {datum !== null && typeof datum === 'string' && (
+        {datum !== "" && typeof datum === 'string' && (
           <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
             {datum}
           </span>
