@@ -36,7 +36,7 @@ const componentProps = [
     name: "digits",
     type: "number",
     default: 0,
-    desc: "The number of trailing digits to display after the decimal.",
+    desc: "A positive number specifies the number of trailing digits to display after the decimal. A negative number specifies rounding of the integer (e.g. -1 rounds to nearest 10, -2 rounds to nearest 100 etc...)",
   },
   {
     name: "className",
@@ -49,6 +49,12 @@ const componentProps = [
     type: "string",
     default: "undefined",
     desc: "An alternative URL for the CDA instance if not using the default (e.g. for testing in a development environment).",
+  },
+  {
+    name: "datum",
+    type: "string",
+    default: "undefined",
+    desc: "Adds a string tag after the units for datum labeling.",
   },
 ];
 
@@ -63,11 +69,25 @@ function CdaLatestValueCardDocs() {
         <QueryClientWarning />
       </div>
       <Divider text="Example Usage" className="mt-8" />
-      <div className="rounded-md border border-dashed px-6 py-3 my-3">
+      <div className="flex flex-wrap gap-4">
         <CdaLatestValueCard
           label="Buckhorn Outflow"
           tsId="Buckhorn.Flow-Outflow.Ave.1Hour.1Hour.lrldlb-comp"
           office="LRL"
+        />
+        <CdaLatestValueCard
+          label="Lock & Dam 4 Elev"
+          tsId="LockDam_04.Elev.Inst.~15Minutes.0.best-MSL1912"
+          office="MVP"
+          digits={2}
+          datum="MSL1912"
+        />
+
+        <CdaLatestValueCard
+          label="Lock & Dam 4 Outflow"
+          tsId="LockDam_04.Flow-Out.Inst.~15Minutes.0.best"
+          office="MVP"
+          digits={-2}
         />
       </div>
       <CodeBlock language="jsx">
@@ -77,6 +97,21 @@ function CdaLatestValueCardDocs() {
   label="Buckhorn Outflow"
   tsId="Buckhorn.Flow-Outflow.Ave.1Hour.1Hour.lrldlb-comp"
   office="LRL"
+/>
+
+<CdaLatestValueCard
+  label="Lock & Dam 4 Elev"
+  tsId="LockDam_04.Elev.Inst.~15Minutes.0.best-MSL1912"
+  office="MVP"
+  digits=2
+  datum='MSL1912'
+/>
+
+<CdaLatestValueCard
+  label="Lock & Dam 4 Outflow"
+  tsId="LockDam_04.Flow-Out.Inst.~15Minutes.0.best"
+  office="MVP"
+  digits=-2
 />
 `}
       </CodeBlock>
