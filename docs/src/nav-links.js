@@ -69,6 +69,11 @@ export default [
         href: "/docs/hooks/use-cda-latest-value",
       },
       {
+        id: "use-cda-levels",
+        text: "CDA Location Levels",
+        href: "/docs/hooks/use-cda-levels",
+      },
+      {
         id: "use-cda-location",
         text: "CDA Location",
         href: "/docs/hooks/use-cda-location",
