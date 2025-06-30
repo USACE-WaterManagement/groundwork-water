@@ -17,9 +17,11 @@ const useCdaLatestValue = ({
   unit,
   cdaUrl,
 }: useCdaLatestValueParams) => {
-  const [latestDate, setLatestDate] = useState("");
-  const begin = latestDate;
-  const end = latestDate;
+  const [latestDate, setLatestDate] = useState<
+    Record<string, string | undefined>
+  >({});
+  const begin = latestDate[tsId];
+  const end = latestDate[tsId];
   const ts = useCdaTimeSeries({
     cdaParams: {
       name: tsId,
@@ -60,8 +62,15 @@ const useCdaLatestValue = ({
     const latestTimeIso =
       typeof latestTime == "string" ? latestTime : latestTime.toISOString();
 
-    setLatestDate(latestTimeIso);
-  }, [catalog]);
+    if (latestDate[tsId] === latestTimeIso) {
+      return;
+    }
+
+    setLatestDate((prev) => ({
+      ...prev,
+      [tsId]: latestTimeIso,
+    }));
+  }, [catalog.data, latestDate, tsId]);
 
   const isPending =
     ts?.isPending || (enableCatalog ? catalog?.isPending : false);
