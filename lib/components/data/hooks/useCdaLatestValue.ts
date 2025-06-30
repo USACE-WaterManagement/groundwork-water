@@ -17,7 +17,9 @@ const useCdaLatestValue = ({
   unit,
   cdaUrl,
 }: useCdaLatestValueParams) => {
-  const [latestDate, setLatestDate] = useState<Record<string, string>>({});
+  const [latestDate, setLatestDate] = useState<
+    Record<string, string | undefined>
+  >({});
   const begin = latestDate[tsId];
   const end = latestDate[tsId];
   const ts = useCdaTimeSeries({
