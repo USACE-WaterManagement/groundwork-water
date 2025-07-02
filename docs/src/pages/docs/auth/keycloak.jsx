@@ -30,6 +30,18 @@ const componentProps = [
     desc: "The authentication flow to use.  Currently only 'direct-grant' is supported.",
   },
   {
+    name: "username",
+    type: "string",
+    default: '""',
+    desc: "The username to use for login. Defaults to blank.",
+  },
+  {
+    name: "flow",
+    type: "string",
+    default: '""',
+    desc: "The password to use for login. Defaults to blank.",
+  },
+  {
     name: "refreshInterval",
     type: "number",
     default: "undefined",
@@ -68,6 +80,11 @@ function KeycloakDocs() {
           token string will typically be included directly in the request
           headers. For example, requests to CDA will require the following
           header to be set: <Code>Authorization: `Bearer *token*`</Code>
+        </Text>
+        <Text className="mt-4">
+          A username and password can optionally be provided directly to the
+          auth handler, but this is primarily intended for development purposes
+          and generally should not be used in production.
         </Text>
       </div>
       <Divider text="Example Usage" className="mt-6 mb-4" />
