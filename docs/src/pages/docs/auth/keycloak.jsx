@@ -1,8 +1,9 @@
-import { Code, Text } from "@usace/groundwork";
+import { Badge, Code, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+import Alert from "../../components/alert";
 
 const componentProps = [
   {
@@ -33,13 +34,13 @@ const componentProps = [
     name: "username",
     type: "string",
     default: '""',
-    desc: "The username to use for login. Defaults to blank.",
+    desc: "(DEVELOPMENT-USE ONLY) The username to use for login. Defaults to blank.",
   },
   {
     name: "flow",
     type: "string",
     default: '""',
-    desc: "The password to use for login. Defaults to blank.",
+    desc: "(DEVELOPMENT-USE ONLY) The password to use for login. Defaults to blank.",
   },
   {
     name: "refreshInterval",
@@ -82,9 +83,17 @@ function KeycloakDocs() {
           header to be set: <Code>Authorization: `Bearer *token*`</Code>
         </Text>
         <Text className="mt-4">
-          A username and password can optionally be provided directly to the
-          auth handler, but this is primarily intended for development purposes
-          and generally should not be used in production.
+          <Alert
+            title={"Warning"}
+            status={"warning"}
+            message={
+              "A username and password can optionally be provided directly to the auth handler, but are intended for development purposes and should not be used in production."
+            }
+          >
+            A username and password can optionally be provided directly to the
+            auth handler, but this is intended for development purposes and
+            should not be used in production.
+          </Alert>
         </Text>
       </div>
       <Divider text="Example Usage" className="mt-6 mb-4" />
