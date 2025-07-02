@@ -28,6 +28,8 @@ interface KeycloakAuthConfig {
   realm: string;
   client: string;
   flow: "direct-grant";
+  username?: string;
+  password?: string;
   refreshInterval?: number;
 }
 
@@ -42,6 +44,8 @@ interface KeycloakAuthConfig {
  * @param {string} config.realm - The Keycloak realm to use for authentication.
  * @param {string} config.client - The Keycloak client to use for authentication.
  * @param {string} config.flow - The Keycloak flow type to use for authentication.
+ * @param {string} config.username - The username to use for authentication, if required.
+ * @param {string} config.password - The password to use for authentication, if required.
  * @param {number} config.refreshInterval - Time between each token refresh, in seconds.
  */
 export const createKeycloakAuthMethod = ({
@@ -49,6 +53,8 @@ export const createKeycloakAuthMethod = ({
   realm,
   client,
   flow,
+  username = "",
+  password = "",
   refreshInterval = 300,
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
@@ -82,8 +88,8 @@ export const createKeycloakAuthMethod = ({
             grant_type: "password",
             client_id: client,
             scope: "openid profile",
-            username: "",
-            password: "",
+            username,
+            password,
           }
         : undefined;
     if (!loginData)
