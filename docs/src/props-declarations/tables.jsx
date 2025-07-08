@@ -1,4 +1,4 @@
-import { Code } from "../pages/components/code";
+import { Code } from "@usace/groundwork";
 import { cdaUrlParam } from "../pages/components/shared-docs";
 
 const tsTableParams = [
@@ -37,6 +37,13 @@ const tsTableParams = [
     type: "string",
     required: false,
     desc: "The order of the table. Can be 'asc' or 'desc'.",
+  },
+  {
+    name: "dateTimeTableColumnHeader",
+    type: "string",
+    required: false,
+    default: '"Date & Time (Local)"',
+    desc: "The header for the first column which represents the datetime value.",
   },
   {
     name: "dateFormat",
@@ -156,9 +163,33 @@ const cwmsTableParams = [
           Day.js Formatting
         </a>
         .<br />
-        Default is "ddd MMM DD HH:mm"
+        Default is &quot;ddd MMM DD HH:mm&quot;
       </>
     ),
+  },
+  {
+    name: "tableOptions",
+    type: "object",
+    required: false,
+    desc: (
+      <>
+        An object containing additional options for the table. See the component
+        API for <Code>{"<Table />"}</Code> on the Groundwork docs for details:{" "}
+        <a
+          href="https://usace.github.io/groundwork/#/docs/display/table"
+          className="underline"
+        >
+          Table Options
+        </a>
+      </>
+    ),
+  },
+  {
+    name: "dateTimeTableColumnHeader",
+    type: "string",
+    required: false,
+    default: '"Date & Time (Local)"',
+    desc: "The header for the first column. Default: 'Date & Time (Local)'.",
   },
   cdaUrlParam,
 ];

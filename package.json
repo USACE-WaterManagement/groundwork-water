@@ -25,6 +25,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
+        "dev": "cd docs && npm run dev",
         "build": "npm run build-lib",
         "build-lib": "tsc && vite build --mode lib && npm run link",
         "build-docs": "cd docs && vite build",
