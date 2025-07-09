@@ -130,7 +130,7 @@ export default function CWMSPlot({
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
-    const levels = locationLevelsArray.map((level) => level.id);
+    const levels = locationLevelsArray;
 
     if (!tsids?.length) {
       setError("You must specify one or more Timeseries IDs to plot.");
@@ -142,16 +142,6 @@ export default function CWMSPlot({
     const fetchData = async () => {
       let ts_promises = tsids.map(async (name) => {
         try {
-          // Currently, large page size calls are blocked, so the default of 500 is used
-          // let pageSize = 500;
-          // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
-          // let interval = tsid.split(".")[3]
-          // if (interval.includes("Minute")) {
-          //   if (interval.includes("15")) { pageSize = delta * 100 }
-          //   if (interval.includes("1Minute")) { pageSize = delta * 1500 }
-          // }
-          // if (interval.includes("Hour")) { pageSize = delta * 10 }
-          // if (interval.includes("Day")) { pageSize = delta * 1 }
           return await ts_api.getTimeSeries({
             name,
             office,
@@ -170,15 +160,13 @@ export default function CWMSPlot({
 
       let lev_promises = levels?.map(async (item) => {
         let level;
-        // The Level API doesn't accept the same date format
         try {
-          level = await level_api.getLevels({
-            levelIdMask: item,
-            begin: begin?.slice(0, 10),
-            end: end?.slice(0, 10),
+          level = await level_api.getLevelsWithLevelIdTimeSeries({
+            levelId: item.id,
+            unit: item.units,
             office: office,
-            format: "json",
-            unit: unit,
+            begin,
+            end,
           });
         } catch (error) {
           console.error("Error fetching location level data:", error);
@@ -208,8 +196,17 @@ export default function CWMSPlot({
       }
 
       lev_values?.forEach((result) => {
-        const name = result["location-levels"]["location-levels"][0]?.name;
-        const levels = result["location-levels"]["location-levels"][0]?.values;
+        const name_arr = result?.name.split(".");
+        let name
+        if (name_arr?.length > 0) {
+          name =
+            name_arr[0] + "." +
+            name_arr[1] + "." +
+            name_arr[2] + "." +
+            name_arr[3] + "." +
+            name_arr[5]
+        }
+        const levels = result?.values;
         if (result && name) {
           if (!_data.ts[name]) {
             _data.ts[name] = [];
@@ -260,7 +257,11 @@ export default function CWMSPlot({
       staticTraces.map((trace) => traces.push(trace));
     }
 
-    // Loop thru TS Data for timeseries and location levels
+    // Loop thru TS Data for timeseries to add to traces 
+    // and build start and end timestamps to use with the location levels
+    let start = 2100 * 12 * 30 * 24 * 3600 * 1000
+    let end = 0
+
     for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
       const key = ts_keys[k_idx];
 
@@ -283,17 +284,61 @@ export default function CWMSPlot({
             ? deepmerge(trace, tsObj?.traceOptions)
             : trace;
           traces.push(fullTrace);
+          // Update start and end timestamps as necessary
+          ts.values.map(value => {
+            if (value[1] != null) {
+              if (value[0] < start) { start = value[0] }
+              if (value[0] > end) { end = value[0] }
+            }
+          })
         }
       }
+    }
+
+
+    // Loop thru TS Data for location levels
+    for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
+      const key = ts_keys[k_idx];
 
       // Add Location Levels to list of traces
       if (levels?.includes(key)) {
         for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
           ts = tsData.ts[key][ts_idx];
+
+          // Update start and end values
+          let dates = []
+          let values = []
+          let prev_date = ts[0][0]
+
+          ts.map(tsv => {
+            if (tsv[0] && tsv[1]) {
+
+              const dt = tsv[0]
+              const val = tsv[1]
+
+              if (dt < start) {
+                prev_date = dt
+              }
+              if (dt >= start && prev_date < start) {
+                prev_date = dt
+                dates.push(start)
+                values.push(val)
+              }
+              if (dt > start && prev_date > start && dt < end) {
+                dates.push(dt)
+                values.push(val)
+              }
+              if (dt >= end) {
+                dates.push(end)
+                values.push(val)
+              }
+            }
+          })
+
           // Defaults for trace
           const trace = {
-            x: ts.segments[0].values.map((value) => new Date(value[0])),
-            y: ts.segments[0].values.map((value) => value[1]),
+            x: dates.map(d => new Date(d)),
+            y: values,
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
           };
@@ -308,6 +353,7 @@ export default function CWMSPlot({
         }
       }
     }
+
 
     setIsLoading(false);
 
