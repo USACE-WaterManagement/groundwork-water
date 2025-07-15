@@ -31,8 +31,7 @@
         "build-docs": "cd docs && vite build",
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
-        "login": "npm login",
-        "publish": "npm publish --access public"
+        "login": "npm login"
     },
     "repository": {
         "type": "git",
