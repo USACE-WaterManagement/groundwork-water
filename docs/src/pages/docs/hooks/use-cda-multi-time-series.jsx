@@ -125,7 +125,7 @@ const { data, isPending, isError } = useCdaMultiTimeSeries({
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
         Hook Parameters -{" "}
-        <Code className="p-2">{`useCdaTimeSeries({...})`}</Code>
+        <Code className="p-2">{`useCdaMultiTimeSeries({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="TimeSeries"
