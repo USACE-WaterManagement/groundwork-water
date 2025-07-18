@@ -47,6 +47,7 @@ const CWMSPlotExample = () => {
   const locationLevels = [
     {
       id: `${dam}.Elev.Inst.0.Top of Flood`,
+      units: "ft",
       traceOptions: {
         name: "Spillway",
         mode: "lines",
@@ -65,6 +66,7 @@ const CWMSPlotExample = () => {
     },
     {
       id: `${dam}.Elev.Inst.0.Top of Normal`,
+      units: "ft",
       traceOptions: {
         name: "Normal Pool",
         mode: "lines",
@@ -183,6 +185,7 @@ const CWMSPlotExample = () => {
   const locationLevels = [
     {
       id: \`\${dam}.Elev.Inst.0.Top of Flood\`,
+      units: "ft",
       traceOptions: {
         name: "Spillway",
         mode: "lines",
@@ -201,6 +204,7 @@ const CWMSPlotExample = () => {
     },
     {
       id: \`\${dam}.Elev.Inst.0.Top of Normal\`,
+      units: "ft",
       traceOptions: {
         name: "Normal Pool",
         mode: "lines",

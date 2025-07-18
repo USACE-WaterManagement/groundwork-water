@@ -15,7 +15,7 @@ const cwmsPlotProps = [
     name: "unit",
     type: "string",
     default: "undefined",
-    desc: "Specifies the unit or unit system of the response. Options: 'EN', 'SI', specific units (e.g. 'ft')",
+    desc: "Specifies the unit or unit system of the timeSeries response. Options: 'EN', 'SI', specific units (e.g. 'ft')",
   },
   {
     name: "office",
@@ -34,6 +34,12 @@ const cwmsPlotProps = [
     type: "TraceData[]",
     default: "undefined",
     desc: "An array of objects that define the location level ids to plot and, optionally, styling options.  Details below.",
+  },
+  {
+    name: "units",
+    type: "string",
+    default: "undefined",
+    desc: "Specifies the units specific to the location level, e.g. 'ft'",
   },
   {
     name: "pageSize",
