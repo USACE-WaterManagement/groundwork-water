@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import { TimeSeriesApi } from "cwmsjs";
 import dayjs from "dayjs";
 import {
+  Badge,
+  Skeleton,
   Table,
   TableBody,
   TableRow,
@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableCell,
 } from "@usace/groundwork";
-import { useCdaConfig } from "../helpers/cda";
+import useCdaMultiTimeSeries from "../hooks/useCdaMultiTimeSeries";
 
 export default function CWMSTable({
   timeseriesParams,
@@ -27,6 +27,7 @@ export default function CWMSTable({
   dateFormat = "ddd MMM DD HH:mm",
   cdaUrl,
   dateTimeTableColumnHeader = "Date & Time (Local)",
+  queryOptions,
   tableOptions = {
     striped: false,
     dense: false,
@@ -38,133 +39,118 @@ export default function CWMSTable({
     className: "",
   },
 }) {
-  const tableElement = useRef([]);
-  const [tableData, setTableData] = useState(null);
-  const [tsData, setTsData] = useState(null);
-  const config = useCdaConfig("v2", cdaUrl);
-  const ts_api = new TimeSeriesApi(config);
+  const multTimeSeries = useCdaMultiTimeSeries({
+    cdaParams: {
+      name: timeseriesParams.map((item) => item.tsid).join(","),
+      office,
+      unit,
+      datum,
+      begin,
+      end,
+      timezone,
+      trim,
+      pageSize,
+    },
+    cdaUrl,
+    queryOptions: {
+      enabled: !!timeseriesParams.length && !!office,
+      select: (values) => {
+        let data = { ts: {}, dates: [] };
+        let dates = [];
 
-  useEffect(() => {
-    const tsids = timeseriesParams.map((item) => item.tsid);
-
-    if (!tsids.length)
-      throw Error("You must specify one or more Timeseries IDs to table.");
-
-    if (!office) throw Error("You must specify a 3 letter ID for the office");
-
-    // Need support for page size, either defined or set with time delta
-    // And then code to page thru each page and append into ts data
-
-    const fetchData = async () => {
-      let promises = tsids.map(async (name) => {
-        try {
-          return await ts_api.getTimeSeries({
-            name,
-            office,
-            unit,
-            datum,
-            begin,
-            end,
-            timezone,
-            trim,
-            pageSize,
-          });
-        } catch (error) {
-          if (error.response?.status === 404) {
-            console.warn(`Data for ${name} not found: 404`);
-            return null;
-          } else {
-            throw error;
-          }
-        }
-      });
-
-      let values = await Promise.all(promises);
-      let data = { ts: {}, dates: [] };
-      let dates = [];
-
-      values.forEach((result) => {
-        if (result && result.values) {
-          if (!data.ts[result.values]) {
-            data.ts[result.name] = [];
-          }
-
-          let precision = 2;
-          timeseriesParams.map((entry) => {
-            if (entry.tsid == result.name && entry.precision != null) {
-              precision = entry.precision;
-            }
-          });
-
-          result.values.forEach((item) => {
-            const dt = item[0];
-            const val = item[1];
-
-            if (val === null) {
-              data.ts[result.name][dt] = missingString;
-            } else {
-              data.ts[result.name][dt] = val.toFixed(precision);
+        values.forEach((result) => {
+          if (result && result.values) {
+            if (!data.ts[result.values]) {
+              data.ts[result.name] = [];
             }
 
-            if (!dates.includes(dt)) {
-              if (dt % (interval * 1000 * 60) == 0) {
-                dates.push(dt);
+            let precision = 2;
+            timeseriesParams.map((entry) => {
+              if (entry.tsid == result.name && entry.precision != null) {
+                precision = entry.precision;
               }
-            }
-          });
-        } else if (result === null) {
-          console.warn(`Skipping as no data was found.`);
-          data.ts[null] = [];
-        } else {
-          console.warn(`No unit found for ${result?.name}`);
+            });
+
+            result.values.forEach((item) => {
+              const dt = item[0];
+              const val = item[1];
+
+              if (val === null) {
+                data.ts[result.name][dt] = missingString;
+              } else {
+                data.ts[result.name][dt] = val.toFixed(precision);
+              }
+
+              if (!dates.includes(dt)) {
+                if (dt % (interval * 1000 * 60) == 0) {
+                  dates.push(dt);
+                }
+              }
+            });
+          } else if (result === null) {
+            console.warn(`Skipping as no data was found.`);
+            data.ts[null] = [];
+          } else {
+            console.warn(`No unit found for ${result?.name}`);
+          }
+        });
+
+        dates.sort();
+
+        if (!sortAscending) {
+          dates.reverse();
         }
-      });
 
-      dates.sort();
+        data.dates = dates;
+        if (!data) {
+          throw new Error("No data was returned from the server.");
+        }
 
-      if (!sortAscending) {
-        dates.reverse();
-      }
+        const table = [];
 
-      data.dates = dates;
+        data.dates.forEach((dt) => {
+          const row = [];
 
-      setTsData(data);
-    };
+          Object.keys(data.ts).forEach((item) => {
+            row.push(data.ts[item][dt]);
+          });
+          table.push([new Date(dt), row]);
+        });
 
-    fetchData();
-  }, [
-    timeseriesParams,
-    office,
-    unit,
-    datum,
-    begin,
-    end,
-    timezone,
-    trim,
-    pageSize,
-    sortAscending,
-    missingString,
-    interval,
-  ]);
+        return table;
+      },
+      ...queryOptions, // allow for additional OR overrides
+    },
+  });
+  if (!timeseriesParams.map((item) => item.tsid).length)
+    throw Error("You must specify one or more Timeseries IDs to table.");
 
-  useEffect(() => {
-    if (!tableElement.current || !tsData) {
-      return;
-    }
+  if (!office) throw Error("You must specify a 3 letter ID for the office");
 
-    const table = [];
-
-    tsData.dates.forEach((dt) => {
-      const row = [];
-
-      Object.keys(tsData.ts).forEach((item) => {
-        row.push(tsData.ts[item][dt]);
-      });
-      table.push([new Date(dt), row]);
-    });
-    setTableData(table);
-  }, [tsData, timeseriesParams]);
-
+  if (multTimeSeries.isLoading) {
+    return (
+      <Table {...tableOptions}>
+        <TableHead>
+          <TableRow>
+            <TableHeader>{dateTimeTableColumnHeader}</TableHeader>
+            {timeseriesParams.map((item, index) => (
+              <TableHeader key={`header${index}`}>{item.header}</TableHeader>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell colSpan={timeseriesParams.length + 1}>
+              <Skeleton className="gww-w-full gww-h-full" />
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+  }
+  if (multTimeSeries.isError) {
+    return <Badge color="red">Error:{multTimeSeries.error.message}</Badge>;
+  }
   return (
     <Table {...tableOptions}>
       <TableHead>
@@ -177,7 +163,7 @@ export default function CWMSTable({
       </TableHead>
       <TableBody>
         {/* Each Row */}
-        {tableData?.map((item, index) => (
+        {multTimeSeries.data.map((item, index) => (
           <TableRow key={`row${index}`}>
             {/* Date-Time */}
             <TableCell key={`cell${index}`}>
