@@ -1,4 +1,14 @@
-import { H3, Text, Card, Badge } from "@usace/groundwork";
+import {
+  H3,
+  Text,
+  Card,
+  Badge,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+} from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
 import CdaParamsTable from "../../components/cda-params-table";
 import QueryClientWarning from "../../../components/QueryClientWarning";
@@ -21,7 +31,7 @@ const OutflowCard = () => {
   if (isError) return <span>TimeSeries error!</span>;
   return (
     <Card className="gw-w-96">
-      <H3>Buckhorn Outflow Data</H3>
+      <H3>Keystone Lake: Multiple TimeSeries Data</H3>
       {data.map((ts) => {
         return (
           <Card key={ts.name} className="gw-my-2">
@@ -30,25 +40,32 @@ const OutflowCard = () => {
               <Badge color="yellow">Begin: {ts.begin.toISOString()}</Badge>
               <Badge color="yellow">End: {ts.end.toISOString()}</Badge>
             </div>
-            <ul>
-              <li>Time - Value</li>
-
-              {ts.values
-                .filter((entry) => !!entry[1]) // Remove empty records
-                .slice(-5) // Trim to the last 5 values
-                .map((entry) => {
-                  const time = new Date(entry[0]).toLocaleTimeString();
-                  const value = entry[1].toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  });
-                  return (
-                    <li key={entry[0]}>
-                      {time} - {value}
-                    </li>
-                  );
-                })}
-            </ul>
+            <Table className="gw-w-full" dense overflow>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Value</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {ts.values
+                  .filter((entry) => !!entry[1]) // Remove empty records
+                  .slice(-5) // Trim to the last 5 values
+                  .map((entry) => {
+                    const time = new Date(entry[0]).toLocaleTimeString();
+                    const value = entry[1].toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    });
+                    return (
+                      <TableRow key={entry[0]}>
+                        <TableCell>{time}</TableCell>
+                        <TableCell>{value}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
           </Card>
         );
       })}
@@ -61,10 +78,16 @@ function UseCdaMultiTimeSeries() {
     <DocsPage middleText="CDA MultiTimeSeries Hook">
       <div>
         <Text>
-          {`The useCdaMultiTimeSeries hook can be used to retrieve timeseries data
-            using cwms-data-api (CDA). It requires only a timeseries ID and an
-            office ID, but can be further customized using additional parameters
-            provided through CDA if desired.`}
+          The useCdaMultiTimeSeries hook can be used to retrieve multiple
+          timeseries data in parallel using cwms-data-api (CDA). It requires
+          only a timeseries ID and an office ID, but can be further customized
+          using additional parameters provided through CDA if desired.
+        </Text>
+        <Text>
+          To retrieve multiple timeseries, the `name` parameter should be a
+          comma-separated list of timeseries IDs. The hook will return an array
+          of timeseries data objects, each containing the timeseries name, begin
+          and end dates, values and other metadata for each timeseries response.
         </Text>
         <QueryClientWarning />
       </div>
@@ -87,7 +110,7 @@ const { data, isPending, isError } = useCdaMultiTimeSeries({
   if (isError) return <span>TimeSeries error!</span>;
   return (
     <Card className="gw-w-96">
-      <H3>Buckhorn Outflow Data</H3>
+      <H3>Keystone Lake: Multiple TimeSeries Data</H3>
       {data.map((ts) => {
         return (
           <Card key={ts.name} className="gw-my-2">
