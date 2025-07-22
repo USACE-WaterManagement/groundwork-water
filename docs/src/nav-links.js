@@ -84,6 +84,11 @@ export default [
                 href: "/docs/hooks/use-cda-time-series",
             },
             {
+                id: "use-cda-multi-time-series",
+                text: "CDA Multi Time Series",
+                href: "/docs/hooks/use-cda-multi-time-series",
+            },
+            {
                 id: "use-cda-time-series-group",
                 text: "CDA Time Series Group",
                 href: "/docs/hooks/use-cda-time-series-group",
