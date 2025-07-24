@@ -80,4 +80,9 @@ const cdaBlobsParams = [
     }
 ]
 
-export { cdaTSHookParams, cdaCatalogParams, cdaBlobsParams };
+const cdaBlobByIdParams = [
+    { name: "blob-id", type: "string", required: true, description: "The unique ID of the file (blob)" },
+    { name: "office", type: "string", required: false, description: "The owning office (optional filter)" },
+];
+
+export { cdaTSHookParams, cdaCatalogParams, cdaBlobsParams, cdaBlobByIdParams };

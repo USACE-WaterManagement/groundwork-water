@@ -29,6 +29,7 @@ import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
 import UseCdaFileCatalog from "../pages/docs/hooks/use-cda-file-catalog";
+import UseCdaFile from "../pages/docs/hooks/use-cda-file";
 
 export default createRouteBundle(
     {
@@ -45,6 +46,7 @@ export default createRouteBundle(
         "/docs/hooks": DataHooks,
         "/docs/hooks/use-cda-catalog": UseCdaCatalog,
         "/docs/hooks/use-cda-file-catalog": UseCdaFileCatalog,
+        "/docs/hooks/use-cda-file": UseCdaFile,
         "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
         "/docs/hooks/use-cda-location": UseCdaLocation,
         "/docs/hooks/use-cda-levels": UseCdaLevels,
