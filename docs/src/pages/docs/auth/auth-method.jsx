@@ -54,16 +54,15 @@ function AuthMethodDocs() {
     <DocsPage middleText="{componentCode}">
       <div>
         <Text>
-          An {authMethod} is an interface for linking an authentication platform
-          with an {authProvider}.
+          An {authMethod} is an interface for linking an authentication platform with an{" "}
+          {authProvider}.
         </Text>
         <Text className="mt-4">
           Constructor functions are available in Groundwork-Water to create an{" "}
-          {authMethod} for authentication platforms that are commonly used
-          within the water management community. These functions require the
-          user to provide only a configuration (url, user details, etc.) and
-          will handle the nuts and bolts internally. The following constructor
-          functions are currently available:
+          {authMethod} for authentication platforms that are commonly used within the
+          water management community. These functions require the user to provide only a
+          configuration (url, user details, etc.) and will handle the nuts and bolts
+          internally. The following constructor functions are currently available:
         </Text>
         <ul className="list-disc mt-2 ml-8 text-gray-500">
           <li>
@@ -78,9 +77,9 @@ function AuthMethodDocs() {
           </li>
         </ul>
         <Text className="mt-4">
-          While use of the provided functions is recommended where applicable,
-          custom {authMethod} objects can be created for advanced use cases. The
-          interface shape is provided here for reference.
+          While use of the provided functions is recommended where applicable, custom{" "}
+          {authMethod} objects can be created for advanced use cases. The interface
+          shape is provided here for reference.
         </Text>
       </div>
       <Divider text="API Reference" className="mt-6" />

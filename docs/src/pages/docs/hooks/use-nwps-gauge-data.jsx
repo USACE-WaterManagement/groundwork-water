@@ -104,8 +104,7 @@ const NwpsForecastCard = () => {
       </CodeBlock>
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters -{" "}
-        <Code className="p-2">{`useNwpsGaugeData({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useNwpsGaugeData({...})`}</Code>
       </div>
       <ParamsTable paramsList={hookParams} />
     </DocsPage>

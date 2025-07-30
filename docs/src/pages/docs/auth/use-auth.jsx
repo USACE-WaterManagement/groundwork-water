@@ -55,8 +55,7 @@ function UseAuthDocs() {
     <DocsPage middleText="{componentCode}">
       <div>
         <Text>
-          The {useAuth} hook provides access to your current authentication
-          context.
+          The {useAuth} hook provides access to your current authentication context.
         </Text>
         <Text className="mt-4">
           Any components that require access to authentication can tie in to the{" "}
@@ -64,23 +63,22 @@ function UseAuthDocs() {
         </Text>
         <ul className="list-disc mt-2 ml-8 text-gray-500">
           <li>
-            a LoginButton component could attach the <Code>login</Code> function
-            to its onClick property
+            a LoginButton component could attach the <Code>login</Code> function to its
+            onClick property
           </li>
           <li>
-            a component displayed only to authenticated users could toggle its
-            display based on the <Code>isAuth</Code> boolean
+            a component displayed only to authenticated users could toggle its display
+            based on the <Code>isAuth</Code> boolean
           </li>
           <li>
-            a component that fires a POST request could retrieve the{" "}
-            <Code>token</Code> string for inclusion in the request
+            a component that fires a POST request could retrieve the <Code>token</Code>{" "}
+            string for inclusion in the request
           </li>
         </ul>
         <Text className="mt-4">
-          In order for the {useAuth} hook to function correctly, it must be used
-          within a <Code>&lt;QueryClientProvider&gt;</Code> AND an{" "}
-          {authProvider}. The {authProvider} must be configured with an
-          appropriate {authMethod}.
+          In order for the {useAuth} hook to function correctly, it must be used within
+          a <Code>&lt;QueryClientProvider&gt;</Code> AND an {authProvider}. The{" "}
+          {authProvider} must be configured with an appropriate {authMethod}.
         </Text>
         <QueryClientWarning />
       </div>
@@ -98,8 +96,7 @@ function UseAuthDocs() {
       <AuthHookExample />
       <Divider text="API Reference" />
       <div className="font-bold text-lg pt-6">
-        Return Parameters -{" "}
-        <Code className="p-2">{`const {...} = useAuth()`}</Code>
+        Return Parameters - <Code className="p-2">{`const {...} = useAuth()`}</Code>
       </div>
       <ParamsTable paramsList={returnParams} showReq={false} />
     </DocsPage>

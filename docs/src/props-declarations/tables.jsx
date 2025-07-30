@@ -52,10 +52,7 @@ const tsTableParams = [
     desc: (
       <>
         The format of the date in the table in any string available here:{" "}
-        <a
-          href="https://day.js.org/docs/en/display/format"
-          className="gw-underline"
-        >
+        <a href="https://day.js.org/docs/en/display/format" className="gw-underline">
           Day.js Formatting
         </a>
         .
@@ -83,16 +80,16 @@ const cwmsTableParams = [
     default: "undefined",
     desc: (
       <div>
-        Specifies the elevation datum of the response. This field affects only
-        elevation location levels.
+        Specifies the elevation datum of the response. This field affects only elevation
+        location levels.
         <ul>
           <li>
-            <b>NAVD88</b>: The elevation values will in the specified or default
-            units above the NAVD-88 datum.
+            <b>NAVD88</b>: The elevation values will in the specified or default units
+            above the NAVD-88 datum.
           </li>
           <li>
-            <b>NGVD29</b>: The elevation values will be in the specified or
-            default units above the NGVD-29 datum.
+            <b>NGVD29</b>: The elevation values will be in the specified or default
+            units above the NGVD-29 datum.
           </li>
         </ul>
       </div>
@@ -156,10 +153,7 @@ const cwmsTableParams = [
     desc: (
       <>
         The format of the date in the table in any string available here:{" "}
-        <a
-          href="https://day.js.org/docs/en/display/format"
-          className="gw-underline"
-        >
+        <a href="https://day.js.org/docs/en/display/format" className="gw-underline">
           Day.js Formatting
         </a>
         .<br />
@@ -173,8 +167,8 @@ const cwmsTableParams = [
     required: false,
     desc: (
       <>
-        An object containing additional options for the table. See the component
-        API for <Code>{"<Table />"}</Code> on the Groundwork docs for details:{" "}
+        An object containing additional options for the table. See the component API for{" "}
+        <Code>{"<Table />"}</Code> on the Groundwork docs for details:{" "}
         <a
           href="https://usace.github.io/groundwork/#/docs/display/table"
           className="underline"

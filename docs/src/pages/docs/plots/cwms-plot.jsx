@@ -4,10 +4,7 @@ import { Code as CodeBlock } from "../../components/code.jsx";
 import Divider from "../../components/divider.jsx";
 import DocsPage from "../_docs-wrapper.jsx";
 import PropsTable from "../../components/props-table.jsx";
-import {
-  cwmsPlotProps,
-  traceDataProps,
-} from "../../../props-declarations/plots.jsx";
+import { cwmsPlotProps, traceDataProps } from "../../../props-declarations/plots.jsx";
 
 const CWMSPlotExample = () => {
   const plotHeight = 550;
@@ -128,18 +125,18 @@ function CWMSPlotDocs() {
     <DocsPage middleText="CWMS Plot">
       <UsaceBox title="CWMS Plot">
         <Text>
-          The CWMS Plot is a generic plot for displaying time series and
-          location level data from CWMS.
+          The CWMS Plot is a generic plot for displaying time series and location level
+          data from CWMS.
         </Text>
         <Text className="mt-2">
-          This plot handles the nuts and bolts of data retrieval for the user,
-          allowing for multiple CWMS data sets to be plotted by providing only
-          the time series or location level ID.
+          This plot handles the nuts and bolts of data retrieval for the user, allowing
+          for multiple CWMS data sets to be plotted by providing only the time series or
+          location level ID.
         </Text>
         <Text className="mt-2">
-          All Plotly trace and layout options are exposed to the user, allowing
-          for full customization of the appearance of the plot. Reasonable
-          defaults are used if specific options are not provided.
+          All Plotly trace and layout options are exposed to the user, allowing for full
+          customization of the appearance of the plot. Reasonable defaults are used if
+          specific options are not provided.
         </Text>
       </UsaceBox>
       <Divider text="Example" className="mt-8" />

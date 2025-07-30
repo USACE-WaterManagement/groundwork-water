@@ -62,10 +62,9 @@ function UseCdaTimeSeriesGroup() {
     <DocsPage middleText="CDA Time Series Group Hook">
       <div>
         <Text>
-          The useCdaTimeSeriesGroup hook can be used to retrieve metadata and
-          associated time series for a given time series group using
-          cwms-data-api (CDA). It requires the passing of a groupId, office, and
-          categoryId.
+          The useCdaTimeSeriesGroup hook can be used to retrieve metadata and associated
+          time series for a given time series group using cwms-data-api (CDA). It
+          requires the passing of a groupId, office, and categoryId.
         </Text>
         <QueryClientWarning />
       </div>
@@ -108,8 +107,7 @@ const TimeSeriesGroupList = () => {
       </CodeBlock>
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters -{" "}
-        <Code className="p-2">{`useCdaTimeSeriesGroup({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useCdaTimeSeriesGroup({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="TimeSeries Group"

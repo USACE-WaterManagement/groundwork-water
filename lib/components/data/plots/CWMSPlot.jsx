@@ -66,14 +66,11 @@ export default function CWMSPlot({
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
 
-  const timeSeriesArray = useMemo(
-    () => normalizeDataProp(timeSeries),
-    [timeSeries]
-  );
+  const timeSeriesArray = useMemo(() => normalizeDataProp(timeSeries), [timeSeries]);
 
   const locationLevelsArray = useMemo(
     () => normalizeDataProp(locationLevels),
-    [locationLevels]
+    [locationLevels],
   );
 
   const config_v2 = new Configuration({
@@ -107,8 +104,7 @@ export default function CWMSPlot({
   };
 
   timeSeriesArray.forEach((item, index) => {
-    const yaxis_id =
-      getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
+    const yaxis_id = getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
     if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
@@ -123,7 +119,7 @@ export default function CWMSPlot({
   });
 
   defaultLayout.grid.rows = Object.keys(defaultLayout).filter((key) =>
-    key.includes("yaxis")
+    key.includes("yaxis"),
   ).length;
 
   const layout = deepmerge(defaultLayout, layoutOptions);
@@ -197,14 +193,18 @@ export default function CWMSPlot({
 
       lev_values?.forEach((result) => {
         const name_arr = result?.name.split(".");
-        let name
+        let name;
         if (name_arr?.length > 0) {
           name =
-            name_arr[0] + "." +
-            name_arr[1] + "." +
-            name_arr[2] + "." +
-            name_arr[3] + "." +
-            name_arr[5]
+            name_arr[0] +
+            "." +
+            name_arr[1] +
+            "." +
+            name_arr[2] +
+            "." +
+            name_arr[3] +
+            "." +
+            name_arr[5];
         }
         const levels = result?.values;
         if (result && name) {
@@ -257,10 +257,10 @@ export default function CWMSPlot({
       staticTraces.map((trace) => traces.push(trace));
     }
 
-    // Loop thru TS Data for timeseries to add to traces 
+    // Loop thru TS Data for timeseries to add to traces
     // and build start and end timestamps to use with the location levels
-    let start = 2100 * 12 * 30 * 24 * 3600 * 1000
-    let end = 0
+    let start = 2100 * 12 * 30 * 24 * 3600 * 1000;
+    let end = 0;
 
     for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
       const key = ts_keys[k_idx];
@@ -277,24 +277,25 @@ export default function CWMSPlot({
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const tsObj = timeSeriesArray?.filter(
-            (item) => item.id === ts.name
-          )[0];
+          const tsObj = timeSeriesArray?.filter((item) => item.id === ts.name)[0];
           const fullTrace = tsObj?.traceOptions
             ? deepmerge(trace, tsObj?.traceOptions)
             : trace;
           traces.push(fullTrace);
           // Update start and end timestamps as necessary
-          ts.values.map(value => {
+          ts.values.map((value) => {
             if (value[1] != null) {
-              if (value[0] < start) { start = value[0] }
-              if (value[0] > end) { end = value[0] }
+              if (value[0] < start) {
+                start = value[0];
+              }
+              if (value[0] > end) {
+                end = value[0];
+              }
             }
-          })
+          });
         }
       }
     }
-
 
     // Loop thru TS Data for location levels
     for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
@@ -306,46 +307,43 @@ export default function CWMSPlot({
           ts = tsData.ts[key][ts_idx];
 
           // Update start and end values
-          let dates = []
-          let values = []
-          let prev_date = ts[0][0]
+          let dates = [];
+          let values = [];
+          let prev_date = ts[0][0];
 
-          ts.map(tsv => {
+          ts.map((tsv) => {
             if (tsv[0] && tsv[1]) {
-
-              const dt = tsv[0]
-              const val = tsv[1]
+              const dt = tsv[0];
+              const val = tsv[1];
 
               if (dt < start) {
-                prev_date = dt
+                prev_date = dt;
               }
               if (dt >= start && prev_date < start) {
-                prev_date = dt
-                dates.push(start)
-                values.push(val)
+                prev_date = dt;
+                dates.push(start);
+                values.push(val);
               }
               if (dt > start && prev_date > start && dt < end) {
-                dates.push(dt)
-                values.push(val)
+                dates.push(dt);
+                values.push(val);
               }
               if (dt >= end) {
-                dates.push(end)
-                values.push(val)
+                dates.push(end);
+                values.push(val);
               }
             }
-          })
+          });
 
           // Defaults for trace
           const trace = {
-            x: dates.map(d => new Date(d)),
+            x: dates.map((d) => new Date(d)),
             y: values,
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const levelObj = locationLevelsArray?.filter(
-            (item) => item.id == key
-          )[0];
+          const levelObj = locationLevelsArray?.filter((item) => item.id == key)[0];
           const fullTrace = levelObj?.traceOptions
             ? deepmerge(trace, levelObj?.traceOptions)
             : trace;
@@ -354,20 +352,12 @@ export default function CWMSPlot({
       }
     }
 
-
     setIsLoading(false);
 
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [
-    layout,
-    locationLevelsArray,
-    responsive,
-    staticTraces,
-    timeSeriesArray,
-    tsData,
-  ]);
+  }, [layout, locationLevelsArray, responsive, staticTraces, timeSeriesArray, tsData]);
 
   return (
     <div

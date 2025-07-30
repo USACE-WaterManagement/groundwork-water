@@ -1,11 +1,4 @@
-import {
-  Container,
-  Text,
-  Code,
-  UsaceBox,
-  TextLink,
-  Hero,
-} from "@usace/groundwork";
+import { Container, Text, Code, UsaceBox, TextLink, Hero } from "@usace/groundwork";
 import CopyButton from "../components/CopyButton";
 
 const base = import.meta.env.BASE_URL;
@@ -41,14 +34,14 @@ function Home() {
                 <CopyButton text="npm uninstall @usace-watermanagement/groundwork-water" />
               </div>
               <Text>
-                To update Groundwork Water, run the uninstall command and then
-                the install command. Confirm in your package.json that the
-                version number has been updated.
+                To update Groundwork Water, run the uninstall command and then the
+                install command. Confirm in your package.json that the version number
+                has been updated.
               </Text>
 
               <Text>
-                Then, import the components you need and our CSS, and start
-                building your application!
+                Then, import the components you need and our CSS, and start building
+                your application!
               </Text>
               <div className="mt-3">
                 <TextLink href="/docs" className="text-lg font-bold">
