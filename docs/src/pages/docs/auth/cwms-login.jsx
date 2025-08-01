@@ -31,23 +31,23 @@ function CwmsLoginDocs() {
     <DocsPage middleText="{componentCode}">
       <div>
         <Text>
-          The {cwmsLogin} function returns an {authMethod} configured to
-          authenticate using a CWMSLogin provider.
+          The {cwmsLogin} function returns an {authMethod} configured to authenticate
+          using a CWMSLogin provider.
         </Text>
         <Text className="mt-4">
-          The function must be passed a configuration object with two values:
-          the host URL for the CWMSLogin instance and the URL for an API
-          endpoint that can be used to check authentication status.
+          The function must be passed a configuration object with two values: the host
+          URL for the CWMSLogin instance and the URL for an API endpoint that can be
+          used to check authentication status.
         </Text>
         <Text className="mt-4">
-          This authentication method expects that the access token will be
-          handled using cookies. Therefore, the token string itself is managed
-          by the browser and will not be directly available to the application.
+          This authentication method expects that the access token will be handled using
+          cookies. Therefore, the token string itself is managed by the browser and will
+          not be directly available to the application.
         </Text>
         <Text className="mt-4">
           When making requests using this authentication method, be sure to set{" "}
-          <Code>credentials: `include`</Code> in the request headers. This will
-          ensure that the authentication cookie is included with the request.
+          <Code>credentials: `include`</Code> in the request headers. This will ensure
+          that the authentication cookie is included with the request.
         </Text>
       </div>
       <Divider text="Example Usage" className="mt-6 mb-4" />
@@ -63,8 +63,7 @@ const authMethod = createCwmsLoginAuthMethod({
       </CodeBlock>
       <Divider text="API Reference" className="mt-6" />
       <div className="font-bold text-lg pt-6">
-        config -{" "}
-        <Code className="p-2">{`createCwmsLoginAuthMethod(config)`}</Code>
+        config - <Code className="p-2">{`createCwmsLoginAuthMethod(config)`}</Code>
       </div>
       <PropsTable propsList={componentProps} />
     </DocsPage>

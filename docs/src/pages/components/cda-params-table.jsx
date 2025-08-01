@@ -12,8 +12,8 @@ const CdaParamsTable = ({ requestObject, requestType, cwmsJsType }) => {
       required: true,
       desc: (
         <>
-          Parameters provided to CDA for a {requestObject} {requestType}{" "}
-          request. Core parameters are listed below. Check the{" "}
+          Parameters provided to CDA for a {requestObject} {requestType} request. Core
+          parameters are listed below. Check the{" "}
           <a href={docsUrl} className="underline">
             cwmsjs documentation
           </a>{" "}

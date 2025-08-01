@@ -65,13 +65,13 @@ function Tables() {
     >
       <UsaceBox title="CWMS Table">
         <Text>
-          The CWMS Table is a generic table for displaying one or more
-          timeseries containing CWMS Data.
+          The CWMS Table is a generic table for displaying one or more timeseries
+          containing CWMS Data.
         </Text>
         <Text className="mt-2">
-          This table handles the nuts and bolts of data retrieval for the user,
-          allowing for multiple CWMS data sets to be tabulated by providing only
-          the time series, office, and other necessary parameters.
+          This table handles the nuts and bolts of data retrieval for the user, allowing
+          for multiple CWMS data sets to be tabulated by providing only the time series,
+          office, and other necessary parameters.
         </Text>
 
         <CWMSTable
@@ -95,8 +95,8 @@ function Tables() {
         />
         <Divider text="Header Line Breaks" className="mt-8" />
         <Text className="mb-2">
-          The header for the table can be set to an HTML tag or component with
-          line breaks.
+          The header for the table can be set to an HTML tag or component with line
+          breaks.
           <Code enableCopy={false} className="p-2" language="jsx">
             {`// For example:
 const datum = "NGVD29";

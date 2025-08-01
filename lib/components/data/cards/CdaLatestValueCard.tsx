@@ -117,30 +117,31 @@ interface CardValueProps {
 
 const CardValue = ({ value, units, digits = 0, datum = "" }: CardValueProps) => {
   if (!Number.isFinite(digits)) {
-    console.error("CardValue: 'digits' prop must be a finite number. Using default value of 0.");
+    console.error(
+      "CardValue: 'digits' prop must be a finite number. Using default value of 0.",
+    );
     digits = 0;
   }
-  const roundedValue = typeof value === "number" ? (
-    digits >= 0 ? (
-      value // No rounding needed for positive digits
-    ) : (
-      Math.round(value / Math.pow(10, Math.abs(digits))) * Math.pow(10, Math.abs(digits))
-    )
-  ) : null; // Or some other default if 'value' is not a number
+  const roundedValue =
+    typeof value === "number"
+      ? digits >= 0
+        ? value // No rounding needed for positive digits
+        : Math.round(value / Math.pow(10, Math.abs(digits))) *
+          Math.pow(10, Math.abs(digits))
+      : null; // Or some other default if 'value' is not a number
 
-  const formattedValue = typeof roundedValue === "number" ? (
-    digits >= 0 ? (
-      roundedValue.toLocaleString(undefined, {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      })
-    ) : (
-      roundedValue.toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })
-    )
-  ) : "-";
+  const formattedValue =
+    typeof roundedValue === "number"
+      ? digits >= 0
+        ? roundedValue.toLocaleString(undefined, {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+          })
+        : roundedValue.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })
+      : "-";
 
   return (
     <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
@@ -149,7 +150,7 @@ const CardValue = ({ value, units, digits = 0, datum = "" }: CardValueProps) => 
         <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
           {units}
         </span>
-        {datum !== "" && typeof datum === 'string' && (
+        {datum !== "" && typeof datum === "string" && (
           <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
             {datum}
           </span>

@@ -31,16 +31,16 @@ function AuthProviderDocs() {
     <DocsPage middleText="{componentCode}">
       <div>
         <Text>
-          The {authProvider} is a wrapper that provides your authentication
-          context to the rest of your application.
+          The {authProvider} is a wrapper that provides your authentication context to
+          the rest of your application.
         </Text>
         <Text className="mt-4">
-          Configuration of your authentication environment is handled by an{" "}
-          {authMethod} that is passed into the {authProvider}.
+          Configuration of your authentication environment is handled by an {authMethod}{" "}
+          that is passed into the {authProvider}.
         </Text>
         <Text className="mt-4">
-          Within the {authProvider}, access to your authentication context is
-          provided through the {useAuth} hook.
+          Within the {authProvider}, access to your authentication context is provided
+          through the {useAuth} hook.
         </Text>
         <QueryClientWarning />
       </div>

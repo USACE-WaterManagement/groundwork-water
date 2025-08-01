@@ -64,15 +64,13 @@ function AuthenticationDocs() {
     <DocsPage middleText="Authentication">
       <div>
         <Text>
-          Authentication management in Groundwork-Water is designed to support
-          common authentication platforms used by the water management community
-          such as Keycloak and CWMSLogin. Authentication is handled using three
-          main components:
+          Authentication management in Groundwork-Water is designed to support common
+          authentication platforms used by the water management community such as
+          Keycloak and CWMSLogin. Authentication is handled using three main components:
         </Text>
         <ul className="list-disc ml-12 text-gray-500">
           <li>
-            an {authMethod}, generally created using one of the provided
-            constructors:
+            an {authMethod}, generally created using one of the provided constructors:
             <ul className="list-disc ml-8">
               <li>
                 <a href="/docs/auth/keycloak" className="hover:underline">
@@ -91,24 +89,22 @@ function AuthenticationDocs() {
             requiring authentication)
           </li>
           <li>
-            a {useAuth} hook that provides access to authentication
-            functionality where needed
+            a {useAuth} hook that provides access to authentication functionality where
+            needed
           </li>
         </ul>
         <QueryClientWarning />
       </div>
       <Divider text="Setup" className="mt-6 mb-4" />
       <Text>
-        These examples provide a brief overview of authentication setup. Please
-        refer to the individual component documentation pages for more detailed
-        information.
+        These examples provide a brief overview of authentication setup. Please refer to
+        the individual component documentation pages for more detailed information.
       </Text>
       <H4 className="mt-4 mb-2">AuthMethod</H4>
       <Text>
-        An {authMethod} object must be created to configure your authentication
-        within the {authProvider}. Typically, this can be done at the top level
-        of your application, e.g. App.jsx/tsx, using the provided constructor
-        functions.
+        An {authMethod} object must be created to configure your authentication within
+        the {authProvider}. Typically, this can be done at the top level of your
+        application, e.g. App.jsx/tsx, using the provided constructor functions.
       </Text>
       <CodeBlock language="jsx">
         {`import { createCwmsLoginAuthMethod } from "@usace-watermanagement/groundwork-water";
@@ -121,10 +117,10 @@ const authMethod = createCwmsLoginAuthMethod({
       </CodeBlock>
       <H4 className="mb-2">AuthProvider</H4>
       <Text>
-        Your application (or the parts of your application requiring
-        authentication) must be wrapped in an {authProvider} component. The
-        previously-created {authMethod} will be passed to the {authProvider} to
-        apply the configuration within your application.
+        Your application (or the parts of your application requiring authentication)
+        must be wrapped in an {authProvider} component. The previously-created{" "}
+        {authMethod} will be passed to the {authProvider} to apply the configuration
+        within your application.
       </Text>
       <CodeBlock language="jsx">
         {`import {
@@ -145,10 +141,9 @@ const authMethod = createCwmsLoginAuthMethod({
       </CodeBlock>
       <H4 className="mb-2">useAuth()</H4>
       <Text>
-        The {useAuth} hook provides access to your authentication context within
-        your application. This includes features such as login/logout methods,
-        an authentication status boolean, and, when applicable, a JWT token
-        string.
+        The {useAuth} hook provides access to your authentication context within your
+        application. This includes features such as login/logout methods, an
+        authentication status boolean, and, when applicable, a JWT token string.
       </Text>
       <Text className="mt-2">
         The following example expands upon the{" "}

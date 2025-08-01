@@ -21,10 +21,7 @@ function DocsPage({
     if (!prevUrl && !nextUrl) return null;
     return (
       <div className="select-none mb-5 flex flex-row justify-between items-center navigation-buttons relative">
-        <div
-          onMouseEnter={handlePrevMouseEnter}
-          onMouseLeave={handlePrevMouseLeave}
-        >
+        <div onMouseEnter={handlePrevMouseEnter} onMouseLeave={handlePrevMouseLeave}>
           {prevUrl ? (
             <Prev url={prevUrl} className="relative z-10 hover:text-white" />
           ) : null}
@@ -32,10 +29,7 @@ function DocsPage({
         <span className="middle-text relative bg-white px-2 font-bold">
           {hoverText}
         </span>
-        <div
-          onMouseEnter={handleNextMouseEnter}
-          onMouseLeave={handleNextMouseLeave}
-        >
+        <div onMouseEnter={handleNextMouseEnter} onMouseLeave={handleNextMouseLeave}>
           {nextUrl ? (
             <Next url={nextUrl} className="relative z-10 hover:text-white" />
           ) : null}

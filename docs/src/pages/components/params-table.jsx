@@ -13,9 +13,7 @@ import {
 
 function ParamsTable({ paramsList, showReq = true }) {
   if (!paramsList || !paramsList.length)
-    return (
-      <Text className="gw-pt-3">This hook does not accept any parameters.</Text>
-    );
+    return <Text className="gw-pt-3">This hook does not accept any parameters.</Text>;
   return (
     <Table striped dense>
       <TableHead>

@@ -17,25 +17,19 @@ export default function Docs() {
         <div className="gw-mt-3 gw-mb-3">
           <Text>
             Similar to{" "}
-            <a
-              className="gw-underline"
-              href="https://usace.github.io/groundwork"
-            >
+            <a className="gw-underline" href="https://usace.github.io/groundwork">
               Groundwork
             </a>
             , <b>Groundwork-Water </b>
-            is a set of React <b>DATA</b> components that are designed to be
-            used by USACE Developers building internal and externally facing web
-            pages and web apps. If you are just getting started with Groundwork
-            for the first time we suggest you start with the{" "}
-            <a
-              className="gw-underline"
-              href="https://usace.github.io/groundwork"
-            >
+            is a set of React <b>DATA</b> components that are designed to be used by
+            USACE Developers building internal and externally facing web pages and web
+            apps. If you are just getting started with Groundwork for the first time we
+            suggest you start with the{" "}
+            <a className="gw-underline" href="https://usace.github.io/groundwork">
               Groundwork
             </a>{" "}
-            documentation. If you are ready to start creating data components
-            for your site you are in the right place! See the{" "}
+            documentation. If you are ready to start creating data components for your
+            site you are in the right place! See the{" "}
             <a
               className="gw-underline"
               href="https://vitejs.dev/guide/"
@@ -48,8 +42,7 @@ export default function Docs() {
             <a className="gw-underline" href="/docs/quick-start">
               quick start guide
             </a>{" "}
-            for a step by step guide for getting set up using Vite with
-            Groundwork.
+            for a step by step guide for getting set up using Vite with Groundwork.
           </Text>
           <Text className="gw-mt-3">
             Set up a new project with Vite using the following command:
@@ -73,14 +66,12 @@ export default function Docs() {
           {`import "@usace-watermanagement/groundwork-water/dist/style.css";`}
         </Code>
         <Text>
-          Make sure to import style.css from Groundwork-Water into your
-          top-level component (i.e. App.jsx), then go build stuff with the
-          components!
+          Make sure to import style.css from Groundwork-Water into your top-level
+          component (i.e. App.jsx), then go build stuff with the components!
         </Text>
         <br />
         <Text>
-          Note: The Groundwork-Water styles include all of the base Groundwork
-          styles.
+          Note: The Groundwork-Water styles include all of the base Groundwork styles.
         </Text>
       </UsaceBox>
     </DocsPage>
