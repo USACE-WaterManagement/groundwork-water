@@ -28,6 +28,7 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
+import UseMidasProjectTS from "../pages/docs/hooks/use-midas-time-series";
 
 export default createRouteBundle(
   {
@@ -50,6 +51,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
+    "/docs/hooks/use-midas-ts": UseMidasProjectTS,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,

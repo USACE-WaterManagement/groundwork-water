@@ -98,6 +98,11 @@ export default [
         text: "NWPS Gauge Data",
         href: "/docs/hooks/use-nwps-gauge-data",
       },
+      {
+        id: "use-midas-ts",
+        text: "MIDAS Project Time Series",
+        href: "/docs/hooks/use-midas-ts",
+      },
     ],
   },
   {
