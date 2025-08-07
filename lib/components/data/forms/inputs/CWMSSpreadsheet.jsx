@@ -50,7 +50,7 @@ function CWMSSpreadsheet({
       setSpreadsheetData(
         defaultData.length
           ? defaultData
-          : Array(rows).fill(Array(columns.length).fill(""))
+          : Array(rows).fill(Array(columns.length).fill("")),
       ),
   };
 
@@ -100,10 +100,10 @@ function CWMSSpreadsheet({
     if (e && e.preventDefault) {
       e.preventDefault();
     }
-    
+
     const range = getSelectionRange();
-    let copyText = '';
-    
+    let copyText = "";
+
     if (!range && selectedCell) {
       // Single cell copy
       copyText = spreadsheetData[selectedCell.row][selectedCell.col];
@@ -112,24 +112,27 @@ function CWMSSpreadsheet({
       for (let row = range.startRow; row <= range.endRow; row++) {
         const rowData = [];
         for (let col = range.startCol; col <= range.endCol; col++) {
-          rowData.push(spreadsheetData[row][col] || '');
+          rowData.push(spreadsheetData[row][col] || "");
         }
-        copyText += rowData.join('\t') + '\n';
+        copyText += rowData.join("\t") + "\n";
       }
       copyText = copyText.trim();
     }
-    
+
     // Use clipboard API for keyboard shortcuts
     if (navigator.clipboard && copyText) {
-      navigator.clipboard.writeText(copyText).then(() => {
-        console.log('Data copied to clipboard');
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-        fallbackCopyToClipboard(copyText);
-      });
+      navigator.clipboard
+        .writeText(copyText)
+        .then(() => {
+          console.log("Data copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          fallbackCopyToClipboard(copyText);
+        });
     } else if (e && e.clipboardData) {
       // For onCopy event
-      e.clipboardData.setData('text/plain', copyText);
+      e.clipboardData.setData("text/plain", copyText);
     } else if (copyText) {
       // Fallback
       fallbackCopyToClipboard(copyText);
@@ -138,38 +141,41 @@ function CWMSSpreadsheet({
 
   const copyAllData = () => {
     // Create tab-separated string of all data
-    let copyText = '';
-    
+    let copyText = "";
+
     // Add headers if they exist
     if (showColumnHeaders) {
       const headers = [];
-      if (showRowNumbers) headers.push(''); // Empty cell for row numbers column
+      if (showRowNumbers) headers.push(""); // Empty cell for row numbers column
       for (let i = 0; i < columns.length; i++) {
         headers.push(getColumnLabel(i));
       }
-      copyText += headers.join('\t') + '\n';
+      copyText += headers.join("\t") + "\n";
     }
-    
+
     // Add data rows
     for (let row = 0; row < spreadsheetData.length; row++) {
       const rowData = [];
       if (showRowNumbers) rowData.push(row + 1); // Add row number
       for (let col = 0; col < columns.length; col++) {
-        rowData.push(spreadsheetData[row][col] || '');
+        rowData.push(spreadsheetData[row][col] || "");
       }
-      copyText += rowData.join('\t') + '\n';
+      copyText += rowData.join("\t") + "\n";
     }
-    
+
     // Copy to clipboard using the Clipboard API
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(copyText.trim()).then(() => {
-        // Optional: Show success message
-        console.log('Data copied to clipboard');
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-        // Fallback method
-        fallbackCopyToClipboard(copyText.trim());
-      });
+      navigator.clipboard
+        .writeText(copyText.trim())
+        .then(() => {
+          // Optional: Show success message
+          console.log("Data copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          // Fallback method
+          fallbackCopyToClipboard(copyText.trim());
+        });
     } else {
       // Fallback for older browsers
       fallbackCopyToClipboard(copyText.trim());
@@ -177,18 +183,18 @@ function CWMSSpreadsheet({
   };
 
   const fallbackCopyToClipboard = (text) => {
-    const textArea = document.createElement('textarea');
+    const textArea = document.createElement("textarea");
     textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
     try {
-      document.execCommand('copy');
-      console.log('Data copied to clipboard (fallback)');
+      document.execCommand("copy");
+      console.log("Data copied to clipboard (fallback)");
     } catch (err) {
-      console.error('Fallback copy failed: ', err);
+      console.error("Fallback copy failed: ", err);
     }
     document.body.removeChild(textArea);
   };
@@ -196,25 +202,25 @@ function CWMSSpreadsheet({
   const handlePaste = (e, startRow, startCol) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const pasteData = (e.clipboardData || window.clipboardData).getData("text");
     if (!pasteData) return;
-    
+
     // Split by line breaks first (handles both \r\n and \n)
     const rows = pasteData.split(/\r?\n/);
     const updatedData = [...spreadsheetData];
-    
+
     rows.forEach((row, rowOffset) => {
       // Skip empty rows
       if (!row.trim()) return;
-      
+
       // Split by tabs for columns
       const cells = row.split("\t");
-      
+
       cells.forEach((cell, colOffset) => {
         const targetRow = startRow + rowOffset;
         const targetCol = startCol + colOffset;
-        
+
         // Check bounds
         if (targetRow < spreadsheetData.length && targetCol < columns.length) {
           if (!updatedData[targetRow]) {
@@ -227,7 +233,7 @@ function CWMSSpreadsheet({
         }
       });
     });
-    
+
     setSpreadsheetData(updatedData);
     if (onChange) {
       onChange(updatedData);
@@ -263,10 +269,10 @@ function CWMSSpreadsheet({
     const handleGlobalMouseUp = () => {
       setIsMouseDown(false);
     };
-    
-    document.addEventListener('mouseup', handleGlobalMouseUp);
+
+    document.addEventListener("mouseup", handleGlobalMouseUp);
     return () => {
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
     };
   }, []);
 
@@ -274,7 +280,7 @@ function CWMSSpreadsheet({
     if (readonly || disable) return;
 
     // Handle copy
-    if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+    if ((e.ctrlKey || e.metaKey) && e.key === "c") {
       e.preventDefault();
       handleCopy();
       return;
@@ -287,7 +293,7 @@ function CWMSSpreadsheet({
     }
 
     // Handle select all (Ctrl+A)
-    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+    if ((e.ctrlKey || e.metaKey) && e.key === "a") {
       e.preventDefault();
       setDragStart({ row: 0, col: 0 });
       setDragEnd({ row: rows - 1, col: columns.length - 1 });
@@ -345,7 +351,10 @@ function CWMSSpreadsheet({
           // Extend selection right
           e.preventDefault();
           if (!dragStart) setDragStart(selectedCell);
-          setDragEnd({ row: rowIndex, col: Math.min(columns.length - 1, colIndex + 1) });
+          setDragEnd({
+            row: rowIndex,
+            col: Math.min(columns.length - 1, colIndex + 1),
+          });
         } else if (colIndex < columns.length - 1) {
           e.preventDefault();
           const newCol = colIndex + 1;
@@ -365,9 +374,7 @@ function CWMSSpreadsheet({
         e.preventDefault();
         if (e.shiftKey) {
           if (colIndex > 0) {
-            document
-              .getElementById(`cell-${rowIndex}-${colIndex - 1}`)
-              ?.focus();
+            document.getElementById(`cell-${rowIndex}-${colIndex - 1}`)?.focus();
           } else if (rowIndex > 0) {
             document
               .getElementById(`cell-${rowIndex - 1}-${columns.length - 1}`)
@@ -375,9 +382,7 @@ function CWMSSpreadsheet({
           }
         } else {
           if (colIndex < columns.length - 1) {
-            document
-              .getElementById(`cell-${rowIndex}-${colIndex + 1}`)
-              ?.focus();
+            document.getElementById(`cell-${rowIndex}-${colIndex + 1}`)?.focus();
           } else if (rowIndex < rows - 1) {
             document.getElementById(`cell-${rowIndex + 1}-0`)?.focus();
           }
@@ -484,24 +489,24 @@ function CWMSSpreadsheet({
 
   return (
     <div>
-      <div style={{ marginBottom: '8px', display: 'flex', gap: '8px' }}>
+      <div style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
         <button
           onClick={copyAllData}
           style={{
-            padding: '6px 12px',
-            backgroundColor: '#0969da',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontFamily: 'Arial, sans-serif',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
+            padding: "6px 12px",
+            backgroundColor: "#0969da",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "13px",
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
           }}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#0860ca'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#0969da'}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#0860ca")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#0969da")}
         >
           📋 Copy All Data
         </button>
@@ -510,87 +515,92 @@ function CWMSSpreadsheet({
             setDragStart({ row: 0, col: 0 });
             setDragEnd({ row: rows - 1, col: columns.length - 1 });
             // Focus on first cell to enable keyboard copy
-            document.getElementById('cell-0-0')?.focus();
+            document.getElementById("cell-0-0")?.focus();
           }}
           style={{
-            padding: '6px 12px',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontFamily: 'Arial, sans-serif',
+            padding: "6px 12px",
+            backgroundColor: "#6c757d",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "13px",
+            fontFamily: "Arial, sans-serif",
           }}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#5a6268'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#5a6268")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#6c757d")}
         >
           Select All
         </button>
       </div>
       <div style={containerStyle} ref={tableRef}>
         <table style={tableStyle}>
-        {showColumnHeaders && (
-          <thead>
-            <tr>
-              {showRowNumbers && <th style={rowNumberStyle}></th>}
-              {Array.from({ length: columns.length }, (_, i) => (
-                <th key={i} style={headerStyle}>
-                  {getColumnLabel(i)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-        )}
-        <tbody>
-          {spreadsheetData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
-              {row.map((cellValue, colIndex) => {
-                const column = columns[colIndex] || {};
-                const isSelected = isCellInSelection(rowIndex, colIndex);
-                const isActiveCell = selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
-                
-                return (
-                  <td
-                    key={colIndex}
-                    style={{
-                      ...cellStyle,
-                      backgroundColor: isSelected ? (isActiveCell ? "#b3d7ff" : "#cce5ff") : "#ffffff",
-                      boxShadow: isActiveCell ? "inset 0 0 0 2px #1a73e8" : "none",
-                      zIndex: isActiveCell ? 10 : 1,
-                      position: "relative",
-                    }}
-                    onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
-                    onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-                    onMouseUp={handleMouseUp}
-                  >
-                    <input
-                      id={`cell-${rowIndex}-${colIndex}`}
-                      type={column.type || "text"}
-                      value={cellValue}
-                      onChange={(e) =>
-                        handleCellChange(rowIndex, colIndex, e.target.value)
-                      }
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                      onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
-                      disabled={disable}
-                      readOnly={readonly}
+          {showColumnHeaders && (
+            <thead>
+              <tr>
+                {showRowNumbers && <th style={rowNumberStyle}></th>}
+                {Array.from({ length: columns.length }, (_, i) => (
+                  <th key={i} style={headerStyle}>
+                    {getColumnLabel(i)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {spreadsheetData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
+                {row.map((cellValue, colIndex) => {
+                  const column = columns[colIndex] || {};
+                  const isSelected = isCellInSelection(rowIndex, colIndex);
+                  const isActiveCell =
+                    selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+
+                  return (
+                    <td
+                      key={colIndex}
                       style={{
-                        ...inputStyle,
-                        cursor: "cell",
-                        pointerEvents: isSelected ? "auto" : "auto",
+                        ...cellStyle,
+                        backgroundColor: isSelected
+                          ? isActiveCell
+                            ? "#b3d7ff"
+                            : "#cce5ff"
+                          : "#ffffff",
+                        boxShadow: isActiveCell ? "inset 0 0 0 2px #1a73e8" : "none",
+                        zIndex: isActiveCell ? 10 : 1,
+                        position: "relative",
                       }}
-                      placeholder={column.placeholder || ""}
-                    />
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                      onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
+                      onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                      onMouseUp={handleMouseUp}
+                    >
+                      <input
+                        id={`cell-${rowIndex}-${colIndex}`}
+                        type={column.type || "text"}
+                        value={cellValue}
+                        onChange={(e) =>
+                          handleCellChange(rowIndex, colIndex, e.target.value)
+                        }
+                        onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                        onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
+                        disabled={disable}
+                        readOnly={readonly}
+                        style={{
+                          ...inputStyle,
+                          cursor: "cell",
+                          pointerEvents: isSelected ? "auto" : "auto",
+                        }}
+                        placeholder={column.placeholder || ""}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -20,26 +20,32 @@ function CWMSInput({
   readonly,
   onChange,
   units,
+  timeOffset,
 }) {
   const { registerInput } = useContext(FormContext);
   const [inputValue, setInputValue] = useState(defaultValue || value || "");
 
-  const inputRef = {
-    tsid,
-    precision: precision || 2,
-    offset: offset || 0,
-    order: order || 1,
-    AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
-    loadNearest: loadNearest || "prev",
-    readonly: readonly || false,
-    units: units || "EN",
-    getValues: () => [inputValue],
-    reset: () => setInputValue(defaultValue || ""),
-  };
-
   useEffect(() => {
-    registerInput(inputRef);
-  }, [registerInput]);
+    if (!registerInput) return;
+
+    const inputRef = {
+      name,
+      tsid,
+      precision: precision || 2,
+      offset: offset || 0,
+      order: order || 1,
+      AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
+      loadNearest: loadNearest || "prev",
+      readonly: readonly || false,
+      units: units || "EN",
+      timeOffset: timeOffset || 0,
+      getValues: () => [inputValue],
+      reset: () => setInputValue(defaultValue || ""),
+    };
+
+    const cleanup = registerInput(inputRef);
+    return cleanup;
+  }, []); // Empty dependency array - only register once on mount
 
   const handleChange = (e) => {
     const newValue = e.target.value;
