@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Textarea } from "@usace/groundwork";
 import { FormContext } from "../../forms/CWMSForm";
 
-export function CWMSTextarea({
+function CWMSTextarea({
   style,
   disable,
   invalid,
@@ -15,6 +15,8 @@ export function CWMSTextarea({
   order,
   AllowMissingData,
   loadNearest,
+  readonly,
+  units,
   onChange,
   rows,
 }) {
@@ -26,9 +28,9 @@ export function CWMSTextarea({
   const textareaRef = {
     tsid,
     precision: precision || 2,
-    offset: timeoffset || 0,
+    offset: offset || 0,
     order: order || 1,
-    AllowMissingData: AllowMissingData || true,
+    AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
     loadNearest: loadNearest || "prev",
     readonly: readonly || false,
     units: units || "EN",
@@ -57,6 +59,10 @@ export function CWMSTextarea({
       value={textareaValue}
       onChange={handleChange}
       rows={rows}
+      readOnly={readonly}
     />
   );
 }
+
+export default CWMSTextarea;
+export { CWMSTextarea };

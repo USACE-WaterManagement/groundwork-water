@@ -28,6 +28,14 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
+import FormsDocs from "../pages/docs/forms";
+import FormWrapperDocs from "../pages/docs/forms/form-wrapper";
+import CWMSInputDocs from "../pages/docs/forms/cwms-input";
+import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
+import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
+import CWMSDropdownDocs from "../pages/docs/forms/cwms-dropdown";
+import CWMSInputTableDocs from "../pages/docs/forms/cwms-input-table";
+import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 
 export default createRouteBundle(
   {
@@ -54,6 +62,14 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/forms": FormsDocs,
+    "/docs/forms/form-wrapper": FormWrapperDocs,
+    "/docs/forms/cwms-input": CWMSInputDocs,
+    "/docs/forms/cwms-textarea": CWMSTextareaDocs,
+    "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
+    "/docs/forms/cwms-dropdown": CWMSDropdownDocs,
+    "/docs/forms/cwms-input-table": CWMSInputTableDocs,
+    "/docs/forms/cwms-spreadsheet": CWMSSpreadsheetDocs,
     "/docs/utilities": UtilitiesDocs,
     "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,
