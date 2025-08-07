@@ -31,7 +31,9 @@
         "build-docs-prod": "cd docs && vite build",
         "deploy": "gh-pages -d dist",
         "login": "npm login",
-        "publish": "npm publish --access public"
+        "publish": "npm publish --access public",
+        "dev": "vite build --mode lib --watch",
+        "watch": "vite build --mode lib --watch"
     },
     "repository": {
         "type": "git",
@@ -48,11 +50,14 @@
         "cwms"
     ],
     "dependencies": {
+        "@tanstack/react-query": "^5.51.23",
         "cwmsjs": "^2.3.0-2024.12.10",
         "dayjs": "^1.11.11",
         "deepmerge": "^4.3.1",
         "ol": "^10.0.0",
         "plotly.js-basic-dist": "^2.33.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "react-icons": "^5.3.0"
     },
     "devDependencies": {
@@ -75,7 +80,7 @@
     },
     "peerDependencies": {
         "@tanstack/react-query": "^5.51.23",
-        "@usace/groundwork": "^3.10.0",
+        "@usace/groundwork": "^3.14.19",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     }

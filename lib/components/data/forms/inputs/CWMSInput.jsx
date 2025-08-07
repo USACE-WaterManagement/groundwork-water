@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../../forms/CWMSForm";
 
-export function CWMSInput({
+function CWMSInput({
   style,
   disable,
   invalid,
@@ -27,11 +27,11 @@ export function CWMSInput({
   const inputRef = {
     tsid,
     precision: precision || 2,
-    offset: timeoffset || 0,
+    offset: offset || 0,
     order: order || 1,
-    AllowMissingData: true,
-    loadNearest: "prev",
-    readonly: false,
+    AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
+    loadNearest: loadNearest || "prev",
+    readonly: readonly || false,
     units: units || "EN",
     getValues: () => [inputValue],
     reset: () => setInputValue(defaultValue || ""),
@@ -63,3 +63,6 @@ export function CWMSInput({
     />
   );
 }
+
+export default CWMSInput;
+export { CWMSInput };
