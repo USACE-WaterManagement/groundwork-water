@@ -14,5 +14,14 @@ export default defineConfig(({ mode }) => {
     define: {
       "import.meta.env.PKG_VERSION": JSON.stringify(pkg.version),
     },
+    server: {
+      proxy: {
+        "/midas-api": {
+          target: "https://midas.sec.usace.army.mil",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/midas-api/, "/api"),
+        },
+      },
+    },
   };
 });
