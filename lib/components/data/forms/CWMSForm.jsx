@@ -110,33 +110,32 @@ export function FormWrapper({
         if (input.tsid) {
           try {
             const timestamp = getTimestampForInput(input.timeOffset || 0);
-            const payload = {
+            // Convert timestamp to epoch milliseconds
+            const epochMs = new Date(timestamp).getTime();
+            const value = parseFloat(input.getValues()[0]) || 0;
+
+            // Create TimeSeries object according to the interface
+            const timeSeries = {
               name: input.tsid,
               officeId: office,
+              units: input.units || "EN",
+              // values is a 2D array: [[epochMs, value, qualityCode], ...]
               values: [
-                {
-                  dateTime: timestamp,
-                  value: parseFloat(input.getValues()[0]) || 0,
-                  qualityCode: 0,
-                },
+                [epochMs, value, 0], // [timestamp, value, quality_code]
               ],
-              units: input.units,
             };
 
-            console.log("Submitting time series:", payload);
+            console.log("Submitting time series:", timeSeries);
 
-            const response = await ts_api.postTimeSeries({
-              timeSeries: payload,
+            // Call postTimeSeries with correct parameters
+            await ts_api.postTimeSeries({
+              timeSeries: timeSeries,
+              timezone: "UTC",
+              createAsLrts: false,
+              storeRule: "REPLACE_ALL",
             });
 
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error(`API error (${response.status}):`, errorText);
-              throw new Error(`API error: ${response.status} - ${errorText}`);
-            }
-
-            const result = await response.json();
-            console.log("API result:", result);
+            console.log("Successfully posted time series for:", input.tsid);
           } catch (err) {
             console.error("API call failed for", input.tsid, ":", err);
           }
