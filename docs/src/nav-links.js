@@ -98,6 +98,24 @@ export default [
         text: "NWPS Gauge Data",
         href: "/docs/hooks/use-nwps-gauge-data",
       },
+
+      {
+        id: "blobs",
+        text: "CDA Blobs",
+        href: "#",
+        children: [
+          {
+            id: "use-cda-blob",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob",
+          },
+          {
+            id: "use-cda-blob-catalog",
+            text: "CDA Blob Catalog",
+            href: "/docs/hooks/use-cda-blob-catalog",
+          },
+        ],
+      },
     ],
   },
   {
