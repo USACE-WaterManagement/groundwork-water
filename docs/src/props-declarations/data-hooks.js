@@ -52,4 +52,31 @@ const cdaTSHookParams = [
   },
 ];
 
-export { cdaTSHookParams, cdaCatalogParams };
+const cdaBlobsParams = [
+  {
+    name: "office",
+    type: "string",
+    required: false,
+    desc: "3-4 letter office name representing the district you want to isolate data to.",
+  },
+  {
+    name: "like",
+    type: "string",
+    required: false,
+    desc: "Posix regular expression matching against the blob id. For example, '*.JSON' to match all JSON files.",
+  },
+  {
+    name: "page",
+    type: "number",
+    required: false,
+    desc: "Page number for pagination. Returned from the last request to continue listing blobs with a page-size.",
+  },
+  {
+    name: "page-size",
+    type: "number",
+    required: false,
+    desc: "Number of items per page for pagination. Defaults to 20.",
+  },
+];
+
+export { cdaTSHookParams, cdaCatalogParams, cdaBlobsParams };
