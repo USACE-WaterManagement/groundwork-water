@@ -20,6 +20,10 @@ import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 
+// files
+import useCdaBlob from "./components/data/hooks/useCdaBlob";
+import useCdaBlobCatalog from "./components/data/hooks/useCdaBlobCatalog";
+
 // auth
 import { AuthProvider } from "./components/data/utilities/auth/AuthProvider";
 import { useAuth } from "./components/data/utilities/auth/useAuth";
@@ -36,6 +40,8 @@ export {
   CdaLatestValueCard,
   CdaUrlProvider,
   useCdaCatalog,
+  useCdaBlob,
+  useCdaBlobCatalog,
   useCdaLatestValue,
   useCdaLocation,
   useCdaLevels,
