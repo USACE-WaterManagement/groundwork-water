@@ -5,7 +5,6 @@ import {
   Input,
   Label,
   Fieldset,
-  Button,
   Badge,
   Code,
   Textarea,
@@ -69,7 +68,7 @@ const FileViewerCard = () => {
   );
 };
 
-function useCdaBlob() {
+function useCdaBlobPage() {
   return (
     <DocsPage middleText="CDA File Hook">
       <Text>
@@ -78,14 +77,12 @@ function useCdaBlob() {
         to fetch binary files (PDF, XML, text, etc.) by ID and optionally filter by
         office.
       </Text>
+      useCdaBlobPage
       <QueryClientWarning />
-
       <Divider text="Example Usage" className="mt-8" />
-
       <div className="rounded-md border border-dashed px-6 py-3 my-3">
         <FileViewerCard />
       </div>
-
       <CodeBlock language="jsx">
         {`import {
     Card,
@@ -152,9 +149,7 @@ function useCdaBlob() {
     );
   };`}
       </CodeBlock>
-
       <Divider text="API Reference" className="mt-8" />
-
       <div className="font-bold text-lg pt-6">
         Hook Parameters - <Code className="p-2">{`useCdaBlob({...})`}</Code>
       </div>
@@ -169,5 +164,5 @@ function useCdaBlob() {
   );
 }
 
-export { useCdaBlob };
-export default useCdaBlob;
+export { useCdaBlobPage };
+export default useCdaBlobPage;

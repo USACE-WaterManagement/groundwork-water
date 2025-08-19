@@ -135,7 +135,7 @@ const FileCatalogCard = () => {
   );
 };
 
-function useCdaBlobCatalog() {
+function useCdaBlobCatalogPage() {
   return (
     <DocsPage middleText="CDA File Catalog Hook">
       <div>
@@ -293,5 +293,5 @@ const FileCatalogCard = () => {
   );
 }
 
-export { useCdaBlobCatalog };
-export default useCdaBlobCatalog;
+export { useCdaBlobCatalogPage };
+export default useCdaBlobCatalogPage;
