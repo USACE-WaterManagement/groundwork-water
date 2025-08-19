@@ -73,10 +73,10 @@ function useCdaBlob() {
   return (
     <DocsPage middleText="CDA File Hook">
       <Text>
-        The <Code>useCdaBlob</Code> hook retrieves a single file (blob) from the
-        CWMS Data API using the <Code>/blobs/{`{blob-id}`}</Code> endpoint. This
-        allows you to fetch binary files (PDF, XML, text, etc.) by ID and
-        optionally filter by office.
+        The <Code>useCdaBlob</Code> hook retrieves a single file (blob) from the CWMS
+        Data API using the <Code>/blobs/{`{blob-id}`}</Code> endpoint. This allows you
+        to fetch binary files (PDF, XML, text, etc.) by ID and optionally filter by
+        office.
       </Text>
       <QueryClientWarning />
 

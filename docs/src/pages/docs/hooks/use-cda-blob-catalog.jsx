@@ -115,8 +115,7 @@ const FileCatalogCard = () => {
             <TableRow>
               <TableCell colSpan={2} className="text-center">
                 <Badge color="red">
-                  No files found matching{" "}
-                  <Code>&quot;{debouncedLike}&quot;</Code>
+                  No files found matching <Code>&quot;{debouncedLike}&quot;</Code>
                 </Badge>
               </TableCell>
             </TableRow>
@@ -281,8 +280,7 @@ const FileCatalogCard = () => {
 
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters -{" "}
-        <Code className="p-2">{`useCdaBlobCatalog({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useCdaBlobCatalog({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="Blob"
