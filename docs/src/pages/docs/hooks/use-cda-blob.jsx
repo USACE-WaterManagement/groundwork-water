@@ -104,67 +104,83 @@ function useCdaBlobPage() {
       </div>
       <CodeBlock language="jsx">
         {`import {
-    Card,
-    H3,
-    Input,
-    Label,
-    Fieldset,
-    Button,
-    Badge,
+      H3,
+  Card,
+  Input,
+  Label,
+  Fieldset,
+  Badge,
+  Textarea,
+  Accordion,
+  Skeleton,
   } from "@usace/groundwork";
   import { useCdaBlob, useDebounce } from "@usace-watermanagement/groundwork-water";
   import { useState } from "react";
   
   const BlobViewerCard = () => {
-    const [blobId, setBlobId] = useState("sample.xml");
+    const [blobId, setBlobId] = useState("KEYSMAR24.TXT");
     const [office, setOffice] = useState("SWT");
-  
-    const { data, isPending, isError } = useCdaBlob({
-      cdaParams: { "blob-id": blobId, office },
-      queryOptions: {
-        enabled: !!blobId,
-      },
+
+    const debouncedBlobId = useDebounce(blobId, 500);
+    const debouncedOffice = useDebounce(office, 500);
+
+    const cdaBlob = useCdaBlob({
+        cdaParams: { blobId: debouncedBlobId, office: debouncedOffice },
+        queryOptions: {
+        enabled: !!debouncedBlobId && !!debouncedOffice,
+        retry: false,
+        },
     });
-  
-    const getDownloadUrl = () => {
-      if (!data) return null;
-      const blob = new Blob([data]);
-      return URL.createObjectURL(blob);
-    };
-  
+
     return (
-      <Card className="w-fit">
-        <H3>View a Blob by ID</H3>
+        <Card className="w-full">
+        <H3>View a blobs by ID</H3>
         <Fieldset>
-          <Label htmlFor="blob-id">Blob ID:</Label>
-          <Input
-            id="blob-id"
-            value={blobId}
-            onChange={(e) => setBlobId(e.target.value)}
-            placeholder="e.g. myfile.pdf"
-          />
-          <Label htmlFor="office">Office:</Label>
-          <Input
-            id="office"
-            value={office}
-            onChange={(e) => setOffice(e.target.value)}
-            placeholder="e.g. SWT"
-          />
+            <div className="grid grid-cols-[300px_1fr] gap-y-4 items-center">
+            <Label htmlFor="blob-id" className="text-right me-2">
+                Blob ID:
+            </Label>
+            <Input
+                id="blob-id"
+                className="w-1/2"
+                value={blobId}
+                onChange={(e) => setBlobId(e.target.value)}
+                placeholder="Enter blob ID (e.g. myfile.pdf)"
+            />
+
+            <Label htmlFor="office" className="text-right me-2">
+                Office:
+            </Label>
+            <Input
+                id="office"
+                className="w-1/2"
+                value={office}
+                onChange={(e) => setOffice(e.target.value)}
+                placeholder="e.g. SWT"
+            />
+            </div>
         </Fieldset>
-        {isPending ? (
-          <p>Loading blob...</p>
-        ) : isError ? (
-          <Badge color="red">Error retrieving blob</Badge>
-        ) : data ? (
-          <div className="mt-4">
-            <a href={getDownloadUrl()} target="_blank" rel="noopener noreferrer" download={blobId}>
-              <Button>Download / View Blob</Button>
-            </a>
-          </div>
+        {cdaBlob.isPending ? (
+            <Skeleton type="card" className="w-full h-[50vh]" />
+        ) : cdaBlob.isError ? (
+            <Badge color="red">Error retrieving blob: {cdaBlob.error?.message}</Badge>
+        ) : cdaBlob.data ? (
+            <div className="mt-4">
+            <Accordion defaultOpen={true} heading={<H3>View: {blobId}</H3>}>
+                <Textarea
+                className="h-[50vh] font-mono"
+                defaultValue={
+                    typeof cdaBlob.data == "object"
+                    ? JSON.stringify(cdaBlob.data, null, 2)
+                    : cdaBlob.data
+                }
+                />
+            </Accordion>
+            </div>
         ) : (
-          <Badge color="yellow">No blob loaded yet</Badge>
+            <Badge color="yellow">No blob loaded yet</Badge>
         )}
-      </Card>
+        </Card>
     );
   };`}
       </CodeBlock>
