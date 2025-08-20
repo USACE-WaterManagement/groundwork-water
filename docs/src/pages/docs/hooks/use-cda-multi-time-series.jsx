@@ -8,6 +8,7 @@ import {
   TableRow,
   TableBody,
   TableCell,
+  Link,
 } from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
 import CdaParamsTable from "../../components/cda-params-table";
@@ -20,14 +21,21 @@ import Divider from "../../components/divider";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
 
 const OutflowCard = () => {
-  const { data, isPending, isError } = useCdaMultiTimeSeries({
+  const cdaMultiTimeSeries = useCdaMultiTimeSeries({
     cdaParams: {
-      name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev,KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
+      name: [
+        "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+        "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
+      ],
       office: "SWT",
     },
   });
-
-  if (isPending) return <span>Loading timeseries data...</span>;
+  const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
+  const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
+  const data = cdaMultiTimeSeries
+    .filter((ts) => ts.data) // Filter out any errors or pending states
+    .map((ts) => ts.data);
+  if (isLoading) return <span>Loading timeseries data...</span>;
   if (isError) return <span>TimeSeries error!</span>;
   return (
     <Card className="gw-w-96">
@@ -83,11 +91,36 @@ function UseCdaMultiTimeSeries() {
           only a timeseries ID and an office ID, but can be further customized
           using additional parameters provided through CDA if desired.
         </Text>
+        <Text className="my-4">
+          To retrieve multiple timeseries, the `name` parameter should be an
+          array of timeseries ids <b>or</b> a comma-separated list of timeseries
+          IDs.
+        </Text>
         <Text>
-          To retrieve multiple timeseries, the `name` parameter should be a
-          comma-separated list of timeseries IDs. The hook will return an array
-          of timeseries data objects, each containing the timeseries name, begin
-          and end dates, values and other metadata for each timeseries response.
+          The hook will return an array of{" "}
+          <Link
+            target="_blank"
+            className="underline"
+            href="https://tanstack.com/query/v5/docs/framework/react/reference/useQuery"
+          >
+            tanstack useQuery objects
+          </Link>
+          . The major objects you will want to access from this are data,
+          isLoading, and isError/error. The data object will contain the
+          timeseries name, begin and end dates, values and other metadata for
+          each timeseries response in the array.
+        </Text>
+        <Text className="my-4">
+          The timeseries response for a given useQuery result is outlined in the
+          swagger specification here:{" "}
+          <Link
+            href="https://cwms-data.usace.army.mil/cwms-data/swagger-ui.html#operations-tag-TimeSeries"
+            target="_blank"
+            className="underline"
+          >
+            CDA Timeseries API
+          </Link>
+          .
         </Text>
         <QueryClientWarning />
       </div>
@@ -99,15 +132,24 @@ function UseCdaMultiTimeSeries() {
         {`import { Card, H3 } from "@usace/groundwork";
 import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
 
-const { data, isPending, isError } = useCdaMultiTimeSeries({
+const cdaMultiTimeSeries = useCdaMultiTimeSeries({
     cdaParams: {
-      name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev,KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
+      name: [
+        "KEYS.Elev.Inst.1Hour.0.Ccp-Rev", 
+        "KEYS.Stor.Inst.1Hour.0.Ccp-Rev"
+      ],
       office: "SWT",
     },
   });
-
-  if (isPending) return <span>Loading timeseries data...</span>;
+  // Combine all true error or loading states 
+  const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
+  const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
+  const data = cdaMultTimeSeries
+    .filter((ts) => ts.data) // Filter out any errors or pending states
+    .map((ts) => ts.data);
+  if (isLoading) return <span>Loading timeseries data...</span>;
   if (isError) return <span>TimeSeries error!</span>;
+
   return (
     <Card className="gw-w-96">
       <H3>Keystone Lake: Multiple TimeSeries Data</H3>
