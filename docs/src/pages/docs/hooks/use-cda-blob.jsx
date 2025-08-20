@@ -22,7 +22,7 @@ import ParamsTable from "../../components/params-table";
 import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
 import useDebounce from "./use-debounce";
 
-const FileViewerCard = () => {
+const BlobViewerCard = () => {
   const [blobId, setBlobId] = useState("KEYSMAR24.TXT");
   const [office, setOffice] = useState("SWT");
 
@@ -31,6 +31,7 @@ const FileViewerCard = () => {
 
   const cdaBlob = useCdaBlob({
     cdaParams: { blobId: debouncedBlobId, office: debouncedOffice },
+    cdaUrl: "https://wm.swt.ds.usace.army.mil/swt-data",
     queryOptions: {
       enabled: !!debouncedBlobId && !!debouncedOffice,
       retry: false,
@@ -39,18 +40,18 @@ const FileViewerCard = () => {
 
   return (
     <Card className="w-full">
-      <H3>View a File by ID</H3>
+      <H3>View a blobs by ID</H3>
       <Fieldset>
         <div className="grid grid-cols-[300px_1fr] gap-y-4 items-center">
           <Label htmlFor="blob-id" className="text-right me-2">
-            File ID (Blob ID):
+            Blob ID:
           </Label>
           <Input
             id="blob-id"
             className="w-1/2"
             value={blobId}
             onChange={(e) => setBlobId(e.target.value)}
-            placeholder="Enter file ID (e.g. myfile.pdf)"
+            placeholder="Enter blob ID (e.g. myfile.pdf)"
           />
 
           <Label htmlFor="office" className="text-right me-2">
@@ -68,7 +69,7 @@ const FileViewerCard = () => {
       {cdaBlob.isPending ? (
         <Skeleton type="card" className="w-full h-[50vh]" />
       ) : cdaBlob.isError ? (
-        <Badge color="red">Error retrieving file: {cdaBlob.error?.message}</Badge>
+        <Badge color="red">Error retrieving blob: {cdaBlob.error?.message}</Badge>
       ) : cdaBlob.data ? (
         <div className="mt-4">
           <Accordion defaultOpen={true} heading={<H3>View: {blobId}</H3>}>
@@ -76,7 +77,7 @@ const FileViewerCard = () => {
           </Accordion>
         </div>
       ) : (
-        <Badge color="yellow">No file loaded yet</Badge>
+        <Badge color="yellow">No blob loaded yet</Badge>
       )}
     </Card>
   );
@@ -84,18 +85,17 @@ const FileViewerCard = () => {
 
 function useCdaBlobPage() {
   return (
-    <DocsPage middleText="CDA File Hook">
+    <DocsPage middleText="CDA Blob Hook">
       <Text>
-        The <Code>useCdaBlob</Code> hook retrieves a single file (blob) from the CWMS
-        Data API using the <Code>/blobs/{`{blob-id}`}</Code> endpoint. This allows you
-        to fetch binary files (PDF, XML, text, etc.) by ID and optionally filter by
-        office.
+        The <Code>useCdaBlob</Code> hook retrieves a single blob from the CWMS Data API
+        using the <Code>/blobs/{`{blob-id}`}</Code> endpoint. This allows you to fetch
+        binary blobs (PDF, XML, text, etc.) by ID and optionally filter by office.
       </Text>
       useCdaBlobPage
       <QueryClientWarning />
       <Divider text="Example Usage" className="mt-8" />
       <div className="rounded-md border border-dashed px-6 py-3 my-3">
-        <FileViewerCard />
+        <BlobViewerCard />
       </div>
       <CodeBlock language="jsx">
         {`import {
@@ -110,7 +110,7 @@ function useCdaBlobPage() {
   import { useCdaBlob, useDebounce } from "@usace-watermanagement/groundwork-water";
   import { useState } from "react";
   
-  const FileViewerCard = () => {
+  const BlobViewerCard = () => {
     const [blobId, setBlobId] = useState("sample.xml");
     const [office, setOffice] = useState("SWT");
   
@@ -129,9 +129,9 @@ function useCdaBlobPage() {
   
     return (
       <Card className="w-fit">
-        <H3>View a File by ID</H3>
+        <H3>View a Blob by ID</H3>
         <Fieldset>
-          <Label htmlFor="blob-id">File ID (Blob ID):</Label>
+          <Label htmlFor="blob-id">Blob ID:</Label>
           <Input
             id="blob-id"
             value={blobId}
@@ -147,17 +147,17 @@ function useCdaBlobPage() {
           />
         </Fieldset>
         {isPending ? (
-          <p>Loading file...</p>
+          <p>Loading blob...</p>
         ) : isError ? (
-          <Badge color="red">Error retrieving file</Badge>
+          <Badge color="red">Error retrieving blob</Badge>
         ) : data ? (
           <div className="mt-4">
             <a href={getDownloadUrl()} target="_blank" rel="noopener noreferrer" download={blobId}>
-              <Button>Download / View File</Button>
+              <Button>Download / View Blob</Button>
             </a>
           </div>
         ) : (
-          <Badge color="yellow">No file loaded yet</Badge>
+          <Badge color="yellow">No blob loaded yet</Badge>
         )}
       </Card>
     );

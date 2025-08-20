@@ -26,7 +26,7 @@ import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
 import { useState } from "react";
 import useDebounce from "./use-debounce";
 
-const FileCatalogCard = () => {
+const BlobCatalogCard = () => {
   const [like, setLike] = useState("*.json");
   const [office, setOffice] = useState("SWT");
 
@@ -48,10 +48,10 @@ const FileCatalogCard = () => {
 
   return (
     <Card className="w-fit">
-      <H3>File Catalog</H3>
+      <H3>Blob Catalog</H3>
       <Fieldset>
         <Label htmlFor="like-input" className="font-bold">
-          Filter by File Name (like):
+          Filter by Blob Name (like):
         </Label>
         <Input
           id="like-input"
@@ -84,7 +84,7 @@ const FileCatalogCard = () => {
       >
         <TableHead>
           <TableRow>
-            <TableCell>File (blob) ID</TableCell>
+            <TableCell>Blob ID</TableCell>
             <TableCell>Description</TableCell>
           </TableRow>
         </TableHead>
@@ -111,7 +111,7 @@ const FileCatalogCard = () => {
             <TableRow>
               <TableCell colSpan={2} className="text-center">
                 <Badge color="red">
-                  No files found matching <Code>&quot;{debouncedLike}&quot;</Code>
+                  No blobs found matching <Code>&quot;{debouncedLike}&quot;</Code>
                 </Badge>
               </TableCell>
             </TableRow>
@@ -133,7 +133,7 @@ const FileCatalogCard = () => {
 
 function useCdaBlobCatalogPage() {
   return (
-    <DocsPage middleText="CDA File Catalog Hook">
+    <DocsPage middleText="CDA Blob Catalog Hook">
       <div>
         <Text>
           {`The useCdaBlobCatalog hook retrieves blob metadata using the
@@ -144,7 +144,7 @@ function useCdaBlobCatalogPage() {
       </div>
       <Divider text="Example Usage" className="mt-8" />
       <div className="rounded-md border border-dashed px-6 py-3 my-3">
-        <FileCatalogCard />
+        <BlobCatalogCard />
       </div>
       <CodeBlock language="jsx">
         {`import {
@@ -166,7 +166,7 @@ function useCdaBlobCatalogPage() {
 import { useEffect, useRef, useState } from "react";
 import { useCdaBlobCatalog, useDebounce } from "@usace-watermanagement/groundwork-water";
 
-const FileCatalogCard = () => {
+const BlobCatalogCard = () => {
     const [like, setLike] = useState("*.json");
     const [office, setOffice] = useState("SWT");
 
@@ -188,10 +188,10 @@ const FileCatalogCard = () => {
 
     return (
     <Card className="w-fit">
-        <H3>File Catalog</H3>
+        <H3>Blob Catalog</H3>
         <Fieldset>
         <Label htmlFor="like-input" className="font-bold">
-            Filter by File Name (like):
+            Filter by Blob Name (like):
         </Label>
         <Input
             id="like-input"
@@ -224,7 +224,7 @@ const FileCatalogCard = () => {
         >
         <TableHead>
             <TableRow>
-            <TableCell>File (blob) ID</TableCell>
+            <TableCell>Blob ID</TableCell>
             <TableCell>Description</TableCell>
             </TableRow>
         </TableHead>
@@ -251,7 +251,7 @@ const FileCatalogCard = () => {
             <TableRow>
                 <TableCell colSpan={2} className="text-center">
                 <Badge color="red">
-                    No files found matching <Code>&quot;{debouncedLike}&quot;</Code>
+                    No blobs found matching <Code>&quot;{debouncedLike}&quot;</Code>
                 </Badge>
                 </TableCell>
             </TableRow>
