@@ -8,6 +8,7 @@ import {
   Badge,
   Code,
   Textarea,
+  Accordion,
 } from "@usace/groundwork";
 import { useCdaBlob } from "@usace-watermanagement/groundwork-water";
 import { useState } from "react";
@@ -20,7 +21,7 @@ import ParamsTable from "../../components/params-table";
 import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
 
 const FileViewerCard = () => {
-  const [blobId, setBlobId] = useState("ALTUFEB25.TXT");
+  const [blobId, setBlobId] = useState("KEYSMAR24.TXT");
   const [office, setOffice] = useState("SWT");
 
   const cdaBlob = useCdaBlob({
@@ -32,7 +33,7 @@ const FileViewerCard = () => {
   });
 
   return (
-    <Card className="w-fit">
+    <Card className="w-full">
       <H3>View a File by ID</H3>
       <Fieldset>
         <Label htmlFor="blob-id">File ID (Blob ID):</Label>
@@ -58,8 +59,10 @@ const FileViewerCard = () => {
         <Badge color="red">Error retrieving file: {cdaBlob.error?.message}</Badge>
       ) : cdaBlob.data ? (
         <div className="mt-4">
-          <p>File loaded. You can download or view it:</p>
-          <Textarea>{cdaBlob.data}</Textarea>
+          <p>File loaded.</p>
+          <Accordion defaultOpen={true} heading={<H3>View: {blobId}</H3>}>
+            <Textarea className="h-[50vh] font-mono">{cdaBlob.data}</Textarea>
+          </Accordion>
         </div>
       ) : (
         <Badge color="yellow">No file loaded yet</Badge>
