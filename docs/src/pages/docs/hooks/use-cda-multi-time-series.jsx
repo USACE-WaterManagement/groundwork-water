@@ -19,6 +19,7 @@ import { Code } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
+import CWMSTableInfo from "../../../components/CWMSTableInfo";
 
 const OutflowCard = () => {
   const cdaMultiTimeSeries = useCdaMultiTimeSeries({
@@ -45,8 +46,8 @@ const OutflowCard = () => {
           <Card key={ts.name} className="gw-my-2">
             <div className="gw-flex gw-flex-col  gw-gap-2 gw-w-1/2">
               <Badge color="blue">TimeSeries: {ts.name}</Badge>
-              <Badge color="yellow">Begin: {ts.begin.toISOString()}</Badge>
-              <Badge color="yellow">End: {ts.end.toISOString()}</Badge>
+              <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
+              <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
             </div>
             <Table className="gw-w-full" dense overflow>
               <TableHead>
@@ -60,7 +61,7 @@ const OutflowCard = () => {
                   .filter((entry) => !!entry[1]) // Remove empty records
                   .slice(-5) // Trim to the last 5 values
                   .map((entry) => {
-                    const time = new Date(entry[0]).toLocaleTimeString();
+                    const time = new Date(entry[0]).toLocaleString();
                     const value = entry[1].toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -123,6 +124,7 @@ function UseCdaMultiTimeSeries() {
           .
         </Text>
         <QueryClientWarning />
+        <CWMSTableInfo />
       </div>
       <Divider text="Example Usage" className="mt-8" />
       <div className="rounded-md border border-dashed px-6 py-3 my-3">
@@ -158,8 +160,8 @@ const cdaMultiTimeSeries = useCdaMultiTimeSeries({
           <Card key={ts.name} className="gw-my-2">
             <div className="gw-flex gw-flex-col  gw-gap-2 gw-w-1/2">
               <Badge color="blue">TimeSeries: {ts.name}</Badge>
-              <Badge color="yellow">Begin: {ts.begin.toISOString()}</Badge>
-              <Badge color="yellow">End: {ts.end.toISOString()}</Badge>
+              <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
+              <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
             </div>
             <ul>
               <li>Time - Value</li>
@@ -168,7 +170,7 @@ const cdaMultiTimeSeries = useCdaMultiTimeSeries({
                 .filter((entry) => !!entry[1]) // Remove empty records
                 .slice(-5) // Trim to the last 5 values
                 .map((entry) => {
-                  const time = new Date(entry[0]).toLocaleTimeString();
+                  const time = new Date(entry[0]).toLocaleString();
                   const value = entry[1].toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
