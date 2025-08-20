@@ -22,9 +22,14 @@ const useCdaBlob = ({
   return useQuery({
     queryKey: ["cda", "file", ...Object.values(cdaParams)],
     queryFn: async () =>
-      blobApi
-        .getBlobsWithBlobIdRaw(cdaParams, initOverrides)
-        .then((response) => response.raw.json()),
+      blobApi.getBlobsWithBlobIdRaw(cdaParams, initOverrides).then(async (response) => {
+        const contentType = response.raw.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return await response.raw.json();
+        } else {
+          return await response.raw.text();
+        }
+      }),
     ...queryOptions,
   });
 };
