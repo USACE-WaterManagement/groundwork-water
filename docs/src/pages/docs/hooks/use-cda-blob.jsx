@@ -11,7 +11,7 @@ import {
   Accordion,
   Skeleton,
 } from "@usace/groundwork";
-import { useCdaBlob } from "@usace-watermanagement/groundwork-water";
+import { useCdaBlob, useDebounce } from "@usace-watermanagement/groundwork-water";
 import { useState } from "react";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -20,7 +20,6 @@ import { Code as CodeBlock } from "../../components/code";
 import CdaParamsTable from "../../components/cda-params-table";
 import ParamsTable from "../../components/params-table";
 import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
-import useDebounce from "./use-debounce";
 
 const BlobViewerCard = () => {
   const [blobId, setBlobId] = useState("KEYSMAR24.TXT");

@@ -18,13 +18,15 @@ import {
 import ParamsTable from "../../components/params-table";
 import CdaParamsTable from "../../components/cda-params-table";
 import QueryClientWarning from "../../../components/QueryClientWarning";
-import { useCdaBlobCatalog } from "@usace-watermanagement/groundwork-water";
+import {
+  useCdaBlobCatalog,
+  useDebounce,
+} from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
 import { useState } from "react";
-import useDebounce from "./use-debounce";
 
 const BlobCatalogCard = () => {
   const [like, setLike] = useState("*.json");
