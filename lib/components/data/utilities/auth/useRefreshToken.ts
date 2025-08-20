@@ -4,7 +4,7 @@ import { AuthMethod } from "../auth/AuthProvider";
 export function useRefreshToken(
   enabled: boolean,
   method: AuthMethod,
-  refreshInterval?: number
+  refreshInterval?: number,
 ) {
   const interval = refreshInterval ?? method.refreshInterval ?? 300;
   return useQuery({

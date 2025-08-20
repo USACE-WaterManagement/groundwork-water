@@ -8,11 +8,7 @@ interface UseCdaCatalogParams {
   queryOptions?: Partial<UseQueryOptions<Catalog>>;
 }
 
-const useCdaCatalog = ({
-  cdaParams,
-  cdaUrl,
-  queryOptions,
-}: UseCdaCatalogParams) => {
+const useCdaCatalog = ({ cdaParams, cdaUrl, queryOptions }: UseCdaCatalogParams) => {
   const config = useCdaConfig("v2", cdaUrl);
   const catalogApi = new CatalogApi(config);
 

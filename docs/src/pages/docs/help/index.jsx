@@ -11,16 +11,13 @@ export default function HelpPage() {
       >
         <div className="p-3">
           <article>
-            There are many libraries available or options for how you could get
-            started or update your existing React website. This page is intended
-            to help you decide which library to use. <br />
+            There are many libraries available or options for how you could get started
+            or update your existing React website. This page is intended to help you
+            decide which library to use. <br />
             <br />
-            If you are just getting started with Groundwork for the first time
-            we suggest you start with the{" "}
-            <a
-              className="gw-underline"
-              href="https://usace.github.io/groundwork"
-            >
+            If you are just getting started with Groundwork for the first time we
+            suggest you start with the{" "}
+            <a className="gw-underline" href="https://usace.github.io/groundwork">
               Groundwork
             </a>{" "}
             documentation.
@@ -30,8 +27,8 @@ export default function HelpPage() {
             <br />
             <br />
             <b>
-              Start with the first option and work your way down as you
-              determine what you need.
+              Start with the first option and work your way down as you determine what
+              you need.
             </b>{" "}
             If something is missing, please request it. <br />
             <em>(see requests/issues below each section)</em>
@@ -42,10 +39,9 @@ export default function HelpPage() {
               title="NOTE"
               message={
                 <span>
-                  The `Groundwork` library is a collection of React components
-                  that are primarily for{" "}
-                  <b>Design, Layout, Branding, and Styling</b> of your React
-                  website to match the USACE standards. Read more here:{" "}
+                  The `Groundwork` library is a collection of React components that are
+                  primarily for <b>Design, Layout, Branding, and Styling</b> of your
+                  React website to match the USACE standards. Read more here:{" "}
                   <a
                     className="underline text-blue-500"
                     href="https://usace.github.io/groundwork"
@@ -60,8 +56,8 @@ export default function HelpPage() {
       </UsaceBox>
       <UsaceBox title="Groundwork-Water">
         <em>
-          Wraps everything below and provides components to build the plots,
-          tables, maps, and more for you given metadata.
+          Wraps everything below and provides components to build the plots, tables,
+          maps, and more for you given metadata.
         </em>
         <div className="p-3">
           <article>
@@ -75,8 +71,8 @@ export default function HelpPage() {
             <br />
             See the Plots, Tables, and Maps tabs in the header for examples.{" "}
             <Divider text="Requests / Issues" className="mt-8 mb-5" />
-            Please make requests for new components or features you would like
-            to see on the issues page: <br />
+            Please make requests for new components or features you would like to see on
+            the issues page: <br />
             <a
               className="underline text-blue-500"
               href="https://github.com/USACE-WaterManagement/groundwork-water/issues"
@@ -100,8 +96,8 @@ export default function HelpPage() {
             <br />
             See the &quot;Data Hooks&quot; tab in the header for examples.{" "}
             <Divider text="Requests / Issues" className="mt-8 mb-5" />
-            Please make requests for new components or features you would like
-            to see on the issues page: <br />
+            Please make requests for new components or features you would like to see on
+            the issues page: <br />
             <a
               className="underline text-blue-500"
               href="https://github.com/USACE-WaterManagement/groundwork-water/issues"
@@ -116,19 +112,18 @@ export default function HelpPage() {
         <div className="p-3">
           <article>
             <div>
-              CWMSjs is a wrapper for the CWMS API. It provides a simple way to
-              fetch data from the CWMS API and parse the response into a
-              JavaScript object. It also provides a way to make requests to the
-              CWMS API using the HTTP protocol.
+              CWMSjs is a wrapper for the CWMS API. It provides a simple way to fetch
+              data from the CWMS API and parse the response into a JavaScript object. It
+              also provides a way to make requests to the CWMS API using the HTTP
+              protocol.
             </div>
             <div>
-              These are automatically generated using the Swagger Specification
-              provided by CDA.
+              These are automatically generated using the Swagger Specification provided
+              by CDA.
             </div>
             <div>
-              The intent is to keep the latest version of this library current
-              with the version of CDA and it&apos;s available endpoints provided
-              here:{" "}
+              The intent is to keep the latest version of this library current with the
+              version of CDA and it&apos;s available endpoints provided here:{" "}
               <a
                 className="underline text-blue-500"
                 href="https://cwms-data.usace.army.mil/cwms-data/swagger-ui.html"
@@ -147,9 +142,8 @@ export default function HelpPage() {
             <br />
             Examples that are tested are found in the center of the page.
             <Divider text="Site Navigation" className="mt-8 mb-5" />
-            The sidebar provides you navigation through all the return and
-            request types. As well as the class definitions for the CWMSjs
-            library.
+            The sidebar provides you navigation through all the return and request
+            types. As well as the class definitions for the CWMSjs library.
             <br />
             To report a bug, please make a request on the issues page: <br />
             <a
@@ -163,24 +157,22 @@ export default function HelpPage() {
       </UsaceBox>
       <UsaceBox title="fetch / Vanilla JS">
         <em>
-          fetch is a JavaScript method build into the browser for making HTTP
-          requests
+          fetch is a JavaScript method build into the browser for making HTTP requests
         </em>
         <div className="p-3">
           <article>
-            Fetch provides a low level way for you to make HTTP requests to any
-            endpoint you would like. You could use it to dynamically load a
-            config file, make requests another API endpoint, or even make a
-            request to a local server. Fetch is a very powerful tool and is used
-            in many modern applications.
+            Fetch provides a low level way for you to make HTTP requests to any endpoint
+            you would like. You could use it to dynamically load a config file, make
+            requests another API endpoint, or even make a request to a local server.
+            Fetch is a very powerful tool and is used in many modern applications.
             <Alert
               title="Note"
               status="info"
               message={
                 <span>
-                  <b>fetch</b> is not a part of the <b>React Query</b> library.
-                  It is a browser API that is available in all modern browsers.
-                  If you are using <b>React Query</b> consider{" "}
+                  <b>fetch</b> is not a part of the <b>React Query</b> library. It is a
+                  browser API that is available in all modern browsers. If you are using{" "}
+                  <b>React Query</b> consider{" "}
                   <a
                     className="underline text-blue-500"
                     href="https://tanstack.com/query/latest/docs/framework/react/quick-start"

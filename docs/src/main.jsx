@@ -29,5 +29,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </QueryClientProvider>
       </CdaUrlProvider>
     </ReduxBundlerProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

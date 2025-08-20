@@ -54,8 +54,8 @@ const cwmsPlotProps = [
     required: false,
     desc: (
       <>
-        Optional styling options for the plot. Can take any of the plotlyjs
-        layout properties:{" "}
+        Optional styling options for the plot. Can take any of the plotlyjs layout
+        properties:{" "}
         <a
           href="https://plotly.com/javascript/reference/layout/"
           className="gw-underline"
@@ -84,16 +84,16 @@ const cwmsPlotProps = [
     default: "undefined",
     desc: (
       <div>
-        Specifies the elevation datum of the response. This field affects only
-        elevation location levels.
+        Specifies the elevation datum of the response. This field affects only elevation
+        location levels.
         <ul>
           <li>
-            <b>NAVD88</b>: The elevation values will in the specified or default
-            units above the NAVD-88 datum.
+            <b>NAVD88</b>: The elevation values will in the specified or default units
+            above the NAVD-88 datum.
           </li>
           <li>
-            <b>NGVD29</b>: The elevation values will be in the specified or
-            default units above the NGVD-29 datum.
+            <b>NGVD29</b>: The elevation values will be in the specified or default
+            units above the NGVD-29 datum.
           </li>
         </ul>
       </div>
@@ -138,8 +138,8 @@ const traceDataProps = [
     default: "undefined",
     desc: (
       <>
-        Optional styling options for the data. Can take any of the plotlyjs
-        scatter trace properties:{" "}
+        Optional styling options for the data. Can take any of the plotlyjs scatter
+        trace properties:{" "}
         <a
           href="https://plotly.com/javascript/reference/scatter/"
           className="gw-underline"

@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@usace-watermanagement/groundwork-water": "^3.3.1",
-        "@usace/groundwork": "^3.14.19",
+        "@usace/groundwork": "^3.14.10",
         "clsx": "^2.1.0",
         "dayjs": "^1.11.11",
         "internal-nav-helper": "^3.1.0",

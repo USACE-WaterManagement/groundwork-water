@@ -63,7 +63,7 @@ export const createKeycloakAuthMethod = ({
 
   const fetchKeycloakRequest = async (
     endpoint: "token" | "logout",
-    formData: KeycloakRequest
+    formData: KeycloakRequest,
   ) => {
     const fullUrl = `${baseUrl}/${endpoint}`;
 
@@ -92,8 +92,7 @@ export const createKeycloakAuthMethod = ({
             password,
           }
         : undefined;
-    if (!loginData)
-      throw new Error("Invalid flow provided for keycloak auth config");
+    if (!loginData) throw new Error("Invalid flow provided for keycloak auth config");
     const tokenResponse = await fetchKeycloakRequest("token", loginData);
     const tokenJson: KeycloakTokenResponse = await tokenResponse.json();
     accessToken = tokenJson.access_token;

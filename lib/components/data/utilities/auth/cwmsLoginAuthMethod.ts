@@ -25,14 +25,12 @@ export const createCwmsLoginAuthMethod = ({
   const cwmsLoginAuthMethod: AuthMethod = {
     async login() {
       location.href =
-        `${authUrl}/login?OriginalLocation=` +
-        encodeURIComponent(location.href);
+        `${authUrl}/login?OriginalLocation=` + encodeURIComponent(location.href);
     },
 
     async logout() {
       location.href =
-        `${authUrl}/logout?OriginalLocation=` +
-        encodeURIComponent(location.href);
+        `${authUrl}/logout?OriginalLocation=` + encodeURIComponent(location.href);
     },
 
     async isAuth() {

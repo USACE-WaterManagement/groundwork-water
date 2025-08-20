@@ -17,9 +17,8 @@ const CdaParamsTable = ({
       required: true,
       desc: (
         <>
-          {arrayOf ? "An array of p" : "P"}arameters provided to CDA for a{" "}
-          {requestObject} {requestType} request. Core parameters are listed
-          below. Check the{" "}
+          {arrayOf ? "An array of p" : "P"}arameters provided to CDA for a {requestObject} {requestType} request. Core
+          parameters are listed below. Check the{" "}
           <a href={docsUrl} className="underline">
             cwmsjs documentation
           </a>{" "}

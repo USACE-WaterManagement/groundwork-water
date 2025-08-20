@@ -20,7 +20,6 @@ You can read the current Groundwork Water Documentation:
 ### Contribution Guidelines
 
 - #### Pull Requests
-
   - Where possible, commits and pull requests should be [atomic](https://en.wikipedia.org/wiki/Atomic_commit):  
     _Keeping commits and PRs to one topic at a time_
     - To ensure reviewers can more easily review code revisions and not miss anything
@@ -35,7 +34,6 @@ You can read the current Groundwork Water Documentation:
        ![rebase from main](_images/rebase-main.png)
 
 - #### Workflow Recommendations
-
   - Use `npm link` to connect your project or the `docs` to the local generated `groundwork-water`
     - See the `link` script in `package.json` for details
   - Commit Often - [Atomic Commits](https://en.wikipedia.org/wiki/Atomic_commit)
@@ -45,7 +43,6 @@ You can read the current Groundwork Water Documentation:
     - [Tips & Tricks](https://code.visualstudio.com/docs/getstarted/tips-and-tricks)
 
 - #### Extensions
-
   - [TailwindCSS](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) -> Provides you inline tailwind options in your `className` blocks
   - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) -> Industry standard for styling, large community, and works in many programming languages
   - [Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments) -> Highlight TODO and other type comments
@@ -53,7 +50,6 @@ You can read the current Groundwork Water Documentation:
   - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph) -> Adds a graph icon on your "Source Control" line to let you view a visual representation of your git state
 
 - #### Styling / formatting
-
   - Style often and consider [Format on Save for Workspace](![Format on Save in Workspace](./_images/save_workspace_format.png))
   - Use the Prettier extension mentioned before to format with
     1. Press F1 to open command pallette

@@ -14,8 +14,8 @@ function PlotsDocs() {
       <div>
         <Text className="pb-6">
           The groundwork-water plotting components are intended to create
-          consistently-styled water management plots while handling as much of
-          the data retrieval as possible for the user.
+          consistently-styled water management plots while handling as much of the data
+          retrieval as possible for the user.
         </Text>
       </div>
       <H4>Components</H4>

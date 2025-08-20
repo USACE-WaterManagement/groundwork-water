@@ -93,13 +93,13 @@ function UseCdaLevels() {
       <div>
         <Text className="my-2">
           {" "}
-          The useCdaLevels hook retrieves levels data for specified levels in
-          CDA. It handles seasonal and constant levels.
+          The useCdaLevels hook retrieves levels data for specified levels in CDA. It
+          handles seasonal and constant levels.
         </Text>
         <Text>
-          The useCdaLevels hook (and endpoint) returns it in the same format as
-          the TimeSeries endpoint. If you are wanting to use levels in plots
-          please see the <Code>locationLevels</Code> prop on{" "}
+          The useCdaLevels hook (and endpoint) returns it in the same format as the
+          TimeSeries endpoint. If you are wanting to use levels in plots please see the{" "}
+          <Code>locationLevels</Code> prop on{" "}
           <a href="/docs/plots/cwms-plot" className="underline">
             CWMSPlot
           </a>
@@ -116,8 +116,7 @@ function UseCdaLevels() {
           </div>
         ) : isError ? (
           <Badge color="red" className="mb-2">
-            Error:{" "}
-            {TOI.error?.message || TOF.error?.message || TOC.error?.message}
+            Error: {TOI.error?.message || TOF.error?.message || TOC.error?.message}
           </Badge>
         ) : (
           <Card className="p-4 w-2/5">
@@ -129,31 +128,24 @@ function UseCdaLevels() {
               </div>
             ) : isError ? (
               <Badge color="red" className="mb-2">
-                Error:{" "}
-                {TOI.error?.message || TOF.error?.message || TOC.error?.message}
+                Error: {TOI.error?.message || TOF.error?.message || TOC.error?.message}
               </Badge>
             ) : (
               <div className="space-y-2">
                 <p>
                   <span className="font-bold me-2">Top of Inactive:</span>
                   {TOI.data?.values.at(-1)[1]?.toFixed(2)} ft as of{" "}
-                  {dayjs(TOI.data?.values.at(-1)[0]).format(
-                    "MM/DD/YYYY h:mm A"
-                  )}
+                  {dayjs(TOI.data?.values.at(-1)[0]).format("MM/DD/YYYY h:mm A")}
                 </p>
                 <p>
                   <span className="font-bold me-2">Top of Conservation:</span>
                   {TOC.data?.values.at(-1)[1]?.toFixed(2)} ft as of{" "}
-                  {dayjs(TOC.data?.values.at(-1)[0]).format(
-                    "MM/DD/YYYY h:mm A"
-                  )}
+                  {dayjs(TOC.data?.values.at(-1)[0]).format("MM/DD/YYYY h:mm A")}
                 </p>
                 <p>
                   <span className="font-bold me-2">Top of Flood:</span>
                   {TOF.data?.values.at(-1)[1]?.toFixed(2)} ft as of{" "}
-                  {dayjs(TOF.data?.values.at(-1)[0]).format(
-                    "MM/DD/YYYY h:mm A"
-                  )}
+                  {dayjs(TOF.data?.values.at(-1)[0]).format("MM/DD/YYYY h:mm A")}
                 </p>
               </div>
             )}
@@ -166,9 +158,9 @@ function UseCdaLevels() {
         Conservation, and Top of Flood. The hook takes a <Code>cdaParams</Code>
         object that specifies the level ID, office, and unit. The{" "}
         <Code>queryOptions</Code>
-        object allows you to set options like <Code>staleTime</Code> to control
-        how often the data is refetched. In this example, we set a stale time of
-        24 hours (1 day) to avoid unnecessary refetching of data.
+        object allows you to set options like <Code>staleTime</Code> to control how
+        often the data is refetched. In this example, we set a stale time of 24 hours (1
+        day) to avoid unnecessary refetching of data.
       </Text>
       <CodeBlock language="jsx">
         {`import { Card, Badge, Skeleton } from "@usace/groundwork";

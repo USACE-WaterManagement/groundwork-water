@@ -99,23 +99,21 @@ function UseCdaLatestValue() {
     <DocsPage middleText="CDA Latest Value Hook">
       <div>
         <Text>
-          The useCdaLatestValue hook returns the latest value entry from a CDA
-          time series. It includes the timestamp, value, quality code, and
-          units.
+          The useCdaLatestValue hook returns the latest value entry from a CDA time
+          series. It includes the timestamp, value, quality code, and units.
         </Text>
         <Text className="mt-2">
           The hook is an abstraction of the CDA TimeSeries GET and Catalog GET
-          endpoints. It first makes a TimeSeries GET request with the default
-          time window (now - 24 hours ago) and returns the latest value. If no
-          values are found, it makes a Catalog GET request and retrieves the
-          timestamp of the latest value. It then repeats the TimeSeries GET
-          request with the retrieved timestamp.
+          endpoints. It first makes a TimeSeries GET request with the default time
+          window (now - 24 hours ago) and returns the latest value. If no values are
+          found, it makes a Catalog GET request and retrieves the timestamp of the
+          latest value. It then repeats the TimeSeries GET request with the retrieved
+          timestamp.
         </Text>
         <Text className="mt-2">
-          The isPending and isFetching return booleans represent the full
-          lifecycle of the abstracted hook (time series AND catalog, if needed).
-          All other return parameters represent those returned from the time
-          series request.
+          The isPending and isFetching return booleans represent the full lifecycle of
+          the abstracted hook (time series AND catalog, if needed). All other return
+          parameters represent those returned from the time series request.
         </Text>
         <QueryClientWarning />
       </div>
@@ -202,8 +200,7 @@ const LatestDataCard = ({ title, tsId, office, unit, precision = 2 }) => {
 
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters -{" "}
-        <Code className="p-2">{`useCdaLatestValue({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useCdaLatestValue({...})`}</Code>
       </div>
       <ParamsTable paramsList={hookParams} />
       <div className="font-bold text-lg pt-6">Return Data Parameters - </div>

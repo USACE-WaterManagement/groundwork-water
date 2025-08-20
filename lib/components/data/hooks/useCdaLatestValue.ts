@@ -11,15 +11,8 @@ interface useCdaLatestValueParams {
   cdaUrl?: string;
 }
 
-const useCdaLatestValue = ({
-  tsId,
-  office,
-  unit,
-  cdaUrl,
-}: useCdaLatestValueParams) => {
-  const [latestDate, setLatestDate] = useState<
-    Record<string, string | undefined>
-  >({});
+const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }: useCdaLatestValueParams) => {
+  const [latestDate, setLatestDate] = useState<Record<string, string | undefined>>({});
   const begin = latestDate[tsId];
   const end = latestDate[tsId];
   const ts = useCdaTimeSeries({
@@ -51,8 +44,7 @@ const useCdaLatestValue = ({
       return;
     }
     const firstEntry: TimeSeriesCatalogEntry = catalog.data?.entries?.[0];
-    const latestTime =
-      firstEntry?.extents && firstEntry.extents?.[0].latestTime;
+    const latestTime = firstEntry?.extents && firstEntry.extents?.[0].latestTime;
     if (!latestTime) {
       return;
     }
@@ -72,8 +64,7 @@ const useCdaLatestValue = ({
     }));
   }, [catalog.data, latestDate, tsId]);
 
-  const isPending =
-    ts?.isPending || (enableCatalog ? catalog?.isPending : false);
+  const isPending = ts?.isPending || (enableCatalog ? catalog?.isPending : false);
 
   const isFetching = ts.isFetching || catalog.isFetching;
 
