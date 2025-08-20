@@ -269,6 +269,7 @@ export default function OutflowCardExample() {
         requestObject="TimeSeries"
         requestType="GET"
         cwmsJsType="GetTimeSeriesRequest"
+        arrayOf={true}
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaTSHookParams} />
