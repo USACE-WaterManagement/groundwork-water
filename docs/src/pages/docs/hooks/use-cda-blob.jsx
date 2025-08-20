@@ -71,7 +71,14 @@ const BlobViewerCard = () => {
       ) : cdaBlob.data ? (
         <div className="mt-4">
           <Accordion defaultOpen={true} heading={<H3>View: {blobId}</H3>}>
-            <Textarea className="h-[50vh] font-mono" defaultValue={cdaBlob.data} />
+            <Textarea
+              className="h-[50vh] font-mono"
+              defaultValue={
+                typeof cdaBlob.data == "object"
+                  ? JSON.stringify(cdaBlob.data, null, 2)
+                  : cdaBlob.data
+              }
+            />
           </Accordion>
         </div>
       ) : (
