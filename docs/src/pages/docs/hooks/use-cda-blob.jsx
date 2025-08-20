@@ -17,13 +17,13 @@ import QueryClientWarning from "../../../components/QueryClientWarning";
 import { Code as CodeBlock } from "../../components/code";
 import CdaParamsTable from "../../components/cda-params-table";
 import ParamsTable from "../../components/params-table";
-import { cdaBlobByIdParams } from "../../../props-declarations/data-hooks";
+import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
 
 const FileViewerCard = () => {
   const [blobId, setBlobId] = useState("ALTUFEB25.TXT");
   const [office, setOffice] = useState("SWT");
 
-  const { data, isPending, isError } = useCdaBlob({
+  const cdaBlob = useCdaBlob({
     cdaParams: { blobId, office },
     queryOptions: {
       enabled: !!blobId && !!office,
@@ -52,14 +52,14 @@ const FileViewerCard = () => {
           placeholder="e.g. SWT"
         />
       </Fieldset>
-      {isPending ? (
+      {cdaBlob.isPending ? (
         <p>Loading file...</p>
-      ) : isError ? (
-        <Badge color="red">Error retrieving file</Badge>
-      ) : data ? (
+      ) : cdaBlob.isError ? (
+        <Badge color="red">Error retrieving file: {cdaBlob.error?.message}</Badge>
+      ) : cdaBlob.data ? (
         <div className="mt-4">
           <p>File loaded. You can download or view it:</p>
-          <Textarea>{data}</Textarea>
+          <Textarea>{cdaBlob.data}</Textarea>
         </div>
       ) : (
         <Badge color="yellow">No file loaded yet</Badge>
@@ -159,7 +159,7 @@ function useCdaBlobPage() {
         cwmsJsType="GetBlobsWithBlobIdRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
-      <ParamsTable paramsList={cdaBlobByIdParams} />
+      <ParamsTable paramsList={cdaBlobsParams} />
     </DocsPage>
   );
 }
