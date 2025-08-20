@@ -131,7 +131,15 @@ function UseCdaMultiTimeSeries() {
         <OutflowCard />
       </div>
       <CodeBlock language="jsx">
-        {`import { Card, H3 } from "@usace/groundwork";
+        {`import {
+  Card,
+  H3, 
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell
+  } from "@usace/groundwork";
 import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
 
 const cdaMultiTimeSeries = useCdaMultiTimeSeries({
@@ -153,35 +161,43 @@ const cdaMultiTimeSeries = useCdaMultiTimeSeries({
   if (isError) return <span>TimeSeries error!</span>;
 
   return (
-    <Card className="gw-w-96">
+    <Card className="w-96">
       <H3>Keystone Lake: Multiple TimeSeries Data</H3>
       {data.map((ts) => {
         return (
-          <Card key={ts.name} className="gw-my-2">
-            <div className="gw-flex gw-flex-col  gw-gap-2 gw-w-1/2">
+          <Card key={ts.name} className="my-2">
+            <div className="flex flex-col  gap-2 w-1/2">
               <Badge color="blue">TimeSeries: {ts.name}</Badge>
               <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
               <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
             </div>
-            <ul>
-              <li>Time - Value</li>
-
-              {ts.values
-                .filter((entry) => !!entry[1]) // Remove empty records
-                .slice(-5) // Trim to the last 5 values
-                .map((entry) => {
-                  const time = new Date(entry[0]).toLocaleString();
-                  const value = entry[1].toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  });
-                  return (
-                    <li key={entry[0]}>
-                      {time} - {value}
-                    </li>
-                  );
-                })}
-            </ul>
+            // Did you know CWMSTable can be used to make this table for you! 
+            <Table className="w-full" dense overflow>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Value</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {ts.values
+                  .filter((entry) => !!entry[1]) // Remove empty records
+                  .slice(-5) // Trim to the last 5 values
+                  .map((entry) => {
+                    const time = new Date(entry[0]).toLocaleString();
+                    const value = entry[1].toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    });
+                    return (
+                      <TableRow key={entry[0]}>
+                        <TableCell>{time}</TableCell>
+                        <TableCell>{value}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
           </Card>
         );
       })}
