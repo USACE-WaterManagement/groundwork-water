@@ -24,6 +24,9 @@ import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 import useCdaBlob from "./components/data/hooks/useCdaBlob";
 import useCdaBlobCatalog from "./components/data/hooks/useCdaBlobCatalog";
 
+// Utility Hooks
+import useDebounce from "./components/data/hooks/useDebounce";
+
 // auth
 import { AuthProvider } from "./components/data/utilities/auth/AuthProvider";
 import { useAuth } from "./components/data/utilities/auth/useAuth";
@@ -47,6 +50,7 @@ export {
   useCdaLevels,
   useCdaTimeSeries,
   useCdaTimeSeriesGroup,
+  useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,
   AuthProvider,
