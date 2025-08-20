@@ -21,16 +21,25 @@ import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
 import CWMSTableInfo from "../../../components/CWMSTableInfo";
+import dayjs from "dayjs";
+
+const office = "SWT";
+const TSID_LIST = [
+  {
+    name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+    office,
+    begin: dayjs().subtract(2, "hour").toISOString(),
+  },
+  {
+    name: "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
+    office,
+    begin: dayjs().subtract(5, "hour").toISOString(),
+  },
+];
 
 const OutflowCard = () => {
   const cdaMultiTimeSeries = useCdaMultiTimeSeries({
-    cdaParams: {
-      name: [
-        "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-        "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
-      ],
-      office: "SWT",
-    },
+    cdaParams: TSID_LIST,
   });
   const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
   const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
@@ -43,12 +52,12 @@ const OutflowCard = () => {
       <Card className="gw-w-96">
         <H3>Keystone Lake: Multiple TimeSeries Data</H3>
         {isError &&
-          cdaMultiTimeSeries.map((ts) => {
+          cdaMultiTimeSeries.map((ts, idx) => {
             if (!ts.isError) return null;
             return (
               <Card key={ts.data?.name + "-error"} className="gw-my-2">
                 <div className="gw-flex gw-flex-col gw-gap-2 gw-w-1/2">
-                  <Badge color="red">TimeSeries: {ts.data?.name}</Badge>
+                  <Badge color="red">TimeSeries: {TSID_LIST.at(idx)}</Badge>
                   <Badge color="red">Error: {ts.error.message} </Badge>
                 </div>
               </Card>
@@ -62,7 +71,15 @@ const OutflowCard = () => {
                 <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
                 <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
               </div>
-              <Table className="gw-w-full" dense overflow>
+              <Table
+                className="gw-w-full"
+                dense
+                overflow={true}
+                grid
+                stickyHeader
+                striped
+                bleed
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell>Time</TableCell>
@@ -71,16 +88,15 @@ const OutflowCard = () => {
                 </TableHead>
                 <TableBody>
                   {ts.values
-                    .filter((entry) => !!entry[1]) // Remove empty records
-                    .slice(-5) // Trim to the last 5 values
+                    .filter((entry) => !!entry.at(1)) // Remove empty records
                     .map((entry) => {
-                      const time = new Date(entry[0]).toLocaleString();
-                      const value = entry[1].toLocaleString(undefined, {
+                      const time = new Date(entry.at(0)).toLocaleString();
+                      const value = entry.at(1).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       });
                       return (
-                        <TableRow key={entry[0]}>
+                        <TableRow key={entry.at(0)}>
                           <TableCell>{time}</TableCell>
                           <TableCell>{value}</TableCell>
                         </TableRow>
@@ -156,77 +172,92 @@ function UseCdaMultiTimeSeries() {
   } from "@usace/groundwork";
 import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
 
-const cdaMultiTimeSeries = useCdaMultiTimeSeries({
-  cdaParams: {
-    name: [
-      "KEYS.Elev.Inst.1Hour.0.Ccp-Rev2",
-      "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
-    ],
-    office: "SWT",
+const office = "SWT";
+const TSID_LIST = [
+  {
+    name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+    office,
+    begin: dayjs().subtract(2, "hour").toISOString(),
   },
-});
-const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
-const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
-const data = cdaMultiTimeSeries
-  .filter((ts) => ts.data) // Filter out any errors or pending states
-  .map((ts) => ts.data);
-if (isLoading) return <Skeleton type="card" className="w-1/2 m-auto" />;
-return (
-  <>
-    <Card className="w-96">
-      <H3>Keystone Lake: Multiple TimeSeries Data</H3>
-      {isError &&
-        cdaMultiTimeSeries.map((ts) => {
-          if (!ts.isError) return null;
-          return (
-            <Card key={ts.data?.name + "-error"} className="my-2">
-              <div className="flex flex-col gap-2 w-1/2">
-                <Badge color="red">TimeSeries: {ts.data?.name}</Badge>
-                <Badge color="red">Error: {ts.error.message} </Badge>
-              </div>
-            </Card>
-          );
-        })}
-      {data.map((ts) => {
-        return (
-          <Card key={ts.name} className="my-2">
-            <div className="flex flex-col  gap-2 w-1/2">
-              <Badge color="blue">TimeSeries: {ts.name}</Badge>
-              <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
-              <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
-            </div>
-            <Table className="w-full" dense overflow>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Time</TableCell>
-                  <TableCell>Value</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {ts.values
-                  .filter((entry) => !!entry[1]) // Remove empty records
-                  .slice(-5) // Trim to the last 5 values
-                  .map((entry) => {
-                    const time = new Date(entry[0]).toLocaleString();
-                    const value = entry[1].toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    });
-                    return (
-                      <TableRow key={entry[0]}>
-                        <TableCell>{time}</TableCell>
-                        <TableCell>{value}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </Card>
-        );
-      })}
-    </Card>
-  </>
-);
+  {
+    name: "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
+    office,
+    begin: dayjs().subtract(5, "hour").toISOString(),
+  },
+];
+
+export default function OutflowCardExample() {
+    const cdaMultiTimeSeries = useCdaMultiTimeSeries({
+        cdaParams: TSID_LIST,
+    });
+    const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
+    const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
+    const data = cdaMultiTimeSeries
+        .filter((ts) => ts.data) // Filter out any errors or pending states
+        .map((ts) => ts.data);
+    if (isLoading) return <Skeleton type="card" className="w-1/2 m-auto" />;
+    return (
+        <Card className="gw-w-96">
+            <H3>Keystone Lake: Multiple TimeSeries Data</H3>
+            {isError &&
+            cdaMultiTimeSeries.map((ts, idx) => {
+                if (!ts.isError) return null;
+                return (
+                <Card key={ts.data?.name + "-error"} className="gw-my-2">
+                    <div className="gw-flex gw-flex-col gw-gap-2 gw-w-1/2">
+                    <Badge color="red">TimeSeries: {TSID_LIST.at(idx)}</Badge>
+                    <Badge color="red">Error: {ts.error.message} </Badge>
+                    </div>
+                </Card>
+                );
+            })}
+            {data.map((ts) => {
+                return (
+                    <Card key={ts.name} className="gw-my-2">
+                    <div className="gw-flex gw-flex-col  gw-gap-2 gw-w-1/2">
+                        <Badge color="blue">TimeSeries: {ts.name}</Badge>
+                        <Badge color="yellow">Begin: {ts.begin.toLocaleString()}</Badge>
+                        <Badge color="yellow">End: {ts.end.toLocaleString()}</Badge>
+                    </div>
+                    <Table
+                        className="gw-w-full"
+                        dense
+                        overflow={true}
+                        grid
+                        stickyHeader
+                        striped
+                        bleed
+                    >
+                        <TableHead>
+                        <TableRow>
+                            <TableCell>Time</TableCell>
+                            <TableCell>Value</TableCell>
+                        </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {ts.values
+                            .filter((entry) => !!entry.at(1)) // Remove empty records
+                            .map((entry) => {
+                            const time = new Date(entry.at(0)).toLocaleString();
+                            const value = entry[1].toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                            return (
+                                <TableRow key={entry.at(0)}>
+                                    <TableCell>{time}</TableCell>
+                                    <TableCell>{value}</TableCell>
+                                </TableRow>
+                            );
+                            })}
+                        </TableBody>
+                    </Table>
+                    </Card>
+                );
+            })}
+        </Card>
+    );
+}
 `}
       </CodeBlock>
       <Divider text="API Reference" className="mt-8" />
