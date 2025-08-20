@@ -23,30 +23,26 @@ import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import { cdaBlobsParams } from "../../../props-declarations/data-hooks";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import useDebounce from "./use-debounce";
 
 const FileCatalogCard = () => {
   const [like, setLike] = useState("*.json");
-  const [debouncedLike, setDebouncedLike] = useState(like);
   const [office, setOffice] = useState("SWT");
-  const debounceTimeout = useRef();
 
-  // Avoid querying CDA as the user finishes typing with a 400ms delay
-  useEffect(() => {
-    clearTimeout(debounceTimeout.current);
-    debounceTimeout.current = setTimeout(() => {
-      setDebouncedLike(like);
-    }, 400);
-    return () => clearTimeout(debounceTimeout.current);
-  }, [like]);
+  const debouncedLike = useDebounce(like, 400);
 
   // Cherry-pick a few offices we know have blob data
   const offices = ["SWT", "SAM", "MVP", "MVS", "NAE"];
 
-  const { data, isPending, isError } = useCdaBlobCatalog({
+  const blobCatalog = useCdaBlobCatalog({
     cdaParams: {
       office,
       like: debouncedLike,
+    },
+    queryOptions: {
+      enabled: !!debouncedLike,
+      retry: false,
     },
   });
 
@@ -93,7 +89,7 @@ const FileCatalogCard = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {isPending ? (
+          {blobCatalog.isPending ? (
             // Show a few rows while loading for interest
             Array.from({ length: 5 }).map((_, index) => (
               <TableRow key={index}>
@@ -105,13 +101,13 @@ const FileCatalogCard = () => {
                 </TableCell>
               </TableRow>
             ))
-          ) : isError ? (
+          ) : blobCatalog.isError ? (
             <TableRow>
               <TableCell colSpan={2} className="text-center">
                 <span>Error loading blob data!</span>
               </TableCell>
             </TableRow>
-          ) : data?.blobs?.length === 0 ? (
+          ) : blobCatalog.data?.blobs?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={2} className="text-center">
                 <Badge color="red">
@@ -120,7 +116,7 @@ const FileCatalogCard = () => {
               </TableCell>
             </TableRow>
           ) : (
-            data?.blobs?.map((blob) => (
+            blobCatalog.data?.blobs?.map((blob) => (
               <TableRow key={blob.id}>
                 <TableCell>
                   <strong>{blob.id}</strong>
@@ -168,59 +164,56 @@ function useCdaBlobCatalogPage() {
   Dropdown,
 } from "@usace/groundwork";
 import { useEffect, useRef, useState } from "react";
-import { useCdaBlobCatalog } from "@usace-watermanagement/groundwork-water";
+import { useCdaBlobCatalog, useDebounce } from "@usace-watermanagement/groundwork-water";
 
 const FileCatalogCard = () => {
-  const [like, setLike] = useState("*.json");
-  const [debouncedLike, setDebouncedLike] = useState(like);
-  const [office, setOffice] = useState("SWT");
-  const debounceTimeout = useRef();
+    const [like, setLike] = useState("*.json");
+    const [office, setOffice] = useState("SWT");
 
-  useEffect(() => {
-    clearTimeout(debounceTimeout.current);
-    debounceTimeout.current = setTimeout(() => {
-      setDebouncedLike(like);
-    }, 400);
-    return () => clearTimeout(debounceTimeout.current);
-  }, [like]);
+    const debouncedLike = useDebounce(like, 400);
 
-  const offices = ["SWT", "MVP", "MVS", "NAE"];
+    // Cherry-pick a few offices we know have blob data
+    const offices = ["SWT", "SAM", "MVP", "MVS", "NAE"];
 
-  const { data, isPending, isError } = useCdaBlobCatalog({
+    const blobCatalog = useCdaBlobCatalog({
     cdaParams: {
-      office,
-      like: debouncedLike,
+        office,
+        like: debouncedLike,
     },
-  });
+    queryOptions: {
+        enabled: !!debouncedLike,
+        retry: false,
+    },
+    });
 
-  return (
+    return (
     <Card className="w-fit">
-      <H3>File Catalog</H3>
-      <Fieldset>
+        <H3>File Catalog</H3>
+        <Fieldset>
         <Label htmlFor="like-input" className="font-bold">
-          Filter by File Name (like):
+            Filter by File Name (like):
         </Label>
         <Input
-          id="like-input"
-          value={like}
-          onChange={(e) => setLike(e.target.value)}
-          className="w-1/4 ml-4 inline-block mb-2"
-          placeholder="e.g. *.json or *.txt"
-        />
+            id="like-input"
+            value={like}
+            onChange={(e) => setLike(e.target.value)}
+            className="w-1/4 ml-4 inline-block mb-2"
+            placeholder="e.g. *.json or *.txt"
+        />{" "}
         <Dropdown
-          label="Office: "
-          labelClassName="inline-block mx-2"
-          className="inline-block w-1/4 mb-2"
-          options={offices.map((option) => (
+            label="Office: "
+            labelClassName="inline-block mx-2"
+            className="inline-block w-1/4 mb-2"
+            options={offices.map((option) => (
             <option key={option} value={option} className="pl-2">
-              {option}
+                {option}
             </option>
-          ))}
-          onChange={(e) => setOffice(e.target.value)}
+            ))}
+            onChange={(e) => setOffice(e.target.value)}
         />
-      </Fieldset>
+        </Fieldset>
 
-      <Table
+        <Table
         dense
         overflow
         stickyHeader
@@ -228,54 +221,54 @@ const FileCatalogCard = () => {
         bleed
         overflowHeight="max-h-[35vh]"
         className="min-w-[60vw]"
-      >
+        >
         <TableHead>
-          <TableRow>
+            <TableRow>
             <TableCell>File (blob) ID</TableCell>
             <TableCell>Description</TableCell>
-          </TableRow>
+            </TableRow>
         </TableHead>
         <TableBody>
-          {isPending ? (
+            {blobCatalog.isPending ? (
+            // Show a few rows while loading for interest
             Array.from({ length: 5 }).map((_, index) => (
-              <TableRow key={index}>
+                <TableRow key={index}>
                 <TableCell>
-                  <Skeleton className="w-full" />
+                    <Skeleton className="w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="w-full" />
+                    <Skeleton className="w-full" />
                 </TableCell>
-              </TableRow>
+                </TableRow>
             ))
-          ) : isError ? (
+            ) : blobCatalog.isError ? (
             <TableRow>
-              <TableCell colSpan={2} className="text-center">
+                <TableCell colSpan={2} className="text-center">
                 <span>Error loading blob data!</span>
-              </TableCell>
+                </TableCell>
             </TableRow>
-          ) : data?.blobs?.length === 0 ? (
+            ) : blobCatalog.data?.blobs?.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2} className="text-center">
+                <TableCell colSpan={2} className="text-center">
                 <Badge color="red">
-                  No files found matching <Code>"{debouncedLike}"</Code>
+                    No files found matching <Code>&quot;{debouncedLike}&quot;</Code>
                 </Badge>
-              </TableCell>
+                </TableCell>
             </TableRow>
-          ) : (
-            data?.blobs?.map((blob) => (
-              <TableRow key={blob.id}>
+            ) : (
+            blobCatalog.data?.blobs?.map((blob) => (
+                <TableRow key={blob.id}>
                 <TableCell>
-                  <strong>{blob.id}</strong>
+                    <strong>{blob.id}</strong>
                 </TableCell>
                 <TableCell>{blob.description}</TableCell>
-              </TableRow>
+                </TableRow>
             ))
-          )}
+            )}
         </TableBody>
-      </Table>
+        </Table>
     </Card>
-  );
-};`}
+);`}
       </CodeBlock>
 
       <Divider text="API Reference" className="mt-8" />
