@@ -31,7 +31,6 @@ const BlobViewerCard = () => {
 
   const cdaBlob = useCdaBlob({
     cdaParams: { blobId: debouncedBlobId, office: debouncedOffice },
-    cdaUrl: "https://wm.swt.ds.usace.army.mil/swt-data",
     queryOptions: {
       enabled: !!debouncedBlobId && !!debouncedOffice,
       retry: false,
