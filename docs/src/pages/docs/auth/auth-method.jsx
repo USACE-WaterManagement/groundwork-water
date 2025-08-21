@@ -3,6 +3,8 @@ import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const componentProps = [
   {
     name: "login",
@@ -43,7 +45,7 @@ const componentProps = [
 ];
 
 const authProvider = (
-  <Link href="/#/docs/auth/auth-provider" className="hover:underline">
+  <Link href={`${BASE_URL}/#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
   </Link>
 );
@@ -66,12 +68,15 @@ function AuthMethodDocs() {
         </Text>
         <ul className="list-disc mt-2 ml-8 text-gray-500">
           <li>
-            <Link href="/#/docs/auth/keycloak" className="hover:underline">
+            <Link href={`${BASE_URL}/#/docs/auth/keycloak`} className="hover:underline">
               createKeycloakAuthMethod()
             </Link>
           </li>
           <li>
-            <Link href="/#/docs/auth/cwms-login" className="hover:underline">
+            <Link
+              href={`${BASE_URL}/#/docs/auth/cwms-login`}
+              className="hover:underline"
+            >
               createCwmsLoginAuthMethod()
             </Link>
           </li>

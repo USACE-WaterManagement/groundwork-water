@@ -5,6 +5,8 @@ import Divider from "../../components/divider";
 import QueryClientWarning from "../../../components/QueryClientWarning";
 import { AuthHookExample } from ".";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const returnParams = [
   {
     name: "login",
@@ -39,12 +41,12 @@ const returnParams = [
 ];
 
 const authProvider = (
-  <Link href="/#/docs/auth/auth-provider" className="hover:underline">
+  <Link href={`${BASE_URL}/#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
   </Link>
 );
 const authMethod = (
-  <Link href="/#/docs/auth/auth-method" className="hover:underline">
+  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );

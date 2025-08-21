@@ -5,6 +5,8 @@ import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import Alert from "../../components/alert";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const returnParams = [
   {
     name: "data",
@@ -90,7 +92,7 @@ function DataHooks() {
           <span>
             A quick walkthrough to get React Query set up in your application is
             available at{" "}
-            <Link href="/#/docs/react-query" className="underline">
+            <Link href={`${BASE_URL}/#/docs/react-query`} className="underline">
               Getting Started - React Query
             </Link>
           </span>

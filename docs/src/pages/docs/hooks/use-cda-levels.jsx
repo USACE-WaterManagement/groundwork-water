@@ -9,6 +9,8 @@ import { useCdaLevels } from "@usace-watermanagement/groundwork-water";
 import dayjs from "dayjs";
 import ParamsTable from "../../components/params-table";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const cdaParams = [
   {
     name: "levelId",
@@ -100,7 +102,7 @@ function UseCdaLevels() {
           The useCdaLevels hook (and endpoint) returns it in the same format as the
           TimeSeries endpoint. If you are wanting to use levels in plots please see the{" "}
           <Code>locationLevels</Code> prop on{" "}
-          <Link href="/#/docs/plots/cwms-plot" className="underline">
+          <Link href={`${BASE_URL}/#/docs/plots/cwms-plot`} className="underline">
             CWMSPlot
           </Link>
         </Text>

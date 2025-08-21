@@ -5,6 +5,8 @@ import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import QueryClientWarning from "../../../components/QueryClientWarning";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const componentProps = [
   {
     name: "method",
@@ -16,12 +18,12 @@ const componentProps = [
 
 const authProvider = <Code>AuthProvider</Code>;
 const authMethod = (
-  <Link href="/#/docs/auth/auth-method" className="hover:underline">
+  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );
 const useAuth = (
-  <Link href="/#/docs/auth/use-auth" className="hover:underline">
+  <Link href={`${BASE_URL}/#/docs/auth/use-auth`} className="hover:underline">
     <Code>useAuth()</Code>
   </Link>
 );
