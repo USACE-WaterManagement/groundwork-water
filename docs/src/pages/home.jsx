@@ -44,7 +44,7 @@ function Home() {
                 your application!
               </Text>
               <div className="mt-3">
-                <TextLink href="/docs" className="text-lg font-bold">
+                <TextLink href="/#/docs" className="text-lg font-bold">
                   Check out the docs
                 </TextLink>
               </div>

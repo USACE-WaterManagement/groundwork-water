@@ -1,4 +1,4 @@
-import { Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
@@ -16,14 +16,14 @@ const componentProps = [
 
 const authProvider = <Code>AuthProvider</Code>;
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href="/#/docs/auth/auth-method" className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 const useAuth = (
-  <a href="/docs/auth/use-auth" className="hover:underline">
+  <Link href="/#/docs/auth/use-auth" className="hover:underline">
     <Code>useAuth()</Code>
-  </a>
+  </Link>
 );
 
 function AuthProviderDocs() {

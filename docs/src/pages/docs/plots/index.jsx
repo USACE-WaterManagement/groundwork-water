@@ -1,4 +1,4 @@
-import { Text } from "@usace/groundwork";
+import { Link, Text } from "@usace/groundwork";
 import { H4 } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 
@@ -21,9 +21,9 @@ function PlotsDocs() {
       <H4>Components</H4>
       <ul>
         <li>
-          <a href="/docs/plots/cwms-plot">
+          <Link href="/#/docs/plots/cwms-plot">
             CMWSPlot - A generic plot for displaying CWMS data
-          </a>
+          </Link>
         </li>
       </ul>
       <br />

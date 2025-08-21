@@ -1,4 +1,4 @@
-import { Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -39,14 +39,14 @@ const returnParams = [
 ];
 
 const authProvider = (
-  <a href="/docs/auth/auth-provider" className="hover:underline">
+  <Link href="/#/docs/auth/auth-provider" className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
-  </a>
+  </Link>
 );
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href="/#/docs/auth/auth-method" className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 const useAuth = <Code>useAuth()</Code>;
 

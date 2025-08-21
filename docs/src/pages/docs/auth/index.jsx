@@ -1,23 +1,23 @@
-import { Code, H4, Text } from "@usace/groundwork";
+import { Code, H4, Link, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import QueryClientWarning from "../../../components/QueryClientWarning";
 
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href="/#/docs/auth/auth-method" className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 const authProvider = (
-  <a href="/docs/auth/auth-provider" className="hover:underline">
-    <Code>&lt;AuthProvider&gt;</Code>;
-  </a>
+  <Link href="/#/docs/auth/auth-provider" className="hover:underline">
+    <Code>&lt;AuthProvider&gt;</Code>
+  </Link>
 );
 const useAuth = (
-  <a href="/docs/auth/use-auth" className="hover:underline">
+  <Link href="/#/docs/auth/use-auth" className="hover:underline">
     <Code>useAuth()</Code>
-  </a>
+  </Link>
 );
 
 export const AuthHookExample = () => (
@@ -73,14 +73,14 @@ function AuthenticationDocs() {
             an {authMethod}, generally created using one of the provided constructors:
             <ul className="list-disc ml-8">
               <li>
-                <a href="/docs/auth/keycloak" className="hover:underline">
+                <Link href="/#/docs/auth/keycloak" className="hover:underline">
                   createKeycloakAuthMethod()
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/docs/auth/cwms-login" className="hover:underline">
+                <Link href="/#/docs/auth/cwms-login" className="hover:underline">
                   createCwmsLoginAuthMethod()
-                </a>
+                </Link>
               </li>
             </ul>
           </li>

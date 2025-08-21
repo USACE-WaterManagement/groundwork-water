@@ -1,4 +1,4 @@
-import { Badge, Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
@@ -52,9 +52,9 @@ const componentProps = [
 
 const keycloak = <Code>createKeycloakAuthMethod()</Code>;
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href="/#/docs/auth/auth-method" className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 
 function KeycloakDocs() {
