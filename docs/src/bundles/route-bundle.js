@@ -28,6 +28,7 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
+import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
 
 export default createRouteBundle(
   {
@@ -46,6 +47,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,
     "/docs/hooks/use-cda-levels": UseCdaLevels,
+    "/docs/hooks/use-cda-offices": UseCdaOffices,
     "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,

@@ -79,6 +79,11 @@ export default [
         href: "/docs/hooks/use-cda-location",
       },
       {
+        id: "use-cda-offices",
+        text: "CDA Offices",
+        href: "/docs/hooks/use-cda-offices",
+      },
+      {
         id: "use-cda-time-series",
         text: "CDA Time Series",
         href: "/docs/hooks/use-cda-time-series",
