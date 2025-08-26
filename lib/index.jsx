@@ -27,6 +27,9 @@ import { useAuth } from "./components/data/utilities/auth/useAuth";
 import { createCwmsLoginAuthMethod } from "./components/data/utilities/auth/cwmsLoginAuthMethod";
 import { createKeycloakAuthMethod } from "./components/data/utilities/auth/keycloakAuthMethod";
 
+// dropdowns
+import { OfficeDropdown } from "./components/data/dropdowns/OfficeDropdown";
+
 // import { helperFunction } from './utils/helpers';
 
 export {
@@ -36,6 +39,7 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
+  OfficeDropdown,
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
