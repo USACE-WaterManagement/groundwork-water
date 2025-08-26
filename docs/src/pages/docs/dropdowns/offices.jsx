@@ -58,7 +58,10 @@ const propsList = [
       <div>
         Any additional props are forwarded to the underlying Groundwork {"<Dropdown />"}
         . See{" "}
-        <Link href="https://usace.github.io/#/docs/forms/dropdown">
+        <Link
+          href="https://usace.github.io/#/docs/forms/dropdown"
+          className="underline"
+        >
           Groundwork Dropdown documentation
         </Link>{" "}
         for more details.
