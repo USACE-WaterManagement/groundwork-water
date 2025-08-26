@@ -54,6 +54,18 @@ export default [
     ],
   },
   {
+    id: "dropdowns",
+    text: "Dropdowns",
+    href: "/docs/dropdowns",
+    children: [
+      {
+        id: "offices",
+        text: "Offices",
+        href: "/docs/dropdowns/offices",
+      },
+    ],
+  },
+  {
     id: "hooks",
     text: "Data Hooks",
     href: "/docs/hooks",
