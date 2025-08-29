@@ -61,6 +61,30 @@ const componentProps = [
     desc: "Whether the table is in an invalid state.",
   },
   {
+    name: "required",
+    type: "boolean",
+    default: "false",
+    desc: "Whether all table cells are required for form submission.",
+  },
+  {
+    name: "perColumnRequired",
+    type: "object",
+    default: "{}",
+    desc: "Object specifying required status per TSID column (e.g., {'Stage': true, 'Flow': false}).",
+  },
+  {
+    name: "perColumnUnits",
+    type: "object",
+    default: "{}",
+    desc: "Object specifying units per TSID column (e.g., {'Stage': 'ft', 'Flow': 'cfs'}).",
+  },
+  {
+    name: "perColumnPrecision",
+    type: "object",
+    default: "{}",
+    desc: "Object specifying precision per TSID column (e.g., {'Stage': 2, 'Flow': 0}).",
+  },
+  {
     name: "onChange",
     type: "function",
     default: "undefined",
@@ -81,10 +105,10 @@ function CWMSInputTableDocs() {
     <DocsPage middleText="CWMS Input Table">
       <div>
         <Text>
-          The CWMS Input Table component provides a matrix of input fields for
-          entering multiple time series values across different time offsets.
-          Its ideal for bulk data entry where you need to input values for
-          multiple parameters at different time points.
+          The CWMS Input Table component provides a matrix of input fields for entering
+          multiple time series values across different time offsets. Its ideal for bulk
+          data entry where you need to input values for multiple parameters at different
+          time points.
         </Text>
       </div>
 
@@ -92,11 +116,7 @@ function CWMSInputTableDocs() {
       <div className="overflow-x-auto">
         <FormWrapper office="SWT">
           <CWMSInputTable
-            tsids={[
-              "Stage.Inst.0.0.USGS",
-              "Flow.Inst.0.0.USGS",
-              "Temp.Inst.0.0.USGS",
-            ]}
+            tsids={["Stage.Inst.0.0.USGS", "Flow.Inst.0.0.USGS", "Temp.Inst.0.0.USGS"]}
             timeoffsets={[0, 3600, 7200]}
             showTimestamps={true}
           />
@@ -115,8 +135,8 @@ function CWMSInputTableDocs() {
 
       <Divider text="With Default Values" className="mt-8" />
       <Text className="mb-4">
-        You can provide default values for specific cells using the tsid_offset
-        key format.
+        You can provide default values for specific cells using the tsid_offset key
+        format.
       </Text>
 
       <div className="overflow-x-auto">
@@ -147,8 +167,8 @@ function CWMSInputTableDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSInputTable automatically registers
-        with the form context for bulk data submission to CWMS.
+        When used within a FormWrapper, CWMSInputTable automatically registers with the
+        form context for bulk data submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">

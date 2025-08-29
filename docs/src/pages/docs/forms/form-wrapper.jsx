@@ -7,6 +7,7 @@ import {
   CWMSTextarea,
   CWMSDropdown,
   CWMSCheckboxes,
+  CWMSInputTable,
   AuthProvider,
   useAuth,
   createCwmsLoginAuthMethod,
@@ -82,6 +83,18 @@ const componentProps = [
     type: "string",
     default: "Submission Time",
     desc: "Label text for the calendar input.",
+  },
+  {
+    name: "calendarInterval",
+    type: "string",
+    default: "minute",
+    desc: "Time interval for automatic snapping: 'none', 'second', 'minute', '5minutes', '15minutes', '30minutes', 'hour', or 'day'.",
+  },
+  {
+    name: "calendarSnapTo",
+    type: "string",
+    default: "nearest",
+    desc: "Snap direction when selecting time: 'nearest', 'previous', or 'next'.",
   },
   {
     name: "className",
@@ -368,6 +381,106 @@ function FormWrapperDocsContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
         )}
       </div>
 
+      <Divider text="Live Testing Form" className="mt-8" />
+      <Text className="mb-4">
+        A comprehensive form for testing real CWMS submissions. Configure your CDA URL
+        above and enable test mode to submit actual data.
+      </Text>
+
+      {testMode && (
+        <FormWrapper
+          office={testOffice}
+          cdaUrl={testCdaUrl}
+          showCalendar={true}
+          calendarInterval="hour"
+          calendarSnapTo="nearest"
+        >
+          <Text className="font-semibold mb-2">
+            Test Data Entry Form (Hourly Intervals)
+          </Text>
+          <CWMSInput
+            name="test-stage"
+            tsid={`pytest-loc.Stage.Inst.0.0.TEST`}
+            placeholder="Enter stage value (ft) *"
+            type="number"
+            precision={2}
+            units="ft"
+            required={true}
+            label="Stage Reading"
+          />
+
+          <CWMSInput
+            name="test-flow"
+            tsid={`pytest-loc.Flow.Inst.0.0.TEST`}
+            placeholder="Enter flow value (cfs) *"
+            type="number"
+            precision={0}
+            units="cfs"
+            required={true}
+            label="Flow Measurement"
+          />
+
+          <CWMSDropdown
+            name="test-status"
+            tsid={`pytest-loc.Code.Inst.0.0.TEST`}
+            placeholder="Select operational status *"
+            options={["Normal", "Flood", "Drought", "Maintenance"]}
+            required={true}
+            label="Operational Status"
+          />
+
+          <CWMSTextarea
+            name="test-remarks"
+            tsid={`pytest-loc.Code.Inst.0.0.TEST2`}
+            placeholder="Enter any remarks or observations (optional)"
+            rows={3}
+            required={false}
+            label="Remarks"
+          />
+
+          <Text className="font-semibold mb-2 mt-4">
+            Bulk Data Entry Table (Metric)
+          </Text>
+          <Text className="text-sm text-gray-600 mb-2">
+            * Stage and Flow columns are required
+          </Text>
+          <CWMSInputTable
+            tsids={[
+              `pytest-loc.Stage.Inst.0.0.TABLE-TEST`,
+              `pytest-loc.Flow.Inst.0.0.TABLE-TEST`,
+              `pytest-loc.Temp.Inst.0.0.TABLE-TEST`,
+            ]}
+            timeoffsets={[0, 3600, 7200]}
+            showTimestamps={true}
+            units="SI"
+            precision={2}
+            perColumnUnits={{
+              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST`]: "m",
+              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST`]: "cms",
+              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST`]: "C",
+            }}
+            perColumnRequired={{
+              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST`]: true,
+              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST`]: true,
+              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST`]: false,
+            }}
+            defaultValues={{
+              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST_0`]: "198.12",
+              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST_0`]: "35.40",
+              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST_0`]: "22.5",
+            }}
+          />
+        </FormWrapper>
+      )}
+
+      {!testMode && (
+        <div className="p-4 bg-gray-100 rounded">
+          <Text className="text-center text-gray-600">
+            Enable Test Mode above to see and use the live testing form
+          </Text>
+        </div>
+      )}
+
       <Divider text="Basic Form Example" className="mt-8" />
       <Text className="mb-4">
         A simple form with various input types.{" "}
@@ -381,6 +494,8 @@ function FormWrapperDocsContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
         cdaUrl={testMode ? testCdaUrl : undefined}
         showCalendar={true}
         calendarLabel="Data Collection Time"
+        calendarInterval="15minutes"
+        calendarSnapTo="nearest"
         onSubmit={async (data, e) => {
           console.log("Form submitted with timestamps:", data);
           setFormData(data);
@@ -526,6 +641,90 @@ function FormWrapperDocsContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
 </FormWrapper>`}
       </CodeBlock>
 
+      <Divider text="Calendar Time Snapping" className="mt-8" />
+      <Text className="mb-4">
+        The calendar can automatically snap selected times to specified intervals. This
+        ensures consistent time boundaries for data collection (e.g., always on the
+        hour, or at 15-minute intervals).
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Snap to nearest 15-minute interval
+<FormWrapper 
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="15minutes"
+  calendarSnapTo="nearest"
+>
+  {/* Form inputs */}
+</FormWrapper>
+
+// Snap to previous hour boundary
+<FormWrapper 
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="hour"
+  calendarSnapTo="previous"
+>
+  {/* Form inputs */}
+</FormWrapper>
+
+// Snap to next 5-minute interval
+<FormWrapper 
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="5minutes"
+  calendarSnapTo="next"
+>
+  {/* Form inputs */}
+</FormWrapper>`}
+      </CodeBlock>
+
+      <Text className="mb-4 mt-4">
+        <strong>Available Intervals:</strong>
+      </Text>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        <li>
+          <Code>none</Code> - No snapping, exact time selection
+        </li>
+        <li>
+          <Code>second</Code> - Snap to nearest second (removes milliseconds)
+        </li>
+        <li>
+          <Code>minute</Code> - Snap to minute boundaries
+        </li>
+        <li>
+          <Code>5minutes</Code> - Snap to 5-minute intervals (00, 05, 10, etc.)
+        </li>
+        <li>
+          <Code>15minutes</Code> - Snap to 15-minute intervals (00, 15, 30, 45)
+        </li>
+        <li>
+          <Code>30minutes</Code> - Snap to 30-minute intervals (00, 30)
+        </li>
+        <li>
+          <Code>hour</Code> - Snap to hour boundaries
+        </li>
+        <li>
+          <Code>day</Code> - Snap to midnight
+        </li>
+      </ul>
+
+      <Text className="mb-4">
+        <strong>Snap Directions:</strong>
+      </Text>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        <li>
+          <Code>nearest</Code> - Snap to the nearest interval boundary
+        </li>
+        <li>
+          <Code>previous</Code> - Always snap backward to the previous boundary
+        </li>
+        <li>
+          <Code>next</Code> - Always snap forward to the next boundary
+        </li>
+      </ul>
+
       <Divider text="With CWMS Time Series" className="mt-8" />
       <Text className="mb-4">
         Form inputs can be associated with specific CWMS time series IDs for automatic
@@ -564,6 +763,84 @@ function FormWrapperDocsContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
   />
 </FormWrapper>`}
       </CodeBlock>
+
+      <Divider text="Required Field Validation" className="mt-8" />
+      <Text className="mb-4">
+        Form components support required field validation to ensure critical data is not
+        missing. When a required field is empty during submission, the form will display
+        an alert and highlight the invalid fields.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<FormWrapper 
+  office="SWT"
+  cdaUrl="https://water.usace.army.mil/cwms-data"
+>
+  <CWMSInput
+    name="stage"
+    tsid="LOCATION.Stage.Inst.0.0.USGS"
+    placeholder="Enter stage value *"
+    type="number"
+    required={true}
+    label="Stage Reading"
+  />
+  
+  <CWMSDropdown
+    name="status"
+    tsid="LOCATION.Status.Inst.0.0.MANUAL"
+    placeholder="Select status *"
+    options={["Normal", "Alert", "Flood"]}
+    required={true}
+    label="Operational Status"
+  />
+  
+  <CWMSTextarea
+    name="notes"
+    tsid="LOCATION.Notes.Inst.0.0.MANUAL"
+    placeholder="Optional notes"
+    required={false}
+    label="Observation Notes"
+  />
+  
+  {/* Table with selective required columns */}
+  <CWMSInputTable
+    tsids={["Stage", "Flow", "Temp"]}
+    timeoffsets={[0, 3600]}
+    required={false}  // Global default
+    perColumnRequired={{
+      "Stage": true,   // Stage is required
+      "Flow": true,    // Flow is required
+      "Temp": false    // Temperature is optional
+    }}
+  />
+</FormWrapper>`}
+      </CodeBlock>
+
+      <Text className="mb-4 mt-4">
+        <strong>Validation Features:</strong>
+      </Text>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        <li>Required fields are validated on form submission</li>
+        <li>Empty required fields trigger an alert with field names</li>
+        <li>Invalid fields are visually highlighted with red borders</li>
+        <li>Invalid state clears automatically when user enters data</li>
+        <li>Labels are used in error messages for clarity</li>
+      </ul>
+
+      <Text className="mb-4">
+        <strong>Supported Props:</strong>
+      </Text>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        <li>
+          <Code>required</Code> - Makes the field required (boolean)
+        </li>
+        <li>
+          <Code>label</Code> - Display name used in error messages
+        </li>
+        <li>
+          <Code>perColumnRequired</Code> - For CWMSInputTable, set required per column
+        </li>
+      </ul>
 
       <Divider text="Custom Submit Handler" className="mt-8" />
       <Text className="mb-4">
@@ -676,58 +953,6 @@ function FormWrapperDocsContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
   />
 </FormWrapper>`}
       </CodeBlock>
-
-      <Divider text="Live Testing Form" className="mt-8" />
-      <Text className="mb-4">
-        A comprehensive form for testing real CWMS submissions. Configure your CDA URL
-        above and enable test mode to submit actual data.
-      </Text>
-
-      {testMode && (
-        <FormWrapper office={testOffice} cdaUrl={testCdaUrl}>
-          <Text className="font-semibold mb-2">Test Data Entry Form</Text>
-
-          <CWMSInput
-            name="test-stage"
-            tsid={`${testOffice}.Stage.Inst.0.0.TEST`}
-            placeholder="Enter stage value (ft)"
-            type="number"
-            precision={2}
-            units="ft"
-          />
-
-          <CWMSInput
-            name="test-flow"
-            tsid={`${testOffice}.Flow.Inst.0.0.TEST`}
-            placeholder="Enter flow value (cfs)"
-            type="number"
-            precision={0}
-            units="cfs"
-          />
-
-          <CWMSDropdown
-            name="test-status"
-            tsid={`${testOffice}.Status.Inst.0.0.TEST`}
-            placeholder="Select operational status"
-            options={["Normal", "Flood", "Drought", "Maintenance"]}
-          />
-
-          <CWMSTextarea
-            name="test-remarks"
-            tsid={`${testOffice}.Remarks.Inst.0.0.TEST`}
-            placeholder="Enter any remarks or observations"
-            rows={3}
-          />
-        </FormWrapper>
-      )}
-
-      {!testMode && (
-        <div className="p-4 bg-gray-100 rounded">
-          <Text className="text-center text-gray-600">
-            Enable Test Mode above to see and use the live testing form
-          </Text>
-        </div>
-      )}
 
       <Divider text="Complex Form Example" className="mt-8" />
       <Text className="mb-4">
@@ -964,7 +1189,7 @@ function YourFormComponent() {
 
 // Main component with AuthProvider wrapper
 function FormWrapperDocs() {
-  const [authMethod, setAuthMethod] = useState("inline");
+  const [authMethod, setAuthMethod] = useState("keycloak");
   const [testCdaUrl, setTestCdaUrl] = useState("http://localhost:8081/cwms-data");
   const [keycloakConfig, setKeycloakConfig] = useState({
     host: "http://localhost:8081/auth",

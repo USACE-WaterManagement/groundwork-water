@@ -22,9 +22,12 @@ function CWMSDropdown({
   onChange,
   placeholder,
   timeOffset,
+  required,
+  label,
 }) {
   const { registerInput } = useContext(FormContext);
   const [selectedValue, setSelectedValue] = useState(defaultValue || value || "");
+  const [isInvalid, setIsInvalid] = useState(invalid || false);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -38,18 +41,42 @@ function CWMSDropdown({
       AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
       loadNearest: loadNearest || "prev",
       readonly: readonly || false,
-      units: units || "EN",
+      units: units || "n/a",
       timeOffset: timeOffset || 0,
+      required: required || false,
+      label: label || placeholder || name,
       getValues: () => [selectedValue],
       reset: () => setSelectedValue(defaultValue || ""),
+      setInvalid: setIsInvalid,
     };
 
     const cleanup = registerInput(dropdownRef);
     return cleanup;
-  }, []); // Empty dependency array - only register once on mount
+  }, [
+    selectedValue,
+    registerInput,
+    name,
+    tsid,
+    precision,
+    offset,
+    order,
+    AllowMissingData,
+    loadNearest,
+    readonly,
+    units,
+    timeOffset,
+    defaultValue,
+    required,
+    label,
+    placeholder,
+  ]); // Include dependencies to update getValues reference
 
   const handleChange = (newValue) => {
     setSelectedValue(newValue);
+    // Clear invalid state when user selects a value
+    if (isInvalid && newValue) {
+      setIsInvalid(false);
+    }
     if (onChange) {
       onChange(newValue);
     }
@@ -90,12 +117,13 @@ function CWMSDropdown({
     <Dropdown
       style={style}
       disabled={disable || readonly}
-      invalid={invalid}
+      invalid={isInvalid}
       id={dropdownId}
       name={name}
       value={selectedValue}
       options={dropdownOptions}
       onChange={(e) => handleChange(e.target.value)}
+      required={required}
     />
   );
 }

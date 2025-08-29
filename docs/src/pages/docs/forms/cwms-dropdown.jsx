@@ -1,9 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import {
-  CWMSDropdown,
-  FormWrapper,
-} from "@usace-watermanagement/groundwork-water";
+import { CWMSDropdown, FormWrapper } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -70,6 +67,18 @@ const componentProps = [
     desc: "Whether the dropdown is in an invalid state.",
   },
   {
+    name: "required",
+    type: "boolean",
+    default: "false",
+    desc: "Whether the dropdown field is required for form submission.",
+  },
+  {
+    name: "label",
+    type: "string",
+    default: "undefined",
+    desc: "Label text used in validation error messages.",
+  },
+  {
     name: "onChange",
     type: "function",
     default: "undefined",
@@ -88,8 +97,8 @@ function CWMSDropdownDocs() {
     <DocsPage middleText="CWMS Dropdown">
       <div>
         <Text>
-          The CWMS Dropdown component provides a select dropdown that integrates
-          with CWMS forms for single-selection data collection.
+          The CWMS Dropdown component provides a select dropdown that integrates with
+          CWMS forms for single-selection data collection.
         </Text>
       </div>
 
@@ -143,8 +152,8 @@ function CWMSDropdownDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSDropdown automatically registers
-        with the form context for data collection and submission to CWMS.
+        When used within a FormWrapper, CWMSDropdown automatically registers with the
+        form context for data collection and submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">

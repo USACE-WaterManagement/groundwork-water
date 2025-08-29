@@ -79,6 +79,18 @@ const componentProps = [
     desc: "Whether the input is in an invalid state.",
   },
   {
+    name: "required",
+    type: "boolean",
+    default: "false",
+    desc: "Whether the input field is required for form submission.",
+  },
+  {
+    name: "label",
+    type: "string",
+    default: "undefined",
+    desc: "Label text used in validation error messages.",
+  },
+  {
     name: "onChange",
     type: "function",
     default: "undefined",
@@ -97,10 +109,10 @@ function CWMSInputDocs() {
     <DocsPage middleText="CWMS Input">
       <div>
         <Text>
-          The CWMS Input component is a wrapper around the standard Groundwork
-          Input component that integrates with CWMS forms for data collection
-          and submission. It supports various input types and can be associated
-          with CWMS time series data.
+          The CWMS Input component is a wrapper around the standard Groundwork Input
+          component that integrates with CWMS forms for data collection and submission.
+          It supports various input types and can be associated with CWMS time series
+          data.
         </Text>
       </div>
 
@@ -146,8 +158,8 @@ function CWMSInputDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSInput automatically registers with
-        the form context for data collection and submission to CWMS.
+        When used within a FormWrapper, CWMSInput automatically registers with the form
+        context for data collection and submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">

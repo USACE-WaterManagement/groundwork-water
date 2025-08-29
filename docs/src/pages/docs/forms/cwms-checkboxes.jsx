@@ -1,9 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import {
-  CWMSCheckboxes,
-  FormWrapper,
-} from "@usace-watermanagement/groundwork-water";
+import { CWMSCheckboxes, FormWrapper } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -26,6 +23,12 @@ const componentProps = [
     type: "function",
     default: "undefined",
     desc: "Callback function when any checkbox changes. Receives array of all checked values.",
+  },
+  {
+    name: "required",
+    type: "boolean",
+    default: "false",
+    desc: "Whether at least one checkbox must be checked for form submission. Can be overridden per item.",
   },
   {
     name: "style",
@@ -154,10 +157,9 @@ function CWMSCheckboxesDocs() {
     <DocsPage middleText="CWMS Checkboxes">
       <div>
         <Text>
-          The CWMS Checkboxes component provides a group of checkboxes that
-          integrates with CWMS forms for multi-selection data collection. Uses
-          the full Groundwork checkbox content API with CWMS-specific
-          extensions.
+          The CWMS Checkboxes component provides a group of checkboxes that integrates
+          with CWMS forms for multi-selection data collection. Uses the full Groundwork
+          checkbox content API with CWMS-specific extensions.
         </Text>
       </div>
 
@@ -208,8 +210,7 @@ function CWMSCheckboxesDocs() {
                   label: "Medium Priority",
                   description: "Important but not urgent",
                   defaultChecked: false,
-                  onChange: (checked) =>
-                    console.log("Medium priority:", checked),
+                  onChange: (checked) => console.log("Medium priority:", checked),
                 },
                 {
                   id: "low",
@@ -315,9 +316,9 @@ function CWMSCheckboxesDocs() {
 
       <Divider text="CWMS-Specific Properties" className="mt-8" />
       <Text className="mb-4">
-        Content items can include CWMS-specific properties like tsid for
-        individual time series association. When used within a FormWrapper,
-        these properties enable fine-grained CWMS integration.
+        Content items can include CWMS-specific properties like tsid for individual time
+        series association. When used within a FormWrapper, these properties enable
+        fine-grained CWMS integration.
       </Text>
 
       <CodeBlock language="jsx">
@@ -366,9 +367,9 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
         CheckboxItem API - <Code className="p-2">{`content[n]`}</Code>
       </div>
       <Text className="mb-4">
-        Each item in the content array accepts the following properties. The
-        component passes through all standard Groundwork checkbox properties and
-        adds CWMS-specific extensions.
+        Each item in the content array accepts the following properties. The component
+        passes through all standard Groundwork checkbox properties and adds
+        CWMS-specific extensions.
       </Text>
       <PropsTable propsList={checkboxItemProps} />
     </DocsPage>

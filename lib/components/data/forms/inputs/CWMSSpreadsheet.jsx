@@ -20,6 +20,8 @@ function CWMSSpreadsheet({
   showRowNumbers = true,
   showColumnHeaders = true,
   resizable = false,
+  required,
+  perCellRequired = {},
 }) {
   const { registerInput } = useContext(FormContext);
   const [spreadsheetData, setSpreadsheetData] = useState(() => {
@@ -29,36 +31,91 @@ function CWMSSpreadsheet({
     }
     return initialData;
   });
+  const [invalidCells, setInvalidCells] = useState({});
   const [selectedCell, setSelectedCell] = useState(null);
   const [selectedRange, setSelectedRange] = useState(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);
   const tableRef = useRef(null);
-
-  const spreadsheetRef = {
-    tsid,
-    precision: precision || 2,
-    offset: offset || 0,
-    order: order || 1,
-    AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
-    loadNearest: loadNearest || "prev",
-    readonly: readonly || false,
-    units: units || "EN",
-    getValues: () => spreadsheetData,
-    reset: () =>
-      setSpreadsheetData(
-        defaultData.length
-          ? defaultData
-          : Array(rows).fill(Array(columns.length).fill("")),
-      ),
-  };
+  const cleanupFunctions = useRef([]);
 
   useEffect(() => {
-    if (registerInput) {
-      registerInput(spreadsheetRef);
+    if (!registerInput) return;
+
+    cleanupFunctions.current.forEach((cleanup) => cleanup());
+    cleanupFunctions.current = [];
+
+    for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
+      for (let colIndex = 0; colIndex < columns.length; colIndex++) {
+        const key = `${rowIndex}_${colIndex}`;
+        const column = columns[colIndex] || {};
+
+        const cellRef = {
+          name: key,
+          tsid: column.tsid || tsid || `cell_${key}`,
+          precision: column.precision || precision || 2,
+          offset: column.offset || offset || 0,
+          order: order || 1,
+          AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
+          loadNearest: loadNearest || "prev",
+          readonly: readonly || false,
+          units: column.units || units || "EN",
+          required: perCellRequired[key] || column.required || required || false,
+          label: `Cell ${rowIndex + 1},${colIndex + 1}`,
+          getValues: () => [spreadsheetData[rowIndex]?.[colIndex] || ""],
+          reset: () => {
+            setSpreadsheetData((prev) => {
+              const updated = [...prev];
+              if (!updated[rowIndex]) {
+                updated[rowIndex] = Array(columns.length).fill("");
+              } else {
+                updated[rowIndex] = [...updated[rowIndex]];
+              }
+              updated[rowIndex][colIndex] = defaultData[rowIndex]?.[colIndex] || "";
+              return updated;
+            });
+            setInvalidCells((prev) => ({
+              ...prev,
+              [key]: false,
+            }));
+          },
+          setInvalid: (invalidState) => {
+            setInvalidCells((prev) => ({
+              ...prev,
+              [key]: invalidState,
+            }));
+          },
+        };
+
+        const cleanup = registerInput(cellRef);
+        if (cleanup) {
+          cleanupFunctions.current.push(cleanup);
+        }
+      }
     }
-  }, [registerInput]);
+
+    return () => {
+      cleanupFunctions.current.forEach((cleanup) => cleanup());
+      cleanupFunctions.current = [];
+    };
+  }, [
+    registerInput,
+    rows,
+    columns,
+    spreadsheetData,
+    tsid,
+    precision,
+    offset,
+    order,
+    AllowMissingData,
+    loadNearest,
+    readonly,
+    units,
+    defaultData,
+    required,
+    perCellRequired,
+  ]);
 
   // Calculate selected range from drag coordinates
   const getSelectionRange = () => {
@@ -87,10 +144,19 @@ function CWMSSpreadsheet({
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
+    const key = `${rowIndex}_${colIndex}`;
     const updatedData = [...spreadsheetData];
     updatedData[rowIndex] = [...updatedData[rowIndex]];
     updatedData[rowIndex][colIndex] = value;
     setSpreadsheetData(updatedData);
+
+    if (invalidCells[key] && value) {
+      setInvalidCells((prev) => ({
+        ...prev,
+        [key]: false,
+      }));
+    }
+
     if (onChange) {
       onChange(updatedData);
     }
@@ -552,10 +618,12 @@ function CWMSSpreadsheet({
               <tr key={rowIndex}>
                 {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
                 {row.map((cellValue, colIndex) => {
+                  const key = `${rowIndex}_${colIndex}`;
                   const column = columns[colIndex] || {};
                   const isSelected = isCellInSelection(rowIndex, colIndex);
                   const isActiveCell =
                     selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+                  const isCellInvalid = invalidCells[key] || invalid;
 
                   return (
                     <td
@@ -570,6 +638,7 @@ function CWMSSpreadsheet({
                         boxShadow: isActiveCell ? "inset 0 0 0 2px #1a73e8" : "none",
                         zIndex: isActiveCell ? 10 : 1,
                         position: "relative",
+                        borderColor: isCellInvalid ? "red" : "#d0d0d0",
                       }}
                       onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
                       onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
@@ -577,6 +646,7 @@ function CWMSSpreadsheet({
                     >
                       <input
                         id={`cell-${rowIndex}-${colIndex}`}
+                        name={key}
                         type={column.type || "text"}
                         value={cellValue}
                         onChange={(e) =>
@@ -590,8 +660,10 @@ function CWMSSpreadsheet({
                           ...inputStyle,
                           cursor: "cell",
                           pointerEvents: isSelected ? "auto" : "auto",
+                          color: isCellInvalid ? "red" : undefined,
                         }}
                         placeholder={column.placeholder || ""}
+                        required={perCellRequired[key] || column.required || required}
                       />
                     </td>
                   );

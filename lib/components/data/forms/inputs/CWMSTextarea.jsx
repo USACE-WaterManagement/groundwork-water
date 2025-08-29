@@ -20,9 +20,13 @@ function CWMSTextarea({
   onChange,
   rows,
   timeOffset,
+  required,
+  label,
+  placeholder,
 }) {
   const { registerInput } = useContext(FormContext);
   const [textareaValue, setTextareaValue] = useState(defaultValue || value || "");
+  const [isInvalid, setIsInvalid] = useState(invalid || false);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -36,19 +40,43 @@ function CWMSTextarea({
       AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
       loadNearest: loadNearest || "prev",
       readonly: readonly || false,
-      units: units || "EN",
+      units: units || "n/a",
       timeOffset: timeOffset || 0,
+      required: required || false,
+      label: label || placeholder || name,
       getValues: () => [textareaValue],
       reset: () => setTextareaValue(defaultValue || ""),
+      setInvalid: setIsInvalid,
     };
 
     const cleanup = registerInput(textareaRef);
     return cleanup;
-  }, []); // Empty dependency array - only register once on mount
+  }, [
+    textareaValue,
+    registerInput,
+    name,
+    tsid,
+    precision,
+    offset,
+    order,
+    AllowMissingData,
+    loadNearest,
+    readonly,
+    units,
+    timeOffset,
+    defaultValue,
+    required,
+    label,
+    placeholder,
+  ]); // Include dependencies to update getValues reference
 
   const handleChange = (e) => {
     const newValue = e.target.value;
     setTextareaValue(newValue);
+    // Clear invalid state when user starts typing
+    if (isInvalid && newValue) {
+      setIsInvalid(false);
+    }
     if (onChange) {
       onChange(newValue);
     }
@@ -58,12 +86,14 @@ function CWMSTextarea({
     <Textarea
       style={style}
       disabled={disable}
-      invalid={invalid}
+      invalid={isInvalid}
       name={name}
       value={textareaValue}
       onChange={handleChange}
       rows={rows}
       readOnly={readonly}
+      required={required}
+      placeholder={placeholder}
     />
   );
 }

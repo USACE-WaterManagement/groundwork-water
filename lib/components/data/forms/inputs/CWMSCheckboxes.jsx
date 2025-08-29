@@ -2,12 +2,7 @@ import React, { useEffect, useContext } from "react";
 import { Checkboxes } from "@usace/groundwork";
 import { FormContext } from "../../forms/CWMSForm";
 
-function CWMSCheckboxes({
-  style,
-  legend,
-  content = [],
-  onChange,
-}) {
+function CWMSCheckboxes({ style, legend, content = [], onChange, required }) {
   const { registerInput } = useContext(FormContext);
 
   // Register each checkbox item that has a tsid
@@ -16,14 +11,18 @@ function CWMSCheckboxes({
       content.forEach((item) => {
         if (item.tsid) {
           const checkboxRef = {
+            name: item.id || item.label,
             tsid: item.tsid,
             precision: item.precision || 2,
             offset: item.offset || 0,
             order: item.order || 1,
-            AllowMissingData: item.AllowMissingData !== undefined ? item.AllowMissingData : true,
+            AllowMissingData:
+              item.AllowMissingData !== undefined ? item.AllowMissingData : true,
             loadNearest: item.loadNearest || "prev",
             readonly: item.readonly || false,
-            units: item.units || "EN",
+            units: item.units || "n/a",
+            required: item.required || required || false,
+            label: item.label || item.id,
             getValues: () => {
               // Get the current checked state
               const element = document.getElementById(item.id);
@@ -39,12 +38,22 @@ function CWMSCheckboxes({
                 }
               }
             },
+            setInvalid: (invalid) => {
+              const element = document.getElementById(item.id);
+              if (element && element.parentElement) {
+                if (invalid) {
+                  element.parentElement.classList.add("invalid");
+                } else {
+                  element.parentElement.classList.remove("invalid");
+                }
+              }
+            },
           };
           registerInput(checkboxRef);
         }
       });
     }
-  }, [registerInput, content]);
+  }, [registerInput, content, required]);
 
   // Process content to add CWMS-specific handling
   const processedContent = content.map((item) => {
@@ -61,7 +70,7 @@ function CWMSCheckboxes({
       processedItem.onChange = (e) => {
         // Call the original onChange
         originalOnChange(e);
-        
+
         // Call the parent onChange if provided
         if (onChange) {
           // Collect all checked values
@@ -73,8 +82,10 @@ function CWMSCheckboxes({
               const element = document.getElementById(contentItem.id);
               return element ? element.checked : false;
             })
-            .map(contentItem => contentItem.value || contentItem.label || contentItem.id);
-          
+            .map(
+              (contentItem) => contentItem.value || contentItem.label || contentItem.id,
+            );
+
           onChange(checkedValues);
         }
       };
@@ -83,13 +94,7 @@ function CWMSCheckboxes({
     return processedItem;
   });
 
-  return (
-    <Checkboxes
-      style={style}
-      legend={legend}
-      content={processedContent}
-    />
-  );
+  return <Checkboxes style={style} legend={legend} content={processedContent} />;
 }
 
 // Extended checkbox item interface for documentation
@@ -103,7 +108,7 @@ function CWMSCheckboxes({
 //   - disabled: boolean - Disabled state
 //   - inputProps: object - Props for the input element
 //   - labelProps: object - Props for the label element
-// 
+//
 // - Additional CWMS properties:
 //   - tsid: string - Time series ID for CWMS data
 //   - value: string - Value when checked (defaults to label or id)

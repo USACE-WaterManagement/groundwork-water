@@ -73,6 +73,24 @@ const componentProps = [
     desc: "Whether the textarea is in an invalid state.",
   },
   {
+    name: "required",
+    type: "boolean",
+    default: "false",
+    desc: "Whether the textarea field is required for form submission.",
+  },
+  {
+    name: "label",
+    type: "string",
+    default: "undefined",
+    desc: "Label text used in validation error messages.",
+  },
+  {
+    name: "placeholder",
+    type: "string",
+    default: "undefined",
+    desc: "Placeholder text for the textarea.",
+  },
+  {
     name: "onChange",
     type: "function",
     default: "undefined",
@@ -91,11 +109,12 @@ function CWMSTextareaDocs() {
     <DocsPage middleText="CWMS Textarea">
       <div>
         <Text>
-          The CWMS Textarea component is a wrapper around the standard Groundwork Textarea
-          component that integrates with CWMS forms for multi-line text input and data submission.
+          The CWMS Textarea component is a wrapper around the standard Groundwork
+          Textarea component that integrates with CWMS forms for multi-line text input
+          and data submission.
         </Text>
       </div>
-      
+
       <Divider text="Basic Usage" className="mt-8" />
       <div className="flex flex-col gap-4">
         <FormWrapper office="SWT">
@@ -117,7 +136,7 @@ function CWMSTextareaDocs() {
           />
         </FormWrapper>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`import { CWMSTextarea } from "@usace-watermanagement/groundwork-water";
 
@@ -143,10 +162,10 @@ function CWMSTextareaDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSTextarea automatically registers with the form
-        context for data collection and submission to CWMS.
+        When used within a FormWrapper, CWMSTextarea automatically registers with the
+        form context for data collection and submission to CWMS.
       </Text>
-      
+
       <CodeBlock language="jsx">
         {`import { CWMSTextarea } from "@usace-watermanagement/groundwork-water";
 import { FormWrapper } from "@usace-watermanagement/groundwork-water";
@@ -174,17 +193,17 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
             name="styled-textarea"
             rows={4}
             placeholder="Custom styled textarea"
-            style={{ 
-              backgroundColor: "#fffacd", 
+            style={{
+              backgroundColor: "#fffacd",
               border: "2px dashed #ff6347",
               padding: "12px",
               borderRadius: "10px",
-              fontFamily: "monospace"
+              fontFamily: "monospace",
             }}
           />
         </FormWrapper>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`<CWMSTextarea
   name="styled-textarea"
