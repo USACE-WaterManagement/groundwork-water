@@ -1,28 +1,33 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Input } from "@usace/groundwork";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
 function CWMSInput({
-  style,
-  disable,
-  invalid,
-  name,
-  defaultValue,
-  value,
-  type,
-  placeholder,
+  // CWMS-specific props
   tsid,
   precision,
   offset,
   order,
   AllowMissingData,
   loadNearest,
-  readonly,
-  onChange,
   units,
   timeOffset,
-  required,
   label,
+
+  // Input props that need special handling
+  defaultValue,
+  value,
+  onChange,
+  invalid,
+  required,
+  placeholder,
+
+  // Legacy prop names
+  disable,
+  readonly,
+
+  // All other props to pass through
+  ...inputProps
 }) {
   const { registerInput } = useContext(FormContext);
   const [inputValue, setInputValue] = useState(defaultValue || value || "");
@@ -32,7 +37,7 @@ function CWMSInput({
     if (!registerInput) return;
 
     const inputRef = {
-      name,
+      name: inputProps.name,
       tsid,
       precision: precision || 2,
       offset: offset || 0,
@@ -43,7 +48,7 @@ function CWMSInput({
       units: units || "EN",
       timeOffset: timeOffset || 0,
       required: required || false,
-      label: label || placeholder || name,
+      label: label || placeholder || inputProps.name,
       getValues: () => [inputValue],
       reset: () => setInputValue(defaultValue || ""),
       setInvalid: setIsInvalid,
@@ -54,7 +59,6 @@ function CWMSInput({
   }, [
     inputValue,
     registerInput,
-    name,
     tsid,
     precision,
     offset,
@@ -68,6 +72,7 @@ function CWMSInput({
     required,
     label,
     placeholder,
+    inputProps.name,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (e) => {
@@ -84,15 +89,12 @@ function CWMSInput({
 
   return (
     <Input
-      style={style}
-      disabled={disable}
-      invalid={isInvalid}
-      name={name}
+      {...inputProps}
+      disabled={disable || inputProps.disabled}
+      readOnly={readonly || inputProps.readOnly}
+      invalid={isInvalid ? "true" : undefined}
       value={inputValue}
-      type={type}
-      placeholder={placeholder}
       onChange={handleChange}
-      readOnly={readonly}
       required={required}
     />
   );

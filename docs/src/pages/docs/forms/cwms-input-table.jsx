@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSInputTable, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSInputTable, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -114,13 +114,13 @@ function CWMSInputTableDocs() {
 
       <Divider text="Basic Usage" className="mt-8" />
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSInputTable
             tsids={["Stage.Inst.0.0.USGS", "Flow.Inst.0.0.USGS", "Temp.Inst.0.0.USGS"]}
             timeoffsets={[0, 3600, 7200]}
             showTimestamps={true}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
@@ -140,7 +140,7 @@ function CWMSInputTableDocs() {
       </Text>
 
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSInputTable
             tsids={["Elev.Inst.0.0.USGS", "Storage.Inst.0.0.USGS"]}
             timeoffsets={[-3600, 0, 3600]}
@@ -150,7 +150,7 @@ function CWMSInputTableDocs() {
               "Storage.Inst.0.0.USGS_0": "125000",
             }}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
@@ -167,15 +167,15 @@ function CWMSInputTableDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSInputTable automatically registers with the
+        When used within a CWMSForm, CWMSInputTable automatically registers with the
         form context for bulk data submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">
         {`import { CWMSInputTable } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSInputTable
     tsids={[
       "LOCATION.Stage.Inst.0.0.USGS-raw",
@@ -192,7 +192,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
     precision={2}
     units="EN"
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="Without Timestamps" className="mt-8" />
@@ -201,13 +201,13 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
       </Text>
 
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSInputTable
             tsids={["Gate 1", "Gate 2", "Gate 3", "Gate 4"]}
             timeoffsets={[0]}
             showTimestamps={false}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
@@ -222,7 +222,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
       <div className="flex flex-col gap-4">
         <div>
           <Text className="mb-2 font-semibold">Read-only Table</Text>
-          <FormWrapper office="SWT">
+          <CWMSForm office="SWT">
             <CWMSInputTable
               tsids={["Parameter A", "Parameter B"]}
               timeoffsets={[0, 3600]}
@@ -234,12 +234,12 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
                 "Parameter B_3600": "210",
               }}
             />
-          </FormWrapper>
+          </CWMSForm>
         </div>
 
         <div>
           <Text className="mb-2 font-semibold">Custom Styled Table</Text>
-          <FormWrapper office="SWT">
+          <CWMSForm office="SWT">
             <CWMSInputTable
               tsids={["Value 1", "Value 2"]}
               timeoffsets={[0]}
@@ -250,7 +250,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
                 borderRadius: "8px",
               }}
             />
-          </FormWrapper>
+          </CWMSForm>
         </div>
       </div>
 

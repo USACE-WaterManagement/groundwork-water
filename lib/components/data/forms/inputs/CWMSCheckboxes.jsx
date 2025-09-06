@@ -1,8 +1,18 @@
 import React, { useEffect, useContext } from "react";
 import { Checkboxes } from "@usace/groundwork";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
-function CWMSCheckboxes({ style, legend, content = [], onChange, required }) {
+function CWMSCheckboxes({
+  // CWMS-specific props
+  content = [],
+
+  // Checkbox props that need special handling
+  onChange,
+  required,
+
+  // All other props to pass through (legend, style, etc.)
+  ...checkboxesProps
+}) {
   const { registerInput } = useContext(FormContext);
 
   // Register each checkbox item that has a tsid
@@ -94,7 +104,7 @@ function CWMSCheckboxes({ style, legend, content = [], onChange, required }) {
     return processedItem;
   });
 
-  return <Checkboxes style={style} legend={legend} content={processedContent} />;
+  return <Checkboxes {...checkboxesProps} content={processedContent} />;
 }
 
 // Extended checkbox item interface for documentation

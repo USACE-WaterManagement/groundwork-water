@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
 function CWMSSpreadsheet({
   style,

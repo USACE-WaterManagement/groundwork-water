@@ -130,19 +130,9 @@ export default [
     href: "/docs/forms",
     children: [
       {
-        id: "form-wrapper",
-        text: "FormWrapper",
-        href: "/docs/forms/form-wrapper",
-      },
-      {
-        id: "cwms-input",
-        text: "CWMS Input",
-        href: "/docs/forms/cwms-input",
-      },
-      {
-        id: "cwms-textarea",
-        text: "CWMS Textarea",
-        href: "/docs/forms/cwms-textarea",
+        id: "cwms-form",
+        text: "CWMSForm",
+        href: "/docs/forms/cwms-form",
       },
       {
         id: "cwms-checkboxes",
@@ -155,6 +145,11 @@ export default [
         href: "/docs/forms/cwms-dropdown",
       },
       {
+        id: "cwms-input",
+        text: "CWMS Input",
+        href: "/docs/forms/cwms-input",
+      },
+      {
         id: "cwms-input-table",
         text: "CWMS Input Table",
         href: "/docs/forms/cwms-input-table",
@@ -163,6 +158,11 @@ export default [
         id: "cwms-spreadsheet",
         text: "CWMS Spreadsheet",
         href: "/docs/forms/cwms-spreadsheet",
+      },
+      {
+        id: "cwms-textarea",
+        text: "CWMS Textarea",
+        href: "/docs/forms/cwms-textarea",
       },
     ],
   },

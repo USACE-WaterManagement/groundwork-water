@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSDropdown, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSDropdown, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -103,7 +103,7 @@ function CWMSDropdownDocs() {
       </div>
 
       <Divider text="Basic Usage" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-4">
           <CWMSDropdown
             name="basic-dropdown"
@@ -123,7 +123,7 @@ function CWMSDropdownDocs() {
             options={["Critical", "High", "Medium", "Low"]}
           />
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`import { CWMSDropdown } from "@usace-watermanagement/groundwork-water";
@@ -152,15 +152,15 @@ function CWMSDropdownDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSDropdown automatically registers with the
-        form context for data collection and submission to CWMS.
+        When used within a CWMSForm, CWMSDropdown automatically registers with the form
+        context for data collection and submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">
         {`import { CWMSDropdown } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSDropdown
     name="gate-position"
     tsid="LOCATION.GatePos.Inst.0.0.POSITION"
@@ -175,11 +175,11 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
     options={["cfs", "cms", "gpm", "mgd"]}
     defaultValue="cfs"
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="States and Styling" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-4">
           <CWMSDropdown
             name="disabled-dropdown"
@@ -207,7 +207,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
             }}
           />
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`// Disabled state

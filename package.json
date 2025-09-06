@@ -36,9 +36,7 @@
     "watch": "vite build --mode lib --watch"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json,css,md}": "prettier --write",
-    "dev": "vite build --mode lib --watch",
-    "watch": "vite build --mode lib --watch"
+    "**/*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
   },
   "repository": {
     "type": "git",
@@ -63,7 +61,9 @@
     "plotly.js-basic-dist": "^2.33.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^5.3.0"
+    "react-icons": "^5.3.0",
+    "react-toastify": "^10.0.5",
+    "toastify": "^2.0.1"
   },
   "devDependencies": {
     "@types/ol": "^7.0.0",

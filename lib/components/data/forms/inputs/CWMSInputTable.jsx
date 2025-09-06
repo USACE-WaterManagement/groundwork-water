@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { Input } from "@usace/groundwork";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
 function CWMSInputTable({
   style,
@@ -210,7 +210,7 @@ function CWMSInputTable({
                       onChange={(e) => handleInputChange(tsid, offset, e.target.value)}
                       disabled={disable}
                       readOnly={readonly}
-                      invalid={invalidCells[key] || invalid}
+                      invalid={invalidCells[key] || invalid ? "true" : undefined}
                       placeholder="Enter value"
                       style={{
                         width: "100%",

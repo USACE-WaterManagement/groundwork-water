@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSInput, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSInput, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -117,7 +117,7 @@ function CWMSInputDocs() {
       </div>
 
       <Divider text="Basic Usage" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-4">
           <CWMSInput name="basic-input" placeholder="Enter a value" />
           <CWMSInput
@@ -132,7 +132,7 @@ function CWMSInputDocs() {
             disable={true}
           />
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`import { CWMSInput } from "@usace-watermanagement/groundwork-water";
@@ -158,15 +158,15 @@ function CWMSInputDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSInput automatically registers with the form
+        When used within a CWMSForm, CWMSInput automatically registers with the form
         context for data collection and submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">
         {`import { CWMSInput } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSInput
     name="stage-input"
     tsid="LOCATION.Stage.Inst.0.0.USGS-raw"
@@ -183,11 +183,11 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
     precision={0}
     units="cfs"
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="With Custom Styling" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-4">
           <CWMSInput
             name="styled-input"
@@ -200,7 +200,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
             }}
           />
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`<CWMSInput

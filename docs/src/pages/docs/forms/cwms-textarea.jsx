@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSTextarea, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSTextarea, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -117,7 +117,7 @@ function CWMSTextareaDocs() {
 
       <Divider text="Basic Usage" className="mt-8" />
       <div className="flex flex-col gap-4">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSTextarea
             name="basic-textarea"
             rows={4}
@@ -134,7 +134,7 @@ function CWMSTextareaDocs() {
             defaultValue="This is a read-only textarea"
             readonly={true}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
@@ -162,15 +162,15 @@ function CWMSTextareaDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSTextarea automatically registers with the
-        form context for data collection and submission to CWMS.
+        When used within a CWMSForm, CWMSTextarea automatically registers with the form
+        context for data collection and submission to CWMS.
       </Text>
 
       <CodeBlock language="jsx">
         {`import { CWMSTextarea } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSTextarea
     name="observation-notes"
     tsid="LOCATION.Notes.Inst.0.0.TEXT"
@@ -183,12 +183,12 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
     rows={8}
     placeholder="Maintenance activities..."
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="With Custom Styling" className="mt-8" />
       <div className="flex flex-col gap-4">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSTextarea
             name="styled-textarea"
             rows={4}
@@ -201,7 +201,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
               fontFamily: "monospace",
             }}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">

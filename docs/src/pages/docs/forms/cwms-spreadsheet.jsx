@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSSpreadsheet, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSSpreadsheet, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -91,20 +91,35 @@ function CWMSSpreadsheetDocs() {
     <DocsPage middleText="CWMS Spreadsheet">
       <div>
         <Text>
-          The CWMS Spreadsheet component provides an Excel-like grid interface for data entry.
-          It supports keyboard navigation, copy/paste operations, and can handle large datasets
-          with multiple columns and rows.
+          The CWMS Spreadsheet component provides an Excel-like grid interface for data
+          entry. It supports keyboard navigation, copy/paste operations, and can handle
+          large datasets with multiple columns and rows.
         </Text>
         <Text className="mt-2">
           <strong>Excel-like Features:</strong>
         </Text>
         <ul className="list-disc ml-6 mt-2">
-          <li><strong>Multi-cell selection:</strong> Click and drag to select multiple cells</li>
-          <li><strong>Range selection:</strong> Shift+Click to select a range</li>
-          <li><strong>Keyboard selection:</strong> Shift+Arrow keys to extend selection</li>
-          <li><strong>Copy multiple cells:</strong> Select cells and press Ctrl+C to copy as tab-separated values</li>
-          <li><strong>Paste from Excel:</strong> Copy from Excel/Google Sheets and paste directly</li>
-          <li><strong>Select all:</strong> Ctrl+A to select entire spreadsheet</li>
+          <li>
+            <strong>Multi-cell selection:</strong> Click and drag to select multiple
+            cells
+          </li>
+          <li>
+            <strong>Range selection:</strong> Shift+Click to select a range
+          </li>
+          <li>
+            <strong>Keyboard selection:</strong> Shift+Arrow keys to extend selection
+          </li>
+          <li>
+            <strong>Copy multiple cells:</strong> Select cells and press Ctrl+C to copy
+            as tab-separated values
+          </li>
+          <li>
+            <strong>Paste from Excel:</strong> Copy from Excel/Google Sheets and paste
+            directly
+          </li>
+          <li>
+            <strong>Select all:</strong> Ctrl+A to select entire spreadsheet
+          </li>
           <li>Arrow keys - Navigate between cells</li>
           <li>Enter - Move down to next row</li>
           <li>Tab / Shift+Tab - Move forward/backward through cells</li>
@@ -112,22 +127,22 @@ function CWMSSpreadsheetDocs() {
           <li>Delete - Clear selected cells</li>
         </ul>
       </div>
-      
+
       <Divider text="Basic Usage" className="mt-8" />
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSSpreadsheet
             columns={[
               { key: "date", label: "Date", type: "text" },
               { key: "stage", label: "Stage (ft)", type: "number" },
               { key: "flow", label: "Flow (cfs)", type: "number" },
-              { key: "notes", label: "Notes", type: "text" }
+              { key: "notes", label: "Notes", type: "text" },
             ]}
             rows={5}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`import { CWMSSpreadsheet } from "@usace-watermanagement/groundwork-water";
 
@@ -143,29 +158,27 @@ function CWMSSpreadsheetDocs() {
       </CodeBlock>
 
       <Divider text="With Default Data" className="mt-8" />
-      <Text className="mb-4">
-        Pre-populate the spreadsheet with default values.
-      </Text>
-      
+      <Text className="mb-4">Pre-populate the spreadsheet with default values.</Text>
+
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSSpreadsheet
             columns={[
               { key: "time", label: "Time" },
               { key: "elevation", label: "Elevation", type: "number" },
-              { key: "volume", label: "Volume", type: "number" }
+              { key: "volume", label: "Volume", type: "number" },
             ]}
             rows={4}
             defaultData={[
               ["08:00", "650.5", "125000"],
               ["09:00", "651.2", "127500"],
               ["10:00", "651.8", "130000"],
-              ["11:00", "", ""]
+              ["11:00", "", ""],
             ]}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`<CWMSSpreadsheet
   columns={[
@@ -187,9 +200,9 @@ function CWMSSpreadsheetDocs() {
       <Text className="mb-4">
         You can create a spreadsheet with simple column labels like A, B, C, etc.
       </Text>
-      
+
       <div className="overflow-x-auto">
-        <FormWrapper office="SWT">
+        <CWMSForm office="SWT">
           <CWMSSpreadsheet
             columns={[
               { key: "a", label: "A" },
@@ -197,15 +210,15 @@ function CWMSSpreadsheetDocs() {
               { key: "c", label: "C" },
               { key: "d", label: "D" },
               { key: "e", label: "E" },
-              { key: "f", label: "F" }
+              { key: "f", label: "F" },
             ]}
             rows={4}
             showRowNumbers={true}
             showColumnHeaders={true}
           />
-        </FormWrapper>
+        </CWMSForm>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`// Creates a 6-column spreadsheet with labeled columns
 <CWMSSpreadsheet
@@ -225,14 +238,14 @@ function CWMSSpreadsheetDocs() {
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
-        When used within a FormWrapper, CWMSSpreadsheet can submit tabular data to CWMS.
+        When used within a CWMSForm, CWMSSpreadsheet can submit tabular data to CWMS.
       </Text>
-      
+
       <CodeBlock language="jsx">
         {`import { CWMSSpreadsheet } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSSpreadsheet
     tsid="LOCATION.DataTable.Inst.0.0.TABLE"
     columns={[
@@ -246,7 +259,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
     precision={2}
     units="EN"
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="Customization Options" className="mt-8" />
@@ -254,42 +267,42 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
         <div>
           <Text className="mb-2 font-semibold">Without Row Numbers</Text>
           <div className="overflow-x-auto">
-            <FormWrapper office="SWT">
+            <CWMSForm office="SWT">
               <CWMSSpreadsheet
                 columns={[
                   { key: "item", label: "Item" },
                   { key: "quantity", label: "Qty", type: "number" },
-                  { key: "price", label: "Price", type: "number" }
+                  { key: "price", label: "Price", type: "number" },
                 ]}
                 rows={3}
                 showRowNumbers={false}
               />
-            </FormWrapper>
+            </CWMSForm>
           </div>
         </div>
-        
+
         <div>
           <Text className="mb-2 font-semibold">Read-only Spreadsheet</Text>
           <div className="overflow-x-auto">
-            <FormWrapper office="SWT">
+            <CWMSForm office="SWT">
               <CWMSSpreadsheet
                 columns={[
                   { key: "gauge", label: "Gauge" },
-                  { key: "reading", label: "Reading" }
+                  { key: "reading", label: "Reading" },
                 ]}
                 rows={3}
                 readonly={true}
                 defaultData={[
                   ["Gauge A", "125.5"],
                   ["Gauge B", "130.2"],
-                  ["Gauge C", "128.7"]
+                  ["Gauge C", "128.7"],
                 ]}
               />
-            </FormWrapper>
+            </CWMSForm>
           </div>
         </div>
       </div>
-      
+
       <CodeBlock language="jsx">
         {`// Without row numbers
 <CWMSSpreadsheet

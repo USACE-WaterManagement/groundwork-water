@@ -1,6 +1,6 @@
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
-import { CWMSCheckboxes, FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSCheckboxes, CWMSForm } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -164,7 +164,7 @@ function CWMSCheckboxesDocs() {
       </div>
 
       <Divider text="Basic Usage" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-6">
           <div>
             <Text className="mb-2 font-semibold">Full Content API</Text>
@@ -223,7 +223,7 @@ function CWMSCheckboxesDocs() {
             />
           </div>
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`import { CWMSCheckboxes } from "@usace-watermanagement/groundwork-water";
@@ -261,7 +261,7 @@ function CWMSCheckboxesDocs() {
       </CodeBlock>
 
       <Divider text="Per-Item Disabled/Readonly States" className="mt-8" />
-      <FormWrapper office="SWT">
+      <CWMSForm office="SWT">
         <div className="flex flex-col gap-6">
           <div>
             <Text className="mb-2 font-semibold">Individual Item States</Text>
@@ -299,7 +299,7 @@ function CWMSCheckboxesDocs() {
             />
           </div>
         </div>
-      </FormWrapper>
+      </CWMSForm>
 
       <CodeBlock language="jsx">
         {`// Per-item disabled/readonly states
@@ -317,15 +317,15 @@ function CWMSCheckboxesDocs() {
       <Divider text="CWMS-Specific Properties" className="mt-8" />
       <Text className="mb-4">
         Content items can include CWMS-specific properties like tsid for individual time
-        series association. When used within a FormWrapper, these properties enable
+        series association. When used within a CWMSForm, these properties enable
         fine-grained CWMS integration.
       </Text>
 
       <CodeBlock language="jsx">
         {`import { CWMSCheckboxes } from "@usace-watermanagement/groundwork-water";
-import { FormWrapper } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
-<FormWrapper office="SWT" cdaUrl="https://water.usace.army.mil/cwms-data">
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSCheckboxes
     legend="Gate Status"
     content={[
@@ -352,7 +352,7 @@ import { FormWrapper } from "@usace-watermanagement/groundwork-water";
       }
     ]}
   />
-</FormWrapper>`}
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="API Reference" className="mt-8" />

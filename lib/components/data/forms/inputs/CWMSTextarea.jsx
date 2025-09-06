@@ -1,28 +1,33 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Textarea } from "@usace/groundwork";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
 function CWMSTextarea({
-  style,
-  disable,
-  invalid,
-  name,
-  defaultValue,
-  value,
+  // CWMS-specific props
   tsid,
   precision,
   offset,
   order,
   AllowMissingData,
   loadNearest,
-  readonly,
   units,
-  onChange,
-  rows,
   timeOffset,
-  required,
   label,
+
+  // Textarea props that need special handling
+  defaultValue,
+  value,
+  onChange,
+  invalid,
+  required,
   placeholder,
+
+  // Legacy prop names
+  disable,
+  readonly,
+
+  // All other props to pass through
+  ...textareaProps
 }) {
   const { registerInput } = useContext(FormContext);
   const [textareaValue, setTextareaValue] = useState(defaultValue || value || "");
@@ -32,7 +37,7 @@ function CWMSTextarea({
     if (!registerInput) return;
 
     const textareaRef = {
-      name,
+      name: textareaProps.name,
       tsid,
       precision: precision || 2,
       offset: offset || 0,
@@ -43,7 +48,7 @@ function CWMSTextarea({
       units: units || "n/a",
       timeOffset: timeOffset || 0,
       required: required || false,
-      label: label || placeholder || name,
+      label: label || placeholder || textareaProps.name,
       getValues: () => [textareaValue],
       reset: () => setTextareaValue(defaultValue || ""),
       setInvalid: setIsInvalid,
@@ -54,7 +59,6 @@ function CWMSTextarea({
   }, [
     textareaValue,
     registerInput,
-    name,
     tsid,
     precision,
     offset,
@@ -68,6 +72,7 @@ function CWMSTextarea({
     required,
     label,
     placeholder,
+    textareaProps.name,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (e) => {
@@ -84,16 +89,13 @@ function CWMSTextarea({
 
   return (
     <Textarea
-      style={style}
-      disabled={disable}
-      invalid={isInvalid}
-      name={name}
+      {...textareaProps}
+      disabled={disable || textareaProps.disabled}
+      readOnly={readonly || textareaProps.readOnly}
+      invalid={isInvalid ? "true" : undefined}
       value={textareaValue}
       onChange={handleChange}
-      rows={rows}
-      readOnly={readonly}
       required={required}
-      placeholder={placeholder}
     />
   );
 }

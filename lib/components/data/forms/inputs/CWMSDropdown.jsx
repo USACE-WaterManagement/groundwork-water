@@ -1,29 +1,34 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Dropdown } from "@usace/groundwork";
-import { FormContext } from "../../forms/CWMSForm";
+import { FormContext } from "../CWMSForm";
 
 function CWMSDropdown({
-  style,
-  disable,
-  invalid,
-  id,
-  name,
-  defaultValue,
-  value,
-  options,
+  // CWMS-specific props
   tsid,
   precision,
   offset,
   order,
   AllowMissingData,
   loadNearest,
-  readonly,
   units,
-  onChange,
-  placeholder,
   timeOffset,
-  required,
   label,
+
+  // Dropdown props that need special handling
+  defaultValue,
+  value,
+  options,
+  onChange,
+  invalid,
+  required,
+  placeholder,
+
+  // Legacy prop names
+  disable,
+  readonly,
+
+  // All other props to pass through
+  ...dropdownProps
 }) {
   const { registerInput } = useContext(FormContext);
   const [selectedValue, setSelectedValue] = useState(defaultValue || value || "");
@@ -33,7 +38,7 @@ function CWMSDropdown({
     if (!registerInput) return;
 
     const dropdownRef = {
-      name,
+      name: dropdownProps.name,
       tsid,
       precision: precision || 2,
       offset: offset || 0,
@@ -44,7 +49,7 @@ function CWMSDropdown({
       units: units || "n/a",
       timeOffset: timeOffset || 0,
       required: required || false,
-      label: label || placeholder || name,
+      label: label || placeholder || dropdownProps.name,
       getValues: () => [selectedValue],
       reset: () => setSelectedValue(defaultValue || ""),
       setInvalid: setIsInvalid,
@@ -55,7 +60,6 @@ function CWMSDropdown({
   }, [
     selectedValue,
     registerInput,
-    name,
     tsid,
     precision,
     offset,
@@ -69,6 +73,7 @@ function CWMSDropdown({
     required,
     label,
     placeholder,
+    dropdownProps.name,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (newValue) => {
@@ -111,15 +116,16 @@ function CWMSDropdown({
 
   // Use provided id or fallback to name, ensuring we have a valid id
   const dropdownId =
-    id || name || `dropdown-${Math.random().toString(36).substr(2, 9)}`;
+    dropdownProps.id ||
+    dropdownProps.name ||
+    `dropdown-${Math.random().toString(36).substr(2, 9)}`;
 
   return (
     <Dropdown
-      style={style}
-      disabled={disable || readonly}
-      invalid={isInvalid}
+      {...dropdownProps}
+      disabled={disable || readonly || dropdownProps.disabled}
+      invalid={isInvalid ? "true" : undefined}
       id={dropdownId}
-      name={name}
       value={selectedValue}
       options={dropdownOptions}
       onChange={(e) => handleChange(e.target.value)}
