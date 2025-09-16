@@ -37,16 +37,10 @@ const componentProps = [
     desc: "Whether to show column headers.",
   },
   {
-    name: "resizable",
-    type: "boolean",
-    default: "false",
-    desc: "Whether columns are resizable (future feature).",
-  },
-  {
-    name: "tsid",
-    type: "string",
-    default: "undefined",
-    desc: "The time series ID for CWMS data association.",
+    name: "tsids",
+    type: "array",
+    default: "[]",
+    desc: "Array of time series IDs for each column. Replaces the single tsid prop.",
   },
   {
     name: "precision",
@@ -56,9 +50,9 @@ const componentProps = [
   },
   {
     name: "units",
-    type: "string",
+    type: "string | array | object",
     default: "EN",
-    desc: "Unit system (EN for English, SI for metric).",
+    desc: "Unit system. Can be a string (applies to all), array (per column index), or object (per TSID key).",
   },
   {
     name: "disable",
@@ -79,10 +73,16 @@ const componentProps = [
     desc: "Callback function when any cell value changes.",
   },
   {
+    name: "className",
+    type: "string",
+    default: "undefined",
+    desc: "Tailwind CSS classes to apply to the container.",
+  },
+  {
     name: "style",
     type: "object",
     default: "undefined",
-    desc: "Custom styles to apply to the container.",
+    desc: "Custom inline styles to apply to the container.",
   },
 ];
 
@@ -236,6 +236,61 @@ function CWMSSpreadsheetDocs() {
 />`}
       </CodeBlock>
 
+      <Divider text="With Multiple Time Series and Units" className="mt-8" />
+      <Text className="mb-4">
+        Use the tsids array to assign different time series IDs to each column, and
+        specify units per column.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT">
+          <CWMSSpreadsheet
+            columns={[
+              { key: "stage", label: "Stage" },
+              { key: "flow", label: "Flow" },
+              { key: "temp", label: "Temperature" },
+            ]}
+            tsids={[
+              "LOCATION.Stage.Inst.15Minutes.0.USGS",
+              "LOCATION.Flow.Inst.15Minutes.0.USGS",
+              "LOCATION.Temp-Water.Inst.1Hour.0.USGS",
+            ]}
+            units={["ft", "cfs", "F"]} // Array of units matching columns
+            rows={3}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Using tsids array and units array
+<CWMSSpreadsheet
+  columns={[
+    { key: "stage", label: "Stage" },
+    { key: "flow", label: "Flow" },
+    { key: "temp", label: "Temperature" }
+  ]}
+  tsids={[
+    "LOCATION.Stage.Inst.15Minutes.0.USGS",
+    "LOCATION.Flow.Inst.15Minutes.0.USGS",
+    "LOCATION.Temp-Water.Inst.1Hour.0.USGS"
+  ]}
+  units={["ft", "cfs", "F"]}  // Array matching columns by index
+  rows={3}
+/>
+
+// Alternative: Using units as an object
+<CWMSSpreadsheet
+  columns={[...]}
+  tsids={[...]}
+  units={{
+    "LOCATION.Stage.Inst.15Minutes.0.USGS": "ft",
+    "LOCATION.Flow.Inst.15Minutes.0.USGS": "cfs",
+    "LOCATION.Temp-Water.Inst.1Hour.0.USGS": "F"
+  }}
+  rows={3}
+/>`}
+      </CodeBlock>
+
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
         When used within a CWMSForm, CWMSSpreadsheet can submit tabular data to CWMS.
@@ -247,9 +302,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSSpreadsheet
-    tsid="LOCATION.DataTable.Inst.0.0.TABLE"
+    tsids={[
+      "LOCATION.Stage.Inst.15Minutes.0.Ccp-Rev",
+      "LOCATION.Flow.Inst.15Minutes.0.Ccp-Rev",
+      "LOCATION.Temp-Water.Inst.1Hour.0.Ccp-Rev"
+    ]}
     columns={[
-      { key: "datetime", label: "Date/Time", type: "text", placeholder: "YYYY-MM-DD HH:MM" },
       { key: "stage", label: "Stage (ft)", type: "number", placeholder: "0.00" },
       { key: "discharge", label: "Discharge (cfs)", type: "number", placeholder: "0" },
       { key: "temperature", label: "Temp (°F)", type: "number", placeholder: "0.0" },

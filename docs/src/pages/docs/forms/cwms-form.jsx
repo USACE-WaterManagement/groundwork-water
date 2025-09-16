@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Text, Code } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
 import {
@@ -6,8 +5,6 @@ import {
   CWMSInput,
   CWMSTextarea,
   CWMSDropdown,
-  CWMSCheckboxes,
-  CWMSInputTable,
 } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
@@ -63,6 +60,18 @@ const componentProps = [
     desc: "Text for the reset button.",
   },
   {
+    name: "resetOnSubmit",
+    type: "boolean",
+    default: "true",
+    desc: "Whether to automatically reset form fields after successful submission.",
+  },
+  {
+    name: "storeRule",
+    type: "string",
+    default: "REPLACE_ALL",
+    desc: "Store rule for time series data: 'REPLACE_ALL', 'DO_NOT_REPLACE', 'DELETE_INSERT', 'REPLACE_WITH_NON_MISSING', 'REPLACE_MISSING_VALUES_ONLY'.",
+  },
+  {
     name: "showButtons",
     type: "boolean",
     default: "true",
@@ -84,13 +93,19 @@ const componentProps = [
     name: "calendarInterval",
     type: "string",
     default: "minute",
-    desc: "Time interval for automatic snapping: 'none', 'second', 'minute', '5minutes', '15minutes', '30minutes', 'hour', or 'day'.",
+    desc: "Time interval for automatic snapping: 'none', 'second', 'minute', '5minutes', '15minutes', '30minutes', 'hour', 'day', 'month', or 'year'.",
   },
   {
     name: "calendarSnapTo",
     type: "string",
     default: "nearest",
     desc: "Snap direction when selecting time: 'nearest', 'previous', or 'next'.",
+  },
+  {
+    name: "toastAutoClose",
+    type: "number|boolean",
+    default: "5000",
+    desc: "Auto-close time for toasts in milliseconds. Set to false to disable auto-closing.",
   },
   {
     name: "className",
@@ -197,7 +212,7 @@ function CWMSFormDocs() {
 >
   <CWMSInput
     name="stage"
-    tsid="LOCATION.Stage.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Stage.Inst.15Minutes.0.USGS-raw"
     placeholder="Stage at base time"
     type="number"
     timeOffset={0}
@@ -205,7 +220,7 @@ function CWMSFormDocs() {
   
   <CWMSInput
     name="flow"
-    tsid="LOCATION.Flow.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Flow.Inst.15Minutes.0.USGS-raw"
     placeholder="Flow 15 minutes later"
     type="number"
     timeOffset={15}
@@ -213,7 +228,7 @@ function CWMSFormDocs() {
   
   <CWMSTextarea
     name="notes"
-    tsid="LOCATION.Notes.Inst.0.0.MANUAL"
+    tsid="LOCATION.Notes.Inst.1Hour.0.MANUAL"
     placeholder="Notes 30 minutes later"
     timeOffset={30}
   />
@@ -249,11 +264,31 @@ function CWMSFormDocs() {
 </CWMSForm>
 
 // Snap to next 5-minute interval
-<CWMSForm 
+<CWMSForm
   office="SWT"
   showCalendar={true}
   calendarInterval="5minutes"
   calendarSnapTo="next"
+>
+  {/* Form inputs */}
+</CWMSForm>
+
+// Snap to beginning of month
+<CWMSForm
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="month"
+  calendarSnapTo="previous"
+>
+  {/* Form inputs */}
+</CWMSForm>
+
+// Snap to nearest year boundary
+<CWMSForm
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="year"
+  calendarSnapTo="nearest"
 >
   {/* Form inputs */}
 </CWMSForm>`}
@@ -287,6 +322,12 @@ function CWMSFormDocs() {
         <li>
           <Code>day</Code> - Snap to midnight
         </li>
+        <li>
+          <Code>month</Code> - Snap to first day of month at midnight
+        </li>
+        <li>
+          <Code>year</Code> - Snap to January 1st at midnight
+        </li>
       </ul>
 
       <Text className="mb-4">
@@ -318,7 +359,7 @@ function CWMSFormDocs() {
 >
   <CWMSInput
     name="stage-input"
-    tsid="LOCATION.Stage.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Stage.Inst.15Minutes.0.USGS-raw"
     type="number"
     placeholder="Stage (ft)"
     precision={2}
@@ -327,7 +368,7 @@ function CWMSFormDocs() {
   
   <CWMSInput
     name="flow-input"
-    tsid="LOCATION.Flow.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Flow.Inst.15Minutes.0.USGS-raw"
     type="number"
     placeholder="Flow (cfs)"
     precision={0}
@@ -336,10 +377,82 @@ function CWMSFormDocs() {
   
   <CWMSTextarea
     name="remarks"
-    tsid="LOCATION.Remarks.Inst.0.0.MANUAL"
+    tsid="LOCATION.Remarks.Inst.1Hour.0.MANUAL"
     placeholder="Enter remarks"
     rows={4}
   />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="Controlling Form Reset Behavior" className="mt-8" />
+      <Text className="mb-4">
+        By default, forms automatically reset all fields after successful submission.
+        You can disable this behavior using the <Code>resetOnSubmit</Code> prop, which
+        is useful for continuous data entry scenarios.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Form that keeps values after submission (useful for repeated entries)
+<CWMSForm
+  office="SWT"
+  resetOnSubmit={false}  // Keep form values after submission
+  showCalendar={true}
+  calendarInterval="15minutes"
+>
+  <CWMSInput
+    name="stage"
+    tsid="LOCATION.Stage.Inst.15Minutes.0.USGS"
+    placeholder="Stage reading"
+    type="number"
+  />
+
+  <CWMSInput
+    name="flow"
+    tsid="LOCATION.Flow.Inst.15Minutes.0.USGS"
+    placeholder="Flow reading"
+    type="number"
+  />
+</CWMSForm>
+
+// Default behavior - form resets after submission
+<CWMSForm
+  office="SWT"
+  // resetOnSubmit={true} is the default
+>
+  {/* Form inputs */}
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="Toast Notification Settings" className="mt-8" />
+      <Text className="mb-4">
+        Control how long toast notifications stay visible using the{" "}
+        <Code>toastAutoClose</Code> prop. Set to <Code>false</Code> to keep toasts
+        visible until manually dismissed, or specify a custom duration in milliseconds.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Keep toasts visible until user dismisses them
+<CWMSForm
+  office="SWT"
+  toastAutoClose={false}  // Toasts won't auto-close
+>
+  {/* Form inputs */}
+</CWMSForm>
+
+// Custom toast duration (10 seconds)
+<CWMSForm
+  office="SWT"
+  toastAutoClose={10000}  // 10 second auto-close
+>
+  {/* Form inputs */}
+</CWMSForm>
+
+// Default behavior (5 seconds)
+<CWMSForm
+  office="SWT"
+  // toastAutoClose={5000} is the default
+>
+  {/* Form inputs */}
 </CWMSForm>`}
       </CodeBlock>
 
@@ -357,7 +470,7 @@ function CWMSFormDocs() {
 >
   <CWMSInput
     name="stage"
-    tsid="LOCATION.Stage.Inst.0.0.USGS"
+    tsid="LOCATION.Stage.Inst.15Minutes.0.USGS"
     placeholder="Enter stage value *"
     type="number"
     required={true}
@@ -366,7 +479,7 @@ function CWMSFormDocs() {
   
   <CWMSDropdown
     name="status"
-    tsid="LOCATION.Status.Inst.0.0.MANUAL"
+    tsid="LOCATION.Status.Inst.1Hour.0.MANUAL"
     placeholder="Select status *"
     options={["Normal", "Alert", "Flood"]}
     required={true}
@@ -375,7 +488,7 @@ function CWMSFormDocs() {
   
   <CWMSTextarea
     name="notes"
-    tsid="LOCATION.Notes.Inst.0.0.MANUAL"
+    tsid="LOCATION.Notes.Inst.1Hour.0.MANUAL"
     placeholder="Optional notes"
     required={false}
     label="Observation Notes"
@@ -503,28 +616,16 @@ function CWMSFormDocs() {
 
       <CWMSForm
         office="SWT"
-        className="custom-form-class"
-        style={{
-          backgroundColor: "#f8f9fa",
-          padding: "2rem",
-          borderRadius: "8px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        }}
+        className="bg-gray-50 p-8 rounded-lg shadow-md"
         onSubmit={(data) => console.log("Styled form submitted:", data)}
       >
         <CWMSInput name="styled-input" placeholder="Enter a value" />
       </CWMSForm>
 
       <CodeBlock language="jsx">
-        {`<CWMSForm 
+        {`<CWMSForm
   office="SWT"
-  className="custom-form-class"
-  style={{
-    backgroundColor: '#f8f9fa',
-    padding: '2rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-  }}
+  className="bg-gray-50 p-8 rounded-lg shadow-md"
 >
   <CWMSInput
     name="styled-input"

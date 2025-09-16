@@ -5,6 +5,7 @@ import { FormContext } from "../CWMSForm";
 function CWMSCheckboxes({
   // CWMS-specific props
   content = [],
+  singleSelect = false, // New prop for single selection mode
 
   // Checkbox props that need special handling
   onChange,
@@ -14,9 +15,12 @@ function CWMSCheckboxes({
   ...checkboxesProps
 }) {
   const { registerInput } = useContext(FormContext);
+  const [selectedId, setSelectedId] = React.useState(null);
 
   // Register each checkbox item that has a tsid
   useEffect(() => {
+    const cleanupFunctions = [];
+
     if (registerInput) {
       content.forEach((item) => {
         if (item.tsid) {
@@ -34,7 +38,11 @@ function CWMSCheckboxes({
             required: item.required || required || false,
             label: item.label || item.id,
             getValues: () => {
-              // Get the current checked state
+              // In single select mode, only return value if this checkbox is selected
+              if (singleSelect) {
+                return selectedId === item.id ? [true] : [false];
+              }
+              // Normal mode: get the current checked state
               const element = document.getElementById(item.id);
               return element ? [element.checked] : [false];
             },
@@ -46,6 +54,9 @@ function CWMSCheckboxes({
                 if (item.onChange) {
                   item.onChange({ target: element });
                 }
+              }
+              if (singleSelect) {
+                setSelectedId(null);
               }
             },
             setInvalid: (invalid) => {
@@ -59,11 +70,19 @@ function CWMSCheckboxes({
               }
             },
           };
-          registerInput(checkboxRef);
+          const cleanup = registerInput(checkboxRef);
+          if (cleanup) {
+            cleanupFunctions.push(cleanup);
+          }
         }
       });
     }
-  }, [registerInput, content, required]);
+
+    // Return cleanup function that calls all individual cleanup functions
+    return () => {
+      cleanupFunctions.forEach((cleanup) => cleanup());
+    };
+  }, [registerInput, content, required, singleSelect, selectedId]);
 
   // Process content to add CWMS-specific handling
   const processedContent = content.map((item) => {
@@ -72,17 +91,45 @@ function CWMSCheckboxes({
       ...item,
       // Override disabled if readonly or disabled is set at item level
       disabled: item.disabled || item.readonly || item.disable,
+      // In single select mode, check if this item is selected
+      defaultChecked: singleSelect ? selectedId === item.id : item.defaultChecked,
     };
 
     // Wrap the original onChange to include CWMS handling if needed
-    if (item.onChange) {
-      const originalOnChange = item.onChange;
-      processedItem.onChange = (e) => {
-        // Call the original onChange
-        originalOnChange(e);
+    const originalOnChange = item.onChange;
+    processedItem.onChange = (e) => {
+      if (singleSelect) {
+        // In single select mode, uncheck all others and check only this one
+        if (e.target.checked) {
+          // Uncheck all other checkboxes
+          content.forEach((contentItem) => {
+            if (contentItem.id !== item.id) {
+              const element = document.getElementById(contentItem.id);
+              if (element) {
+                element.checked = false;
+              }
+            }
+          });
+          setSelectedId(item.id);
+        } else {
+          setSelectedId(null);
+        }
+      }
 
-        // Call the parent onChange if provided
-        if (onChange) {
+      // Call the original onChange if provided
+      if (originalOnChange) {
+        originalOnChange(e);
+      }
+
+      // Call the parent onChange if provided
+      if (onChange) {
+        if (singleSelect) {
+          // In single select mode, only pass the selected value
+          const selectedValue = e.target.checked
+            ? item.value || item.label || item.id
+            : null;
+          onChange(selectedValue ? [selectedValue] : []);
+        } else {
           // Collect all checked values
           const checkedValues = content
             .filter((contentItem) => {
@@ -98,8 +145,8 @@ function CWMSCheckboxes({
 
           onChange(checkedValues);
         }
-      };
-    }
+      }
+    };
 
     return processedItem;
   });
@@ -108,6 +155,10 @@ function CWMSCheckboxes({
 }
 
 // Extended checkbox item interface for documentation
+// Component props:
+// - singleSelect: boolean - When true, only one checkbox can be selected at a time (radio button behavior)
+// - All standard Groundwork Checkboxes props (legend, style, etc.)
+//
 // Each item in content array can have:
 // - All standard Groundwork checkbox properties:
 //   - id: string (required) - Unique identifier

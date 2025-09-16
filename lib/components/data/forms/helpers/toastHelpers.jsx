@@ -2,16 +2,25 @@ import React from "react";
 import { toast } from "react-toastify";
 
 /**
+ * Default toast configuration
+ * Set autoClose to false to disable auto-closing
+ */
+const TOAST_DEFAULTS = {
+  containerId: "cwms-form-toast",
+  position: "top-right",
+  autoClose: 5000, // Set to false to disable auto-closing
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+};
+
+/**
  * Show a success toast
  */
 export const showSuccessToast = (message, options = {}) => {
   toast.success(message, {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
+    ...TOAST_DEFAULTS,
     ...options,
   });
 };
@@ -21,12 +30,7 @@ export const showSuccessToast = (message, options = {}) => {
  */
 export const showErrorToast = (message, options = {}) => {
   toast.error(message, {
-    position: "top-right",
-    autoClose: 7000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
+    ...TOAST_DEFAULTS,
     ...options,
   });
 };
@@ -36,12 +40,7 @@ export const showErrorToast = (message, options = {}) => {
  */
 export const showWarningToast = (message, options = {}) => {
   toast.warning(message, {
-    position: "top-right",
-    autoClose: 6000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
+    ...TOAST_DEFAULTS,
     ...options,
   });
 };
@@ -51,12 +50,7 @@ export const showWarningToast = (message, options = {}) => {
  */
 export const showInfoToast = (message, options = {}) => {
   toast.info(message, {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
+    ...TOAST_DEFAULTS,
     ...options,
   });
 };
@@ -66,7 +60,8 @@ export const showInfoToast = (message, options = {}) => {
  */
 export const showLoadingToast = (message = "Loading...") => {
   return toast.loading(message, {
-    position: "top-right",
+    containerId: TOAST_DEFAULTS.containerId,
+    position: TOAST_DEFAULTS.position,
   });
 };
 
@@ -76,10 +71,10 @@ export const showLoadingToast = (message = "Loading...") => {
 export const updateToast = (toastId, { type = "success", message, ...options }) => {
   if (toastId) {
     toast.update(toastId, {
+      ...TOAST_DEFAULTS,
       render: message,
       type: type,
       isLoading: false,
-      autoClose: 5000,
       closeButton: true,
       ...options,
     });
@@ -113,9 +108,9 @@ export const formatSubmissionMessage = (data) => {
 /**
  * Show detailed error information in a toast
  */
-export const showDetailedError = (error) => {
+export const showDetailedError = (error, options = {}) => {
   if (!error) {
-    showErrorToast("An unknown error occurred");
+    showErrorToast("An unknown error occurred", options);
     return;
   }
 
@@ -135,11 +130,11 @@ export const showDetailedError = (error) => {
           </div>
         )}
       </div>,
-      { autoClose: 10000 },
+      { autoClose: false, ...options }, // Keep error details visible by default, but allow override
     );
   } else if (error.message) {
-    showErrorToast(error.message);
+    showErrorToast(error.message, options);
   } else {
-    showErrorToast("Submission failed. Please try again.");
+    showErrorToast("Submission failed. Please try again.", options);
   }
 };

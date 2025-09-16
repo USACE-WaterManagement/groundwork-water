@@ -173,13 +173,13 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSTextarea
     name="observation-notes"
-    tsid="LOCATION.Notes.Inst.0.0.TEXT"
+    tsid="LOCATION.Notes.Inst.1Hour.0.Ccp-Rev"
     rows={5}
     placeholder="Enter observation notes..."
   />
   <CWMSTextarea
     name="maintenance-log"
-    tsid="LOCATION.Maintenance.Inst.0.0.TEXT"
+    tsid="LOCATION.Maintenance.Inst.1Day.0.Ccp-Rev"
     rows={8}
     placeholder="Maintenance activities..."
   />
@@ -192,14 +192,8 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           <CWMSTextarea
             name="styled-textarea"
             rows={4}
-            placeholder="Custom styled textarea"
-            style={{
-              backgroundColor: "#fffacd",
-              border: "2px dashed #ff6347",
-              padding: "12px",
-              borderRadius: "10px",
-              fontFamily: "monospace",
-            }}
+            placeholder="Custom styled textarea with Tailwind"
+            className="bg-yellow-50 border-2 border-dashed border-red-400 p-3 rounded-lg font-mono"
           />
         </CWMSForm>
       </div>
@@ -208,14 +202,8 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         {`<CWMSTextarea
   name="styled-textarea"
   rows={4}
-  placeholder="Custom styled textarea"
-  style={{ 
-    backgroundColor: "#fffacd", 
-    border: "2px dashed #ff6347",
-    padding: "12px",
-    borderRadius: "10px",
-    fontFamily: "monospace"
-  }}
+  placeholder="Custom styled textarea with Tailwind"
+  className="bg-yellow-50 border-2 border-dashed border-red-400 p-3 rounded-lg font-mono"
 />`}
       </CodeBlock>
 

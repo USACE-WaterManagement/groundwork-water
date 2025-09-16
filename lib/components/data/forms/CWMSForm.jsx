@@ -1,15 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
-import {
-  snapTime,
-  formatForDateTimeLocal,
-  getSnappedTimestamp,
-} from "./helpers/timeSnapping";
+import { getSnappedTimestamp } from "./helpers/timeSnapping";
 import { useCwmsFormSubmit, useFormValidation } from "./hooks/useCwmsFormSubmit";
 import {
   showSuccessToast,
-  showErrorToast,
   showWarningToast,
   formatSubmissionMessage,
   showDetailedError,
@@ -20,7 +15,6 @@ export const FormContext = createContext();
 
 export function CWMSForm({
   office,
-  unit = "EN",
   cdaUrl,
   children,
   onSubmit,
@@ -29,11 +23,14 @@ export function CWMSForm({
   onError,
   submitText = "Submit",
   resetText = "Reset",
+  resetOnSubmit = true, // Whether to reset form fields after successful submission
+  storeRule = "REPLACE_ALL", // Store rule for time series data: REPLACE_ALL, DO_NOT_REPLACE, DELETE_INSERT, etc.
   showButtons = true,
   showCalendar = true,
   calendarLabel = "Submission Time",
   calendarInterval = "minute", // none, second, minute, 5minutes, 15minutes, 30minutes, hour, day
   calendarSnapTo = "nearest", // nearest, previous, next
+  toastAutoClose = 5000, // Set to false to disable auto-close for all toasts, or number for milliseconds
   className = "",
   style,
   mutationOptions = {}, // Additional options for the mutation
@@ -46,7 +43,7 @@ export function CWMSForm({
   try {
     auth = useAuth();
   } catch (e) {
-    // No auth provider, that's ok
+    // No auth provider, dont fail to show mock fields in docs
   }
 
   // Use TanStack Query mutation for form submission
@@ -54,13 +51,16 @@ export function CWMSForm({
     cdaUrl,
     office,
     auth,
+    storeRule,
     onSuccess: (data) => {
       // Show success toast
       const message = formatSubmissionMessage(data);
-      showSuccessToast(message);
+      showSuccessToast(message, { autoClose: toastAutoClose });
 
-      // Reset form on successful submission
-      handleReset();
+      // Reset form on successful submission if enabled
+      if (resetOnSubmit) {
+        handleReset();
+      }
 
       // Call user's onSuccess callback
       if (onSuccess) {
@@ -84,7 +84,7 @@ export function CWMSForm({
       }
 
       // Show error toast
-      showDetailedError(error);
+      showDetailedError(error, { autoClose: toastAutoClose });
 
       // Call user's onError callback
       if (onError) {
@@ -103,11 +103,20 @@ export function CWMSForm({
   });
 
   const registerInput = (input) => {
-    // Create a unique ID for this input based on its properties
-    const inputId = `${input.tsid || ""}_${input.name || ""}_${Math.random()}`;
+    // Create a unique ID for this input based on its TSID and name
+    // Use TSID as primary identifier since it should be unique
+    const inputId = input.tsid || `${input.name || ""}_${Math.random()}`;
 
-    // Only register if not already registered
-    if (!registeredIds.current.has(inputId)) {
+    // Check if this input is already registered by looking for the same TSID
+    const existingIndex = inputsRef.current.findIndex(
+      (i) => i.tsid === input.tsid && i.tsid !== undefined,
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing input instead of adding a duplicate
+      inputsRef.current[existingIndex] = { ...input, id: inputId };
+    } else {
+      // Add new input
       registeredIds.current.add(inputId);
       inputsRef.current.push({ ...input, id: inputId });
     }
@@ -157,7 +166,7 @@ export function CWMSForm({
           ? validation.errors[0].message
           : `Please fill in ${errorCount} required fields`;
 
-      showWarningToast(message);
+      showWarningToast(message, { autoClose: toastAutoClose });
 
       // Mark invalid fields
       validation.errors.forEach((error) => {

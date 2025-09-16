@@ -163,14 +163,14 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSDropdown
     name="gate-position"
-    tsid="LOCATION.GatePos.Inst.0.0.POSITION"
+    tsid="LOCATION.Gate-Pos.Inst.15Minutes.0.Ccp-Rev"
     placeholder="Select gate position"
     options={["Closed", "25% Open", "50% Open", "75% Open", "Fully Open"]}
   />
   
   <CWMSDropdown
     name="unit-selection"
-    tsid="LOCATION.Flow.Inst.0.0.USGS"
+    tsid="LOCATION.Flow.Inst.15Minutes.0.USGS"
     placeholder="Select units"
     options={["cfs", "cms", "gpm", "mgd"]}
     defaultValue="cfs"
@@ -197,14 +197,9 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
           <CWMSDropdown
             name="styled-dropdown"
-            placeholder="Custom styled dropdown"
+            placeholder="Custom styled dropdown with Tailwind"
             options={["Style 1", "Style 2", "Style 3"]}
-            style={{
-              backgroundColor: "#e8f5e9",
-              border: "2px solid #4caf50",
-              borderRadius: "8px",
-              padding: "8px",
-            }}
+            className="bg-green-50 border-2 border-green-500 rounded-lg p-2"
           />
         </div>
       </CWMSForm>
@@ -226,17 +221,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   invalid={true}
 />
 
-// Custom styling
+// Custom styling with Tailwind
 <CWMSDropdown
   name="styled-dropdown"
-  placeholder="Custom styled dropdown"
+  placeholder="Custom styled dropdown with Tailwind"
   options={["Style 1", "Style 2", "Style 3"]}
-  style={{
-    backgroundColor: "#e8f5e9",
-    border: "2px solid #4caf50",
-    borderRadius: "8px",
-    padding: "8px"
-  }}
+  className="bg-green-50 border-2 border-green-500 rounded-lg p-2"
 />`}
       </CodeBlock>
 

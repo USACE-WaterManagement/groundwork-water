@@ -19,10 +19,16 @@ const componentProps = [
     desc: "Array of checkbox item objects. See CheckboxItem API below for detailed properties.",
   },
   {
+    name: "singleSelect",
+    type: "boolean",
+    default: "false",
+    desc: "When true, only one checkbox can be selected at a time (radio button behavior). Only the selected checkbox's value will be submitted.",
+  },
+  {
     name: "onChange",
     type: "function",
     default: "undefined",
-    desc: "Callback function when any checkbox changes. Receives array of all checked values.",
+    desc: "Callback function when any checkbox changes. Receives array of all checked values (or single value in singleSelect mode).",
   },
   {
     name: "required",
@@ -228,7 +234,7 @@ function CWMSCheckboxesDocs() {
       <CodeBlock language="jsx">
         {`import { CWMSCheckboxes } from "@usace-watermanagement/groundwork-water";
 
-// Full content API with id, label, defaultChecked, onChange
+// Multi-select mode (default) - multiple checkboxes can be selected
 <CWMSCheckboxes
   legend="Select Options"
   content={[
@@ -314,6 +320,79 @@ function CWMSCheckboxesDocs() {
 />`}
       </CodeBlock>
 
+      <Divider text="Single Selection Mode" className="mt-8" />
+      <CWMSForm office="SWT">
+        <div className="flex flex-col gap-6">
+          <div>
+            <Text className="mb-2 font-semibold">Radio Button Behavior</Text>
+            <Text className="mb-4 text-sm text-gray-600">
+              With singleSelect enabled, only one checkbox can be selected at a time.
+              Selecting a new checkbox automatically deselects the previous one.
+            </Text>
+            <CWMSCheckboxes
+              singleSelect={true}
+              legend="Select One Option"
+              content={[
+                {
+                  id: "morning",
+                  label: "Morning Shift",
+                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+                  defaultChecked: true,
+                },
+                {
+                  id: "afternoon",
+                  label: "Afternoon Shift",
+                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+                  defaultChecked: false,
+                },
+                {
+                  id: "evening",
+                  label: "Evening Shift",
+                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+                  defaultChecked: false,
+                },
+              ]}
+              onChange={(values) => console.log("Selected:", values)}
+            />
+          </div>
+        </div>
+      </CWMSForm>
+
+      <CodeBlock language="jsx">
+        {`// Single selection mode - only one checkbox can be selected
+<CWMSCheckboxes
+  singleSelect={true}
+  legend="Select One Option"
+  content={[
+    {
+      id: "morning",
+      label: "Morning Shift",
+      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+      defaultChecked: true
+    },
+    {
+      id: "afternoon",
+      label: "Afternoon Shift",
+      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+      defaultChecked: false
+    },
+    {
+      id: "evening",
+      label: "Evening Shift",
+      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+      defaultChecked: false
+    }
+  ]}
+  onChange={(values) => console.log("Selected:", values)}
+/>
+
+// In single select mode:
+// - Only one checkbox can be selected at a time
+// - Selecting a new checkbox deselects all others
+// - Only the selected checkbox's TSID data is submitted
+// - onChange receives an array with only the selected value`}
+      </CodeBlock>
+
       <Divider text="CWMS-Specific Properties" className="mt-8" />
       <Text className="mb-4">
         Content items can include CWMS-specific properties like tsid for individual time
@@ -332,21 +411,21 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       { 
         id: "gate1", 
         label: "Gate 1 Open", 
-        tsid: "LOCATION.Gate1.Inst.0.0.STATUS",
+        tsid: "LOCATION.Gate-Status.Inst.15Minutes.0.STATUS",
         defaultChecked: false,
         onChange: (checked) => console.log("Gate 1:", checked)
       },
       { 
         id: "gate2", 
         label: "Gate 2 Open", 
-        tsid: "LOCATION.Gate2.Inst.0.0.STATUS",
+        tsid: "LOCATION.Gate-Status.Inst.15Minutes.0.STATUS",
         defaultChecked: true,
         onChange: (checked) => console.log("Gate 2:", checked)
       },
       { 
         id: "gate3", 
         label: "Gate 3 Open", 
-        tsid: "LOCATION.Gate3.Inst.0.0.STATUS",
+        tsid: "LOCATION.Gate-Status.Inst.15Minutes.0.STATUS",
         defaultChecked: false,
         onChange: (checked) => console.log("Gate 3:", checked)
       }

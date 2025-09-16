@@ -169,7 +169,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSInput
     name="stage-input"
-    tsid="LOCATION.Stage.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Stage.Inst.15Minutes.0.USGS-raw"
     type="number"
     placeholder="Enter stage value"
     precision={2}
@@ -177,7 +177,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   />
   <CWMSInput
     name="flow-input"
-    tsid="LOCATION.Flow.Inst.0.0.USGS-raw"
+    tsid="LOCATION.Flow.Inst.15Minutes.0.USGS-raw"
     type="number"
     placeholder="Enter flow value"
     precision={0}
@@ -191,13 +191,8 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         <div className="flex flex-col gap-4">
           <CWMSInput
             name="styled-input"
-            placeholder="Custom styled input"
-            style={{
-              backgroundColor: "#f0f8ff",
-              border: "2px solid #4169e1",
-              padding: "10px",
-              borderRadius: "8px",
-            }}
+            placeholder="Custom styled input with Tailwind"
+            className="bg-blue-50 border-2 border-blue-600 p-2.5 rounded-lg"
           />
         </div>
       </CWMSForm>
@@ -205,13 +200,8 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       <CodeBlock language="jsx">
         {`<CWMSInput
   name="styled-input"
-  placeholder="Custom styled input"
-  style={{ 
-    backgroundColor: "#f0f8ff", 
-    border: "2px solid #4169e1",
-    padding: "10px",
-    borderRadius: "8px"
-  }}
+  placeholder="Custom styled input with Tailwind"
+  className="bg-blue-50 border-2 border-blue-600 p-2.5 rounded-lg"
 />`}
       </CodeBlock>
 

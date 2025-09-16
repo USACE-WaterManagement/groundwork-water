@@ -38,9 +38,9 @@ const componentProps = [
   },
   {
     name: "units",
-    type: "string",
+    type: "string | array | object",
     default: "EN",
-    desc: "Unit system (EN for English, SI for metric).",
+    desc: "Unit system. Can be a string (applies to all), array (per column index), or object (per TSID key).",
   },
   {
     name: "disable",
@@ -91,10 +91,16 @@ const componentProps = [
     desc: "Callback function when any input value changes.",
   },
   {
+    name: "className",
+    type: "string",
+    default: "undefined",
+    desc: "Tailwind CSS classes to apply to the table.",
+  },
+  {
     name: "style",
     type: "object",
     default: "undefined",
-    desc: "Custom styles to apply to the table.",
+    desc: "Custom inline styles to apply to the table.",
   },
 ];
 
@@ -178,9 +184,9 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSInputTable
     tsids={[
-      "LOCATION.Stage.Inst.0.0.USGS-raw",
-      "LOCATION.Flow.Inst.0.0.USGS-raw",
-      "LOCATION.Precip.Inst.0.0.USGS-raw"
+      "LOCATION.Stage.Inst.15Minutes.0.USGS-raw",
+      "LOCATION.Flow.Inst.15Minutes.0.USGS-raw",
+      "LOCATION.Precip.Inst.1Hour.0.USGS-raw"
     ]}
     timeoffsets={[
       -7200,  // -2 hours
@@ -218,6 +224,62 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 />`}
       </CodeBlock>
 
+      <Divider text="Different Units Per Column" className="mt-8" />
+      <Text className="mb-4">
+        You can specify different units for each column using an array or object
+        notation.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT">
+          <CWMSInputTable
+            tsids={["Stage", "Flow", "Temperature"]}
+            timeoffsets={[0, 3600]}
+            units={["ft", "cfs", "F"]} // Array of units
+            perColumnPrecision={{
+              Stage: 2,
+              Flow: 0,
+              Temperature: 1,
+            }}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Using units as an array (matches tsids by index)
+<CWMSInputTable
+  tsids={["Stage", "Flow", "Temperature"]}
+  timeoffsets={[0, 3600]}
+  units={["ft", "cfs", "F"]}
+  perColumnPrecision={{
+    "Stage": 2,
+    "Flow": 0,
+    "Temperature": 1
+  }}
+/>
+
+// Alternative: Using units as an object (matches by TSID key)
+<CWMSInputTable
+  tsids={["Stage", "Flow", "Temperature"]}
+  timeoffsets={[0, 3600]}
+  units={{
+    "Stage": "ft",
+    "Flow": "cfs",
+    "Temperature": "F"
+  }}
+/>
+
+// Or continue using perColumnUnits for backward compatibility
+<CWMSInputTable
+  tsids={["Stage", "Flow"]}
+  timeoffsets={[0]}
+  perColumnUnits={{
+    "Stage": "ft",
+    "Flow": "cfs"
+  }}
+/>`}
+      </CodeBlock>
+
       <Divider text="States and Styling" className="mt-8" />
       <div className="flex flex-col gap-4">
         <div>
@@ -238,15 +300,27 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         </div>
 
         <div>
-          <Text className="mb-2 font-semibold">Custom Styled Table</Text>
+          <Text className="mb-2 font-semibold">Custom Styled Table (Tailwind)</Text>
           <CWMSForm office="SWT">
             <CWMSInputTable
               tsids={["Value 1", "Value 2"]}
               timeoffsets={[0]}
               showTimestamps={false}
+              className="bg-gray-100 border-2 border-gray-700 rounded-lg"
+            />
+          </CWMSForm>
+        </div>
+
+        <div>
+          <Text className="mb-2 font-semibold">Custom Styled Table (Inline Style)</Text>
+          <CWMSForm office="SWT">
+            <CWMSInputTable
+              tsids={["Value 3", "Value 4"]}
+              timeoffsets={[0]}
+              showTimestamps={false}
               style={{
-                backgroundColor: "#f5f5f5",
-                border: "2px solid #333",
+                backgroundColor: "#f0f8ff",
+                border: "2px solid #4169e1",
                 borderRadius: "8px",
               }}
             />
@@ -268,16 +342,32 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   }}
 />
 
-// Custom styled table
+// Custom styled table with Tailwind classes
 <CWMSInputTable
   tsids={["Value 1", "Value 2"]}
   timeoffsets={[0]}
   showTimestamps={false}
+  className="bg-gray-100 border-2 border-gray-700 rounded-lg"
+/>
+
+// Custom styled table with inline styles
+<CWMSInputTable
+  tsids={["Value 3", "Value 4"]}
+  timeoffsets={[0]}
+  showTimestamps={false}
   style={{
-    backgroundColor: "#f5f5f5",
-    border: "2px solid #333",
+    backgroundColor: "#f0f8ff",
+    border: "2px solid #4169e1",
     borderRadius: "8px"
   }}
+/>
+
+// You can also use both className and style together
+<CWMSInputTable
+  tsids={["Combined"]}
+  timeoffsets={[0]}
+  className="rounded-lg shadow-md"
+  style={{ backgroundColor: "#fafafa" }}
 />`}
       </CodeBlock>
 

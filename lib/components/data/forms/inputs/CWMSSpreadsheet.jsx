@@ -2,24 +2,24 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 import { FormContext } from "../CWMSForm";
 
 function CWMSSpreadsheet({
+  className,
   style,
   disable,
   invalid,
   columns = [],
   rows = 10,
-  tsid,
+  tsids = [], // Array of tsids for each column
   precision,
   offset,
   order,
   AllowMissingData,
   loadNearest,
   readonly,
-  units,
+  units, // Can be string, array, or object
   onChange,
   defaultData = [],
   showRowNumbers = true,
   showColumnHeaders = true,
-  resizable = false,
   required,
   perCellRequired = {},
 }) {
@@ -33,7 +33,6 @@ function CWMSSpreadsheet({
   });
   const [invalidCells, setInvalidCells] = useState({});
   const [selectedCell, setSelectedCell] = useState(null);
-  const [selectedRange, setSelectedRange] = useState(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);
@@ -51,16 +50,36 @@ function CWMSSpreadsheet({
         const key = `${rowIndex}_${colIndex}`;
         const column = columns[colIndex] || {};
 
+        // Get tsid from array or column
+        let cellTsid = column.tsid || tsids[colIndex] || `cell_${key}`;
+
+        // Support units as array, object, or string
+        let cellUnits = "EN";
+        if (column.units) {
+          cellUnits = column.units;
+        } else if (Array.isArray(units)) {
+          cellUnits = units[colIndex] || "EN";
+        } else if (
+          typeof units === "object" &&
+          units !== null &&
+          !Array.isArray(units)
+        ) {
+          // If units is an object, try to use the tsid as key
+          cellUnits = units[cellTsid] || units[colIndex] || "EN";
+        } else if (typeof units === "string") {
+          cellUnits = units;
+        }
+
         const cellRef = {
           name: key,
-          tsid: column.tsid || tsid || `cell_${key}`,
+          tsid: cellTsid,
           precision: column.precision || precision || 2,
           offset: column.offset || offset || 0,
           order: order || 1,
           AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
           loadNearest: loadNearest || "prev",
           readonly: readonly || false,
-          units: column.units || units || "EN",
+          units: cellUnits,
           required: perCellRequired[key] || column.required || required || false,
           label: `Cell ${rowIndex + 1},${colIndex + 1}`,
           getValues: () => [spreadsheetData[rowIndex]?.[colIndex] || ""],
@@ -104,7 +123,7 @@ function CWMSSpreadsheet({
     rows,
     columns,
     spreadsheetData,
-    tsid,
+    tsids,
     precision,
     offset,
     order,

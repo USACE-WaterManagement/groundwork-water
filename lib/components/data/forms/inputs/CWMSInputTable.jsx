@@ -3,6 +3,7 @@ import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
 
 function CWMSInputTable({
+  className,
   style,
   disable,
   invalid,
@@ -22,8 +23,7 @@ function CWMSInputTable({
   required,
   perColumnRequired = {}, // Allow different required status per TSID
 }) {
-  const { registerInput, baseTimestamp, getTimestampForInput } =
-    useContext(FormContext);
+  const { registerInput, getTimestampForInput } = useContext(FormContext);
   const [matrixData, setMatrixData] = useState(defaultValues);
   const [invalidCells, setInvalidCells] = useState({});
   const cleanupFunctions = useRef([]);
@@ -36,9 +36,21 @@ function CWMSInputTable({
     cleanupFunctions.current = [];
 
     // Register each cell as an individual input
-    tsids.forEach((tsid) => {
+    tsids.forEach((tsid, tsidIndex) => {
       timeoffsets.forEach((offset) => {
         const key = `${tsid}_${offset}`;
+
+        // Support units as array or object
+        let cellUnits = units;
+        if (Array.isArray(units)) {
+          cellUnits = units[tsidIndex] || "EN";
+        } else if (typeof units === "object" && units !== null) {
+          cellUnits = units[tsid] || "EN";
+        } else if (perColumnUnits[tsid]) {
+          cellUnits = perColumnUnits[tsid];
+        } else {
+          cellUnits = units || "EN";
+        }
 
         const cellRef = {
           name: key,
@@ -49,7 +61,7 @@ function CWMSInputTable({
           AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
           loadNearest: loadNearest || "prev",
           readonly: readonly || false,
-          units: perColumnUnits[tsid] || units || "EN",
+          units: cellUnits,
           timeOffset: offset,
           required: perColumnRequired[tsid] || required || false,
           label: `${tsid} at ${offset}s`,
@@ -123,11 +135,6 @@ function CWMSInputTable({
     }
   };
 
-  // Global reset function for the entire table
-  const resetTable = () => {
-    setMatrixData(defaultValues);
-  };
-
   const formatTimestamp = (offset) => {
     if (getTimestampForInput) {
       // Use the form's timestamp function which includes snapping
@@ -143,36 +150,14 @@ function CWMSInputTable({
   };
 
   return (
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        marginBottom: "20px",
-        ...style,
-      }}
-    >
+    <table className={`w-full border-collapse mb-5 ${className || ""}`} style={style}>
       <thead>
         <tr>
           {showTimestamps && (
-            <th
-              style={{
-                padding: "8px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
-              Time
-            </th>
+            <th className="p-2 text-left border-b-2 border-gray-300">Time</th>
           )}
           {tsids.map((tsid, index) => (
-            <th
-              key={index}
-              style={{
-                padding: "8px",
-                textAlign: "left",
-                borderBottom: "2px solid #ddd",
-              }}
-            >
+            <th key={index} className="p-2 text-left border-b-2 border-gray-300">
               {tsid}
             </th>
           ))}
@@ -185,24 +170,19 @@ function CWMSInputTable({
           return (
             <tr key={rowIndex}>
               {showTimestamps && (
-                <td style={{ padding: "8px", width: "200px" }}>
+                <td className="p-2 w-[200px]">
                   <Input
                     type="text"
                     value={formattedTime}
                     readOnly
-                    style={{
-                      width: "100%",
-                      backgroundColor: "#f9f9f9",
-                      border: "1px solid #ccc",
-                      padding: "5px",
-                    }}
+                    className="w-full bg-gray-50 border border-gray-300 p-1"
                   />
                 </td>
               )}
               {tsids.map((tsid, colIndex) => {
                 const key = `${tsid}_${offset}`;
                 return (
-                  <td key={colIndex} style={{ padding: "8px" }}>
+                  <td key={colIndex} className="p-2">
                     <Input
                       name={key}
                       type="number"
@@ -212,10 +192,7 @@ function CWMSInputTable({
                       readOnly={readonly}
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
                       placeholder="Enter value"
-                      style={{
-                        width: "100%",
-                        borderColor: invalidCells[key] ? "red" : undefined,
-                      }}
+                      className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
                       required={perColumnRequired[tsid] || required}
                     />
                   </td>
