@@ -96,7 +96,6 @@ function useCdaBlobPage() {
         using the <Code>/blobs/{`{blob-id}`}</Code> endpoint. This allows you to fetch
         binary blobs (PDF, XML, text, etc.) by ID and optionally filter by office.
       </Text>
-      useCdaBlobPage
       <QueryClientWarning />
       <Divider text="Example Usage" className="mt-8" />
       <div className="rounded-md border border-dashed px-6 py-3 my-3">
