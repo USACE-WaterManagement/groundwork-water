@@ -59,6 +59,23 @@ export default [
     href: "/docs/hooks",
     children: [
       {
+        id: "blobs",
+        text: "CDA Blobs",
+        href: "#",
+        children: [
+          {
+            id: "use-cda-blob",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob",
+          },
+          {
+            id: "use-cda-blobs",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob-catalog",
+          },
+        ],
+      },
+      {
         id: "use-cda-catalog",
         text: "CDA Catalog",
         href: "/docs/hooks/use-cda-catalog",
@@ -97,24 +114,6 @@ export default [
         id: "use-nwps-gauge-data",
         text: "NWPS Gauge Data",
         href: "/docs/hooks/use-nwps-gauge-data",
-      },
-
-      {
-        id: "blobs",
-        text: "CDA Blobs",
-        href: "#",
-        children: [
-          {
-            id: "use-cda-blob",
-            text: "CDA Blob",
-            href: "/docs/hooks/use-cda-blob",
-          },
-          {
-            id: "use-cda-blob-catalog",
-            text: "CDA Blob Catalog",
-            href: "/docs/hooks/use-cda-blob-catalog",
-          },
-        ],
       },
     ],
   },
