@@ -30,6 +30,7 @@ import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
 import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
+import useDebounce from "../pages/docs/hooks/use-debounce";
 
 export default createRouteBundle(
   {
@@ -50,6 +51,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-levels": UseCdaLevels,
     "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
+    "/docs/hooks/use-debounce": useDebounce,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
     "/docs/hooks/use-cda-blob": UseCdaBlob,
