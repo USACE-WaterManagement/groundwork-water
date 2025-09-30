@@ -38,7 +38,7 @@ const BlobViewerCard = () => {
 
   return (
     <Card className="w-full">
-      <H3>View a blobs by ID</H3>
+      <H3>View a blob by ID</H3>
       <Fieldset>
         <div className="grid grid-cols-[300px_1fr] gap-y-4 items-center">
           <Label htmlFor="blob-id" className="text-right me-2">
@@ -134,7 +134,7 @@ function useCdaBlobPage() {
 
     return (
         <Card className="w-full">
-        <H3>View a blobs by ID</H3>
+        <H3>View a blob by ID</H3>
         <Fieldset>
             <div className="grid grid-cols-[300px_1fr] gap-y-4 items-center">
             <Label htmlFor="blob-id" className="text-right me-2">
