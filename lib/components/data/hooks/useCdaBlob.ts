@@ -20,7 +20,7 @@ const useCdaBlob = ({
   const blobApi = new BlobApi(config);
 
   return useQuery({
-    queryKey: ["cda", "file", ...Object.values(cdaParams)],
+    queryKey: ["cda", "blob", ...Object.values(cdaParams)],
     queryFn: async () =>
       blobApi.getBlobsWithBlobIdRaw(cdaParams, initOverrides).then(async (response) => {
         const contentType = response.raw.headers.get("content-type");
