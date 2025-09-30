@@ -71,7 +71,7 @@ export default [
           {
             id: "use-cda-blobs",
             text: "CDA Blobs (list)",
-            href: "/docs/hooks/use-cda-blob-catalog",
+            href: "/docs/hooks/use-cda-blobs",
           },
         ],
       },

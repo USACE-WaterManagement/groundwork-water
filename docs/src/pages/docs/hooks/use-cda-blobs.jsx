@@ -18,10 +18,7 @@ import {
 import ParamsTable from "../../components/params-table";
 import CdaParamsTable from "../../components/cda-params-table";
 import QueryClientWarning from "../../../components/QueryClientWarning";
-import {
-  useCdaBlobCatalog,
-  useDebounce,
-} from "@usace-watermanagement/groundwork-water";
+import { useCdaBlobs, useDebounce } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
@@ -37,7 +34,7 @@ const BlobCatalogCard = () => {
   // Cherry-pick a few offices we know have blob data
   const offices = ["SWT", "SAM", "MVP", "MVS", "NAE"];
 
-  const blobCatalog = useCdaBlobCatalog({
+  const blobCatalog = useCdaBlobs({
     cdaParams: {
       office,
       like: debouncedLike,
@@ -133,12 +130,12 @@ const BlobCatalogCard = () => {
   );
 };
 
-function useCdaBlobCatalogPage() {
+function useCdaBlobsPage() {
   return (
     <DocsPage middleText="CDA Blob Catalog Hook">
       <div>
         <Text>
-          {`The useCdaBlobCatalog hook retrieves blob metadata using the
+          {`The useCdaBlobs hook retrieves blob metadata using the
           cwms-data-api. It accepts standard CDA query parameters such as 
           office, like, page, and page-size.`}
         </Text>
@@ -166,7 +163,7 @@ function useCdaBlobCatalogPage() {
   Dropdown,
 } from "@usace/groundwork";
 import { useEffect, useRef, useState } from "react";
-import { useCdaBlobCatalog, useDebounce } from "@usace-watermanagement/groundwork-water";
+import { useCdaBlobs, useDebounce } from "@usace-watermanagement/groundwork-water";
 
 const BlobCatalogCard = () => {
     const [like, setLike] = useState("*.json");
@@ -177,7 +174,7 @@ const BlobCatalogCard = () => {
     // Cherry-pick a few offices we know have blob data
     const offices = ["SWT", "SAM", "MVP", "MVS", "NAE"];
 
-    const blobCatalog = useCdaBlobCatalog({
+    const blobCatalog = useCdaBlobs({
     cdaParams: {
         office,
         like: debouncedLike,
@@ -275,7 +272,7 @@ const BlobCatalogCard = () => {
 
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters - <Code className="p-2">{`useCdaBlobCatalog({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useCdaBlobs({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="Blob"
@@ -288,5 +285,5 @@ const BlobCatalogCard = () => {
   );
 }
 
-export { useCdaBlobCatalogPage };
-export default useCdaBlobCatalogPage;
+export { useCdaBlobsPage };
+export default useCdaBlobsPage;

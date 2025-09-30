@@ -22,7 +22,7 @@ import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 
 // files
 import useCdaBlob from "./components/data/hooks/useCdaBlob";
-import useCdaBlobCatalog from "./components/data/hooks/useCdaBlobCatalog";
+import useCdaBlobs from "./components/data/hooks/useCdaBlobs";
 
 // Utility Hooks
 import useDebounce from "./components/data/hooks/useDebounce";
@@ -42,9 +42,9 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
-  useCdaCatalog,
   useCdaBlob,
-  useCdaBlobCatalog,
+  useCdaBlobs,
+  useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
   useCdaLevels,
