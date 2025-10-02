@@ -32,6 +32,7 @@
     "build-docs-prod": "cd docs && vite build",
     "deploy": "gh-pages -d dist",
     "prepare": "husky",
+    "release": "npm run build && changeset publish",
     "login": "npm login"
   },
   "lint-staged": {
