@@ -92,12 +92,12 @@ export default function Example() {
       </CodeBlock>
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters - <Code className="p-2">{`useCdaCatalog({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`GetOfficesRequest({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="Catalog"
         requestType="GET"
-        cwmsJsType="GetCatalogWithDatasetRequest"
+        cwmsJsType="GetOfficesRequest"
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaOfficesParams} />
