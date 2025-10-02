@@ -106,11 +106,6 @@ export default [
         href: "/docs/hooks/use-cda-time-series-group",
       },
       {
-        id: "use-debounce",
-        text: "Debounce",
-        href: "/docs/hooks/use-debounce",
-      },
-      {
         id: "use-nwps-gauge",
         text: "NWPS Gauge",
         href: "/docs/hooks/use-nwps-gauge",
@@ -165,6 +160,11 @@ export default [
         id: "cda-url-provider",
         text: "CDA URL Provider",
         href: "/docs/utilities/cda-url-provider",
+      },
+      {
+        id: "use-debounce",
+        text: "Debounce",
+        href: "/docs/utilities/use-debounce",
       },
     ],
   },

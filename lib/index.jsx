@@ -25,7 +25,7 @@ import useCdaBlob from "./components/data/hooks/useCdaBlob";
 import useCdaBlobs from "./components/data/hooks/useCdaBlobs";
 
 // Utility Hooks
-import useDebounce from "./components/data/hooks/useDebounce";
+import useDebounce from "./components/data/utilities/useDebounce";
 
 // auth
 import { AuthProvider } from "./components/data/utilities/auth/AuthProvider";
