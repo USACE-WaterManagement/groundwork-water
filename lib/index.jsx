@@ -21,6 +21,13 @@ import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 
+// files
+import useCdaBlob from "./components/data/hooks/useCdaBlob";
+import useCdaBlobs from "./components/data/hooks/useCdaBlobs";
+
+// Utility Hooks
+import useDebounce from "./components/data/utilities/useDebounce";
+
 // auth
 import { AuthProvider } from "./components/data/utilities/auth/AuthProvider";
 import { useAuth } from "./components/data/utilities/auth/useAuth";
@@ -40,6 +47,8 @@ export {
   CdaLatestValueCard,
   CdaUrlProvider,
   OfficeDropdown,
+  useCdaBlob,
+  useCdaBlobs,
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
@@ -47,6 +56,7 @@ export {
   useCdaTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
+  useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,
   AuthProvider,

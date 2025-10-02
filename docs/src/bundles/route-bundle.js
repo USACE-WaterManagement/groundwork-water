@@ -30,6 +30,10 @@ import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
 import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
+import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
+import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
+import useDebounce from "../pages/docs/utilities/use-debounce";
+
 export default createRouteBundle(
   {
     "/": Home,
@@ -53,11 +57,14 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
     "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
+    "/docs/hooks/use-cda-blob": UseCdaBlob,
+    "/docs/hooks/use-cda-blobs": useCdaBlobs,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
     "/docs/utilities": UtilitiesDocs,
+    "/docs/utilities/use-debounce": useDebounce,
     "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,
     "/docs/add-components": AddComponents,
