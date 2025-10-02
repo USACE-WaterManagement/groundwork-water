@@ -59,6 +59,23 @@ export default [
     href: "/docs/hooks",
     children: [
       {
+        id: "blobs",
+        text: "CDA Blobs",
+        href: "#",
+        children: [
+          {
+            id: "use-cda-blob",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob",
+          },
+          {
+            id: "use-cda-blobs",
+            text: "CDA Blobs (list)",
+            href: "/docs/hooks/use-cda-blobs",
+          },
+        ],
+      },
+      {
         id: "use-cda-catalog",
         text: "CDA Catalog",
         href: "/docs/hooks/use-cda-catalog",
@@ -143,6 +160,11 @@ export default [
         id: "cda-url-provider",
         text: "CDA URL Provider",
         href: "/docs/utilities/cda-url-provider",
+      },
+      {
+        id: "use-debounce",
+        text: "Debounce",
+        href: "/docs/utilities/use-debounce",
       },
     ],
   },
