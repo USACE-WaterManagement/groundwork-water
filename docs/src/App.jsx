@@ -14,18 +14,18 @@ function App() {
   const {
     route: Route,
     hash,
-    doUpdateHash,
-  } = useConnect("selectRoute", "selectHash", "doUpdateHash");
+    doUpdateUrl,
+  } = useConnect("selectRoute", "selectHash", "doUpdateUrl");
 
   if (hash === "") {
     window.setTimeout(() => {
-      doUpdateHash("/");
+      doUpdateUrl("/#/");
     }, 100);
     return null;
   }
 
   return (
-    <div onClick={getNavHelper((url) => doUpdateHash(url))}>
+    <div onClick={getNavHelper(doUpdateUrl)}>
       <SiteWrapper
         fluidNav={true}
         links={links}
