@@ -22,6 +22,7 @@ export default function CWMSTable({
   trim = true,
   pageSize,
   interval = 1,
+  snapTopOfInterval = true,
   sortAscending = true,
   missingString = "",
   dateFormat = "ddd MMM DD HH:mm",
@@ -81,7 +82,7 @@ export default function CWMSTable({
 
       let values = await Promise.all(promises);
       let data = { ts: {}, dates: [] };
-      let dates = [];
+      let all_dates = [];
 
       values.forEach((result) => {
         if (result && result.values) {
@@ -106,11 +107,8 @@ export default function CWMSTable({
               data.ts[result.name][dt] = val.toFixed(precision);
             }
 
-            if (!dates.includes(dt)) {
-              if (dt % (interval * 1000 * 60) == 0) {
-                dates.push(dt);
-              }
-            }
+            if (!all_dates.includes(dt)) { all_dates.push(dt) }
+
           });
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);
@@ -120,10 +118,31 @@ export default function CWMSTable({
         }
       });
 
-      dates.sort();
+      let dates = all_dates.sort();
 
       if (!sortAscending) {
         dates.reverse();
+      }
+
+      let edited_dates = []
+      let mostRecentDate = dates[0]
+
+      if (interval && snapTopOfInterval) {
+        dates.map(dt => {
+          if (dt % (interval * 1000 * 60) == 0) {
+            edited_dates.push(dt)
+          }
+        })
+        dates = edited_dates
+      }
+
+      if (interval && !snapTopOfInterval) {
+        dates.map((dt, id) => {
+          if ((mostRecentDate - dt) % (interval * 1000 * 60) == 0) {
+            edited_dates.push(dt)
+          }
+        })
+        dates = edited_dates
       }
 
       data.dates = dates;
@@ -145,6 +164,7 @@ export default function CWMSTable({
     sortAscending,
     missingString,
     interval,
+    snapTopOfInterval,
   ]);
 
   useEffect(() => {

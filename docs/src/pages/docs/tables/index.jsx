@@ -34,7 +34,7 @@ function Tables() {
   const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: `SHB.Stage-Ocean (ft ${datum})`,
+      header: `Stamford Stage-Ocean (ft ${datum})`,
       rounding: 2,
       offset: null,
     },
@@ -42,15 +42,15 @@ function Tables() {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
       header: (
         <>
-          SHB.Stage-Ocean <br /> (ft {datum})
+          Stamford Stage-Ocean <br /> (ft {datum})
         </>
       ),
       rounding: 2,
       offset: null,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
-      header: "SHB.Temp-Air (F)",
+      tsid: "SHB.Temp-Air.Inst.15Minutes.0.DCP-rev",
+      header: "Stamford Temp-Air (F)",
       precision: 0,
     },
   ];
@@ -103,7 +103,7 @@ const datum = "NGVD29";
 const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: <>SHB.Stage-Ocean <br /> (ft {datum})</>,
+      header: <>Stamford Stage-Ocean <br /> (ft {datum})</>,
       precision: 2,
       offset: offsetValue,
     }
@@ -140,24 +140,26 @@ default export function Example() {
   const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: \`SHB.Stage-Ocean (ft ${datum})\`,
-      precision: 2,
+      header: \`Stamford Stage-Ocean (ft \${datum})\`,
+      rounding: 2,
       offset: offsetValue,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
-      header: \`SHB.Stage-Pred (ft ${datum})\`,
-      precision: 2,
+      header: (
+        <>
+          Stamford Stage-Ocean <br /> (ft {datum})
+        </>
+      ),
+      rounding: 2,
       offset: offsetValue,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
-      header: "SHB.Temp-Air (F)",
+      tsid: "SHB.Temp-Air.Inst.15Minutes.0.DCP-rev",
+      header: "Stamford Temp-Air (F)",
       precision: 0,
     },
   ];
-    const LOOKBACK_HOURS = 24;
-    const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
 
     return (
       <CWMSTable
@@ -165,7 +167,8 @@ default export function Example() {
           end={cdaParams.end}
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
-          interval="5"
+          interval="60"
+          snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
           tableOptions={{
