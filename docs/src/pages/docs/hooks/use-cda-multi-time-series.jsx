@@ -117,15 +117,14 @@ function UseCdaMultiTimeSeries() {
     <DocsPage middleText="CDA MultiTimeSeries Hook">
       <div>
         <Text>
-          The useCdaMultiTimeSeries hook can be used to retrieve multiple
-          timeseries data in parallel using cwms-data-api (CDA). It requires
-          only a timeseries ID and an office ID, but can be further customized
-          using additional parameters provided through CDA if desired.
+          The useCdaMultiTimeSeries hook can be used to retrieve multiple timeseries
+          data in parallel using cwms-data-api (CDA). It requires only a timeseries ID
+          and an office ID, but can be further customized using additional parameters
+          provided through CDA if desired.
         </Text>
         <Text className="my-4">
-          To retrieve multiple timeseries, the `name` parameter should be an
-          array of timeseries ids <b>or</b> a comma-separated list of timeseries
-          IDs.
+          To retrieve multiple timeseries, the `name` parameter should be an array of
+          timeseries ids <b>or</b> a comma-separated list of timeseries IDs.
         </Text>
         <Text>
           The hook will return an array of{" "}
@@ -136,14 +135,13 @@ function UseCdaMultiTimeSeries() {
           >
             tanstack useQuery objects
           </Link>
-          . The major objects you will want to access from this are data,
-          isLoading, and isError/error. The data object will contain the
-          timeseries name, begin and end dates, values and other metadata for
-          each timeseries response in the array.
+          . The major objects you will want to access from this are data, isLoading, and
+          isError/error. The data object will contain the timeseries name, begin and end
+          dates, values and other metadata for each timeseries response in the array.
         </Text>
         <Text className="my-4">
-          The timeseries response for a given useQuery result is outlined in the
-          swagger specification here:{" "}
+          The timeseries response for a given useQuery result is outlined in the swagger
+          specification here:{" "}
           <Link
             href="https://cwms-data.usace.army.mil/cwms-data/swagger-ui.html#operations-tag-TimeSeries"
             target="_blank"
@@ -262,8 +260,7 @@ export default function OutflowCardExample() {
       </CodeBlock>
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Hook Parameters -{" "}
-        <Code className="p-2">{`useCdaMultiTimeSeries({...})`}</Code>
+        Hook Parameters - <Code className="p-2">{`useCdaMultiTimeSeries({...})`}</Code>
       </div>
       <CdaParamsTable
         requestObject="TimeSeries"

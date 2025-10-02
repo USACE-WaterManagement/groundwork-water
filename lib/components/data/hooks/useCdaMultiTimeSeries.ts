@@ -12,9 +12,7 @@ interface UseCdaTimeSeriesParams {
   cdaParams: GetTimeSeriesRequest[];
   cdaUrl?: string;
   // Ensure all generics are present to avoid errors related to `unknown` types
-  queryOptions?: Partial<
-    UseQueryOptions<TimeSeries, Error, TimeSeries, QueryKey>
-  >;
+  queryOptions?: Partial<UseQueryOptions<TimeSeries, Error, TimeSeries, QueryKey>>;
 }
 
 // Explicitly type the query options to ensure compatibility

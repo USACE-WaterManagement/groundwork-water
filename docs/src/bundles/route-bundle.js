@@ -28,8 +28,7 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
-import useCdaMultiTimeSeries from "../pages/docs/hooks/use-cda-multi-time-series"
-
+import useCdaMultiTimeSeries from "../pages/docs/hooks/use-cda-multi-time-series";
 
 export default createRouteBundle(
   {
