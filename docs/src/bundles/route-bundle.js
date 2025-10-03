@@ -16,6 +16,7 @@ import AuthProviderDocs from "../pages/docs/auth/auth-provider";
 import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import KeycloakDocs from "../pages/docs/auth/keycloak";
 import UseAuthDocs from "../pages/docs/auth/use-auth";
+import OfficesDropdownDocs from "../pages/docs/dropdowns/offices";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -28,6 +29,7 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
+import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
 import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
 import useDebounce from "../pages/docs/utilities/use-debounce";
@@ -44,11 +46,13 @@ export default createRouteBundle(
     "/docs/auth/cwms-login": CwmsLoginDocs,
     "/docs/auth/keycloak": KeycloakDocs,
     "/docs/auth/use-auth": UseAuthDocs,
+    "/docs/dropdowns/offices": OfficesDropdownDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,
     "/docs/hooks/use-cda-levels": UseCdaLevels,
+    "/docs/hooks/use-cda-offices": UseCdaOffices,
     "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
     "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
     "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
