@@ -95,7 +95,7 @@ export default function Example() {
         Hook Parameters - <Code className="p-2">{`GetOfficesRequest({...})`}</Code>
       </div>
       <CdaParamsTable
-        requestObject="Catalog"
+        requestObject="Offices"
         requestType="GET"
         cwmsJsType="GetOfficesRequest"
       />
