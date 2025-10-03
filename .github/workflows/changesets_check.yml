@@ -1,0 +1,21 @@
+name: "Check for PR Changeset"
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "*.js"
+      - "*.ts"
+      - "*.json"
+      - "*.md"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: changesets/action@v1
+        with:
+          version: false
+          publish: false
