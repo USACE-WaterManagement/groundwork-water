@@ -19,3 +19,5 @@ jobs:
         with:
           version: false
           publish: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
