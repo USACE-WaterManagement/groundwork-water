@@ -30,6 +30,7 @@
     "build-lib": "tsc && vite build --mode lib && npm run link",
     "build-docs": "cd docs && vite build",
     "build-docs-prod": "cd docs && vite build",
+    "check-changeset": "changeset status --since=main",
     "deploy": "gh-pages -d dist",
     "prepare": "husky",
     "release": "npm run build && changeset publish",

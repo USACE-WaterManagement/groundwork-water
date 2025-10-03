@@ -1,3 +1,5 @@
+# Based on official recommendation at https://github.com/changesets/changesets/blob/main/docs/automating-changesets.md
+
 name: "Check for PR Changeset"
 
 on:
@@ -10,10 +12,18 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: changesets/action@v1
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          version: false
-          publish: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-save @changesets/cli
+
+      - name: Check for required changeset
+        run: npm run check-changeset
