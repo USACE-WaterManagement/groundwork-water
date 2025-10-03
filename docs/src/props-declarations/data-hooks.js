@@ -52,6 +52,15 @@ const cdaTSHookParams = [
   },
 ];
 
+const cdaOfficesParams = [
+  {
+    name: "hasData",
+    type: "boolean",
+    required: false,
+    desc: "A flag ('True'/'False') When set to true this returns offices that have operational data. Default value is False.",
+  },
+];
+
 const cdaBlobsParams = [
   {
     name: "office",
@@ -79,4 +88,4 @@ const cdaBlobsParams = [
   },
 ];
 
-export { cdaTSHookParams, cdaCatalogParams, cdaBlobsParams };
+export { cdaCatalogParams, cdaBlobsParams, cdaOfficesParams, cdaTSHookParams };

@@ -17,6 +17,7 @@ import useCdaLocation from "./components/data/hooks/useCdaLocation";
 import useCdaLevels from "./components/data/hooks/useCdaLevels";
 import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
+import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 
@@ -33,6 +34,9 @@ import { useAuth } from "./components/data/utilities/auth/useAuth";
 import { createCwmsLoginAuthMethod } from "./components/data/utilities/auth/cwmsLoginAuthMethod";
 import { createKeycloakAuthMethod } from "./components/data/utilities/auth/keycloakAuthMethod";
 
+// dropdowns
+import { OfficeDropdown } from "./components/data/dropdowns/OfficeDropdown";
+
 // import { helperFunction } from './utils/helpers';
 
 export {
@@ -42,6 +46,7 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
+  OfficeDropdown,
   useCdaBlob,
   useCdaBlobs,
   useCdaCatalog,
@@ -50,6 +55,7 @@ export {
   useCdaLevels,
   useCdaTimeSeries,
   useCdaTimeSeriesGroup,
+  useCdaOffices,
   useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,

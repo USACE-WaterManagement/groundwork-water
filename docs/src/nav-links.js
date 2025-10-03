@@ -54,6 +54,18 @@ export default [
     ],
   },
   {
+    id: "dropdowns",
+    text: "Dropdowns",
+    href: "/docs/dropdowns",
+    children: [
+      {
+        id: "offices",
+        text: "Offices",
+        href: "/docs/dropdowns/offices",
+      },
+    ],
+  },
+  {
     id: "hooks",
     text: "Data Hooks",
     href: "/docs/hooks",
@@ -94,6 +106,11 @@ export default [
         id: "use-cda-location",
         text: "CDA Location",
         href: "/docs/hooks/use-cda-location",
+      },
+      {
+        id: "use-cda-offices",
+        text: "CDA Offices",
+        href: "/docs/hooks/use-cda-offices",
       },
       {
         id: "use-cda-time-series",
