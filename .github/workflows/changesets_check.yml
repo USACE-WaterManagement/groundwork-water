@@ -3,12 +3,8 @@ name: "Check for PR Changeset"
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "lib/**"
-      - "*.js"
-      - "*.ts"
-      - "*.json"
-      - "*.md"
+    paths-ignore:
+      - "docs/**"
 
 jobs:
   check:
