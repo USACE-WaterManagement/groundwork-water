@@ -48,17 +48,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Remove node_modules and package-lock.json
-        run: |
-          rm -rf ./docs/node_modules
-          rm -f ./docs/package-lock.json
-
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./docs
 
       - name: Install latest groundwork-water
-        run: npm install usace-watermanagement/groundwork-water@latest
+        run: npm install "usace-watermanagement/groundwork-water@latest"
+        working-directory: ./docs
 
       - name: Build docs
         env:
