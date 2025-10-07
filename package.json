@@ -43,6 +43,9 @@
     "type": "git",
     "url": "https://github.com/USACE-WaterManagement/groundwork-water.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "usace",
     "water",
