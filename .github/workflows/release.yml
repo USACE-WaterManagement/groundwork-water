@@ -14,7 +14,6 @@ jobs:
       pull-requests: write
     outputs:
       published: ${{ steps.changesets.outputs.published }}
-      version: ${{ steps.changesets.outputs.publishedPackages }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -38,10 +37,8 @@ jobs:
   update-docs:
     name: Update Docs
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     needs: release
-    if: always()
+    if: needs.release.outputs.published == 'true'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -51,18 +48,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Update docs to latest GWW version
+      - name: Remove node_modules and package-lock.json
         run: |
-          VERSION=$(echo '${{ needs.release.outputs.version }}' | jq -r '.[] | select(.name=="@usace-watermanagement/groundwork-water") | .version')
-          cd docs
-          npm install @usace-watermanagement/groundwork-water@$VERSION
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          git commit -m "chore: update docs to GWW@$VERSION [skip ci]" || echo "No changes to commit"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          rm -rf ./docs/node_modules
+          rm -f ./docs/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./docs
+
+      - name: Install latest groundwork-water
+        run: npm install usace-watermanagement/groundwork-water@latest
 
       - name: Build docs
         env:
@@ -79,7 +75,7 @@ jobs:
     name: Deploy Docs to GH Pages
     runs-on: ubuntu-latest
     needs: update-docs
-    if: always()
+    if: needs.release.outputs.published == 'true'
     permissions:
       pages: write
       id-token: write
