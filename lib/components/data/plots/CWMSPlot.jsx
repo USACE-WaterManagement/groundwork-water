@@ -316,17 +316,16 @@ export default function CWMSPlot({
               const val = tsv[1];
 
               if (dt > start && !dates.includes(start)) {
-                dates.push(start)
-                values.push(val)
-                prev_date = dt
+                dates.push(start);
+                values.push(val);
               }
               if (dt < end && !dates.includes(end)) {
-                dates.push(end)
-                values.push(val)
+                dates.push(end);
+                values.push(val);
               }
               if (dt > start && dt < end && !dates.includes(dt)) {
-                dates.push(dt)
-                values.push(val)
+                dates.push(dt);
+                values.push(val);
               }
             }
           });
