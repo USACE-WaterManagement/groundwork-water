@@ -22,35 +22,38 @@ function Tables() {
     start: dayjs().subtract(LOOKBACK_HOURS, "hours"),
     end: dayjs(),
   };
-  const datum = "NGVD29";
 
   const cdaParams = {
     begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
     end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
-    office: "NAE",
+    office: "SWT",
     unit: "EN",
   };
 
   const tableTimeseriesParams = [
     {
-      tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: `SHB.Stage-Ocean (ft ${datum})`,
-      rounding: 2,
+      tsid: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+      header: `Headwater (ft)`,
+      precision: 2,
       offset: null,
     },
     {
-      tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
+      tsid: "KEYS-Turbine1.Energy-Gen.Total.1Hour.1Hour.Rev-SCADA",
       header: (
         <>
-          SHB.Stage-Ocean <br /> (ft {datum})
+          Turbine 1 Energy Gen <br /> (ft)
         </>
       ),
-      rounding: 2,
+      precision: 0,
       offset: null,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
-      header: "SHB.Temp-Air (F)",
+      tsid: "KEYS-Turbine2.Energy-Gen.Total.1Hour.1Hour.Rev-SCADA",
+      header: (
+        <>
+          Turbine 2 Energy Gen <br /> (ft)
+        </>
+      ),
       precision: 0,
     },
   ];
@@ -79,9 +82,10 @@ function Tables() {
           end={cdaParams.end}
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
-          interval="5"
+          interval="60"
           missingString="---"
           sortAscending={false}
+          //   snapTopOfInterval={true}
           tableOptions={{
             overflow: true,
             stickyHeader: true,
@@ -103,7 +107,7 @@ const datum = "NGVD29";
 const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: <>SHB.Stage-Ocean <br /> (ft {datum})</>,
+      header: <>Stamford Stage-Ocean <br /> (ft {datum})</>,
       precision: 2,
       offset: offsetValue,
     }
@@ -111,7 +115,7 @@ const tableTimeseriesParams = [
           </Code>
         </Text>
         <Badge color="blue" className="mb-2">
-          Note: Using "\n" will NOT create a line break in the header.
+          Note: Using &quot;\n&quot; will NOT create a line break in the header.
         </Badge>
         <Divider text="Code Example:" className="mt-8" />
         <div className="mt-8">
@@ -133,31 +137,37 @@ default export function Example() {
   const cdaParams = {
     begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
     end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
-    office: "NAE",
+    office: "SWT",
     unit: "EN",
   };
 
-  const tableTimeseriesParams = [
+    const tableTimeseriesParams = [
     {
-      tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
-      header: \`SHB.Stage-Ocean (ft ${datum})\`,
+      tsid: "KEYS.Elev.Inst.15Minutes.0.Rev-SCADA",
+      header: \`Headwater (ft)\`,
       precision: 2,
-      offset: offsetValue,
+      offset: null,
     },
     {
-      tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
-      header: \`SHB.Stage-Pred (ft ${datum})\`,
-      precision: 2,
-      offset: offsetValue,
+      tsid: "KEYS-Turbine1.Energy-Gen.Total.1Hour.1Hour.Rev-SCADA",
+      header: (
+        <>
+          Turbine 1 Energy Gen <br /> (ft)
+        </>
+      ),
+      precision: 0,
+      offset: null,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
-      header: "SHB.Temp-Air (F)",
+      tsid: "KEYS-Turbine2.Energy-Gen.Total.1Hour.1Hour.Rev-SCADA",
+      header: (
+        <>
+          Turbine 2 Energy Gen <br /> (ft)
+        </>
+      ),
       precision: 0,
     },
   ];
-    const LOOKBACK_HOURS = 24;
-    const [tsid, setTsid] = useState("KEYS.Elev.Inst.1Hour.0.Ccp-Rev");
 
     return (
       <CWMSTable
@@ -165,7 +175,8 @@ default export function Example() {
           end={cdaParams.end}
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
-          interval="5"
+          interval="15"
+          snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
           tableOptions={{
