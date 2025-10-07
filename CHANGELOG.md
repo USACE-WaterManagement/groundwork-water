@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.4.2
+
+### Patch Changes
+
+- 2246ae5: Update to CWMS Plot to modify location level trace with dates bounded by start and end of all timeseries datasets @stephenkissock
+
 ## 3.4.1
 
 ### Patch Changes
