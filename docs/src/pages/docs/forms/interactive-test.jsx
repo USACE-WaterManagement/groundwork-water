@@ -365,19 +365,19 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
               {
                 id: "gates-operational",
                 label: "Gates Operational",
-                tsid: "pytest-loc.Gates.Inst.0.0.STATUS",
+                tsid: "pytest-loc.Code.Inst.0.0.Gates",
                 defaultChecked: false,
               },
               {
                 id: "spillway-clear",
                 label: "Spillway Clear",
-                tsid: "pytest-loc.Spillway.Inst.0.0.STATUS",
+                tsid: "pytest-loc.Code.Inst.0.0.Spillway",
                 defaultChecked: false,
               },
               {
                 id: "instruments-calibrated",
                 label: "Instruments Calibrated",
-                tsid: "pytest-loc.Instruments.Inst.0.0.STATUS",
+                tsid: "pytest-loc.Code.Inst.0.0.Instruments",
                 defaultChecked: false,
               },
             ]}

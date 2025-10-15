@@ -19,16 +19,10 @@ const componentProps = [
     desc: "Array of checkbox item objects. See CheckboxItem API below for detailed properties.",
   },
   {
-    name: "singleSelect",
-    type: "boolean",
-    default: "false",
-    desc: "When true, only one checkbox can be selected at a time (radio button behavior). Only the selected checkbox's value will be submitted.",
-  },
-  {
     name: "onChange",
     type: "function",
     default: "undefined",
-    desc: "Callback function when any checkbox changes. Receives array of all checked values (or single value in singleSelect mode).",
+    desc: "Callback function when any checkbox changes. Receives array of all checked values.",
   },
   {
     name: "required",
@@ -106,7 +100,19 @@ const checkboxItemProps = [
     name: "value",
     type: "string",
     default: "label or id",
-    desc: "The value returned when this checkbox is checked.",
+    desc: "The value returned when this checkbox is checked (used in onChange callback).",
+  },
+  {
+    name: "checkedValue",
+    type: "any",
+    default: "true",
+    desc: "Custom value to submit to CWMS when checkbox is checked. Defaults to true.",
+  },
+  {
+    name: "uncheckedValue",
+    type: "any",
+    default: "undefined",
+    desc: "Custom value to submit to CWMS when checkbox is unchecked. By default (undefined), unchecked checkboxes don't submit any data.",
   },
   {
     name: "readonly",
@@ -234,7 +240,7 @@ function CWMSCheckboxesDocs() {
       <CodeBlock language="jsx">
         {`import { CWMSCheckboxes } from "@usace-watermanagement/groundwork-water";
 
-// Multi-select mode (default) - multiple checkboxes can be selected
+// Multiple checkboxes can be selected
 <CWMSCheckboxes
   legend="Select Options"
   content={[
@@ -320,77 +326,145 @@ function CWMSCheckboxesDocs() {
 />`}
       </CodeBlock>
 
-      <Divider text="Single Selection Mode" className="mt-8" />
+      <Divider text="Custom Submission Values" className="mt-8" />
+      <Text className="mb-4">
+        Control what values are submitted to CWMS when checkboxes are checked or
+        unchecked using the <Code>checkedValue</Code> and <Code>uncheckedValue</Code>{" "}
+        properties.
+      </Text>
       <CWMSForm office="SWT">
         <div className="flex flex-col gap-6">
           <div>
-            <Text className="mb-2 font-semibold">Radio Button Behavior</Text>
+            <Text className="mb-2 font-semibold">Yes/No Values</Text>
             <Text className="mb-4 text-sm text-gray-600">
-              With singleSelect enabled, only one checkbox can be selected at a time.
-              Selecting a new checkbox automatically deselects the previous one.
+              Submit "yes" when checked, "no" when unchecked
             </Text>
             <CWMSCheckboxes
-              singleSelect={true}
-              legend="Select One Option"
+              legend="Confirm Operations"
               content={[
                 {
-                  id: "morning",
-                  label: "Morning Shift",
-                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+                  id: "confirm1",
+                  label: "Spillway Gate 1 Open",
+                  tsid: "LOCATION.Gate1-Status.Inst.15Minutes.0.STATUS",
+                  checkedValue: "yes",
+                  uncheckedValue: "no",
                   defaultChecked: true,
                 },
                 {
-                  id: "afternoon",
-                  label: "Afternoon Shift",
-                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
-                  defaultChecked: false,
-                },
-                {
-                  id: "evening",
-                  label: "Evening Shift",
-                  tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+                  id: "confirm2",
+                  label: "Spillway Gate 2 Open",
+                  tsid: "LOCATION.Gate2-Status.Inst.15Minutes.0.STATUS",
+                  checkedValue: "yes",
+                  uncheckedValue: "no",
                   defaultChecked: false,
                 },
               ]}
-              onChange={(values) => console.log("Selected:", values)}
+            />
+          </div>
+
+          <div>
+            <Text className="mb-2 font-semibold">Numeric Values</Text>
+            <Text className="mb-4 text-sm text-gray-600">
+              Submit 1 when checked, 0 when unchecked
+            </Text>
+            <CWMSCheckboxes
+              legend="Equipment Status"
+              content={[
+                {
+                  id: "equipment1",
+                  label: "Primary Pump Active",
+                  tsid: "LOCATION.Pump1-Status.Inst.1Hour.0.STATUS",
+                  checkedValue: 1,
+                  uncheckedValue: 0,
+                  defaultChecked: true,
+                },
+                {
+                  id: "equipment2",
+                  label: "Backup Generator Running",
+                  tsid: "LOCATION.Generator-Status.Inst.1Hour.0.STATUS",
+                  checkedValue: 1,
+                  uncheckedValue: 0,
+                  defaultChecked: false,
+                },
+              ]}
+            />
+          </div>
+
+          <div>
+            <Text className="mb-2 font-semibold">Default Behavior</Text>
+            <Text className="mb-4 text-sm text-gray-600">
+              By default, checked items submit true, unchecked items don't submit
+              anything
+            </Text>
+            <CWMSCheckboxes
+              legend="Optional Flags"
+              content={[
+                {
+                  id: "flag1",
+                  label: "Send Notification",
+                  tsid: "LOCATION.Notify-Flag.Inst.1Hour.0.STATUS",
+                  defaultChecked: false,
+                },
+                {
+                  id: "flag2",
+                  label: "Log Action",
+                  tsid: "LOCATION.Log-Flag.Inst.1Hour.0.STATUS",
+                  defaultChecked: true,
+                },
+              ]}
             />
           </div>
         </div>
       </CWMSForm>
 
       <CodeBlock language="jsx">
-        {`// Single selection mode - only one checkbox can be selected
+        {`import { CWMSCheckboxes } from "@usace-watermanagement/groundwork-water";
+import { CWMSForm } from "@usace-watermanagement/groundwork-water";
+
+// Custom yes/no values
 <CWMSCheckboxes
-  singleSelect={true}
-  legend="Select One Option"
+  legend="Confirm Operations"
   content={[
     {
-      id: "morning",
-      label: "Morning Shift",
-      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
+      id: "confirm1",
+      label: "Spillway Gate 1 Open",
+      tsid: "LOCATION.Gate1-Status.Inst.15Minutes.0.STATUS",
+      checkedValue: "yes",
+      uncheckedValue: "no",
       defaultChecked: true
-    },
-    {
-      id: "afternoon",
-      label: "Afternoon Shift",
-      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
-      defaultChecked: false
-    },
-    {
-      id: "evening",
-      label: "Evening Shift",
-      tsid: "LOCATION.Shift.Inst.1Hour.0.STATUS",
-      defaultChecked: false
     }
   ]}
-  onChange={(values) => console.log("Selected:", values)}
 />
 
-// In single select mode:
-// - Only one checkbox can be selected at a time
-// - Selecting a new checkbox deselects all others
-// - Only the selected checkbox's TSID data is submitted
-// - onChange receives an array with only the selected value`}
+// Numeric 1/0 values
+<CWMSCheckboxes
+  legend="Equipment Status"
+  content={[
+    {
+      id: "equipment1",
+      label: "Primary Pump Active",
+      tsid: "LOCATION.Pump1-Status.Inst.1Hour.0.STATUS",
+      checkedValue: 1,
+      uncheckedValue: 0,
+      defaultChecked: true
+    }
+  ]}
+/>
+
+// Default behavior (checked = true, unchecked = don't submit)
+<CWMSCheckboxes
+  legend="Optional Flags"
+  content={[
+    {
+      id: "flag1",
+      label: "Send Notification",
+      tsid: "LOCATION.Notify-Flag.Inst.1Hour.0.STATUS",
+      defaultChecked: false
+      // Checked: submits true
+      // Unchecked: submits nothing (empty array)
+    }
+  ]}
+/>`}
       </CodeBlock>
 
       <Divider text="CWMS-Specific Properties" className="mt-8" />
