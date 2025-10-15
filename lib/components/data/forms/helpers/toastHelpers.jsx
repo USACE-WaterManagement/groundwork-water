@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
  * Set autoClose to false to disable auto-closing
  */
 const TOAST_DEFAULTS = {
-  containerId: "cwms-form-toast",
   position: "top-right",
   autoClose: 5000, // Set to false to disable auto-closing
   hideProgressBar: false,

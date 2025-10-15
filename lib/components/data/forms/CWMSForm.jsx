@@ -1,4 +1,4 @@
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useRef, useState, useMemo } from "react";
 import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
 import { getSnappedTimestamp } from "./helpers/timeSnapping";
@@ -12,6 +12,9 @@ import {
 import { EnsureToastContainer } from "./helpers/ToastProvider";
 
 export const FormContext = createContext();
+
+// Counter to generate unique IDs for each form instance
+let formInstanceCounter = 0;
 
 export function CWMSForm({
   office,
@@ -38,6 +41,12 @@ export function CWMSForm({
   const inputsRef = useRef([]);
   const registeredIds = useRef(new Set());
 
+  // Generate a unique container ID for this form instance
+  const containerId = useMemo(() => {
+    formInstanceCounter++;
+    return `cwms-form-toast-${formInstanceCounter}`;
+  }, []);
+
   // Try to get auth context if available
   let auth = null;
   try {
@@ -55,7 +64,7 @@ export function CWMSForm({
     onSuccess: (data) => {
       // Show success toast
       const message = formatSubmissionMessage(data);
-      showSuccessToast(message, { autoClose: toastAutoClose });
+      showSuccessToast(message, { autoClose: toastAutoClose, containerId });
 
       // Reset form on successful submission if enabled
       if (resetOnSubmit) {
@@ -84,7 +93,7 @@ export function CWMSForm({
       }
 
       // Show error toast
-      showDetailedError(error, { autoClose: toastAutoClose });
+      showDetailedError(error, { autoClose: toastAutoClose, containerId });
 
       // Call user's onError callback
       if (onError) {
@@ -166,7 +175,7 @@ export function CWMSForm({
           ? validation.errors[0].message
           : `Please fill in ${errorCount} required fields`;
 
-      showWarningToast(message, { autoClose: toastAutoClose });
+      showWarningToast(message, { autoClose: toastAutoClose, containerId });
 
       // Mark invalid fields
       validation.errors.forEach((error) => {
@@ -202,7 +211,10 @@ export function CWMSForm({
     if (cwmsInputs.length > 0) {
       mutation.mutate(cwmsInputs);
     } else {
-      showWarningToast("No inputs with TSIDs to submit to CWMS");
+      showWarningToast("No inputs with TSIDs to submit to CWMS", {
+        autoClose: toastAutoClose,
+        containerId,
+      });
     }
   };
 
@@ -245,9 +257,9 @@ export function CWMSForm({
 
   return (
     <>
-      <EnsureToastContainer />
+      <EnsureToastContainer containerId={containerId} />
       <FormContext.Provider
-        value={{ registerInput, baseTimestamp, getTimestampForInput }}
+        value={{ registerInput, baseTimestamp, getTimestampForInput, containerId }}
       >
         <form onSubmit={handleSubmit} className={formClasses} style={style}>
           {showCalendar && (

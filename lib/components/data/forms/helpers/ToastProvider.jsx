@@ -8,10 +8,10 @@ import "react-toastify/dist/ReactToastify.css";
  * This allows multiple instances without conflicts and removes the need
  * to check for existing containers in the DOM
  */
-export function EnsureToastContainer() {
+export function EnsureToastContainer({ containerId }) {
   return (
     <ToastContainer
-      containerId="cwms-form-toast"
+      containerId={containerId}
       enableMultiContainer
       position="top-right"
       autoClose={5000}
