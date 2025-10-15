@@ -7,6 +7,7 @@ import {
   CWMSDropdown,
   CWMSCheckboxes,
   CWMSInputTable,
+  CWMSSpreadsheet,
   AuthProvider,
   useAuth,
   createCwmsLoginAuthMethod,
@@ -498,6 +499,130 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           label="Gate Position"
         />
       </CWMSForm>
+
+      <Divider text="Spreadsheet Data Entry" className="mt-8" />
+      <Text className="mb-4">
+        Use the spreadsheet component for bulk data entry with a familiar Excel-like
+        interface. Copy and paste data directly from spreadsheets.
+      </Text>
+
+      {testMode ? (
+        <CWMSForm
+          office={testOffice}
+          cdaUrl={testCdaUrl}
+          showCalendar={true}
+          calendarInterval="hour"
+          calendarSnapTo="nearest"
+          onSubmit={async (data, e) => {
+            console.log("Spreadsheet form submitted:", data);
+            setFormData(data);
+            setSubmissionResult({
+              status: "pending",
+              message: "Submitting spreadsheet data to CWMS...",
+            });
+
+            try {
+              if (!e.defaultPrevented) {
+                setSubmissionResult({
+                  status: "success",
+                  message: "Spreadsheet data submitted successfully to CWMS",
+                });
+              }
+            } catch (error) {
+              setSubmissionResult({
+                status: "error",
+                message: `Submission failed: ${error.message}`,
+              });
+            }
+          }}
+        >
+          <Text className="font-semibold mb-2">Time Series Data Entry Spreadsheet</Text>
+          <Text className="text-sm text-gray-600 mb-2">
+            Enter hourly data readings. Each row represents a different time offset from
+            the base time. The time column shows when each reading will be recorded.
+          </Text>
+
+          <CWMSSpreadsheet
+            columns={[
+              {
+                key: "stage",
+                label: "Stage (ft)",
+                type: "number",
+                placeholder: "0.00",
+                tsid: "pytest-loc.Stage.Inst.0.0.SPREADSHEET",
+              },
+              {
+                key: "flow",
+                label: "Flow (cfs)",
+                type: "number",
+                placeholder: "0",
+                tsid: "pytest-loc.Flow.Inst.0.0.SPREADSHEET",
+              },
+              {
+                key: "temperature",
+                label: "Temp (°F)",
+                type: "number",
+                placeholder: "0.0",
+                tsid: "pytest-loc.Temp.Inst.0.0.SPREADSHEET",
+              },
+              {
+                key: "quality",
+                label: "Quality",
+                type: "text",
+                placeholder: "Good/Fair/Poor",
+                tsid: "pytest-loc.Quality.Inst.0.0.SPREADSHEET",
+              },
+              {
+                key: "notes",
+                label: "Notes",
+                type: "text",
+                placeholder: "Optional notes",
+                tsid: "pytest-loc.Notes.Inst.0.0.SPREADSHEET",
+              },
+            ]}
+            rows={3}
+            showRowNumbers={true}
+            showColumnHeaders={true}
+            timeoffsets={[0, 3600, 7200]} // 0, 1hr, 2hr, 3hr, 4hr, 5hr offsets - automatically adds time column
+            precision={2}
+            defaultData={[
+              ["650.25", "1250", "72.5", "Good", "Normal operations"],
+              ["648.10", "980", "71.8", "Good", "Slight increase"],
+              ["647.85", "920", "71.2", "Fair", "Decreasing trend"],
+            ]}
+            tsids={[
+              "pytest-loc.Stage.Inst.0.0.SPREADSHEET",
+              "pytest-loc.Flow.Inst.0.0.SPREADSHEET",
+              "pytest-loc.Temp.Inst.0.0.SPREADSHEET",
+              "pytest-loc.Quality.Inst.0.0.SPREADSHEET",
+              "pytest-loc.Notes.Inst.0.0.SPREADSHEET",
+            ]}
+          />
+
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <Text className="text-sm font-semibold">
+              Tips for using the spreadsheet:
+            </Text>
+            <ul className="list-disc ml-5 mt-2 text-sm">
+              <li>
+                The Time column appears automatically when timeoffsets are provided
+              </li>
+              <li>Time values show when each reading will be recorded (read-only)</li>
+              <li>Each row is a different time offset: 0hr, 1hr, 2hr, 3hr, 4hr, 5hr</li>
+              <li>Click any data cell to edit directly</li>
+              <li>Use Tab/Enter to navigate between cells</li>
+              <li>Copy data from Excel and paste using Ctrl+V</li>
+              <li>Empty cells will not be submitted to CWMS</li>
+            </ul>
+          </div>
+        </CWMSForm>
+      ) : (
+        <div className="p-4 bg-gray-100 rounded">
+          <Text className="text-center text-gray-600">
+            Enable Test Mode above to see and use the spreadsheet data entry form
+          </Text>
+        </div>
+      )}
 
       <Divider text="Testing Tips" className="mt-8" />
       <ul className="list-disc ml-6 space-y-2">
