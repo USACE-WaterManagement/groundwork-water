@@ -1,3 +1,5 @@
+import { docsConfig } from "./config/docs.config";
+
 export default [
   {
     id: "get-started",
@@ -164,6 +166,16 @@ export default [
         text: "CWMS Textarea",
         href: "/docs/forms/cwms-textarea",
       },
+      // Conditionally add interactive test page
+      ...(docsConfig.features.showInteractiveTestPage
+        ? [
+            {
+              id: docsConfig.testPage.id,
+              text: docsConfig.testPage.text,
+              href: docsConfig.testPage.href,
+            },
+          ]
+        : []),
     ],
   },
   {
