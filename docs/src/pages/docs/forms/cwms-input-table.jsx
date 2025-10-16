@@ -419,6 +419,73 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         Component API - <Code className="p-2">{`<CWMSInputTable />`}</Code>
       </div>
       <PropsTable propsList={componentProps} />
+
+      <div className="font-bold text-lg pt-6 mt-8">Column Configuration Object</div>
+      <Text className="mb-4">
+        Each object in the <Code className="p-1">columns</Code> array can have the
+        following properties:
+      </Text>
+      <PropsTable
+        propsList={[
+          {
+            name: "tsid",
+            type: "string",
+            default: "required",
+            desc: "Time Series ID for this column. This is the only required property.",
+          },
+          {
+            name: "label",
+            type: "string",
+            default: "tsid value",
+            desc: "Display label for the column header. If not provided, uses the tsid.",
+          },
+          {
+            name: "units",
+            type: "string",
+            default: "global units",
+            desc: "Unit system for this column (e.g., 'ft', 'cfs', 'm', 'cms'). Overrides global units prop.",
+          },
+          {
+            name: "precision",
+            type: "number",
+            default: "global precision",
+            desc: "Number of decimal places for values in this column. Overrides global precision prop.",
+          },
+          {
+            name: "required",
+            type: "boolean",
+            default: "global required",
+            desc: "Whether all cells in this column are required. Overrides global required prop.",
+          },
+          {
+            name: "readonly",
+            type: "boolean",
+            default: "global readonly",
+            desc: "Whether all cells in this column are read-only. Overrides global readonly prop.",
+          },
+          {
+            name: "defaultValues",
+            type: "object",
+            default: "{}",
+            desc: "Object with default values keyed by time offset (e.g., {0: '100', 3600: '105'}).",
+          },
+        ]}
+      />
+
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+        <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
+        <Text className="text-sm">
+          For properties like units, precision, required, and readonly, the component
+          uses this fallback order:
+        </Text>
+        <Code className="block mt-2 p-2 bg-white">
+          column.property → global property → default value
+        </Code>
+        <Text className="text-sm mt-2">
+          This allows you to set global defaults and selectively override them for
+          specific columns.
+        </Text>
+      </div>
     </DocsPage>
   );
 }

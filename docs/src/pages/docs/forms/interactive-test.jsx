@@ -555,57 +555,50 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           <CWMSSpreadsheet
             columns={[
               {
-                key: "stage",
                 label: "Stage (ft)",
                 type: "number",
                 placeholder: "0.00",
                 tsid: "pytest-loc.Stage.Inst.0.0.SPREADSHEET",
+                precision: 2,
+                units: "ft",
               },
               {
-                key: "flow",
                 label: "Flow (cfs)",
                 type: "number",
                 placeholder: "0",
                 tsid: "pytest-loc.Flow.Inst.0.0.SPREADSHEET",
+                precision: 0,
+                units: "cfs",
               },
               {
-                key: "temperature",
                 label: "Temp (°F)",
                 type: "number",
                 placeholder: "0.0",
                 tsid: "pytest-loc.Temp.Inst.0.0.SPREADSHEET",
+                precision: 1,
+                units: "F",
               },
               {
-                key: "quality",
                 label: "Quality",
                 type: "text",
                 placeholder: "Good/Fair/Poor",
-                tsid: "pytest-loc.Quality.Inst.0.0.SPREADSHEET",
+                tsid: "pytest-loc.Code.Inst.0.0.SPREADSHEET_Quality",
               },
               {
-                key: "notes",
                 label: "Notes",
                 type: "text",
                 placeholder: "Optional notes",
-                tsid: "pytest-loc.Notes.Inst.0.0.SPREADSHEET",
+                tsid: "pytest-loc.Code.Inst.0.0.SPREADSHEET_Notes",
               },
             ]}
             rows={3}
             showRowNumbers={true}
             showColumnHeaders={true}
-            timeoffsets={[0, 3600, 7200]} // 0, 1hr, 2hr, 3hr, 4hr, 5hr offsets - automatically adds time column
-            precision={2}
+            timeoffsets={[0, 3600, 7200]}
             defaultData={[
               ["650.25", "1250", "72.5", "Good", "Normal operations"],
               ["648.10", "980", "71.8", "Good", "Slight increase"],
               ["647.85", "920", "71.2", "Fair", "Decreasing trend"],
-            ]}
-            tsids={[
-              "pytest-loc.Stage.Inst.0.0.SPREADSHEET",
-              "pytest-loc.Flow.Inst.0.0.SPREADSHEET",
-              "pytest-loc.Temp.Inst.0.0.SPREADSHEET",
-              "pytest-loc.Quality.Inst.0.0.SPREADSHEET",
-              "pytest-loc.Notes.Inst.0.0.SPREADSHEET",
             ]}
           />
 
@@ -618,7 +611,8 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
                 The Time column appears automatically when timeoffsets are provided
               </li>
               <li>Time values show when each reading will be recorded (read-only)</li>
-              <li>Each row is a different time offset: 0hr, 1hr, 2hr, 3hr, 4hr, 5hr</li>
+              <li>Each row is a different time offset: 0hr, 1hr, 2hr</li>
+              <li>Each column can have its own units, precision, and TSID</li>
               <li>Click any data cell to edit directly</li>
               <li>Use Tab/Enter to navigate between cells</li>
               <li>Copy data from Excel and paste using Ctrl+V</li>

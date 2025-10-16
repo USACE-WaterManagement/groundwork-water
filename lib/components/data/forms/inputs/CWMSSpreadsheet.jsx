@@ -8,26 +8,39 @@ function CWMSSpreadsheet({
   invalid,
   columns = [],
   rows = 10,
-  tsids = [], // Array of tsids for each column
-  precision,
-  offset,
-  order,
-  AllowMissingData,
-  loadNearest,
-  readonly,
-  units, // Can be string, array, or object
+  precision = 2,
+  offset = 0,
+  order = 1,
+  AllowMissingData = true,
+  loadNearest = "prev",
+  readonly = false,
+  units = "EN",
   onChange,
   defaultData = [],
   showRowNumbers = true,
   showColumnHeaders = true,
-  required,
-  perCellRequired = {},
+  showTimestamps = false,
+  timeoffsets = [], // Array of time offsets in seconds (one per row)
+  required = false,
+  cellOverrides = {}, // Per-cell overrides keyed by "rowIndex_colIndex"
 }) {
-  const { registerInput } = useContext(FormContext);
+  const { registerInput, baseTimestamp, getTimestampForInput } =
+    useContext(FormContext);
+  // Determine if we should show timestamps and prepare columns
+  const shouldShowTimestamps = showTimestamps || timeoffsets.length > 0;
+  const effectiveColumns = shouldShowTimestamps
+    ? [{ key: "time", label: "Time", type: "text", readOnly: true }, ...columns]
+    : columns;
+
   const [spreadsheetData, setSpreadsheetData] = useState(() => {
     const initialData = [];
     for (let i = 0; i < rows; i++) {
-      initialData[i] = defaultData[i] || Array(columns.length).fill("");
+      if (shouldShowTimestamps) {
+        // Add empty time column, data will be calculated dynamically
+        initialData[i] = ["", ...(defaultData[i] || Array(columns.length).fill(""))];
+      } else {
+        initialData[i] = defaultData[i] || Array(columns.length).fill("");
+      }
     }
     return initialData;
   });
@@ -46,52 +59,60 @@ function CWMSSpreadsheet({
     cleanupFunctions.current = [];
 
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
-      for (let colIndex = 0; colIndex < columns.length; colIndex++) {
+      for (let colIndex = 0; colIndex < effectiveColumns.length; colIndex++) {
         const key = `${rowIndex}_${colIndex}`;
-        const column = columns[colIndex] || {};
+        const column = effectiveColumns[colIndex] || {};
 
-        // Get tsid from array or column
-        let cellTsid = column.tsid || tsids[colIndex] || `cell_${key}`;
-
-        // Support units as array, object, or string
-        let cellUnits = "EN";
-        if (column.units) {
-          cellUnits = column.units;
-        } else if (Array.isArray(units)) {
-          cellUnits = units[colIndex] || "EN";
-        } else if (
-          typeof units === "object" &&
-          units !== null &&
-          !Array.isArray(units)
-        ) {
-          // If units is an object, try to use the tsid as key
-          cellUnits = units[cellTsid] || units[colIndex] || "EN";
-        } else if (typeof units === "string") {
-          cellUnits = units;
+        // Skip time column for registration
+        if (shouldShowTimestamps && colIndex === 0) {
+          continue;
         }
+
+        // Get cell override settings if they exist
+        const cellOverride = cellOverrides[key] || {};
+
+        // Adjust index for columns when time column is present
+        const dataColIndex = shouldShowTimestamps ? colIndex - 1 : colIndex;
+
+        // Get tsid from cell override, column, or generate one
+        const cellTsid = cellOverride.tsid || column.tsid || `cell_${key}`;
+
+        // Get cell-specific timeOffset (if timeoffsets array is provided for rows)
+        const cellTimeOffset = cellOverride.offset ?? timeoffsets[rowIndex] ?? offset;
 
         const cellRef = {
           name: key,
           tsid: cellTsid,
-          precision: column.precision || precision || 2,
-          offset: column.offset || offset || 0,
-          order: order || 1,
-          AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
-          loadNearest: loadNearest || "prev",
-          readonly: readonly || false,
-          units: cellUnits,
-          required: perCellRequired[key] || column.required || required || false,
-          label: `Cell ${rowIndex + 1},${colIndex + 1}`,
-          getValues: () => [spreadsheetData[rowIndex]?.[colIndex] || ""],
+          precision: cellOverride.precision ?? column.precision ?? precision,
+          offset: cellTimeOffset,
+          timeOffset: cellTimeOffset,
+          order: order,
+          AllowMissingData: AllowMissingData,
+          loadNearest: loadNearest,
+          readonly: cellOverride.readonly ?? column.readonly ?? readonly,
+          units: cellOverride.units ?? column.units ?? units,
+          required: cellOverride.required ?? column.required ?? required,
+          label:
+            cellOverride.label ||
+            column.label ||
+            `Cell ${rowIndex + 1},${colIndex + 1}`,
+          getValues: () => {
+            return [spreadsheetData[rowIndex]?.[colIndex] || ""];
+          },
           reset: () => {
             setSpreadsheetData((prev) => {
               const updated = [...prev];
               if (!updated[rowIndex]) {
-                updated[rowIndex] = Array(columns.length).fill("");
+                updated[rowIndex] = Array(effectiveColumns.length).fill("");
               } else {
                 updated[rowIndex] = [...updated[rowIndex]];
               }
-              updated[rowIndex][colIndex] = defaultData[rowIndex]?.[colIndex] || "";
+              if (shouldShowTimestamps) {
+                updated[rowIndex][colIndex] =
+                  colIndex === 0 ? "" : defaultData[rowIndex]?.[dataColIndex] || "";
+              } else {
+                updated[rowIndex][colIndex] = defaultData[rowIndex]?.[colIndex] || "";
+              }
               return updated;
             });
             setInvalidCells((prev) => ({
@@ -121,9 +142,8 @@ function CWMSSpreadsheet({
   }, [
     registerInput,
     rows,
-    columns,
+    effectiveColumns,
     spreadsheetData,
-    tsids,
     precision,
     offset,
     order,
@@ -133,7 +153,10 @@ function CWMSSpreadsheet({
     units,
     defaultData,
     required,
-    perCellRequired,
+    cellOverrides,
+    shouldShowTimestamps,
+    timeoffsets,
+    baseTimestamp,
   ]);
 
   // Calculate selected range from drag coordinates
@@ -163,6 +186,11 @@ function CWMSSpreadsheet({
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
+    // Don't allow editing time column
+    if (shouldShowTimestamps && colIndex === 0) {
+      return;
+    }
+
     const key = `${rowIndex}_${colIndex}`;
     const updatedData = [...spreadsheetData];
     updatedData[rowIndex] = [...updatedData[rowIndex]];
@@ -232,8 +260,8 @@ function CWMSSpreadsheet({
     if (showColumnHeaders) {
       const headers = [];
       if (showRowNumbers) headers.push(""); // Empty cell for row numbers column
-      for (let i = 0; i < columns.length; i++) {
-        headers.push(getColumnLabel(i));
+      for (let i = 0; i < effectiveColumns.length; i++) {
+        headers.push(effectiveColumns[i].label || getColumnLabel(i));
       }
       copyText += headers.join("\t") + "\n";
     }
@@ -242,8 +270,26 @@ function CWMSSpreadsheet({
     for (let row = 0; row < spreadsheetData.length; row++) {
       const rowData = [];
       if (showRowNumbers) rowData.push(row + 1); // Add row number
-      for (let col = 0; col < columns.length; col++) {
-        rowData.push(spreadsheetData[row][col] || "");
+      for (let col = 0; col < effectiveColumns.length; col++) {
+        // For time column, calculate the actual time
+        if (shouldShowTimestamps && col === 0) {
+          if (baseTimestamp && timeoffsets[row] !== undefined) {
+            const baseTime = new Date(baseTimestamp);
+            const offsetMs = timeoffsets[row] * 1000;
+            const cellTime = new Date(baseTime.getTime() + offsetMs);
+            rowData.push(
+              cellTime.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              }),
+            );
+          } else {
+            rowData.push("--:--");
+          }
+        } else {
+          rowData.push(spreadsheetData[row][col] || "");
+        }
       }
       copyText += rowData.join("\t") + "\n";
     }
@@ -306,10 +352,15 @@ function CWMSSpreadsheet({
         const targetRow = startRow + rowOffset;
         const targetCol = startCol + colOffset;
 
-        // Check bounds
-        if (targetRow < spreadsheetData.length && targetCol < columns.length) {
+        // Check bounds and skip time column
+        if (targetRow < spreadsheetData.length && targetCol < effectiveColumns.length) {
+          // Skip pasting into time column
+          if (shouldShowTimestamps && targetCol === 0) {
+            return;
+          }
+
           if (!updatedData[targetRow]) {
-            updatedData[targetRow] = Array(columns.length).fill("");
+            updatedData[targetRow] = Array(effectiveColumns.length).fill("");
           } else {
             updatedData[targetRow] = [...updatedData[targetRow]];
           }
@@ -381,7 +432,7 @@ function CWMSSpreadsheet({
     if ((e.ctrlKey || e.metaKey) && e.key === "a") {
       e.preventDefault();
       setDragStart({ row: 0, col: 0 });
-      setDragEnd({ row: rows - 1, col: columns.length - 1 });
+      setDragEnd({ row: rows - 1, col: effectiveColumns.length - 1 });
       return;
     }
 
@@ -438,9 +489,9 @@ function CWMSSpreadsheet({
           if (!dragStart) setDragStart(selectedCell);
           setDragEnd({
             row: rowIndex,
-            col: Math.min(columns.length - 1, colIndex + 1),
+            col: Math.min(effectiveColumns.length - 1, colIndex + 1),
           });
-        } else if (colIndex < columns.length - 1) {
+        } else if (colIndex < effectiveColumns.length - 1) {
           e.preventDefault();
           const newCol = colIndex + 1;
           setSelectedCell({ row: rowIndex, col: newCol });
@@ -462,11 +513,11 @@ function CWMSSpreadsheet({
             document.getElementById(`cell-${rowIndex}-${colIndex - 1}`)?.focus();
           } else if (rowIndex > 0) {
             document
-              .getElementById(`cell-${rowIndex - 1}-${columns.length - 1}`)
+              .getElementById(`cell-${rowIndex - 1}-${effectiveColumns.length - 1}`)
               ?.focus();
           }
         } else {
-          if (colIndex < columns.length - 1) {
+          if (colIndex < effectiveColumns.length - 1) {
             document.getElementById(`cell-${rowIndex}-${colIndex + 1}`)?.focus();
           } else if (rowIndex < rows - 1) {
             document.getElementById(`cell-${rowIndex + 1}-0`)?.focus();
@@ -501,8 +552,8 @@ function CWMSSpreadsheet({
   };
 
   const getColumnLabel = (index) => {
-    if (columns[index] && columns[index].label) {
-      return columns[index].label;
+    if (effectiveColumns[index] && effectiveColumns[index].label) {
+      return effectiveColumns[index].label;
     }
     // Generate Excel-like column labels (A, B, C, ..., AA, AB, etc.)
     let label = "";
@@ -598,7 +649,7 @@ function CWMSSpreadsheet({
         <button
           onClick={() => {
             setDragStart({ row: 0, col: 0 });
-            setDragEnd({ row: rows - 1, col: columns.length - 1 });
+            setDragEnd({ row: rows - 1, col: effectiveColumns.length - 1 });
             // Focus on first cell to enable keyboard copy
             document.getElementById("cell-0-0")?.focus();
           }}
@@ -624,9 +675,9 @@ function CWMSSpreadsheet({
             <thead>
               <tr>
                 {showRowNumbers && <th style={rowNumberStyle}></th>}
-                {Array.from({ length: columns.length }, (_, i) => (
+                {effectiveColumns.map((col, i) => (
                   <th key={i} style={headerStyle}>
-                    {getColumnLabel(i)}
+                    {col.label || getColumnLabel(i)}
                   </th>
                 ))}
               </tr>
@@ -638,11 +689,38 @@ function CWMSSpreadsheet({
                 {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
                 {row.map((cellValue, colIndex) => {
                   const key = `${rowIndex}_${colIndex}`;
-                  const column = columns[colIndex] || {};
+                  const column = effectiveColumns[colIndex] || {};
+                  const cellOverride = cellOverrides[key] || {};
                   const isSelected = isCellInSelection(rowIndex, colIndex);
                   const isActiveCell =
                     selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
                   const isCellInvalid = invalidCells[key] || invalid;
+
+                  // Get cell-specific properties with proper fallback chain
+                  const cellReadonly =
+                    cellOverride.readonly ?? column.readonly ?? readonly;
+                  const cellRequired =
+                    cellOverride.required ?? column.required ?? required;
+                  const cellType = cellOverride.type ?? column.type ?? "text";
+                  const cellPlaceholder =
+                    cellOverride.placeholder ?? column.placeholder ?? "";
+
+                  // Calculate time value for time column
+                  let displayValue = cellValue;
+                  if (shouldShowTimestamps && colIndex === 0) {
+                    if (baseTimestamp && timeoffsets[rowIndex] !== undefined) {
+                      const baseTime = new Date(baseTimestamp);
+                      const offsetMs = timeoffsets[rowIndex] * 1000;
+                      const cellTime = new Date(baseTime.getTime() + offsetMs);
+                      displayValue = cellTime.toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      });
+                    } else {
+                      displayValue = "--:--";
+                    }
+                  }
 
                   return (
                     <td
@@ -666,23 +744,25 @@ function CWMSSpreadsheet({
                       <input
                         id={`cell-${rowIndex}-${colIndex}`}
                         name={key}
-                        type={column.type || "text"}
-                        value={cellValue}
+                        type={cellType}
+                        value={displayValue}
                         onChange={(e) =>
                           handleCellChange(rowIndex, colIndex, e.target.value)
                         }
                         onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
                         onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
-                        disabled={disable}
-                        readOnly={readonly}
+                        disabled={disable || (shouldShowTimestamps && colIndex === 0)}
+                        readOnly={
+                          cellReadonly || (shouldShowTimestamps && colIndex === 0)
+                        }
                         style={{
                           ...inputStyle,
                           cursor: "cell",
                           pointerEvents: isSelected ? "auto" : "auto",
                           color: isCellInvalid ? "red" : undefined,
                         }}
-                        placeholder={column.placeholder || ""}
-                        required={perCellRequired[key] || column.required || required}
+                        placeholder={cellPlaceholder}
+                        required={cellRequired}
                       />
                     </td>
                   );
