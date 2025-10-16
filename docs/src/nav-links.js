@@ -142,6 +142,11 @@ export default [
         href: "/docs/forms/cwms-checkboxes",
       },
       {
+        id: "cwms-radio-group",
+        text: "CWMS Radio Group",
+        href: "/docs/forms/cwms-radio-group",
+      },
+      {
         id: "cwms-dropdown",
         text: "CWMS Dropdown",
         href: "/docs/forms/cwms-dropdown",

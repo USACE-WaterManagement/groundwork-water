@@ -33,6 +33,7 @@ import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
 import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
 import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
+import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
 import CWMSDropdownDocs from "../pages/docs/forms/cwms-dropdown";
 import CWMSInputTableDocs from "../pages/docs/forms/cwms-input-table";
 import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
@@ -68,6 +69,7 @@ const routes = {
   "/docs/forms/cwms-input": CWMSInputDocs,
   "/docs/forms/cwms-textarea": CWMSTextareaDocs,
   "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
+  "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
   "/docs/forms/cwms-dropdown": CWMSDropdownDocs,
   "/docs/forms/cwms-input-table": CWMSInputTableDocs,
   "/docs/forms/cwms-spreadsheet": CWMSSpreadsheetDocs,

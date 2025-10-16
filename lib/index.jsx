@@ -15,6 +15,7 @@ import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
 import CWMSInput from "./components/data/forms/inputs/CWMSInput";
 import CWMSTextarea from "./components/data/forms/inputs/CWMSTextarea";
 import CWMSCheckboxes from "./components/data/forms/inputs/CWMSCheckboxes";
+import CWMSRadioGroup from "./components/data/forms/inputs/CWMSRadioGroup";
 import CWMSDropdown from "./components/data/forms/inputs/CWMSDropdown";
 import CWMSInputTable from "./components/data/forms/inputs/CWMSInputTable";
 import CWMSSpreadsheet from "./components/data/forms/inputs/CWMSSpreadsheet";
@@ -77,6 +78,7 @@ export {
   CWMSInput,
   CWMSTextarea,
   CWMSCheckboxes,
+  CWMSRadioGroup,
   CWMSDropdown,
   CWMSInputTable,
   CWMSSpreadsheet,

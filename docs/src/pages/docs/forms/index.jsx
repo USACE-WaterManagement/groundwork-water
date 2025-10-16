@@ -2,8 +2,6 @@ import { Text } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 
-const BASE_URL = import.meta.env.BASE_URL;
-
 function FormsDocs() {
   return (
     <DocsPage middleText="Forms">
@@ -19,7 +17,7 @@ function FormsDocs() {
       <Text className="mb-4">
         Start with the{" "}
         <a
-          href={`${BASE_URL}#/docs/forms/cwms-form`}
+          href="/docs/forms/cwms-form"
           className="text-blue-600 hover:underline font-semibold"
         >
           CWMSForm
@@ -33,7 +31,7 @@ function FormsDocs() {
       <ul className="list-disc ml-6 space-y-2">
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-form`}
+            href="/docs/forms/cwms-form"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSForm
@@ -42,7 +40,7 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-input`}
+            href="/docs/forms/cwms-input"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInput
@@ -51,7 +49,7 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-textarea`}
+            href="/docs/forms/cwms-textarea"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSTextarea
@@ -60,7 +58,7 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-checkboxes`}
+            href="/docs/forms/cwms-checkboxes"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSCheckboxes
@@ -69,7 +67,16 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-dropdown`}
+            href="/docs/forms/cwms-radio-group"
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            CWMSRadioGroup
+          </a>{" "}
+          - Single selection radio buttons
+        </li>
+        <li>
+          <a
+            href="/docs/forms/cwms-dropdown"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSDropdown
@@ -78,7 +85,7 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-input-table`}
+            href="/docs/forms/cwms-input-table"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInputTable
@@ -87,7 +94,7 @@ function FormsDocs() {
         </li>
         <li>
           <a
-            href={`${BASE_URL}#/docs/forms/cwms-spreadsheet`}
+            href="/docs/forms/cwms-spreadsheet"
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSSpreadsheet
