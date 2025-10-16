@@ -399,30 +399,40 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
             * Stage and Flow columns are required
           </Text>
           <CWMSInputTable
-            tsids={[
-              `pytest-loc.Stage.Inst.0.0.TABLE-TEST`,
-              `pytest-loc.Flow.Inst.0.0.TABLE-TEST`,
-              `pytest-loc.Temp.Inst.0.0.TABLE-TEST`,
+            columns={[
+              {
+                tsid: `pytest-loc.Stage.Inst.0.0.TABLE-TEST`,
+                label: "Stage",
+                units: "m",
+                precision: 2,
+                required: true,
+                defaultValues: {
+                  0: "198.12",
+                },
+              },
+              {
+                tsid: `pytest-loc.Flow.Inst.0.0.TABLE-TEST`,
+                label: "Flow",
+                units: "cms",
+                precision: 2,
+                required: true,
+                defaultValues: {
+                  0: "35.40",
+                },
+              },
+              {
+                tsid: `pytest-loc.Temp.Inst.0.0.TABLE-TEST`,
+                label: "Temperature",
+                units: "C",
+                precision: 2,
+                required: false,
+                defaultValues: {
+                  0: "22.5",
+                },
+              },
             ]}
             timeoffsets={[0, 3600, 7200]}
             showTimestamps={true}
-            units="SI"
-            precision={2}
-            perColumnUnits={{
-              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST`]: "m",
-              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST`]: "cms",
-              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST`]: "C",
-            }}
-            perColumnRequired={{
-              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST`]: true,
-              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST`]: true,
-              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST`]: false,
-            }}
-            defaultValues={{
-              [`pytest-loc.Stage.Inst.0.0.TABLE-TEST_0`]: "198.12",
-              [`pytest-loc.Flow.Inst.0.0.TABLE-TEST_0`]: "35.40",
-              [`pytest-loc.Temp.Inst.0.0.TABLE-TEST_0`]: "22.5",
-            }}
           />
         </CWMSForm>
       )}

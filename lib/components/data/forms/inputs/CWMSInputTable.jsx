@@ -7,24 +7,35 @@ function CWMSInputTable({
   style,
   disable,
   invalid,
-  tsids = [],
+  columns = [],
   timeoffsets = [],
-  precision,
-  order,
-  AllowMissingData,
-  loadNearest,
-  readonly,
-  units,
+  precision = 2,
+  order = 1,
+  AllowMissingData = true,
+  loadNearest = "prev",
+  readonly = false,
+  units = "EN",
   onChange,
   showTimestamps = true,
-  defaultValues = {},
-  perColumnUnits = {}, // Allow different units per TSID
-  perColumnPrecision = {}, // Allow different precision per TSID
-  required,
-  perColumnRequired = {}, // Allow different required status per TSID
+  required = false,
 }) {
   const { registerInput, getTimestampForInput } = useContext(FormContext);
-  const [matrixData, setMatrixData] = useState(defaultValues);
+
+  // Initialize matrixData from column defaultValues
+  const getInitialMatrixData = () => {
+    const data = {};
+    columns.forEach((column) => {
+      if (column.defaultValues) {
+        Object.entries(column.defaultValues).forEach(([offset, value]) => {
+          const key = `${column.tsid}_${offset}`;
+          data[key] = value;
+        });
+      }
+    });
+    return data;
+  };
+
+  const [matrixData, setMatrixData] = useState(getInitialMatrixData);
   const [invalidCells, setInvalidCells] = useState({});
   const cleanupFunctions = useRef([]);
 
@@ -36,40 +47,37 @@ function CWMSInputTable({
     cleanupFunctions.current = [];
 
     // Register each cell as an individual input
-    tsids.forEach((tsid, tsidIndex) => {
+    columns.forEach((column) => {
+      const {
+        tsid,
+        units: columnUnits,
+        precision: columnPrecision,
+        required: columnRequired,
+        readonly: columnReadonly,
+        defaultValues: columnDefaultValues = {},
+      } = column;
+
       timeoffsets.forEach((offset) => {
         const key = `${tsid}_${offset}`;
-
-        // Support units as array or object
-        let cellUnits = units;
-        if (Array.isArray(units)) {
-          cellUnits = units[tsidIndex] || "EN";
-        } else if (typeof units === "object" && units !== null) {
-          cellUnits = units[tsid] || "EN";
-        } else if (perColumnUnits[tsid]) {
-          cellUnits = perColumnUnits[tsid];
-        } else {
-          cellUnits = units || "EN";
-        }
 
         const cellRef = {
           name: key,
           tsid: tsid,
-          precision: perColumnPrecision[tsid] || precision || 2,
+          precision: columnPrecision ?? precision,
           offset: offset || 0,
-          order: order || 1,
-          AllowMissingData: AllowMissingData !== undefined ? AllowMissingData : true,
-          loadNearest: loadNearest || "prev",
-          readonly: readonly || false,
-          units: cellUnits,
+          order: order,
+          AllowMissingData: AllowMissingData,
+          loadNearest: loadNearest,
+          readonly: columnReadonly ?? readonly,
+          units: columnUnits ?? units,
           timeOffset: offset,
-          required: perColumnRequired[tsid] || required || false,
-          label: `${tsid} at ${offset}s`,
+          required: columnRequired ?? required,
+          label: column.label || `${tsid} at ${offset}s`,
           getValues: () => [matrixData[key] || ""],
           reset: () => {
             setMatrixData((prev) => ({
               ...prev,
-              [key]: defaultValues[key] || "",
+              [key]: columnDefaultValues[offset] || "",
             }));
             setInvalidCells((prev) => ({
               ...prev,
@@ -98,7 +106,7 @@ function CWMSInputTable({
     };
   }, [
     registerInput,
-    tsids,
+    columns,
     timeoffsets,
     matrixData,
     precision,
@@ -107,11 +115,7 @@ function CWMSInputTable({
     loadNearest,
     readonly,
     units,
-    defaultValues,
-    perColumnUnits,
-    perColumnPrecision,
     required,
-    perColumnRequired,
   ]);
 
   const handleInputChange = (tsid, offset, value) => {
@@ -156,9 +160,9 @@ function CWMSInputTable({
           {showTimestamps && (
             <th className="p-2 text-left border-b-2 border-gray-300">Time</th>
           )}
-          {tsids.map((tsid, index) => (
+          {columns.map((column, index) => (
             <th key={index} className="p-2 text-left border-b-2 border-gray-300">
-              {tsid}
+              {column.label || column.tsid}
             </th>
           ))}
         </tr>
@@ -179,21 +183,26 @@ function CWMSInputTable({
                   />
                 </td>
               )}
-              {tsids.map((tsid, colIndex) => {
-                const key = `${tsid}_${offset}`;
+              {columns.map((column, colIndex) => {
+                const key = `${column.tsid}_${offset}`;
+                const columnReadonly = column.readonly ?? readonly;
+                const columnRequired = column.required ?? required;
+
                 return (
                   <td key={colIndex} className="p-2">
                     <Input
                       name={key}
                       type="number"
                       value={matrixData[key] || ""}
-                      onChange={(e) => handleInputChange(tsid, offset, e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(column.tsid, offset, e.target.value)
+                      }
                       disabled={disable}
-                      readOnly={readonly}
+                      readOnly={columnReadonly}
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
                       placeholder="Enter value"
                       className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
-                      required={perColumnRequired[tsid] || required}
+                      required={columnRequired}
                     />
                   </td>
                 );

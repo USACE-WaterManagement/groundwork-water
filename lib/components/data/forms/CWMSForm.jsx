@@ -112,14 +112,15 @@ export function CWMSForm({
   });
 
   const registerInput = (input) => {
-    // Create a unique ID for this input based on its TSID and name
-    // Use TSID as primary identifier since it should be unique
-    const inputId = input.tsid || `${input.name || ""}_${Math.random()}`;
+    // Create a unique ID for this input based on TSID and timeOffset
+    // This allows multiple inputs for the same TSID with different time offsets
+    const timeOffset = input.timeOffset ?? input.offset ?? 0;
+    const inputId = input.tsid
+      ? `${input.tsid}_${timeOffset}`
+      : `${input.name || ""}_${Math.random()}`;
 
-    // Check if this input is already registered by looking for the same TSID
-    const existingIndex = inputsRef.current.findIndex(
-      (i) => i.tsid === input.tsid && i.tsid !== undefined,
-    );
+    // Check if this exact input (same TSID + timeOffset) is already registered
+    const existingIndex = inputsRef.current.findIndex((i) => i.id === inputId);
 
     if (existingIndex !== -1) {
       // Update existing input instead of adding a duplicate

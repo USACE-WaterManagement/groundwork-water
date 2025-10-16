@@ -7,22 +7,16 @@ import Divider from "../../components/divider";
 
 const componentProps = [
   {
-    name: "tsids",
+    name: "columns",
     type: "array",
     default: "[]",
-    desc: "Array of time series IDs for column headers.",
+    desc: "Array of column configuration objects. Each object can have: tsid (required), label, units, precision, required, readonly, defaultValues.",
   },
   {
     name: "timeoffsets",
     type: "array",
-    default: "[0]",
+    default: "[]",
     desc: "Array of time offsets in seconds for row timestamps.",
-  },
-  {
-    name: "defaultValues",
-    type: "object",
-    default: "{}",
-    desc: "Object with default values keyed by 'tsid_offset'.",
   },
   {
     name: "showTimestamps",
@@ -34,13 +28,13 @@ const componentProps = [
     name: "precision",
     type: "number",
     default: "2",
-    desc: "Number of decimal places for numeric values.",
+    desc: "Global default number of decimal places for numeric values. Can be overridden per column.",
   },
   {
     name: "units",
-    type: "string | array | object",
+    type: "string",
     default: "EN",
-    desc: "Unit system. Can be a string (applies to all), array (per column index), or object (per TSID key).",
+    desc: "Global default unit system (EN or SI). Can be overridden per column.",
   },
   {
     name: "disable",
@@ -52,7 +46,7 @@ const componentProps = [
     name: "readonly",
     type: "boolean",
     default: "false",
-    desc: "Whether all inputs are read-only.",
+    desc: "Global default for read-only status. Can be overridden per column.",
   },
   {
     name: "invalid",
@@ -64,25 +58,25 @@ const componentProps = [
     name: "required",
     type: "boolean",
     default: "false",
-    desc: "Whether all table cells are required for form submission.",
+    desc: "Global default for required status. Can be overridden per column.",
   },
   {
-    name: "perColumnRequired",
-    type: "object",
-    default: "{}",
-    desc: "Object specifying required status per TSID column (e.g., {'Stage': true, 'Flow': false}).",
+    name: "order",
+    type: "number",
+    default: "1",
+    desc: "Order for CWMS data submission.",
   },
   {
-    name: "perColumnUnits",
-    type: "object",
-    default: "{}",
-    desc: "Object specifying units per TSID column (e.g., {'Stage': 'ft', 'Flow': 'cfs'}).",
+    name: "AllowMissingData",
+    type: "boolean",
+    default: "true",
+    desc: "Whether to allow missing data in submissions.",
   },
   {
-    name: "perColumnPrecision",
-    type: "object",
-    default: "{}",
-    desc: "Object specifying precision per TSID column (e.g., {'Stage': 2, 'Flow': 0}).",
+    name: "loadNearest",
+    type: "string",
+    default: "prev",
+    desc: "Load nearest value strategy (prev, next, nearest).",
   },
   {
     name: "onChange",
@@ -122,7 +116,11 @@ function CWMSInputTableDocs() {
       <div className="overflow-x-auto">
         <CWMSForm office="SWT">
           <CWMSInputTable
-            tsids={["Stage.Inst.0.0.USGS", "Flow.Inst.0.0.USGS", "Temp.Inst.0.0.USGS"]}
+            columns={[
+              { tsid: "Stage.Inst.0.0.USGS" },
+              { tsid: "Flow.Inst.0.0.USGS" },
+              { tsid: "Temp.Inst.0.0.USGS" },
+            ]}
             timeoffsets={[0, 3600, 7200]}
             showTimestamps={true}
           />
@@ -133,7 +131,11 @@ function CWMSInputTableDocs() {
         {`import { CWMSInputTable } from "@usace-watermanagement/groundwork-water";
 
 <CWMSInputTable
-  tsids={["Stage.Inst.0.0.USGS", "Flow.Inst.0.0.USGS", "Temp.Inst.0.0.USGS"]}
+  columns={[
+    { tsid: "Stage.Inst.0.0.USGS" },
+    { tsid: "Flow.Inst.0.0.USGS" },
+    { tsid: "Temp.Inst.0.0.USGS" }
+  ]}
   timeoffsets={[0, 3600, 7200]}  // 0, 1 hour, 2 hours
   showTimestamps={true}
 />`}
@@ -141,33 +143,51 @@ function CWMSInputTableDocs() {
 
       <Divider text="With Default Values" className="mt-8" />
       <Text className="mb-4">
-        You can provide default values for specific cells using the tsid_offset key
-        format.
+        You can provide default values for specific cells within each column
+        configuration. Default values are keyed by time offset.
       </Text>
 
       <div className="overflow-x-auto">
         <CWMSForm office="SWT">
           <CWMSInputTable
-            tsids={["Elev.Inst.0.0.USGS", "Storage.Inst.0.0.USGS"]}
+            columns={[
+              {
+                tsid: "Elev.Inst.0.0.USGS",
+                defaultValues: {
+                  [-3600]: "650.5",
+                  0: "651.2",
+                },
+              },
+              {
+                tsid: "Storage.Inst.0.0.USGS",
+                defaultValues: {
+                  0: "125000",
+                },
+              },
+            ]}
             timeoffsets={[-3600, 0, 3600]}
-            defaultValues={{
-              "Elev.Inst.0.0.USGS_-3600": "650.5",
-              "Elev.Inst.0.0.USGS_0": "651.2",
-              "Storage.Inst.0.0.USGS_0": "125000",
-            }}
           />
         </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
         {`<CWMSInputTable
-  tsids={["Elev.Inst.0.0.USGS", "Storage.Inst.0.0.USGS"]}
+  columns={[
+    {
+      tsid: "Elev.Inst.0.0.USGS",
+      defaultValues: {
+        [-3600]: "650.5",
+        0: "651.2"
+      }
+    },
+    {
+      tsid: "Storage.Inst.0.0.USGS",
+      defaultValues: {
+        0: "125000"
+      }
+    }
+  ]}
   timeoffsets={[-3600, 0, 3600]}  // -1 hour, now, +1 hour
-  defaultValues={{
-    "Elev.Inst.0.0.USGS_-3600": "650.5",
-    "Elev.Inst.0.0.USGS_0": "651.2",
-    "Storage.Inst.0.0.USGS_0": "125000"
-  }}
 />`}
       </CodeBlock>
 
@@ -183,10 +203,10 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
 <CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
   <CWMSInputTable
-    tsids={[
-      "LOCATION.Stage.Inst.15Minutes.0.USGS-raw",
-      "LOCATION.Flow.Inst.15Minutes.0.USGS-raw",
-      "LOCATION.Precip.Inst.1Hour.0.USGS-raw"
+    columns={[
+      { tsid: "LOCATION.Stage.Inst.15Minutes.0.USGS-raw" },
+      { tsid: "LOCATION.Flow.Inst.15Minutes.0.USGS-raw" },
+      { tsid: "LOCATION.Precip.Inst.1Hour.0.USGS-raw" }
     ]}
     timeoffsets={[
       -7200,  // -2 hours
@@ -209,7 +229,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       <div className="overflow-x-auto">
         <CWMSForm office="SWT">
           <CWMSInputTable
-            tsids={["Gate 1", "Gate 2", "Gate 3", "Gate 4"]}
+            columns={[
+              { tsid: "Gate 1" },
+              { tsid: "Gate 2" },
+              { tsid: "Gate 3" },
+              { tsid: "Gate 4" },
+            ]}
             timeoffsets={[0]}
             showTimestamps={false}
           />
@@ -218,65 +243,71 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
       <CodeBlock language="jsx">
         {`<CWMSInputTable
-  tsids={["Gate 1", "Gate 2", "Gate 3", "Gate 4"]}
+  columns={[
+    { tsid: "Gate 1" },
+    { tsid: "Gate 2" },
+    { tsid: "Gate 3" },
+    { tsid: "Gate 4" }
+  ]}
   timeoffsets={[0]}  // Single row for current values
   showTimestamps={false}
 />`}
       </CodeBlock>
 
-      <Divider text="Different Units Per Column" className="mt-8" />
+      <Divider text="Different Units and Precision Per Column" className="mt-8" />
       <Text className="mb-4">
-        You can specify different units for each column using an array or object
-        notation.
+        Each column can have its own units, precision, and other settings.
+        Column-specific settings override global defaults.
       </Text>
 
       <div className="overflow-x-auto">
         <CWMSForm office="SWT">
           <CWMSInputTable
-            tsids={["Stage", "Flow", "Temperature"]}
+            columns={[
+              { tsid: "Stage", label: "Stage", units: "ft", precision: 2 },
+              { tsid: "Flow", label: "Flow", units: "cfs", precision: 0 },
+              { tsid: "Temperature", label: "Temp", units: "F", precision: 1 },
+            ]}
             timeoffsets={[0, 3600]}
-            units={["ft", "cfs", "F"]} // Array of units
-            perColumnPrecision={{
-              Stage: 2,
-              Flow: 0,
-              Temperature: 1,
-            }}
           />
         </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
-        {`// Using units as an array (matches tsids by index)
-<CWMSInputTable
-  tsids={["Stage", "Flow", "Temperature"]}
+        {`<CWMSInputTable
+  columns={[
+    {
+      tsid: "Stage",
+      label: "Stage",
+      units: "ft",
+      precision: 2
+    },
+    {
+      tsid: "Flow",
+      label: "Flow",
+      units: "cfs",
+      precision: 0
+    },
+    {
+      tsid: "Temperature",
+      label: "Temp",
+      units: "F",
+      precision: 1
+    }
+  ]}
   timeoffsets={[0, 3600]}
-  units={["ft", "cfs", "F"]}
-  perColumnPrecision={{
-    "Stage": 2,
-    "Flow": 0,
-    "Temperature": 1
-  }}
 />
 
-// Alternative: Using units as an object (matches by TSID key)
+// You can also set global defaults and override only specific columns
 <CWMSInputTable
-  tsids={["Stage", "Flow", "Temperature"]}
-  timeoffsets={[0, 3600]}
-  units={{
-    "Stage": "ft",
-    "Flow": "cfs",
-    "Temperature": "F"
-  }}
-/>
-
-// Or continue using perColumnUnits for backward compatibility
-<CWMSInputTable
-  tsids={["Stage", "Flow"]}
+  columns={[
+    { tsid: "Stage" },                    // Uses global defaults
+    { tsid: "Flow", units: "cms" },       // Overrides only units
+    { tsid: "Temp", precision: 1 }        // Overrides only precision
+  ]}
   timeoffsets={[0]}
-  perColumnUnits={{
-    "Stage": "ft",
-    "Flow": "cfs"
-  }}
+  units="EN"      // Global default
+  precision={2}   // Global default
 />`}
       </CodeBlock>
 
@@ -286,15 +317,18 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           <Text className="mb-2 font-semibold">Read-only Table</Text>
           <CWMSForm office="SWT">
             <CWMSInputTable
-              tsids={["Parameter A", "Parameter B"]}
+              columns={[
+                {
+                  tsid: "Parameter A",
+                  defaultValues: { 0: "100", 3600: "105" },
+                },
+                {
+                  tsid: "Parameter B",
+                  defaultValues: { 0: "200", 3600: "210" },
+                },
+              ]}
               timeoffsets={[0, 3600]}
               readonly={true}
-              defaultValues={{
-                "Parameter A_0": "100",
-                "Parameter B_0": "200",
-                "Parameter A_3600": "105",
-                "Parameter B_3600": "210",
-              }}
             />
           </CWMSForm>
         </div>
@@ -303,7 +337,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           <Text className="mb-2 font-semibold">Custom Styled Table (Tailwind)</Text>
           <CWMSForm office="SWT">
             <CWMSInputTable
-              tsids={["Value 1", "Value 2"]}
+              columns={[{ tsid: "Value 1" }, { tsid: "Value 2" }]}
               timeoffsets={[0]}
               showTimestamps={false}
               className="bg-gray-100 border-2 border-gray-700 rounded-lg"
@@ -315,7 +349,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           <Text className="mb-2 font-semibold">Custom Styled Table (Inline Style)</Text>
           <CWMSForm office="SWT">
             <CWMSInputTable
-              tsids={["Value 3", "Value 4"]}
+              columns={[{ tsid: "Value 3" }, { tsid: "Value 4" }]}
               timeoffsets={[0]}
               showTimestamps={false}
               style={{
@@ -329,22 +363,28 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       </div>
 
       <CodeBlock language="jsx">
-        {`// Read-only table
+        {`// Read-only table with default values
 <CWMSInputTable
-  tsids={["Parameter A", "Parameter B"]}
+  columns={[
+    {
+      tsid: "Parameter A",
+      defaultValues: { 0: "100", 3600: "105" }
+    },
+    {
+      tsid: "Parameter B",
+      defaultValues: { 0: "200", 3600: "210" }
+    }
+  ]}
   timeoffsets={[0, 3600]}
   readonly={true}
-  defaultValues={{
-    "Parameter A_0": "100",
-    "Parameter B_0": "200",
-    "Parameter A_3600": "105",
-    "Parameter B_3600": "210"
-  }}
 />
 
 // Custom styled table with Tailwind classes
 <CWMSInputTable
-  tsids={["Value 1", "Value 2"]}
+  columns={[
+    { tsid: "Value 1" },
+    { tsid: "Value 2" }
+  ]}
   timeoffsets={[0]}
   showTimestamps={false}
   className="bg-gray-100 border-2 border-gray-700 rounded-lg"
@@ -352,7 +392,10 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
 // Custom styled table with inline styles
 <CWMSInputTable
-  tsids={["Value 3", "Value 4"]}
+  columns={[
+    { tsid: "Value 3" },
+    { tsid: "Value 4" }
+  ]}
   timeoffsets={[0]}
   showTimestamps={false}
   style={{
@@ -364,7 +407,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
 // You can also use both className and style together
 <CWMSInputTable
-  tsids={["Combined"]}
+  columns={[{ tsid: "Combined" }]}
   timeoffsets={[0]}
   className="rounded-lg shadow-md"
   style={{ backgroundColor: "#fafafa" }}
