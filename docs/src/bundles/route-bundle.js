@@ -16,6 +16,7 @@ import AuthProviderDocs from "../pages/docs/auth/auth-provider";
 import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import KeycloakDocs from "../pages/docs/auth/keycloak";
 import UseAuthDocs from "../pages/docs/auth/use-auth";
+import OfficesDropdownDocs from "../pages/docs/dropdowns/offices";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -28,6 +29,11 @@ import HelpPage from "../pages/docs/help";
 import CdaUrlProviderDocs from "../pages/docs/utilities/cda-url-provider";
 import UtilitiesDocs from "../pages/docs/utilities";
 import UseCdaLevels from "../pages/docs/hooks/use-cda-levels";
+import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
+import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
+import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
+import useDebounce from "../pages/docs/utilities/use-debounce";
+
 import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
@@ -40,51 +46,57 @@ import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
 
-const routes = {
-  "/": Home,
-  "/docs": Docs,
-  "/docs/cards/cda-latest-value-card": CdaLatestValueCardDocs,
-  "/docs/help": HelpPage,
-  "/docs/auth": AuthenticationDocs,
-  "/docs/auth/auth-method": AuthMethodDocs,
-  "/docs/auth/auth-provider": AuthProviderDocs,
-  "/docs/auth/cwms-login": CwmsLoginDocs,
-  "/docs/auth/keycloak": KeycloakDocs,
-  "/docs/auth/use-auth": UseAuthDocs,
-  "/docs/hooks": DataHooks,
-  "/docs/hooks/use-cda-catalog": UseCdaCatalog,
-  "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
-  "/docs/hooks/use-cda-location": UseCdaLocation,
-  "/docs/hooks/use-cda-levels": UseCdaLevels,
-  "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
-  "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
-  "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
-  "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
-  "/docs/plots": PlotsDocs,
-  "/docs/plots/cwms-plot": CWMSPlotDocs,
-  "/docs/maps": Maps,
-  "/docs/tables": Tables,
-  "/docs/forms": FormsDocs,
-  "/docs/forms/cwms-form": CWMSFormDocs,
-  "/docs/forms/cwms-input": CWMSInputDocs,
-  "/docs/forms/cwms-textarea": CWMSTextareaDocs,
-  "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
-  "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
-  "/docs/forms/cwms-dropdown": CWMSDropdownDocs,
-  "/docs/forms/cwms-input-table": CWMSInputTableDocs,
-  "/docs/forms/cwms-spreadsheet": CWMSSpreadsheetDocs,
-  // Conditionally add interactive test route
-  ...(docsConfig.features.showInteractiveTestPage && {
-    "/docs/forms/interactive-test": InteractiveFormTest,
-  }),
-  "/docs/utilities": UtilitiesDocs,
-  "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
-  "/docs/react-query": ReactQuery,
-  "/docs/add-components": AddComponents,
-  "/docs/quick-start": QuickStart,
-  "*": NotFound,
-};
-
-export default createRouteBundle(routes, {
-  routeInfoSelector: "selectHash",
-});
+export default createRouteBundle(
+  {
+    "/": Home,
+    "/docs": Docs,
+    "/docs/cards/cda-latest-value-card": CdaLatestValueCardDocs,
+    "/docs/help": HelpPage,
+    "/docs/auth": AuthenticationDocs,
+    "/docs/auth/auth-method": AuthMethodDocs,
+    "/docs/auth/auth-provider": AuthProviderDocs,
+    "/docs/auth/cwms-login": CwmsLoginDocs,
+    "/docs/auth/keycloak": KeycloakDocs,
+    "/docs/auth/use-auth": UseAuthDocs,
+    "/docs/dropdowns/offices": OfficesDropdownDocs,
+    "/docs/hooks": DataHooks,
+    "/docs/hooks/use-cda-catalog": UseCdaCatalog,
+    "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
+    "/docs/hooks/use-cda-location": UseCdaLocation,
+    "/docs/hooks/use-cda-levels": UseCdaLevels,
+    "/docs/hooks/use-cda-offices": UseCdaOffices,
+    "/docs/hooks/use-cda-time-series": UseCdaTimeSeries,
+    "/docs/hooks/use-cda-time-series-group": UseCdaTimeSeriesGroup,
+    "/docs/hooks/use-nwps-gauge": UseNwpsGauge,
+    "/docs/hooks/use-nwps-gauge-data": UseNwpsGaugeData,
+    "/docs/hooks/use-cda-blob": UseCdaBlob,
+    "/docs/hooks/use-cda-blobs": useCdaBlobs,
+    "/docs/plots": PlotsDocs,
+    "/docs/plots/cwms-plot": CWMSPlotDocs,
+    "/docs/maps": Maps,
+    "/docs/tables": Tables,
+    "/docs/forms": FormsDocs,
+    "/docs/forms/cwms-form": CWMSFormDocs,
+    "/docs/forms/cwms-input": CWMSInputDocs,
+    "/docs/forms/cwms-textarea": CWMSTextareaDocs,
+    "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
+    "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
+    "/docs/forms/cwms-dropdown": CWMSDropdownDocs,
+    "/docs/forms/cwms-input-table": CWMSInputTableDocs,
+    "/docs/forms/cwms-spreadsheet": CWMSSpreadsheetDocs,
+    // Conditionally add interactive test route
+    ...(docsConfig.features.showInteractiveTestPage && {
+      "/docs/forms/interactive-test": InteractiveFormTest,
+    }),
+    "/docs/utilities": UtilitiesDocs,
+    "/docs/utilities/use-debounce": useDebounce,
+    "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
+    "/docs/react-query": ReactQuery,
+    "/docs/add-components": AddComponents,
+    "/docs/quick-start": QuickStart,
+    "*": NotFound,
+  },
+  {
+    routeInfoSelector: "selectHash",
+  },
+);

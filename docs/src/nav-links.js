@@ -56,10 +56,39 @@ export default [
     ],
   },
   {
+    id: "dropdowns",
+    text: "Dropdowns",
+    href: "/docs/dropdowns",
+    children: [
+      {
+        id: "offices",
+        text: "Offices",
+        href: "/docs/dropdowns/offices",
+      },
+    ],
+  },
+  {
     id: "hooks",
     text: "Data Hooks",
     href: "/docs/hooks",
     children: [
+      {
+        id: "blobs",
+        text: "CDA Blobs",
+        href: "#",
+        children: [
+          {
+            id: "use-cda-blob",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob",
+          },
+          {
+            id: "use-cda-blobs",
+            text: "CDA Blobs (list)",
+            href: "/docs/hooks/use-cda-blobs",
+          },
+        ],
+      },
       {
         id: "use-cda-catalog",
         text: "CDA Catalog",
@@ -79,6 +108,11 @@ export default [
         id: "use-cda-location",
         text: "CDA Location",
         href: "/docs/hooks/use-cda-location",
+      },
+      {
+        id: "use-cda-offices",
+        text: "CDA Offices",
+        href: "/docs/hooks/use-cda-offices",
       },
       {
         id: "use-cda-time-series",
@@ -202,6 +236,11 @@ export default [
         id: "cda-url-provider",
         text: "CDA URL Provider",
         href: "/docs/utilities/cda-url-provider",
+      },
+      {
+        id: "use-debounce",
+        text: "Debounce",
+        href: "/docs/utilities/use-debounce",
       },
     ],
   },
