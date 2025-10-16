@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { FormContext } from "../CWMSForm";
 
 function CWMSSpreadsheet({
-  className,
   style,
   disable,
   invalid,
@@ -28,9 +27,13 @@ function CWMSSpreadsheet({
     useContext(FormContext);
   // Determine if we should show timestamps and prepare columns
   const shouldShowTimestamps = showTimestamps || timeoffsets.length > 0;
-  const effectiveColumns = shouldShowTimestamps
-    ? [{ key: "time", label: "Time", type: "text", readOnly: true }, ...columns]
-    : columns;
+  const effectiveColumns = useMemo(
+    () =>
+      shouldShowTimestamps
+        ? [{ key: "time", label: "Time", type: "text", readOnly: true }, ...columns]
+        : columns,
+    [shouldShowTimestamps, columns],
+  );
 
   const [spreadsheetData, setSpreadsheetData] = useState(() => {
     const initialData = [];
@@ -528,7 +531,7 @@ function CWMSSpreadsheet({
         setDragStart(null);
         setDragEnd(null);
         break;
-      case "Delete":
+      case "Delete": {
         // Delete all selected cells
         const range = getSelectionRange();
         if (range) {
@@ -547,6 +550,7 @@ function CWMSSpreadsheet({
           handleCellChange(rowIndex, colIndex, "");
         }
         break;
+      }
     }
   };
 
