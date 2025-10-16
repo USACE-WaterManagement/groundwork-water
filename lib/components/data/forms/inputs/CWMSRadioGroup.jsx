@@ -28,7 +28,7 @@ function CWMSRadioGroup({
   // All other props to pass through (legend, className, style, etc.)
   ...radioGroupProps
 }) {
-  const { registerInput, getTimestampForInput } = useContext(FormContext);
+  const { registerInput } = useContext(FormContext);
   const [selectedValue, setSelectedValue] = useState(defaultValue || "");
 
   // Register with CWMS form

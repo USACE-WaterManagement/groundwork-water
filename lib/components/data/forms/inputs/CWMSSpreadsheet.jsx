@@ -273,10 +273,9 @@ function CWMSSpreadsheet({
       for (let col = 0; col < effectiveColumns.length; col++) {
         // For time column, calculate the actual time
         if (shouldShowTimestamps && col === 0) {
-          if (baseTimestamp && timeoffsets[row] !== undefined) {
-            const baseTime = new Date(baseTimestamp);
-            const offsetMs = timeoffsets[row] * 1000;
-            const cellTime = new Date(baseTime.getTime() + offsetMs);
+          if (getTimestampForInput && timeoffsets[row] !== undefined) {
+            const timestamp = getTimestampForInput(timeoffsets[row]);
+            const cellTime = new Date(timestamp);
             rowData.push(
               cellTime.toLocaleTimeString("en-US", {
                 hour: "2-digit",
@@ -708,10 +707,9 @@ function CWMSSpreadsheet({
                   // Calculate time value for time column
                   let displayValue = cellValue;
                   if (shouldShowTimestamps && colIndex === 0) {
-                    if (baseTimestamp && timeoffsets[rowIndex] !== undefined) {
-                      const baseTime = new Date(baseTimestamp);
-                      const offsetMs = timeoffsets[rowIndex] * 1000;
-                      const cellTime = new Date(baseTime.getTime() + offsetMs);
+                    if (getTimestampForInput && timeoffsets[rowIndex] !== undefined) {
+                      const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
+                      const cellTime = new Date(timestamp);
                       displayValue = cellTime.toLocaleTimeString("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
