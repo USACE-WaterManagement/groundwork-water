@@ -1,6 +1,8 @@
-import { Text } from "@usace/groundwork";
+import { Text, Link } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 function FormsDocs() {
   return (
@@ -16,12 +18,12 @@ function FormsDocs() {
       <Divider text="Getting Started" className="mt-8" />
       <Text className="mb-4">
         Start with the{" "}
-        <a
-          href="/docs/forms/cwms-form"
+        <Link
+          href={`${BASE_URL}/#/docs/forms/cwms-form`}
           className="text-blue-600 hover:underline font-semibold"
         >
           CWMSForm
-        </a>{" "}
+        </Link>{" "}
         component to create a form container, then add any of the CWMS input components
         for data collection. The CWMSForm handles all the CWMS integration
         automatically.
@@ -30,75 +32,75 @@ function FormsDocs() {
       <Divider text="Available Components" className="mt-8" />
       <ul className="list-disc ml-6 space-y-2">
         <li>
-          <a
-            href="/docs/forms/cwms-form"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-form`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSForm
-          </a>{" "}
+          </Link>{" "}
           - Container component that provides form context and CWMS submission
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-input"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-input`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInput
-          </a>{" "}
+          </Link>{" "}
           - Standard text and number input field
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-textarea"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-textarea`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSTextarea
-          </a>{" "}
+          </Link>{" "}
           - Multi-line text input
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-checkboxes"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-checkboxes`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSCheckboxes
-          </a>{" "}
+          </Link>{" "}
           - Multiple selection checkboxes
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-radio-group"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-radio-group`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSRadioGroup
-          </a>{" "}
+          </Link>{" "}
           - Single selection radio buttons
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-dropdown"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-dropdown`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSDropdown
-          </a>{" "}
+          </Link>{" "}
           - Single selection dropdown
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-input-table"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-input-table`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInputTable
-          </a>{" "}
+          </Link>{" "}
           - Matrix of inputs for time series data
         </li>
         <li>
-          <a
-            href="/docs/forms/cwms-spreadsheet"
+          <Link
+            href={`${BASE_URL}/#/docs/forms/cwms-spreadsheet`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSSpreadsheet
-          </a>{" "}
+          </Link>{" "}
           - Excel-like spreadsheet with copy/paste support
         </li>
       </ul>
