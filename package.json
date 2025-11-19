@@ -33,7 +33,7 @@
     "check-changeset": "changeset status --since=main",
     "deploy": "gh-pages -d dist",
     "prepare": "husky",
-    "watch": "vite build --mode lib --watch"
+    "watch": "vite build --mode lib --watch",
     "release": "npm run build && changeset publish",
     "login": "npm login"
   },
