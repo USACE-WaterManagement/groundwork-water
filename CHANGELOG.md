@@ -1,5 +1,15 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.5.0
+
+### Minor Changes
+
+- 25f99ad: Adds a squite of form components to easily allow users to create and maintain manual data entry forms to the CWMS database. Components include text, number, dropdown, radio, and checkbox, fields, along with a seemless intregration with existing Auth contexts.
+
+### Patch Changes
+
+- 2246ae5: Update to CWMS Plot to modify location level trace with dates bounded by start and end of all timeseries datasets @stephenkissock
+
 ## 3.4.1
 
 ### Patch Changes
