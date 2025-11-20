@@ -33,6 +33,7 @@
     "check-changeset": "changeset status --since=main",
     "deploy": "gh-pages -d dist",
     "prepare": "husky",
+    "watch": "vite build --mode lib --watch",
     "release": "npm run build && changeset publish",
     "login": "npm login"
   },
@@ -62,7 +63,8 @@
     "deepmerge": "^4.3.1",
     "ol": "^10.0.0",
     "plotly.js-basic-dist": "^2.33.0",
-    "react-icons": "^5.3.0"
+    "react-icons": "^5.3.0",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",

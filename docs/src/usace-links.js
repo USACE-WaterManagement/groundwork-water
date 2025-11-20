@@ -2,7 +2,7 @@ export default [
   {
     id: "a2w",
     text: "Access 2 Water",
-    href: "https://water.usace.army.mil/",
+    href: "https://cwms-data.usace.army.mil/",
   },
   {
     id: "HEC",

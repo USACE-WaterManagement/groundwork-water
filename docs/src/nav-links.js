@@ -1,3 +1,5 @@
+import { docsConfig } from "./config/docs.config";
+
 export default [
   {
     id: "get-started",
@@ -156,6 +158,63 @@ export default [
         text: "CWMS Plot",
         href: "/docs/plots/cwms-plot",
       },
+    ],
+  },
+  {
+    id: "forms",
+    text: "Forms",
+    href: "/docs/forms",
+    children: [
+      {
+        id: "cwms-form",
+        text: "CWMSForm",
+        href: "/docs/forms/cwms-form",
+      },
+      {
+        id: "cwms-checkboxes",
+        text: "CWMS Checkboxes",
+        href: "/docs/forms/cwms-checkboxes",
+      },
+      {
+        id: "cwms-radio-group",
+        text: "CWMS Radio Group",
+        href: "/docs/forms/cwms-radio-group",
+      },
+      {
+        id: "cwms-dropdown",
+        text: "CWMS Dropdown",
+        href: "/docs/forms/cwms-dropdown",
+      },
+      {
+        id: "cwms-input",
+        text: "CWMS Input",
+        href: "/docs/forms/cwms-input",
+      },
+      {
+        id: "cwms-input-table",
+        text: "CWMS Input Table",
+        href: "/docs/forms/cwms-input-table",
+      },
+      {
+        id: "cwms-spreadsheet",
+        text: "CWMS Spreadsheet",
+        href: "/docs/forms/cwms-spreadsheet",
+      },
+      {
+        id: "cwms-textarea",
+        text: "CWMS Textarea",
+        href: "/docs/forms/cwms-textarea",
+      },
+      // Conditionally add interactive test page
+      ...(docsConfig.features.showInteractiveTestPage
+        ? [
+            {
+              id: docsConfig.testPage.id,
+              text: docsConfig.testPage.text,
+              href: docsConfig.testPage.href,
+            },
+          ]
+        : []),
     ],
   },
   {

@@ -34,6 +34,18 @@ import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
 import useDebounce from "../pages/docs/utilities/use-debounce";
 
+import FormsDocs from "../pages/docs/forms";
+import CWMSFormDocs from "../pages/docs/forms/cwms-form";
+import CWMSInputDocs from "../pages/docs/forms/cwms-input";
+import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
+import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
+import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
+import CWMSDropdownDocs from "../pages/docs/forms/cwms-dropdown";
+import CWMSInputTableDocs from "../pages/docs/forms/cwms-input-table";
+import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
+import InteractiveFormTest from "../pages/docs/forms/interactive-test";
+import { docsConfig } from "../config/docs.config";
+
 export default createRouteBundle(
   {
     "/": Home,
@@ -63,6 +75,19 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/forms": FormsDocs,
+    "/docs/forms/cwms-form": CWMSFormDocs,
+    "/docs/forms/cwms-input": CWMSInputDocs,
+    "/docs/forms/cwms-textarea": CWMSTextareaDocs,
+    "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
+    "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
+    "/docs/forms/cwms-dropdown": CWMSDropdownDocs,
+    "/docs/forms/cwms-input-table": CWMSInputTableDocs,
+    "/docs/forms/cwms-spreadsheet": CWMSSpreadsheetDocs,
+    // Conditionally add interactive test route
+    ...(docsConfig.features.showInteractiveTestPage && {
+      "/docs/forms/interactive-test": InteractiveFormTest,
+    }),
     "/docs/utilities": UtilitiesDocs,
     "/docs/utilities/use-debounce": useDebounce,
     "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
