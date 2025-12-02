@@ -18,12 +18,12 @@ const componentProps = [
 
 const authProvider = <Code>AuthProvider</Code>;
 const authMethod = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );
 const useAuth = (
-  <Link href={`${BASE_URL}/#/docs/auth/use-auth`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/use-auth`} className="hover:underline">
     <Code>useAuth()</Code>
   </Link>
 );

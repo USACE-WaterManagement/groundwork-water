@@ -54,7 +54,7 @@ const componentProps = [
 
 const keycloak = <Code>createKeycloakAuthMethod()</Code>;
 const authMethod = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );

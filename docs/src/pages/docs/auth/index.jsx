@@ -7,17 +7,17 @@ import QueryClientWarning from "../../../components/QueryClientWarning";
 const BASE_URL = import.meta.env.BASE_URL;
 
 const authMethod = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );
 const authProvider = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-provider`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
   </Link>
 );
 const useAuth = (
-  <Link href={`${BASE_URL}/#/docs/auth/use-auth`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/use-auth`} className="hover:underline">
     <Code>useAuth()</Code>
   </Link>
 );
@@ -76,7 +76,7 @@ function AuthenticationDocs() {
             <ul className="list-disc ml-8">
               <li>
                 <Link
-                  href={`${BASE_URL}/#/docs/auth/keycloak`}
+                  href={`${BASE_URL}#/docs/auth/keycloak`}
                   className="hover:underline"
                 >
                   createKeycloakAuthMethod()
@@ -84,7 +84,7 @@ function AuthenticationDocs() {
               </li>
               <li>
                 <Link
-                  href={`${BASE_URL}/#/docs/auth/cwms-login`}
+                  href={`${BASE_URL}#/docs/auth/cwms-login`}
                   className="hover:underline"
                 >
                   createCwmsLoginAuthMethod()

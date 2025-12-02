@@ -23,7 +23,7 @@ function PlotsDocs() {
       <H4>Components</H4>
       <ul>
         <li>
-          <Link href={`${BASE_URL}/#/docs/plots/cwms-plot`}>
+          <Link href={`${BASE_URL}#/docs/plots/cwms-plot`}>
             CMWSPlot - A generic plot for displaying CWMS data
           </Link>
         </li>

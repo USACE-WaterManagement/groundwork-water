@@ -45,7 +45,7 @@ const componentProps = [
 ];
 
 const authProvider = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-provider`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
   </Link>
 );
@@ -68,13 +68,13 @@ function AuthMethodDocs() {
         </Text>
         <ul className="list-disc mt-2 ml-8 text-gray-500">
           <li>
-            <Link href={`${BASE_URL}/#/docs/auth/keycloak`} className="hover:underline">
+            <Link href={`${BASE_URL}#/docs/auth/keycloak`} className="hover:underline">
               createKeycloakAuthMethod()
             </Link>
           </li>
           <li>
             <Link
-              href={`${BASE_URL}/#/docs/auth/cwms-login`}
+              href={`${BASE_URL}#/docs/auth/cwms-login`}
               className="hover:underline"
             >
               createCwmsLoginAuthMethod()

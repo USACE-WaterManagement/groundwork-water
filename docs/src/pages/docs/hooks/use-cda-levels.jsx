@@ -102,7 +102,7 @@ function UseCdaLevels() {
           The useCdaLevels hook (and endpoint) returns it in the same format as the
           TimeSeries endpoint. If you are wanting to use levels in plots please see the{" "}
           <Code>locationLevels</Code> prop on{" "}
-          <Link href={`${BASE_URL}/#/docs/plots/cwms-plot`} className="underline">
+          <Link href={`${BASE_URL}#/docs/plots/cwms-plot`} className="underline">
             CWMSPlot
           </Link>
         </Text>

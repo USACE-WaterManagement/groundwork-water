@@ -41,12 +41,12 @@ const returnParams = [
 ];
 
 const authProvider = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-provider`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
   </Link>
 );
 const authMethod = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );

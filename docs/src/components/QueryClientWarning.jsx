@@ -13,7 +13,7 @@ const QueryClientWarning = () => {
         <span>
           Use of this component requires that your application be wrapped in a
           QueryClientProvider. Refer to the{" "}
-          <Link href={`${BASE_URL}/#/docs/react-query`} className="underline">
+          <Link href={`${BASE_URL}#/docs/react-query`} className="underline">
             Getting Started - React-Query
           </Link>{" "}
           page.

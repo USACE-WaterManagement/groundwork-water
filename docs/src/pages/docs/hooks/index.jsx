@@ -92,7 +92,7 @@ function DataHooks() {
           <span>
             A quick walkthrough to get React Query set up in your application is
             available at{" "}
-            <Link href={`${BASE_URL}/#/docs/react-query`} className="underline">
+            <Link href={`${BASE_URL}#/docs/react-query`} className="underline">
               Getting Started - React Query
             </Link>
           </span>

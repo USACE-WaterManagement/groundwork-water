@@ -12,10 +12,10 @@ function NotFound() {
           </H2>
         </div>
         <div className="flex gap-3 mt-8">
-          <Button color="green" href={`${BASE_URL}/#/`}>
+          <Button color="green" href={`${BASE_URL}#/`}>
             Go Home
           </Button>
-          <Button color="teal" href={`${BASE_URL}/#/docs`}>
+          <Button color="teal" href={`${BASE_URL}#/docs`}>
             Go to Documentation
           </Button>
           <Button color="blue" onClick={() => window.history.back()}>

@@ -23,7 +23,7 @@ const componentProps = [
 
 const cwmsLogin = <Code>createCwmsLoginAuthMethod()</Code>;
 const authMethod = (
-  <Link href={`${BASE_URL}/#/docs/auth/auth-method`} className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
   </Link>
 );
