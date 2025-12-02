@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.5.1
+
+### Patch Changes
+
+- ad16cf6: Updating routing in docs by removing leading /#/ can setting base_Url to be "/groundwork-water/" : "/"
+
 ## 3.5.0
 
 ### Minor Changes
