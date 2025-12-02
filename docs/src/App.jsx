@@ -16,12 +16,12 @@ function App() {
   const {
     route: Route,
     hash,
-    doUpdateUrl,
-  } = useConnect("selectRoute", "selectHash", "doUpdateUrl");
+    doUpdateHash,
+  } = useConnect("selectRoute", "selectHash", "doUpdateHash");
 
   if (hash === "") {
     window.setTimeout(() => {
-      doUpdateUrl("/#/");
+      doUpdateHash("/");
     }, 100);
     return null;
   }
