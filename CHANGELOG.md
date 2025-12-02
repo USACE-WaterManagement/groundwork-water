@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.5.2
+
+### Patch Changes
+
+- a8c2461: Add missing baseurl to docs
+
 ## 3.5.1
 
 ### Patch Changes
