@@ -25,7 +25,12 @@ function App() {
   }
 
   return (
-    <div onClick={getNavHelper((url) => doUpdateHash(url))}>
+    <div
+      onClick={getNavHelper((url) => {
+        if (url.includes("/#")) url = url.replace("/#", "");
+        doUpdateHash(url);
+      })}
+    >
       <SiteWrapper
         fluidNav={true}
         links={links}

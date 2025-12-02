@@ -4,10 +4,7 @@ import pkg from "../package.json";
 import tailwindcss from "tailwindcss";
 
 export default defineConfig(({ mode }) => {
-  const base =
-    mode === "production"
-      ? "https://USACE-WaterManagement.github.io/groundwork-water/"
-      : "http://localhost:5173/";
+  const base = mode === "production" ? "/groundwork-water/" : "/";
   return {
     plugins: [react(), tailwindcss()],
     base: base,
