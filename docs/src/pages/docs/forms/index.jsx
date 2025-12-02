@@ -19,7 +19,7 @@ function FormsDocs() {
       <Text className="mb-4">
         Start with the{" "}
         <Link
-          href={`${BASE_URL}docs/forms/cwms-form`}
+          href={`${BASE_URL}#/docs/forms/cwms-form`}
           className="text-blue-600 hover:underline font-semibold"
         >
           CWMSForm
@@ -33,7 +33,7 @@ function FormsDocs() {
       <ul className="list-disc ml-6 space-y-2">
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-form`}
+            href={`${BASE_URL}#/docs/forms/cwms-form`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSForm
@@ -42,7 +42,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-input`}
+            href={`${BASE_URL}#/docs/forms/cwms-input`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInput
@@ -51,7 +51,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-textarea`}
+            href={`${BASE_URL}#/docs/forms/cwms-textarea`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSTextarea
@@ -60,7 +60,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-checkboxes`}
+            href={`${BASE_URL}#/docs/forms/cwms-checkboxes`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSCheckboxes
@@ -69,7 +69,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-radio-group`}
+            href={`${BASE_URL}#/docs/forms/cwms-radio-group`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSRadioGroup
@@ -78,7 +78,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-dropdown`}
+            href={`${BASE_URL}#/docs/forms/cwms-dropdown`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSDropdown
@@ -87,7 +87,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-input-table`}
+            href={`${BASE_URL}#/docs/forms/cwms-input-table`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSInputTable
@@ -96,7 +96,7 @@ function FormsDocs() {
         </li>
         <li>
           <Link
-            href={`${BASE_URL}docs/forms/cwms-spreadsheet`}
+            href={`${BASE_URL}#/docs/forms/cwms-spreadsheet`}
             className="text-blue-600 hover:underline font-semibold"
           >
             CWMSSpreadsheet
