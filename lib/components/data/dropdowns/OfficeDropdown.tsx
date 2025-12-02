@@ -89,7 +89,7 @@ const OfficeDropdown = ({
       ) : (
         <Dropdown
           className={"gww-w-5/6 gww-m-auto"}
-          defaultValue={filteredOffices.at(0)?.name}
+          defaultValue={filteredOffices[0]?.name}
           title="Select an office"
           aria-label="Select an office"
           options={filteredOffices.map((office) => (
