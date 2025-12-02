@@ -1,4 +1,6 @@
 const BASE_URL = import.meta.env.BASE_URL;
+import { docsConfig } from "./config/docs.config";
+
 export default [
   {
     id: "get-started",
@@ -55,10 +57,39 @@ export default [
     ],
   },
   {
+    id: "dropdowns",
+    text: "Dropdowns",
+    href: "/docs/dropdowns",
+    children: [
+      {
+        id: "offices",
+        text: "Offices",
+        href: "/docs/dropdowns/offices",
+      },
+    ],
+  },
+  {
     id: "hooks",
     text: "Data Hooks",
     href: `${BASE_URL}/#/docs/hooks`,
     children: [
+      {
+        id: "blobs",
+        text: "CDA Blobs",
+        href: "#",
+        children: [
+          {
+            id: "use-cda-blob",
+            text: "CDA Blob",
+            href: "/docs/hooks/use-cda-blob",
+          },
+          {
+            id: "use-cda-blobs",
+            text: "CDA Blobs (list)",
+            href: "/docs/hooks/use-cda-blobs",
+          },
+        ],
+      },
       {
         id: "use-cda-catalog",
         text: "CDA Catalog",
@@ -78,6 +109,11 @@ export default [
         id: "use-cda-location",
         text: "CDA Location",
         href: `${BASE_URL}/#/docs/hooks/use-cda-location`,
+      },
+      {
+        id: "use-cda-offices",
+        text: "CDA Offices",
+        href: "/docs/hooks/use-cda-offices",
       },
       {
         id: "use-cda-time-series",
@@ -126,6 +162,63 @@ export default [
     ],
   },
   {
+    id: "forms",
+    text: "Forms",
+    href: "/docs/forms",
+    children: [
+      {
+        id: "cwms-form",
+        text: "CWMSForm",
+        href: "/docs/forms/cwms-form",
+      },
+      {
+        id: "cwms-checkboxes",
+        text: "CWMS Checkboxes",
+        href: "/docs/forms/cwms-checkboxes",
+      },
+      {
+        id: "cwms-radio-group",
+        text: "CWMS Radio Group",
+        href: "/docs/forms/cwms-radio-group",
+      },
+      {
+        id: "cwms-dropdown",
+        text: "CWMS Dropdown",
+        href: "/docs/forms/cwms-dropdown",
+      },
+      {
+        id: "cwms-input",
+        text: "CWMS Input",
+        href: "/docs/forms/cwms-input",
+      },
+      {
+        id: "cwms-input-table",
+        text: "CWMS Input Table",
+        href: "/docs/forms/cwms-input-table",
+      },
+      {
+        id: "cwms-spreadsheet",
+        text: "CWMS Spreadsheet",
+        href: "/docs/forms/cwms-spreadsheet",
+      },
+      {
+        id: "cwms-textarea",
+        text: "CWMS Textarea",
+        href: "/docs/forms/cwms-textarea",
+      },
+      // Conditionally add interactive test page
+      ...(docsConfig.features.showInteractiveTestPage
+        ? [
+            {
+              id: docsConfig.testPage.id,
+              text: docsConfig.testPage.text,
+              href: docsConfig.testPage.href,
+            },
+          ]
+        : []),
+    ],
+  },
+  {
     id: "tables",
     text: "Tables",
     href: `${BASE_URL}/#/docs/tables`,
@@ -144,6 +237,11 @@ export default [
         id: "cda-url-provider",
         text: "CDA URL Provider",
         href: `${BASE_URL}/#/docs/utilities/cda-url-provider`,
+      },
+      {
+        id: "use-debounce",
+        text: "Debounce",
+        href: "/docs/utilities/use-debounce",
       },
     ],
   },

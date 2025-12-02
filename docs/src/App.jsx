@@ -10,6 +10,8 @@ const version = import.meta.env.PKG_VERSION;
 import externalLinks from "./external-links";
 import usaceLinks from "./usace-links";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 function App() {
   const {
     route: Route,
@@ -25,7 +27,12 @@ function App() {
   }
 
   return (
-    <div onClick={getNavHelper(doUpdateUrl)}>
+    <div
+      onClick={getNavHelper((url) => {
+        if (url.includes(`${BASE_URL}#`)) url = url.replace(`${BASE_URL}#`, "");
+        doUpdateHash(url);
+      })}
+    >
       <SiteWrapper
         fluidNav={true}
         links={links}

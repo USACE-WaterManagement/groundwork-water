@@ -1,6 +1,6 @@
 {
   "name": "@usace-watermanagement/groundwork-water",
-  "version": "3.3.1",
+  "version": "3.5.2",
   "license": "MIT",
   "author": "Various",
   "description": "A library of react components for use with USACE Water Management Webpages",
@@ -30,8 +30,11 @@
     "build-lib": "tsc && vite build --mode lib && npm run link",
     "build-docs": "cd docs && vite build",
     "build-docs-prod": "cd docs && vite build",
+    "check-changeset": "changeset status --since=main",
     "deploy": "gh-pages -d dist",
     "prepare": "husky",
+    "watch": "vite build --mode lib --watch",
+    "release": "npm run build && changeset publish",
     "login": "npm login"
   },
   "lint-staged": {
@@ -39,7 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/USACE-WaterManagement/groundwork-water"
+    "url": "https://github.com/USACE-WaterManagement/groundwork-water.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "usace",
@@ -57,9 +63,11 @@
     "deepmerge": "^4.3.1",
     "ol": "^10.0.0",
     "plotly.js-basic-dist": "^2.33.0",
-    "react-icons": "^5.3.0"
+    "react-icons": "^5.3.0",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.7",
     "@types/ol": "^7.0.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -83,7 +91,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.51.23",
-    "@usace/groundwork": "^3.10.0",
+    "@usace/groundwork": "^3.14.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
