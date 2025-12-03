@@ -258,32 +258,32 @@ export default [
       {
         id: "report-issue",
         text: "Report Issue / Request Help",
-        href: `${BASE_URL}/#https://github.com/USACE-WaterManagement/groundwork-water/issues`,
+        href: `https://github.com/USACE-WaterManagement/groundwork-water/issues`,
       },
       {
         id: "javascript-basics",
         text: "JavaScript Basics",
-        href: `${BASE_URL}/#https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics`,
+        href: `https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics`,
       },
       {
         id: "template-literal",
         text: "Template Literal",
-        href: `${BASE_URL}/#https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals`,
+        href: `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals`,
       },
       {
         id: "react-basics",
         text: "React Basics",
-        href: `${BASE_URL}/#https://react.dev/learn`,
+        href: `https://react.dev/learn`,
       },
       {
         id: "groundwork-basics",
         text: "Getting Started - Groundwork - Themes/Styles",
-        href: `${BASE_URL}/#https://usace.github.io/groundwork/#`,
+        href: `https://usace.github.io/groundwork/#`,
       },
       {
         id: "cwms-js-docs",
         text: "CWMSjs Developer Docs",
-        href: `${BASE_URL}/#https://hydrologicengineeringcenter.github.io/cwms-data-api-client-javascript/`,
+        href: `https://hydrologicengineeringcenter.github.io/cwms-data-api-client-javascript/`,
       },
     ],
   },
