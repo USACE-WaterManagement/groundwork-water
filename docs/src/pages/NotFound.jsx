@@ -1,5 +1,7 @@
 import { Button, H2 } from "@usace/groundwork";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 function NotFound() {
   return (
     <div className="flex justify-center mt-12">
@@ -10,10 +12,10 @@ function NotFound() {
           </H2>
         </div>
         <div className="flex gap-3 mt-8">
-          <Button color="green" href="/">
+          <Button color="green" href={`${BASE_URL}#/`}>
             Go Home
           </Button>
-          <Button color="teal" href="/docs">
+          <Button color="teal" href={`${BASE_URL}#/docs`}>
             Go to Documentation
           </Button>
           <Button color="blue" onClick={() => window.history.back()}>
