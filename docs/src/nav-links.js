@@ -59,12 +59,12 @@ export default [
   {
     id: "dropdowns",
     text: "Dropdowns",
-    href: "/docs/dropdowns",
+    href: `${BASE_URL}#/docs/dropdowns`,
     children: [
       {
         id: "offices",
         text: "Offices",
-        href: "/docs/dropdowns/offices",
+        href: `${BASE_URL}#/docs/dropdowns/offices`,
       },
     ],
   },
@@ -76,17 +76,17 @@ export default [
       {
         id: "blobs",
         text: "CDA Blobs",
-        href: "#",
+        href: `${BASE_URL}#`,
         children: [
           {
             id: "use-cda-blob",
             text: "CDA Blob",
-            href: "/docs/hooks/use-cda-blob",
+            href: `${BASE_URL}#/docs/hooks/use-cda-blob`,
           },
           {
             id: "use-cda-blobs",
             text: "CDA Blobs (list)",
-            href: "/docs/hooks/use-cda-blobs",
+            href: `${BASE_URL}#/docs/hooks/use-cda-blobs`,
           },
         ],
       },
@@ -113,7 +113,7 @@ export default [
       {
         id: "use-cda-offices",
         text: "CDA Offices",
-        href: "/docs/hooks/use-cda-offices",
+        href: `${BASE_URL}#/docs/hooks/use-cda-offices`,
       },
       {
         id: "use-cda-time-series",
@@ -164,47 +164,47 @@ export default [
   {
     id: "forms",
     text: "Forms",
-    href: "/docs/forms",
+    href: `${BASE_URL}#/docs/forms`,
     children: [
       {
         id: "cwms-form",
         text: "CWMSForm",
-        href: "/docs/forms/cwms-form",
+        href: `${BASE_URL}#/docs/forms/cwms-form`,
       },
       {
         id: "cwms-checkboxes",
         text: "CWMS Checkboxes",
-        href: "/docs/forms/cwms-checkboxes",
+        href: `${BASE_URL}#/docs/forms/cwms-checkboxes`,
       },
       {
         id: "cwms-radio-group",
         text: "CWMS Radio Group",
-        href: "/docs/forms/cwms-radio-group",
+        href: `${BASE_URL}#/docs/forms/cwms-radio-group`,
       },
       {
         id: "cwms-dropdown",
         text: "CWMS Dropdown",
-        href: "/docs/forms/cwms-dropdown",
+        href: `${BASE_URL}#/docs/forms/cwms-dropdown`,
       },
       {
         id: "cwms-input",
         text: "CWMS Input",
-        href: "/docs/forms/cwms-input",
+        href: `${BASE_URL}#/docs/forms/cwms-input`,
       },
       {
         id: "cwms-input-table",
         text: "CWMS Input Table",
-        href: "/docs/forms/cwms-input-table",
+        href: `${BASE_URL}#/docs/forms/cwms-input-table`,
       },
       {
         id: "cwms-spreadsheet",
         text: "CWMS Spreadsheet",
-        href: "/docs/forms/cwms-spreadsheet",
+        href: `${BASE_URL}#/docs/forms/cwms-spreadsheet`,
       },
       {
         id: "cwms-textarea",
         text: "CWMS Textarea",
-        href: "/docs/forms/cwms-textarea",
+        href: `${BASE_URL}#/docs/forms/cwms-textarea`,
       },
       // Conditionally add interactive test page
       ...(docsConfig.features.showInteractiveTestPage
@@ -241,7 +241,7 @@ export default [
       {
         id: "use-debounce",
         text: "Debounce",
-        href: "/docs/utilities/use-debounce",
+        href: `${BASE_URL}#/docs/utilities/use-debounce`,
       },
     ],
   },
