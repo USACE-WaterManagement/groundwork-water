@@ -16,16 +16,18 @@ _Note: You must have nodejs installed and in your path!_
      - Create your own fork and clone it locally.
    - Developers (Ask for access):
      - Clone the repository directory
-     - Try to use the "create branch" feature on the right sidebar of GitHub in the issue's given page
 
-3. **Create a Branch**  
-   Use a descriptive branch name for your feature or fix:
+3. **Create a Branch**
+
+   _NOTE_: Try to use the "create branch" feature on the right sidebar of GitHub in the issue's given page
+
+   If Not: Use a descriptive branch name for your feature or fix:
 
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
-   Or use VSCode
+   Or use VSCode to create the branch after step 2
 
 4. **Install the root and docs packages**
    Install the required dependencies for the docs page and library with:
@@ -70,11 +72,12 @@ _Note: You must have nodejs installed and in your path!_
    To do this run:  
    `changesets patch`
 
-   We use semantic versioning, or semver. Read more here: https://semver.org/  
-   In short:
-   - `major` if it **breaks** something.
-   - `minor` if it's a functionality that does _not_ break anything.
-   - `patch` if it's a bug fix that does _not_ break something.
+We use semantic versioning, or semver. Read more here: https://semver.org/  
+ In short:
+
+- `major` if it **breaks** something.
+- `minor` if it's a functionality that does _not_ break anything.
+- `patch` if it's a bug fix that does _not_ break something.
 
 10. **Push and Open a Pull Request**  
     Read more below about [PRs](#pull-requests)  
