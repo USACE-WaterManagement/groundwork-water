@@ -10,7 +10,7 @@ _Note: You must have nodejs installed and in your path!_
 
 1. **Submit an issue**
    1. Create an [issue](https://github.com/USACE-WaterManagement/groundwork-water/issues) as bug or feature/etc
-   2. If you wish to work the issue, ask for it to be assigned to you
+   2. If you wish to work the issue, ask for it to be assigned to you. If you can, assign it to yourself.
 2. **Retrieve the Repository**
    - Non Core Developers:
      - Create your own fork and clone it locally.
