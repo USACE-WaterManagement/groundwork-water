@@ -70,7 +70,7 @@ _Note: You must have nodejs installed and in your path!_
 9. **Version your Code**  
    Run changesets to version your code.  
    To do this run:  
-   `changesets patch`
+   `npx changesets patch`
 
 We use semantic versioning, or semver. Read more here: https://semver.org/  
  In short:
