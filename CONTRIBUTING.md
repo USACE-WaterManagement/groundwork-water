@@ -111,13 +111,7 @@ To help keep your code formatted while you make changes you might consider in vs
 
 - Be respectful and constructive in all communications.
 
-## Questions?
-
-Open an issue or start a discussion if you need help.
-
-Thank you for helping improve Groundwork Water!
-
-### Pull Requests
+## Pull Requests
 
 - Where possible, commits and pull requests should be [atomic](https://en.wikipedia.org/wiki/Atomic_commit):  
   _Keeping commits and PRs to one topic at a time_
@@ -132,7 +126,7 @@ Thank you for helping improve Groundwork Water!
     This can also be done in VSCode using the `Version Control` menu:  
      ![rebase from main](_images/rebase-main.png)
 
-### Workflow Recommendations
+## Workflow Recommendations
 
 - Use `npm link` to connect your project or the `docs` to the local generated `groundwork-water`
   - See the `link` script in `package.json` for details
@@ -142,7 +136,7 @@ Thank you for helping improve Groundwork Water!
   - Command Prompt in VSCode : [Integrated Terminal](https://code.visualstudio.com/docs/terminal/getting-started)
   - [Tips & Tricks](https://code.visualstudio.com/docs/getstarted/tips-and-tricks)
 
-### Extensions
+## Extensions
 
 - [TailwindCSS](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) -> Provides you inline tailwind options in your `className` blocks
 - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) -> Industry standard for styling, large community, and works in many programming languages
@@ -150,7 +144,7 @@ Thank you for helping improve Groundwork Water!
 - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) -> Don't let the typos win
 - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph) -> Adds a graph icon on your "Source Control" line to let you view a visual representation of your git state
 
-### Styling / formatting
+## Styling / formatting
 
 - Style often and consider [Format on Save for Workspace](![Format on Save in Workspace](./_images/save_workspace_format.png))
 - Use the Prettier extension mentioned before to format with
@@ -209,3 +203,9 @@ npm run publish
 ```
 
 This will build the package, and then publish it to NPM.
+
+## Questions?
+
+Open an issue or start a discussion if you need help.
+
+Thank you for helping improve Groundwork Water!
