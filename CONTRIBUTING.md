@@ -99,7 +99,7 @@ To help keep your code formatted while you make changes you might consider in vs
 
 ## Reporting Issues
 
-- Report issues directly in VSCode. Using the issue submission tool consider labeling it with a priority to help us gauge if it is a blocker.
+- Report issues directly in GitHub. Using the issue submission tool consider labeling it with a priority to help us gauge if it is a blocker.
 - Provide steps to reproduce bugs and relevant logs or screenshots.
 - Do NOT post sensitive information such as:
   - IP Addresses
