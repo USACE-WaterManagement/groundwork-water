@@ -173,7 +173,7 @@ npm run dev
 
 This will first _install_ the dependencies for the library then it `npm link`'s the package in the docs.
 
-When you're making frequent changes you should consider importing the components directly from the package.
+When you're making frequent changes you might consider importing the components directly from the package.
 i.e.
 
 ```js
@@ -181,6 +181,16 @@ import { CWMSPlot } from "../path/to/lib/path/to/component";
 ```
 
 This will install the dependencies, and then run the docs in development mode.
+
+**NOTE**: BE SURE, if you use this method to change the import back to using the library import before committing your changes:
+
+i.e.
+
+```js
+import { CWMSPlot } from "@usace-watermanagement/groundwork-water";
+```
+
+If you do not, your changes will be broken in the official NPM release.
 
 ### groundwork-water npm library
 
@@ -192,7 +202,13 @@ These are the components that would be shared with the community but also within
 
 Publishing is done automatically via `changesets` and keys setup in the GitHub secrets. A [PR](#pull-requests) to main with a version bump is sufficient to trigger a publication.
 
-#### Publishing Manually
+When a PR with a changesets file is merged to the main branch, changesets will automatically aggregate the changes into a new PR that it manages automatically. When desired, library maintainers can trigger a release by merging the changesets-managed PR.
+
+You need only worry about running the command `changesets` when you are ready to version your changes. Then commit the files the changesets command creates.
+
+We prefer you to run this command and commit prior to making the PR.
+
+### Publishing Manually
 
 **_NOTE:_** You will first need to be added as a collaborator to the package on NPM.
 
