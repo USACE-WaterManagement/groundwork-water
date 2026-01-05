@@ -19,8 +19,6 @@ Will install the groundwork water components to your local `node_modules` direct
 You can read the current Groundwork Water Documentation:  
 [https://usace-watermanagement.github.io/groundwork-water/](https://usace-watermanagement.github.io/groundwork-water/)
 
-[View Source on Github](https://github.com/USACE-WaterManagement/groundwork-water)
-
 ## Developers ![NPM Downloads](https://img.shields.io/npm/dm/@usace-watermanagement/groundwork-water)
 
-If you wish to contribute to the `groundwork-water` project and you are a current water management member within USACE. Please consider checking out the [CONTRIBUTING](/CONTRIBUTING.md) documentation!
+If you wish to contribute to the `groundwork-water` project, and you are a current water management member within USACE, please consider checking out the [CONTRIBUTING](/CONTRIBUTING.md) documentation!
