@@ -31,7 +31,6 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({
   method,
-  refreshInterval,
   statusPollInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
@@ -55,7 +54,7 @@ export const AuthProvider = ({
 
   const isAuth = statusQuery.data ?? false;
 
-  useRefreshToken(isAuth, method, refreshInterval);
+  useRefreshToken(isAuth, method);
 
   const login = useMutation({
     mutationFn: async () => {
