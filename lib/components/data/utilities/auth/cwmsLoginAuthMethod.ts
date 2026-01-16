@@ -3,6 +3,7 @@ import { AuthMethod } from "./AuthProvider";
 interface CwmsLoginConfig {
   authUrl: string;
   authCheckUrl: string;
+  statusPollInterval?: number;
 }
 
 /**
@@ -21,8 +22,11 @@ interface CwmsLoginConfig {
 export const createCwmsLoginAuthMethod = ({
   authUrl,
   authCheckUrl,
+  statusPollInterval = 15,
 }: CwmsLoginConfig) => {
   const cwmsLoginAuthMethod: AuthMethod = {
+    refreshInterval: statusPollInterval,
+
     async login() {
       location.href =
         `${authUrl}/login?OriginalLocation=` + encodeURIComponent(location.href);
