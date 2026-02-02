@@ -1,6 +1,7 @@
-import { createContext, PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 import { useRefreshToken } from "./useRefreshToken";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { AuthContext } from "./AuthContext";
 
 export interface AuthMethod {
   login: () => Promise<void>;
@@ -10,16 +11,6 @@ export interface AuthMethod {
   refreshInterval?: number;
   token?: string;
 }
-
-export interface AuthContextValue {
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
-  isAuth: boolean;
-  isLoading: boolean;
-  token?: string;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
 
 interface AuthProviderProps {
   method: AuthMethod;
