@@ -1,7 +1,9 @@
 import { PropsWithChildren } from "react";
 import { useRefreshToken } from "./useRefreshToken";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "./AuthContext";
+import useCdaUrl from "../useCdaUrl";
+import { useCdaUserProfile } from "./useCdaUserProfile";
 
 export interface AuthMethod {
   login: () => Promise<void>;
@@ -14,14 +16,18 @@ export interface AuthMethod {
 
 interface AuthProviderProps {
   method: AuthMethod;
+  cdaUrl?: string;
   refreshInterval?: number;
 }
 
 export const AuthProvider = ({
   method,
+  cdaUrl: propCdaUrl,
   refreshInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
+  const queryClient = useQueryClient();
+
   const {
     data: isAuth = false,
     isLoading,
@@ -33,23 +39,33 @@ export const AuthProvider = ({
     refetchOnWindowFocus: false,
   });
 
+  const providedCdaUrl = useCdaUrl();
+  const cdaUrl = propCdaUrl ?? providedCdaUrl;
+
   useRefreshToken(isAuth, method, refreshInterval);
+  const { data: profile, isLoading: profileLoading } = useCdaUserProfile(
+    isAuth,
+    cdaUrl,
+    method.token,
+  );
 
   const login = useMutation({
     mutationFn: method.login,
-    onSuccess: () => {
-      refetchAuthStatus();
+    onSuccess: async () => {
+      await refetchAuthStatus();
     },
   });
 
   const logout = useMutation({
     mutationFn: method.logout,
-    onSuccess: () => {
-      refetchAuthStatus();
+    onSuccess: async () => {
+      await refetchAuthStatus();
+      queryClient.removeQueries({ queryKey: ["auth", "profile"] });
     },
   });
 
-  const isAnyLoading = isLoading || login.isPending || logout.isPending;
+  const isAnyLoading =
+    isLoading || login.isPending || logout.isPending || profileLoading;
 
   return (
     <AuthContext.Provider
@@ -58,6 +74,7 @@ export const AuthProvider = ({
         logout: logout.mutateAsync,
         isAuth,
         isLoading: isAnyLoading,
+        profile,
         token: method.token,
       }}
     >
