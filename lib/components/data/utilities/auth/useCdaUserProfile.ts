@@ -51,7 +51,9 @@ export const useCdaUserProfile = (isAuth: boolean, cdaUrl?: string, token?: stri
       return fetchCdaUserProfile(cdaUrl, token);
     },
     enabled: !!cdaUrl && !!isAuth,
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: false,
   });
 };
