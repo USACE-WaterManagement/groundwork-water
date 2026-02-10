@@ -198,7 +198,7 @@ The `/lib` directory contains the source code for the package itself.
 
 These are the components that would be shared with the community but also within the docs themselves for testing and to showcase the components.
 
-### Publishing
+## Publishing
 
 Publishing is done automatically via `changesets` and keys setup in the GitHub secrets. A [PR](#pull-requests) to main with a version bump is sufficient to trigger a publication.
 
