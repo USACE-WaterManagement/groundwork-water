@@ -31,7 +31,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({
   method,
-  statusPollInterval,
+  statusPollInterval = 15, // in seconds
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
   const queryClient = useQueryClient();
