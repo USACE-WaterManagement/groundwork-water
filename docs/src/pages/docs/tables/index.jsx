@@ -184,6 +184,7 @@ default export function Example() {
 `}
           </Code>
         </div>
+
         <Divider text="API Reference" className="mt-8" />
         <div className="font-bold text-lg pt-6">
           Table Hook Parameters
@@ -207,6 +208,11 @@ default export function Example() {
         </div>
         <ParamsTable paramsList={timeseriesParams} showReq={true} />
 
+        <Badge color="blue" className="mt-2 text-[0.9em]">
+          <b>Precision</b> is determined based on the units provided by CDA for each
+          Time Series. They are overrode by the &quot;precision&quot; property in the
+          timeseriesParams object for each Time Series.
+        </Badge>
         <div className="font-bold text-lg pt-6">
           cdaParams
           <Code
