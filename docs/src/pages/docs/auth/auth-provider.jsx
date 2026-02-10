@@ -12,6 +12,18 @@ const componentProps = [
     default: "undefined",
     desc: "An authentication method with configuration options appropriate for your environment.",
   },
+  {
+    name: "cdaUrl",
+    type: "string",
+    default: "undefined",
+    desc: "The base CDA URL to use within the AuthProvider for profile retrieval. If the AuthProvider is within a CdaUrlProvider, the CdaUrlProvider is used by default.  Prop will override. If no cdaUrl is found then profile details will not be available.",
+  },
+  {
+    name: "refreshInterval",
+    type: "number",
+    default: "undefined",
+    desc: "Optional - Time between refresh token requests, in seconds. Will override authMethod setting.",
+  },
 ];
 
 const authProvider = <Code>AuthProvider</Code>;
