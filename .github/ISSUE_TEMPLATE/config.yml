@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Groundwork
+    url: https://github.com/usace/groundwork/issues
+    about: Issues Related to CSS/Style/Theming or other non data component problems.
+  - name: CWMSjs
+    url: https://github.com/HydrologicEngineeringCenter/cwms-data-api-client-javascript/issues
+    about: Issues with fetching data in hooks or the JavaScript wrapper for CDA.
+  - name: Groundwork Geo
+    url: https://github.com/USACE/groundwork-geo/issues
+    about: Map component issues that do NOT fetch data and otherwise have trouble with rendering or feature requests.
