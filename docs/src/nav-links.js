@@ -238,6 +238,11 @@ export default [
         href: "/docs/utilities/cda-url-provider",
       },
       {
+        id: "get-precision",
+        text: "Get Precision",
+        href: "/docs/utilities/get-precision",
+      },
+      {
         id: "use-debounce",
         text: "Debounce",
         href: "/docs/utilities/use-debounce",
