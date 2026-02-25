@@ -35,7 +35,7 @@ function Tables() {
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: `SHB.Stage-Ocean (ft ${datum})`,
-      rounding: 2,
+      precision: 2,
       offset: null,
     },
     {
@@ -45,7 +45,7 @@ function Tables() {
           SHB.Stage-Ocean <br /> (ft {datum})
         </>
       ),
-      rounding: 2,
+      precision: 2,
       offset: null,
     },
     {
