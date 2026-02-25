@@ -189,9 +189,9 @@ export default function CWMSPlot({
 
           // Update trace to include precision
           const yaxis_id = getYAxisId(
-            timeSeriesArray.filter((item) => {
+            timeSeriesArray.find((item) => {
               return item.id == result.name;
-            })[0],
+            }),
           );
           // Do not set tickformat if a precision is not required
           if (precision != 0) defaultLayout[yaxis_id].tickformat = `.${precision}f`;
