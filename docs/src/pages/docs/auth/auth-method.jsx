@@ -1,7 +1,9 @@
-import { Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 const componentProps = [
   {
@@ -43,9 +45,9 @@ const componentProps = [
 ];
 
 const authProvider = (
-  <a href="/docs/auth/auth-provider" className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-provider`} className="hover:underline">
     <Code>&lt;AuthProvider&gt;</Code>
-  </a>
+  </Link>
 );
 const authMethod = <Code>AuthMethod</Code>;
 
@@ -66,14 +68,17 @@ function AuthMethodDocs() {
         </Text>
         <ul className="list-disc mt-2 ml-8 text-gray-500">
           <li>
-            <a href="/docs/auth/keycloak" className="hover:underline">
+            <Link href={`${BASE_URL}#/docs/auth/keycloak`} className="hover:underline">
               createKeycloakAuthMethod()
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/docs/auth/cwms-login" className="hover:underline">
+            <Link
+              href={`${BASE_URL}#/docs/auth/cwms-login`}
+              className="hover:underline"
+            >
               createCwmsLoginAuthMethod()
-            </a>
+            </Link>
           </li>
         </ul>
         <Text className="mt-4">
