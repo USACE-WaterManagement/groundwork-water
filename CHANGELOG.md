@@ -1,5 +1,12 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.6.0
+
+### Minor Changes
+
+- ef0c492: Adds routing param to plots and allows for default rounding on plot and tables
+- 1e5425a: Update authentication handling to expose the user profile from CDA when available
+
 ## 3.5.2
 
 ### Patch Changes

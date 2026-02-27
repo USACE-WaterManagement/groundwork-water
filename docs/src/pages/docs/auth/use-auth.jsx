@@ -33,6 +33,12 @@ const returnParams = [
     desc: "True if auth status is currently processing, else false.",
   },
   {
+    name: "profile",
+    type: "CdaUserProfile",
+    default: "undefined",
+    desc: "CDA user profile for the authenticated user. Profile is only available if a cdaUrl is provided to the AuthProvider (prop or CdaUrlProvider), else undefined.",
+  },
+  {
     name: "token",
     type: "string",
     default: "undefined",
