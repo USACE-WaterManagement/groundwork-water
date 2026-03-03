@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.6.1
+
+### Patch Changes
+
+- 38ffd1c: Fix routing for other docs pages and headers to allow for ctrl + click and copy/paste of URLS
+
 ## 3.6.0
 
 ### Minor Changes
