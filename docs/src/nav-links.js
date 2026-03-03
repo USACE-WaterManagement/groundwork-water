@@ -1,209 +1,210 @@
+const BASE_URL = import.meta.env.BASE_URL;
 import { docsConfig } from "./config/docs.config";
 
 export default [
   {
     id: "get-started",
     text: "Getting Started",
-    href: "/docs",
+    href: `${BASE_URL}#/docs`,
     children: [
       {
         id: "quick-start",
         text: "Quick Start",
-        href: "/docs/quick-start",
+        href: `${BASE_URL}#/docs/quick-start`,
       },
       {
         id: "add-components",
         text: "Add Components",
-        href: "/docs/add-components",
+        href: `${BASE_URL}#/docs/add-components`,
       },
       {
         id: "react-query",
         text: "React Query",
-        href: "/docs/react-query",
+        href: `${BASE_URL}#/docs/react-query`,
       },
     ],
   },
   {
     id: "auth",
     text: "Authentication",
-    href: "/docs/auth",
+    href: `${BASE_URL}#/docs/auth`,
     children: [
       {
         id: "auth-method",
         text: "AuthMethod",
-        href: "/docs/auth/auth-method",
+        href: `${BASE_URL}#/docs/auth/auth-method`,
       },
       {
         id: "auth-provider",
         text: "AuthProvider",
-        href: "/docs/auth/auth-provider",
+        href: `${BASE_URL}#/docs/auth/auth-provider`,
       },
       {
         id: "cwms-login",
         text: "CWMSLogin Method",
-        href: "/docs/auth/cwms-login",
+        href: `${BASE_URL}#/docs/auth/cwms-login`,
       },
       {
         id: "keycloak",
         text: "Keycloak Method",
-        href: "/docs/auth/keycloak",
+        href: `${BASE_URL}#/docs/auth/keycloak`,
       },
       {
         id: "use-auth",
         text: "useAuth Hook",
-        href: "/docs/auth/use-auth",
+        href: `${BASE_URL}#/docs/auth/use-auth`,
       },
     ],
   },
   {
     id: "dropdowns",
     text: "Dropdowns",
-    href: "/docs/dropdowns",
+    href: `${BASE_URL}#/docs/dropdowns`,
     children: [
       {
         id: "offices",
         text: "Offices",
-        href: "/docs/dropdowns/offices",
+        href: `${BASE_URL}#/docs/dropdowns/offices`,
       },
     ],
   },
   {
     id: "hooks",
     text: "Data Hooks",
-    href: "/docs/hooks",
+    href: `${BASE_URL}#/docs/hooks`,
     children: [
       {
         id: "blobs",
         text: "CDA Blobs",
-        href: "#",
+        href: `${BASE_URL}#`,
         children: [
           {
             id: "use-cda-blob",
             text: "CDA Blob",
-            href: "/docs/hooks/use-cda-blob",
+            href: `${BASE_URL}#/docs/hooks/use-cda-blob`,
           },
           {
             id: "use-cda-blobs",
             text: "CDA Blobs (list)",
-            href: "/docs/hooks/use-cda-blobs",
+            href: `${BASE_URL}#/docs/hooks/use-cda-blobs`,
           },
         ],
       },
       {
         id: "use-cda-catalog",
         text: "CDA Catalog",
-        href: "/docs/hooks/use-cda-catalog",
+        href: `${BASE_URL}#/docs/hooks/use-cda-catalog`,
       },
       {
         id: "use-cda-latest-value",
         text: "CDA Latest Value",
-        href: "/docs/hooks/use-cda-latest-value",
+        href: `${BASE_URL}#/docs/hooks/use-cda-latest-value`,
       },
       {
         id: "use-cda-levels",
         text: "CDA Location Levels",
-        href: "/docs/hooks/use-cda-levels",
+        href: `${BASE_URL}#/docs/hooks/use-cda-levels`,
       },
       {
         id: "use-cda-location",
         text: "CDA Location",
-        href: "/docs/hooks/use-cda-location",
+        href: `${BASE_URL}#/docs/hooks/use-cda-location`,
       },
       {
         id: "use-cda-offices",
         text: "CDA Offices",
-        href: "/docs/hooks/use-cda-offices",
+        href: `${BASE_URL}#/docs/hooks/use-cda-offices`,
       },
       {
         id: "use-cda-time-series",
         text: "CDA Time Series",
-        href: "/docs/hooks/use-cda-time-series",
+        href: `${BASE_URL}#/docs/hooks/use-cda-time-series`,
       },
       {
         id: "use-cda-time-series-group",
         text: "CDA Time Series Group",
-        href: "/docs/hooks/use-cda-time-series-group",
+        href: `${BASE_URL}#/docs/hooks/use-cda-time-series-group`,
       },
       {
         id: "use-nwps-gauge",
         text: "NWPS Gauge",
-        href: "/docs/hooks/use-nwps-gauge",
+        href: `${BASE_URL}#/docs/hooks/use-nwps-gauge`,
       },
       {
         id: "use-nwps-gauge-data",
         text: "NWPS Gauge Data",
-        href: "/docs/hooks/use-nwps-gauge-data",
+        href: `${BASE_URL}#/docs/hooks/use-nwps-gauge-data`,
       },
     ],
   },
   {
     id: "cards",
     text: "Cards",
-    href: "/docs/cards",
+    href: `${BASE_URL}#/docs/cards`,
     children: [
       {
         id: "cda-latest-value-card",
         text: "CDA Latest Value Card",
-        href: "/docs/cards/cda-latest-value-card",
+        href: `${BASE_URL}#/docs/cards/cda-latest-value-card`,
       },
     ],
   },
   {
     id: "plots",
     text: "Plots",
-    href: "/docs/plots",
+    href: `${BASE_URL}#/docs/plots`,
     children: [
       {
         id: "cwms-plot",
         text: "CWMS Plot",
-        href: "/docs/plots/cwms-plot",
+        href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
     ],
   },
   {
     id: "forms",
     text: "Forms",
-    href: "/docs/forms",
+    href: `${BASE_URL}#/docs/forms`,
     children: [
       {
         id: "cwms-form",
         text: "CWMSForm",
-        href: "/docs/forms/cwms-form",
+        href: `${BASE_URL}#/docs/forms/cwms-form`,
       },
       {
         id: "cwms-checkboxes",
         text: "CWMS Checkboxes",
-        href: "/docs/forms/cwms-checkboxes",
+        href: `${BASE_URL}#/docs/forms/cwms-checkboxes`,
       },
       {
         id: "cwms-radio-group",
         text: "CWMS Radio Group",
-        href: "/docs/forms/cwms-radio-group",
+        href: `${BASE_URL}#/docs/forms/cwms-radio-group`,
       },
       {
         id: "cwms-dropdown",
         text: "CWMS Dropdown",
-        href: "/docs/forms/cwms-dropdown",
+        href: `${BASE_URL}#/docs/forms/cwms-dropdown`,
       },
       {
         id: "cwms-input",
         text: "CWMS Input",
-        href: "/docs/forms/cwms-input",
+        href: `${BASE_URL}#/docs/forms/cwms-input`,
       },
       {
         id: "cwms-input-table",
         text: "CWMS Input Table",
-        href: "/docs/forms/cwms-input-table",
+        href: `${BASE_URL}#/docs/forms/cwms-input-table`,
       },
       {
         id: "cwms-spreadsheet",
         text: "CWMS Spreadsheet",
-        href: "/docs/forms/cwms-spreadsheet",
+        href: `${BASE_URL}#/docs/forms/cwms-spreadsheet`,
       },
       {
         id: "cwms-textarea",
         text: "CWMS Textarea",
-        href: "/docs/forms/cwms-textarea",
+        href: `${BASE_URL}#/docs/forms/cwms-textarea`,
       },
       // Conditionally add interactive test page
       ...(docsConfig.features.showInteractiveTestPage
@@ -220,22 +221,22 @@ export default [
   {
     id: "tables",
     text: "Tables",
-    href: "/docs/tables",
+    href: `${BASE_URL}#/docs/tables`,
   },
   {
     id: "maps",
     text: "Maps",
-    href: "/docs/maps",
+    href: `${BASE_URL}#/docs/maps`,
   },
   {
     id: "utilities",
     text: "Utilities",
-    href: "/docs/utilities",
+    href: `${BASE_URL}#/docs/utilities`,
     children: [
       {
         id: "cda-url-provider",
         text: "CDA URL Provider",
-        href: "/docs/utilities/cda-url-provider",
+        href: `${BASE_URL}#/docs/utilities/cda-url-provider`,
       },
       {
         id: "get-precision",
@@ -245,49 +246,49 @@ export default [
       {
         id: "use-debounce",
         text: "Debounce",
-        href: "/docs/utilities/use-debounce",
+        href: `${BASE_URL}#/docs/utilities/use-debounce`,
       },
     ],
   },
   {
     id: "help",
     text: "Help",
-    href: "/docs/help",
+    href: `${BASE_URL}#/docs/help`,
     children: [
       {
         id: "help-overview",
         text: "Help Overview",
-        href: "/docs/help",
+        href: `${BASE_URL}#/docs/help`,
       },
       {
         id: "report-issue",
         text: "Report Issue / Request Help",
-        href: "https://github.com/USACE-WaterManagement/groundwork-water/issues",
+        href: `https://github.com/USACE-WaterManagement/groundwork-water/issues`,
       },
       {
         id: "javascript-basics",
         text: "JavaScript Basics",
-        href: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics",
+        href: `https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics`,
       },
       {
         id: "template-literal",
         text: "Template Literal",
-        href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals",
+        href: `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals`,
       },
       {
         id: "react-basics",
         text: "React Basics",
-        href: "https://react.dev/learn",
+        href: `https://react.dev/learn`,
       },
       {
         id: "groundwork-basics",
         text: "Getting Started - Groundwork - Themes/Styles",
-        href: "https://usace.github.io/groundwork/#",
+        href: `https://usace.github.io/groundwork/#`,
       },
       {
         id: "cwms-js-docs",
         text: "CWMSjs Developer Docs",
-        href: "https://hydrologicengineeringcenter.github.io/cwms-data-api-client-javascript/",
+        href: `https://hydrologicengineeringcenter.github.io/cwms-data-api-client-javascript/`,
       },
     ],
   },
