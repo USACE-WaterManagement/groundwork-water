@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.6.2
+
+### Patch Changes
+
+- 89bda0d: Add retries to useCdaUserProfile to return profile upon initial user creation
+
 ## 3.6.1
 
 ### Patch Changes
