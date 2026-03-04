@@ -54,6 +54,6 @@ export const useCdaUserProfile = (isAuth: boolean, cdaUrl?: string, token?: stri
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    retry: false,
+    retry: 2,
   });
 };
