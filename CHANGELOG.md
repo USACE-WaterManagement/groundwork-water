@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.6.3
+
+### Patch Changes
+
+- f3b83dc: Use trusted publishing for npm publishing access
+
 ## 3.6.2
 
 ### Patch Changes
