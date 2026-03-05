@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.6.4
+
+### Patch Changes
+
+- 7b44acf: Remove credentials from /user/profile request when token available
+
 ## 3.6.3
 
 ### Patch Changes
