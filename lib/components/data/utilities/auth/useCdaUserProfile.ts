@@ -22,10 +22,10 @@ const fetchCdaUserProfile = async (
   cdaUrl?: string,
   token?: string,
 ): Promise<CdaUserProfile> => {
-  const res = await fetch(`${cdaUrl}/user/profile`, {
-    credentials: "include",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fetchOptions: RequestInit = token
+    ? { headers: { Authorization: `Bearer ${token}` } }
+    : { credentials: "include" };
+  const res = await fetch(`${cdaUrl}/user/profile`, fetchOptions);
 
   if (!res.ok) {
     if (res.status === 401) return Promise.reject("Unauthorized");
