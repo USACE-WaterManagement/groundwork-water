@@ -70,6 +70,7 @@ export const createKeycloakAuthMethod = ({
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
+  let pkceCallbackHandled = false;
   const baseUrl = `${host}/realms/${realm}/protocol/openid-connect`;
   const oidcClient =
     flow === "authorization-code-pkce"
@@ -161,8 +162,9 @@ export const createKeycloakAuthMethod = ({
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) return false;
 
-      if (hasPkceCallbackParams()) {
+      if (!pkceCallbackHandled && hasPkceCallbackParams()) {
         await oidcClient.signinCallback();
+        pkceCallbackHandled = true;
       }
 
       return syncTokensFromOidcUser();
