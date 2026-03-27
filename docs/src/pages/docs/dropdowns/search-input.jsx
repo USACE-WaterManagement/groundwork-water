@@ -1,5 +1,5 @@
 import { Badge, Card, Code, H3, Link, Text } from "@usace/groundwork";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Code as CodeBlock } from "../../components/code";
 import Divider from "../../components/divider";
@@ -23,6 +23,18 @@ const propsList = [
     desc: "Initial uncontrolled query value. Default: empty string.",
   },
   {
+    name: "office",
+    type: "string",
+    required: false,
+    desc: "Office used by the built-in CDA location search. Example: 'SWT'.",
+  },
+  {
+    name: "cdaUrl",
+    type: "string",
+    required: false,
+    desc: "Base URL for the built-in CDA location search.",
+  },
+  {
     name: "onQueryChange",
     type: "(query: string) => void",
     required: false,
@@ -32,13 +44,13 @@ const propsList = [
     name: "onSearch",
     type: "(query: string) => void",
     required: false,
-    desc: "Debounced callback fired after debounceMs. Consumer code should fetch or filter results here.",
+    desc: "Debounced callback fired after debounceMs. If provided, it overrides the built-in CDA search.",
   },
   {
     name: "results",
     type: "T[]",
     required: false,
-    desc: "Search results to render in the dropdown. The component does not fetch data by itself.",
+    desc: "Optional externally managed results. When omitted, built-in CDA results can be used.",
   },
   {
     name: "onSelect",
@@ -86,7 +98,7 @@ const propsList = [
     name: "isLoading",
     type: "boolean",
     required: false,
-    desc: "Shows loading skeleton rows while results are being fetched.",
+    desc: "Optional external loading state. Useful when custom onSearch logic is supplied.",
   },
   {
     name: "idleMessage",
@@ -104,7 +116,7 @@ const propsList = [
     name: "errorMessage",
     type: "string",
     required: false,
-    desc: "Error text shown instead of the results list.",
+    desc: "Optional external error text. Useful when custom onSearch logic is supplied.",
   },
   {
     name: "label / placeholder / disabled / autoFocus",
@@ -122,20 +134,8 @@ const propsList = [
 
 const LiveExample = () => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [office, setOffice] = useState("SWT");
-  const timeoutRef = useRef();
-  const abortRef = useRef();
-
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(timeoutRef.current);
-      abortRef.current?.abort();
-    };
-  }, []);
 
   const selectedLabel = useMemo(() => {
     if (!selected) return "none";
@@ -145,11 +145,10 @@ const LiveExample = () => {
   return (
     <div className="flex flex-col gap-6">
       <Card className="w-full max-w-[720px]">
-        <H3>Async Search Pattern</H3>
+        <H3>Default CDA Search</H3>
         <p className="mb-3 text-sm">
-          This example uses the live CDA catalog endpoint that Lauren's MVP search is
-          built on. Pick an office with data, then search for a location like{" "}
-          <Code>KEYS</Code>.
+          This example uses the built-in CDA search path. Pick an office with data, then
+          search for a location like <Code>KEYS</Code>.
         </p>
         <div className="mb-4">
           <OfficeDropdown
@@ -158,64 +157,16 @@ const LiveExample = () => {
             onChange={(event) => {
               setOffice(event.target.value);
               setSelected(null);
-              setResults([]);
-              setErrorMessage("");
             }}
           />
         </div>
         <SearchInput
           label={`Search ${office} locations`}
+          office={office}
+          cdaUrl={CDA_URL}
           query={query}
           onQueryChange={setQuery}
-          results={results}
-          isLoading={isLoading}
-          errorMessage={errorMessage}
           minQueryLength={3}
-          onSearch={(nextQuery) => {
-            window.clearTimeout(timeoutRef.current);
-            abortRef.current?.abort();
-            if (nextQuery.trim().length < 3) {
-              setResults([]);
-              setIsLoading(false);
-              setErrorMessage("");
-              return;
-            }
-
-            setIsLoading(true);
-            setErrorMessage("");
-            timeoutRef.current = window.setTimeout(() => {
-              const controller = new AbortController();
-              abortRef.current = controller;
-              fetch(
-                `${CDA_URL}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(nextQuery)}`,
-                {
-                  method: "GET",
-                  headers: { Accept: "application/json" },
-                  signal: controller.signal,
-                },
-              )
-                .then(async (response) => {
-                  if (!response.ok) {
-                    throw new Error(
-                      `CDA search failed: ${response.status} ${response.statusText}`,
-                    );
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  const entries = Array.isArray(data?.entries) ? data.entries : [];
-                  setResults(entries.filter((item) => !item?.name?.includes("-")));
-                })
-                .catch((error) => {
-                  if (error.name === "AbortError") return;
-                  setResults([]);
-                  setErrorMessage(error.message);
-                })
-                .finally(() => {
-                  setIsLoading(false);
-                });
-            }, 350);
-          }}
           onSelect={(item) => {
             setSelected(item);
           }}
@@ -261,16 +212,14 @@ export default function SearchInputDocs() {
           >
             #213
           </Link>
-          . It handles the search-box interaction pattern, while each district controls
-          the actual result source, routing, and filtering rules.
+          . It handles the search-box interaction pattern while still allowing districts
+          to customize the data source when needed.
         </Text>
         <Divider className="my-4" />
         <Text className="mt-2">
-          This keeps the library generic: districts can feed in CDA-backed results,
-          local project lists, or any other search provider without copying Lauren's
-          original Redux bundles and app-specific navigation code. Lauren's current MVP
-          implementation queries the CDA <Code>catalog/LOCATIONS</Code> endpoint for a
-          single district office.
+          By default, the component can query CDA <Code>catalog/LOCATIONS</Code> for a
+          selected office. If a district needs different behavior, passing{" "}
+          <Code>onSearch</Code> overrides that default search.
         </Text>
       </div>
 
@@ -285,34 +234,6 @@ import { useState } from "react";
 export default function DistrictHeaderSearch() {
   const [query, setQuery] = useState("");
   const [office, setOffice] = useState("SWT");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  async function handleSearch(nextQuery) {
-    if (nextQuery.trim().length < 3) {
-      setResults([]);
-      setErrorMessage("");
-      return;
-    }
-
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await fetch(
-        \`https://cwms-data.usace.army.mil/cwms-data/catalog/LOCATIONS?office=\${office}&like=\${encodeURIComponent(nextQuery)}\`,
-        { headers: { Accept: "application/json" } },
-      );
-      const data = await response.json();
-      setResults(data.entries ?? []);
-    } catch (error) {
-      setResults([]);
-      setErrorMessage(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <>
@@ -323,12 +244,9 @@ export default function DistrictHeaderSearch() {
       />
       <SearchInput
         label="Search locations"
+        office={office}
         query={query}
         onQueryChange={setQuery}
-        onSearch={handleSearch}
-        results={results}
-        isLoading={loading}
-        errorMessage={errorMessage}
         minQueryLength={3}
         getResultKey={(item) => \`\${item.office}-\${item.name}\`}
         getResultLabel={(item) => item.name}
@@ -353,8 +271,8 @@ export default function DistrictHeaderSearch() {
       <Divider text="Notes" className="mt-8" />
       <ul className="list-disc pl-6 space-y-2">
         <li>
-          <Code>SearchInput</Code> does not fetch from CDA or any district API on its
-          own. It intentionally separates input behavior from data ownership.
+          If <Code>office</Code> is provided and <Code>onSearch</Code> is not, the
+          component uses the built-in CDA location search.
         </li>
         <li>
           The default renderer recognizes common fields such as <Code>name</Code>,{" "}
