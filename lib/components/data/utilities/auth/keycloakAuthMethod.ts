@@ -1,4 +1,5 @@
 import { AuthMethod } from "./AuthProvider";
+import { createKeycloakOidcClient } from "./keycloakOidcClient";
 
 interface KeycloakTokenResponse {
   access_token: string;
@@ -22,14 +23,18 @@ interface KeycloakOptions {
 }
 
 type KeycloakRequest = KeycloakOptions & Record<string, string>;
+type KeycloakFlow = "authorization-code-pkce" | "direct-grant";
 
 interface KeycloakAuthConfig {
   host: string;
   realm: string;
   client: string;
-  flow: "direct-grant";
+  flow: KeycloakFlow;
   username?: string;
   password?: string;
+  redirectUri?: string;
+  postLogoutRedirectUri?: string;
+  scope?: string;
   refreshInterval?: number;
 }
 
@@ -46,6 +51,9 @@ interface KeycloakAuthConfig {
  * @param {string} config.flow - The Keycloak flow type to use for authentication.
  * @param {string} config.username - The username to use for authentication, if required.
  * @param {string} config.password - The password to use for authentication, if required.
+ * @param {string} config.redirectUri - The redirect URI to use for PKCE callback handling.
+ * @param {string} config.postLogoutRedirectUri - The redirect URI to use after PKCE logout.
+ * @param {string} config.scope - The OIDC scope to request for PKCE authentication.
  * @param {number} config.refreshInterval - Time between each token refresh, in seconds.
  */
 export const createKeycloakAuthMethod = ({
@@ -55,11 +63,25 @@ export const createKeycloakAuthMethod = ({
   flow,
   username = "",
   password = "",
+  redirectUri,
+  postLogoutRedirectUri,
+  scope,
   refreshInterval = 300,
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
   const baseUrl = `${host}/realms/${realm}/protocol/openid-connect`;
+  const oidcClient =
+    flow === "authorization-code-pkce"
+      ? createKeycloakOidcClient({
+          host,
+          realm,
+          client,
+          redirectUri,
+          postLogoutRedirectUri,
+          scope,
+        })
+      : undefined;
 
   const fetchKeycloakRequest = async (
     endpoint: "token" | "logout",
@@ -82,6 +104,12 @@ export const createKeycloakAuthMethod = ({
   };
 
   const login = async () => {
+    if (flow === "authorization-code-pkce") {
+      if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
+      await oidcClient.signinRedirect();
+      return;
+    }
+
     const loginData: KeycloakRequest | undefined =
       flow === "direct-grant"
         ? {
