@@ -25,6 +25,16 @@ interface KeycloakOptions {
 type KeycloakRequest = KeycloakOptions & Record<string, string>;
 type KeycloakFlow = "authorization-code-pkce" | "direct-grant";
 
+const AUTH_RESPONSE_PARAMS = [
+  "code",
+  "state",
+  "session_state",
+  "iss",
+  "error",
+  "error_description",
+  "error_uri",
+];
+
 interface KeycloakAuthConfig {
   host: string;
   realm: string;
@@ -112,6 +122,25 @@ export const createKeycloakAuthMethod = ({
     return !params.has("code") && params.has("state");
   };
 
+  const clearAuthResponseParams = () => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    let hasChanges = false;
+
+    for (const param of AUTH_RESPONSE_PARAMS) {
+      if (url.searchParams.has(param)) {
+        url.searchParams.delete(param);
+        hasChanges = true;
+      }
+    }
+
+    if (hasChanges) {
+      const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState(window.history.state, document.title, nextUrl);
+    }
+  };
+
   const clearPkceState = async () => {
     accessToken = undefined;
     refreshToken = undefined;
@@ -197,12 +226,14 @@ export const createKeycloakAuthMethod = ({
         if (!pkceCallbackHandled && hasPkceCallbackParams()) {
           await oidcClient.signinCallback();
           pkceCallbackHandled = true;
+          clearAuthResponseParams();
         }
 
         if (!pkceCallbackHandled && hasPkceSignoutCallbackParams()) {
           await oidcClient.signoutCallback();
           pkceCallbackHandled = true;
           await clearPkceState();
+          clearAuthResponseParams();
         }
 
         const user = await getOidcUser();
