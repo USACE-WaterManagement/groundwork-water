@@ -30,19 +30,37 @@ const componentProps = [
     name: "flow",
     type: "string",
     default: "undefined",
-    desc: "The authentication flow to use.  Currently only 'direct-grant' is supported.",
+    desc: "The authentication flow to use. Use 'authorization-code-pkce' for the redirect-based OIDC flow, or 'direct-grant' for the legacy password grant flow.",
+  },
+  {
+    name: "redirectUri",
+    type: "string",
+    default: "current page URL without query params",
+    desc: "Optional - Redirect URI used by the PKCE flow.",
+  },
+  {
+    name: "postLogoutRedirectUri",
+    type: "string",
+    default: "redirectUri",
+    desc: "Optional - Redirect URI used after PKCE logout.",
+  },
+  {
+    name: "scope",
+    type: "string",
+    default: '"openid profile"',
+    desc: "Optional - OIDC scopes requested by the PKCE flow.",
   },
   {
     name: "username",
     type: "string",
     default: '""',
-    desc: "(DEVELOPMENT-USE ONLY) The username to use for login. Defaults to blank.",
+    desc: "(DIRECT-GRANT ONLY) The username to use for login. Defaults to blank.",
   },
   {
-    name: "flow",
+    name: "password",
     type: "string",
     default: '""',
-    desc: "(DEVELOPMENT-USE ONLY) The password to use for login. Defaults to blank.",
+    desc: "(DIRECT-GRANT ONLY) The password to use for login. Defaults to blank.",
   },
   {
     name: "refreshInterval",
@@ -70,7 +88,7 @@ function KeycloakDocs() {
         <Text className="mt-4">
           The function must be passed a configuration object identifying the host URL,
           realm, client, authentication flow, and optionally a custom refresh interval
-          for refresh token requests.
+          for refresh token requests. The recommended flow is Auth Code + PKCE.
         </Text>
         <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
@@ -85,15 +103,13 @@ function KeycloakDocs() {
         </Text>
         <Text className="mt-4">
           <Alert
-            title={"Warning"}
-            status={"warning"}
-            message={
-              "A username and password can optionally be provided directly to the auth handler, but are intended for development purposes and should not be used in production."
-            }
+            title={"Flow Guidance"}
+            status={"info"}
+            message={"Prefer the PKCE flow so credential entry stays within Keycloak."}
           >
-            A username and password can optionally be provided directly to the auth
-            handler, but this is intended for development purposes and should not be
-            used in production.
+            The legacy direct-grant flow remains available, but PKCE is the preferred
+            path. Direct username/password values should be treated as a compatibility
+            option rather than the default.
           </Alert>
         </Text>
       </div>
@@ -107,12 +123,13 @@ const authMethod = createKeycloakAuthMethod({
   host: authHost,
   realm: "cwms",
   client: "cwms",
-  flow: "direct-grant",
+  flow: "authorization-code-pkce",
+  redirectUri: window.location.origin,
 });`}
       </CodeBlock>
       <Divider text="API Reference" className="mt-6" />
       <div className="font-bold text-lg pt-6">
-        config - <Code className="p-2">{`createCwmsLoginAuthMethod(config)`}</Code>
+        config - <Code className="p-2">{`createKeycloakAuthMethod(config)`}</Code>
       </div>
       <PropsTable propsList={componentProps} />
     </DocsPage>
