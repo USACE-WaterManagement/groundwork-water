@@ -708,9 +708,7 @@ function InteractiveFormTest() {
     host: "http://localhost:8081/auth",
     realm: "cwms",
     client: "cwms",
-    flow: "direct-grant",
-    password: "m5hectest",
-    username: "m5hectest",
+    flow: "authorization-code-pkce",
   });
 
   // Check if we're already in an AuthProvider
@@ -849,7 +847,7 @@ function InteractiveFormTest() {
             {authMethod === "cwms" &&
               "🔄 CWMS Login will redirect to OAuth login page and back"}
             {authMethod === "keycloak" &&
-              "🔐 Keycloak SSO provides enterprise authentication"}
+              "🔐 Keycloak SSO will use the redirect-based PKCE flow"}
           </Text>
         </div>
       </div>
