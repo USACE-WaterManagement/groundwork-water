@@ -24,6 +24,8 @@ type SearchInputRenderState = {
 type SearchInputProps<T> = {
   query?: string;
   defaultQuery?: string;
+  office?: string;
+  cdaUrl?: string;
   onQueryChange?: (query: string) => void;
   onSearch?: (query: string) => void;
   onSelect?: (item: T) => void;
@@ -124,10 +126,12 @@ const DefaultResult = <T,>({
 const SearchInput = <T,>({
   query,
   defaultQuery = "",
+  office,
+  cdaUrl = "https://cwms-data.usace.army.mil/cwms-data",
   onQueryChange,
   onSearch,
   onSelect,
-  results = [],
+  results,
   getResultKey,
   getResultLabel = defaultGetResultLabel,
   getResultDescription = defaultGetResultDescription,
@@ -147,18 +151,25 @@ const SearchInput = <T,>({
   autoFocus = false,
 }: SearchInputProps<T>) => {
   const [internalQuery, setInternalQuery] = useState(defaultQuery);
+  const [internalResults, setInternalResults] = useState<T[]>([]);
+  const [internalIsLoading, setInternalIsLoading] = useState(false);
+  const [internalErrorMessage, setInternalErrorMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const onSearchRef = useRef<SearchInputProps<T>["onSearch"]>(onSearch);
+  const searchAbortRef = useRef<AbortController | null>(null);
   const listboxId = useId();
   const isControlled = query !== undefined;
   const currentQuery = (isControlled ? query : internalQuery) ?? "";
   const normalizedQuery = currentQuery.trim();
   const debouncedQuery = useDebounce(normalizedQuery, debounceMs);
   const canSearch = debouncedQuery.length >= minQueryLength;
+  const effectiveResults = results ?? internalResults;
+  const effectiveIsLoading = isLoading || internalIsLoading;
+  const effectiveErrorMessage = errorMessage ?? internalErrorMessage;
   const showPanel = isOpen && !disabled;
-  const hasResults = results.length > 0;
+  const hasResults = effectiveResults.length > 0;
   const remainingCharacters = Math.max(minQueryLength - normalizedQuery.length, 0);
   const computedIdleMessage =
     idleMessage === "Type more to search."
@@ -172,8 +183,60 @@ const SearchInput = <T,>({
   }, [onSearch]);
 
   useEffect(() => {
-    onSearchRef.current?.(debouncedQuery);
-  }, [debouncedQuery]);
+    if (onSearchRef.current) {
+      onSearchRef.current(debouncedQuery);
+      return;
+    }
+
+    searchAbortRef.current?.abort();
+
+    if (!office || debouncedQuery.length < minQueryLength) {
+      setInternalResults([]);
+      setInternalIsLoading(false);
+      setInternalErrorMessage("");
+      return;
+    }
+
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
+    setInternalIsLoading(true);
+    setInternalErrorMessage("");
+
+    fetch(
+      `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}`,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      },
+    )
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(
+            `CDA search failed: ${response.status} ${response.statusText}`,
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const entries = Array.isArray(data?.entries)
+          ? (data.entries as Array<{ name?: string }>)
+          : [];
+        setInternalResults(entries.filter((item) => !item.name?.includes("-")) as T[]);
+      })
+      .catch((fetchError: Error & { name?: string }) => {
+        if (fetchError.name === "AbortError") return;
+        setInternalResults([]);
+        setInternalErrorMessage(fetchError.message);
+      })
+      .then(() => {
+        if (!controller.signal.aborted) {
+          setInternalIsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [cdaUrl, debouncedQuery, minQueryLength, office]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.
@@ -185,7 +248,10 @@ const SearchInput = <T,>({
     };
 
     document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      searchAbortRef.current?.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -197,15 +263,15 @@ const SearchInput = <T,>({
     }
 
     setActiveIndex((index) => {
-      if (index >= results.length) return results.length - 1;
+      if (index >= effectiveResults.length) return effectiveResults.length - 1;
       return index;
     });
-  }, [hasResults, results.length, showPanel]);
+  }, [effectiveResults.length, hasResults, showPanel]);
 
   const activeDescendant = useMemo(() => {
-    if (activeIndex < 0 || activeIndex >= results.length) return undefined;
+    if (activeIndex < 0 || activeIndex >= effectiveResults.length) return undefined;
     return `${listboxId}-option-${activeIndex}`;
-  }, [activeIndex, listboxId, results.length]);
+  }, [activeIndex, effectiveResults.length, listboxId]);
 
   const setQueryValue = (nextQuery: string) => {
     if (!isControlled) {
@@ -234,19 +300,19 @@ const SearchInput = <T,>({
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex((index) => (index + 1 >= results.length ? 0 : index + 1));
+      setActiveIndex((index) => (index + 1 >= effectiveResults.length ? 0 : index + 1));
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => (index <= 0 ? results.length - 1 : index - 1));
+      setActiveIndex((index) => (index <= 0 ? effectiveResults.length - 1 : index - 1));
       return;
     }
 
     if (event.key === "Enter" && activeIndex >= 0) {
       event.preventDefault();
-      handleSelect(results[activeIndex]);
+      handleSelect(effectiveResults[activeIndex]);
       return;
     }
 
@@ -257,10 +323,10 @@ const SearchInput = <T,>({
   };
 
   const statusContent = (() => {
-    if (errorMessage) {
+    if (effectiveErrorMessage) {
       return (
         <div className="gww-px-4 gww-py-3 gww-text-sm gww-text-red-700">
-          {errorMessage}
+          {effectiveErrorMessage}
         </div>
       );
     }
@@ -273,7 +339,7 @@ const SearchInput = <T,>({
       );
     }
 
-    if (isLoading) {
+    if (effectiveIsLoading) {
       return (
         <div className="gww-space-y-2 gww-p-4">
           <Skeleton className="gww-h-4 gww-w-full" />
@@ -323,7 +389,7 @@ const SearchInput = <T,>({
             inputClassName,
           )}
           onFocus={() => {
-            if (normalizedQuery.length > 0 || hasResults || errorMessage) {
+            if (normalizedQuery.length > 0 || hasResults || effectiveErrorMessage) {
               setIsOpen(true);
             }
           }}
@@ -346,8 +412,8 @@ const SearchInput = <T,>({
           )}
         >
           {statusContent}
-          {canSearch && !isLoading && !errorMessage && hasResults
-            ? results.map((item, index) => {
+          {canSearch && !effectiveIsLoading && !effectiveErrorMessage && hasResults
+            ? effectiveResults.map((item, index) => {
                 const itemKey =
                   getResultKey?.(item, index) ?? `${getResultLabel(item)}-${index}`;
                 const isActive = index === activeIndex;
