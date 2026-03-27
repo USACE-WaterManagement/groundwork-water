@@ -105,6 +105,13 @@ export const createKeycloakAuthMethod = ({
     return params.has("code") && params.has("state");
   };
 
+  const hasPkceSignoutCallbackParams = () => {
+    if (typeof window === "undefined") return false;
+
+    const params = new URLSearchParams(window.location.search);
+    return !params.has("code") && params.has("state");
+  };
+
   const clearPkceState = async () => {
     accessToken = undefined;
     refreshToken = undefined;
@@ -190,6 +197,12 @@ export const createKeycloakAuthMethod = ({
         if (!pkceCallbackHandled && hasPkceCallbackParams()) {
           await oidcClient.signinCallback();
           pkceCallbackHandled = true;
+        }
+
+        if (!pkceCallbackHandled && hasPkceSignoutCallbackParams()) {
+          await oidcClient.signoutCallback();
+          pkceCallbackHandled = true;
+          await clearPkceState();
         }
 
         const user = await getOidcUser();
