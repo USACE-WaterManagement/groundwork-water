@@ -83,6 +83,22 @@ export const createKeycloakAuthMethod = ({
         })
       : undefined;
 
+  const syncTokensFromOidcUser = async () => {
+    if (!oidcClient) return false;
+
+    const user = await oidcClient.getUser();
+    accessToken = user?.access_token;
+    refreshToken = user?.refresh_token;
+    return !!user?.access_token;
+  };
+
+  const hasPkceCallbackParams = () => {
+    if (typeof window === "undefined") return false;
+
+    const params = new URLSearchParams(window.location.search);
+    return params.has("code") && params.has("state");
+  };
+
   const fetchKeycloakRequest = async (
     endpoint: "token" | "logout",
     formData: KeycloakRequest,
@@ -142,6 +158,16 @@ export const createKeycloakAuthMethod = ({
   };
 
   const isAuth = async () => {
+    if (flow === "authorization-code-pkce") {
+      if (!oidcClient) return false;
+
+      if (hasPkceCallbackParams()) {
+        await oidcClient.signinCallback();
+      }
+
+      return syncTokensFromOidcUser();
+    }
+
     return !!accessToken;
   };
 
