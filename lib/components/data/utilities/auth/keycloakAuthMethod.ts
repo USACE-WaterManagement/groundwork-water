@@ -29,7 +29,7 @@ interface KeycloakAuthConfig {
   host: string;
   realm: string;
   client: string;
-  flow: KeycloakFlow;
+  flow?: KeycloakFlow;
   username?: string;
   password?: string;
   redirectUri?: string;
@@ -60,7 +60,7 @@ export const createKeycloakAuthMethod = ({
   host,
   realm,
   client,
-  flow,
+  flow = "authorization-code-pkce",
   username = "",
   password = "",
   redirectUri,
@@ -71,7 +71,7 @@ export const createKeycloakAuthMethod = ({
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
   let pkceCallbackHandled = false;
-  const baseUrl = `${host}/realms/${realm}/protocol/openid-connect`;
+  const baseUrl = `${host.replace(/\/$/, "")}/realms/${realm}/protocol/openid-connect`;
   const oidcClient =
     flow === "authorization-code-pkce"
       ? createKeycloakOidcClient({
