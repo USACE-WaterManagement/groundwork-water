@@ -93,6 +93,11 @@ export const createKeycloakAuthMethod = ({
     return !!user?.access_token;
   };
 
+  const getOidcUser = async () => {
+    if (!oidcClient) return null;
+    return oidcClient.getUser();
+  };
+
   const hasPkceCallbackParams = () => {
     if (typeof window === "undefined") return false;
 
@@ -187,6 +192,20 @@ export const createKeycloakAuthMethod = ({
           pkceCallbackHandled = true;
         }
 
+        const user = await getOidcUser();
+        if (!user) {
+          accessToken = undefined;
+          refreshToken = undefined;
+          return false;
+        }
+
+        if (!user.expired) {
+          accessToken = user.access_token;
+          refreshToken = user.refresh_token;
+          return true;
+        }
+
+        await oidcClient.signinSilent();
         return syncTokensFromOidcUser();
       } catch (error) {
         console.error("Failed to process keycloak PKCE auth state", error);
