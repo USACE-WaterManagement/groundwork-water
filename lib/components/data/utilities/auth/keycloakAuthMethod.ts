@@ -184,6 +184,17 @@ export const createKeycloakAuthMethod = ({
   };
 
   const refresh = async () => {
+    if (flow === "authorization-code-pkce") {
+      if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
+
+      await oidcClient.signinSilent();
+      const hasToken = await syncTokensFromOidcUser();
+      if (!hasToken) {
+        throw new Error("Unable to refresh PKCE auth session");
+      }
+      return;
+    }
+
     if (!refreshToken)
       throw new Error("Cannot refresh token; no existing refresh token found");
     const refreshData: KeycloakRequest = {
