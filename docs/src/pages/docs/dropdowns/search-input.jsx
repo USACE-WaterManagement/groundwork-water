@@ -252,9 +252,10 @@ export default function DistrictHeaderSearch() {
         getResultLabel={(item) => item.name}
         getResultDescription={(item) => \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`}
         onSelect={(item) => {
+          // NOTE: You should use your district's routing solution here. This is just an example of how to access item properties.
           window.location.assign(item.kind === "PROJECT"
-            ? \`/location/\${item.name}\`
-            : \`/gage-location/\${item.name}\`);
+            ? \`/project/\${item.name}\`
+            : \`/gage/\${item.name}\`);
         }}
       />
     </>
