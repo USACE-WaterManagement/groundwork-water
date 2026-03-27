@@ -100,6 +100,15 @@ export const createKeycloakAuthMethod = ({
     return params.has("code") && params.has("state");
   };
 
+  const clearPkceState = async () => {
+    accessToken = undefined;
+    refreshToken = undefined;
+    pkceCallbackHandled = false;
+
+    if (!oidcClient) return;
+    await oidcClient.removeUser();
+  };
+
   const fetchKeycloakRequest = async (
     endpoint: "token" | "logout",
     formData: KeycloakRequest,
@@ -172,12 +181,18 @@ export const createKeycloakAuthMethod = ({
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) return false;
 
-      if (!pkceCallbackHandled && hasPkceCallbackParams()) {
-        await oidcClient.signinCallback();
-        pkceCallbackHandled = true;
-      }
+      try {
+        if (!pkceCallbackHandled && hasPkceCallbackParams()) {
+          await oidcClient.signinCallback();
+          pkceCallbackHandled = true;
+        }
 
-      return syncTokensFromOidcUser();
+        return syncTokensFromOidcUser();
+      } catch (error) {
+        console.error("Failed to process keycloak PKCE auth state", error);
+        await clearPkceState();
+        return false;
+      }
     }
 
     return !!accessToken;
