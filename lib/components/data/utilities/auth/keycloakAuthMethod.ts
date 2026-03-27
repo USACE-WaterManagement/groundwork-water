@@ -145,6 +145,16 @@ export const createKeycloakAuthMethod = ({
   };
 
   const logout = async () => {
+    if (flow === "authorization-code-pkce") {
+      accessToken = undefined;
+      refreshToken = undefined;
+      pkceCallbackHandled = false;
+
+      if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
+      await oidcClient.signoutRedirect();
+      return;
+    }
+
     if (refreshToken) {
       const logoutData: KeycloakRequest = {
         client_id: client,
