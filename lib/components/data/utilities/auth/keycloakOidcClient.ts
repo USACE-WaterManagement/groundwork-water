@@ -7,6 +7,7 @@ export interface KeycloakPkceConfig {
   redirectUri?: string;
   postLogoutRedirectUri?: string;
   scope?: string;
+  providerHint?: string;
 }
 
 const getDefaultRedirectUri = () => {
@@ -24,6 +25,7 @@ export const createKeycloakOidcClient = ({
   redirectUri,
   postLogoutRedirectUri,
   scope = "openid profile",
+  providerHint,
 }: KeycloakPkceConfig) => {
   if (typeof window === "undefined") {
     throw new Error("Keycloak PKCE auth requires a browser environment");
@@ -34,8 +36,10 @@ export const createKeycloakOidcClient = ({
     throw new Error("Keycloak PKCE auth requires a redirect URI");
   }
 
+  const normalizedHost = host.trim().replace(/\/$/, "");
+
   const settings: UserManagerSettings = {
-    authority: `${host.replace(/\/$/, "")}/realms/${realm}`,
+    authority: `${normalizedHost}/realms/${realm}`,
     client_id: client,
     redirect_uri: resolvedRedirectUri,
     post_logout_redirect_uri: postLogoutRedirectUri ?? resolvedRedirectUri,
@@ -47,6 +51,7 @@ export const createKeycloakOidcClient = ({
       prefix: `groundwork-water:keycloak:${realm}:${client}:`,
       store: window.localStorage,
     }),
+    extraQueryParams: providerHint ? { kc_idp_hint: providerHint } : undefined,
   };
 
   return new UserManager(settings);

@@ -1,5 +1,6 @@
 import { AuthMethod } from "./AuthProvider";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
+import { normalizeKeycloakHost } from "./keycloakHost";
 
 interface KeycloakTokenResponse {
   access_token: string;
@@ -45,17 +46,18 @@ interface KeycloakAuthConfig {
   redirectUri?: string;
   postLogoutRedirectUri?: string;
   scope?: string;
+  providerHint?: string;
   refreshInterval?: number;
 }
 
 /**
  * Generates a Keycloak authentation method from the provided configuration.
  *
- * The host should point to the root of the Keycloak provider, e.g.
- * 'https://localhost:8080/auth'.
+ * The host should point to the actual Keycloak base path for the target realm, e.g.
+ * 'https://localhost:8080/auth' when realm endpoints are served under '/auth'.
  *
  * @param {object} config - An object containing configuration details.
- * @param {string} config.host - The root URL of the Keycloak auth provider.
+ * @param {string} config.host - The base URL of the Keycloak auth provider.
  * @param {string} config.realm - The Keycloak realm to use for authentication.
  * @param {string} config.client - The Keycloak client to use for authentication.
  * @param {string} config.flow - The Keycloak flow type to use for authentication.
@@ -64,6 +66,7 @@ interface KeycloakAuthConfig {
  * @param {string} config.redirectUri - The redirect URI to use for PKCE callback handling.
  * @param {string} config.postLogoutRedirectUri - The redirect URI to use after PKCE logout.
  * @param {string} config.scope - The OIDC scope to request for PKCE authentication.
+ * @param {string} config.providerHint - Optional Keycloak identity provider hint, sent as kc_idp_hint.
  * @param {number} config.refreshInterval - Time between each token refresh, in seconds.
  */
 export const createKeycloakAuthMethod = ({
@@ -76,12 +79,14 @@ export const createKeycloakAuthMethod = ({
   redirectUri,
   postLogoutRedirectUri,
   scope,
+  providerHint,
   refreshInterval = 300,
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
   let pkceCallbackHandled = false;
-  const baseUrl = `${host.replace(/\/$/, "")}/realms/${realm}/protocol/openid-connect`;
+  const normalizedHost = normalizeKeycloakHost(host);
+  const baseUrl = `${normalizedHost}/realms/${realm}/protocol/openid-connect`;
   const oidcClient =
     flow === "authorization-code-pkce"
       ? createKeycloakOidcClient({
@@ -91,6 +96,7 @@ export const createKeycloakAuthMethod = ({
           redirectUri,
           postLogoutRedirectUri,
           scope,
+          providerHint,
         })
       : undefined;
 
