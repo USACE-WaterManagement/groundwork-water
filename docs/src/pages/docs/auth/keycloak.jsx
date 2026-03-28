@@ -12,7 +12,7 @@ const componentProps = [
     name: "host",
     type: "string",
     default: "undefined",
-    desc: "The URL for the Keycloak instance",
+    desc: "The Keycloak base URL for your environment. Include '/auth' when your realm endpoints are served under that path.",
   },
   {
     name: "realm",
@@ -49,6 +49,12 @@ const componentProps = [
     type: "string",
     default: '"openid profile"',
     desc: "Optional - OIDC scopes requested by the PKCE flow.",
+  },
+  {
+    name: "providerHint",
+    type: "string",
+    default: "undefined",
+    desc: "Optional - Keycloak identity provider hint sent as kc_idp_hint.",
   },
   {
     name: "username",
@@ -91,6 +97,12 @@ function KeycloakDocs() {
           for refresh token requests. The recommended flow is Auth Code + PKCE.
         </Text>
         <Text className="mt-4">
+          Use the exact Keycloak base path that serves your realm endpoints. For the
+          CWBI test environment used by <Code>cwms-cli</Code>, that is
+          <Code> https://identity-test.cwbi.us/auth</Code> rather than the stripped root
+          URL.
+        </Text>
+        <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
           requests and updates for the current access token. The interval between
           refresh requests can be controlled by the refreshInterval option.
@@ -120,11 +132,12 @@ function KeycloakDocs() {
 // Set authHost from environment variables
 
 const authMethod = createKeycloakAuthMethod({
-  host: authHost,
-  realm: "cwms",
+  host: "https://identity-test.cwbi.us/auth",
+  realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
   redirectUri: window.location.origin,
+  providerHint: "federation-eams",
 });`}
       </CodeBlock>
       <Divider text="API Reference" className="mt-6" />
