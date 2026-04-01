@@ -22,6 +22,7 @@ function CWMSSpreadsheet({
   timeoffsets = [], // Array of time offsets in seconds (one per row)
   required = false,
   cellOverrides = {}, // Per-cell overrides keyed by "rowIndex_colIndex"
+  transpose = false, // When true, rows and columns are visually swapped
 }) {
   const { registerInput, baseTimestamp, getTimestampForInput } =
     useContext(FormContext);
@@ -674,104 +675,225 @@ function CWMSSpreadsheet({
       </div>
       <div style={containerStyle} ref={tableRef}>
         <table style={tableStyle}>
-          {showColumnHeaders && (
-            <thead>
-              <tr>
-                {showRowNumbers && <th style={rowNumberStyle}></th>}
-                {effectiveColumns.map((col, i) => (
-                  <th key={i} style={headerStyle}>
-                    {col.label || getColumnLabel(i)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-          )}
-          <tbody>
-            {spreadsheetData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
-                {row.map((cellValue, colIndex) => {
-                  const key = `${rowIndex}_${colIndex}`;
-                  const column = effectiveColumns[colIndex] || {};
-                  const cellOverride = cellOverrides[key] || {};
-                  const isSelected = isCellInSelection(rowIndex, colIndex);
-                  const isActiveCell =
-                    selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
-                  const isCellInvalid = invalidCells[key] || invalid;
-
-                  // Get cell-specific properties with proper fallback chain
-                  const cellReadonly =
-                    cellOverride.readonly ?? column.readonly ?? readonly;
-                  const cellRequired =
-                    cellOverride.required ?? column.required ?? required;
-                  const cellType = cellOverride.type ?? column.type ?? "text";
-                  const cellPlaceholder =
-                    cellOverride.placeholder ?? column.placeholder ?? "";
-
-                  // Calculate time value for time column
-                  let displayValue = cellValue;
-                  if (shouldShowTimestamps && colIndex === 0) {
-                    if (getTimestampForInput && timeoffsets[rowIndex] !== undefined) {
-                      const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
-                      const cellTime = new Date(timestamp);
-                      displayValue = cellTime.toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false,
-                      });
-                    } else {
-                      displayValue = "--:--";
-                    }
-                  }
-
-                  return (
-                    <td
-                      key={colIndex}
-                      style={{
-                        ...cellStyle,
-                        backgroundColor: isSelected
-                          ? isActiveCell
-                            ? "#b3d7ff"
-                            : "#cce5ff"
-                          : "#ffffff",
-                        boxShadow: isActiveCell ? "inset 0 0 0 2px #1a73e8" : "none",
-                        zIndex: isActiveCell ? 10 : 1,
-                        position: "relative",
-                        borderColor: isCellInvalid ? "red" : "#d0d0d0",
-                      }}
-                      onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
-                      onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-                      onMouseUp={handleMouseUp}
-                    >
-                      <input
-                        id={`cell-${rowIndex}-${colIndex}`}
-                        name={key}
-                        type={cellType}
-                        value={displayValue}
-                        onChange={(e) =>
-                          handleCellChange(rowIndex, colIndex, e.target.value)
-                        }
-                        onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                        onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
-                        disabled={disable || (shouldShowTimestamps && colIndex === 0)}
-                        readOnly={
-                          cellReadonly || (shouldShowTimestamps && colIndex === 0)
-                        }
-                        style={{
-                          ...inputStyle,
-                          cursor: "cell",
-                          pointerEvents: isSelected ? "auto" : "auto",
-                          color: isCellInvalid ? "red" : undefined,
-                        }}
-                        placeholder={cellPlaceholder}
-                        required={cellRequired}
-                      />
+          {transpose ? (
+            // Transposed layout: data columns become visual rows, data rows become visual columns
+            <>
+              {showColumnHeaders && (
+                <thead>
+                  <tr>
+                    <th style={headerStyle}></th>
+                    {spreadsheetData.map((_, rowIndex) => (
+                      <th key={rowIndex} style={headerStyle}>
+                        {showRowNumbers ? rowIndex + 1 : ""}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {effectiveColumns.map((col, colIndex) => (
+                  <tr key={colIndex}>
+                    <td style={rowNumberStyle}>
+                      {col.label || getColumnLabel(colIndex)}
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
+                    {spreadsheetData.map((row, rowIndex) => {
+                      const key = `${rowIndex}_${colIndex}`;
+                      const column = effectiveColumns[colIndex] || {};
+                      const cellOverride = cellOverrides[key] || {};
+                      const isSelected = isCellInSelection(rowIndex, colIndex);
+                      const isActiveCell =
+                        selectedCell?.row === rowIndex &&
+                        selectedCell?.col === colIndex;
+                      const isCellInvalid = invalidCells[key] || invalid;
+
+                      const cellReadonly =
+                        cellOverride.readonly ?? column.readonly ?? readonly;
+                      const cellRequired =
+                        cellOverride.required ?? column.required ?? required;
+                      const cellType = cellOverride.type ?? column.type ?? "text";
+                      const cellPlaceholder =
+                        cellOverride.placeholder ?? column.placeholder ?? "";
+
+                      let displayValue = row[colIndex];
+                      if (shouldShowTimestamps && colIndex === 0) {
+                        if (
+                          getTimestampForInput &&
+                          timeoffsets[rowIndex] !== undefined
+                        ) {
+                          const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
+                          const cellTime = new Date(timestamp);
+                          displayValue = cellTime.toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          });
+                        } else {
+                          displayValue = "--:--";
+                        }
+                      }
+
+                      return (
+                        <td
+                          key={rowIndex}
+                          style={{
+                            ...cellStyle,
+                            backgroundColor: isSelected
+                              ? isActiveCell
+                                ? "#b3d7ff"
+                                : "#cce5ff"
+                              : "#ffffff",
+                            boxShadow: isActiveCell
+                              ? "inset 0 0 0 2px #1a73e8"
+                              : "none",
+                            zIndex: isActiveCell ? 10 : 1,
+                            position: "relative",
+                            borderColor: isCellInvalid ? "red" : "#d0d0d0",
+                          }}
+                          onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
+                          onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                          onMouseUp={handleMouseUp}
+                        >
+                          <input
+                            id={`cell-${rowIndex}-${colIndex}`}
+                            name={key}
+                            type={cellType}
+                            value={displayValue}
+                            onChange={(e) =>
+                              handleCellChange(rowIndex, colIndex, e.target.value)
+                            }
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                            onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
+                            disabled={
+                              disable || (shouldShowTimestamps && colIndex === 0)
+                            }
+                            readOnly={
+                              cellReadonly || (shouldShowTimestamps && colIndex === 0)
+                            }
+                            style={{
+                              ...inputStyle,
+                              cursor: "cell",
+                              pointerEvents: "auto",
+                              color: isCellInvalid ? "red" : undefined,
+                            }}
+                            placeholder={cellPlaceholder}
+                            required={cellRequired}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </>
+          ) : (
+            // Default layout
+            <>
+              {showColumnHeaders && (
+                <thead>
+                  <tr>
+                    {showRowNumbers && <th style={rowNumberStyle}></th>}
+                    {effectiveColumns.map((col, i) => (
+                      <th key={i} style={headerStyle}>
+                        {col.label || getColumnLabel(i)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {spreadsheetData.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
+                    {row.map((cellValue, colIndex) => {
+                      const key = `${rowIndex}_${colIndex}`;
+                      const column = effectiveColumns[colIndex] || {};
+                      const cellOverride = cellOverrides[key] || {};
+                      const isSelected = isCellInSelection(rowIndex, colIndex);
+                      const isActiveCell =
+                        selectedCell?.row === rowIndex &&
+                        selectedCell?.col === colIndex;
+                      const isCellInvalid = invalidCells[key] || invalid;
+
+                      const cellReadonly =
+                        cellOverride.readonly ?? column.readonly ?? readonly;
+                      const cellRequired =
+                        cellOverride.required ?? column.required ?? required;
+                      const cellType = cellOverride.type ?? column.type ?? "text";
+                      const cellPlaceholder =
+                        cellOverride.placeholder ?? column.placeholder ?? "";
+
+                      let displayValue = cellValue;
+                      if (shouldShowTimestamps && colIndex === 0) {
+                        if (
+                          getTimestampForInput &&
+                          timeoffsets[rowIndex] !== undefined
+                        ) {
+                          const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
+                          const cellTime = new Date(timestamp);
+                          displayValue = cellTime.toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          });
+                        } else {
+                          displayValue = "--:--";
+                        }
+                      }
+
+                      return (
+                        <td
+                          key={colIndex}
+                          style={{
+                            ...cellStyle,
+                            backgroundColor: isSelected
+                              ? isActiveCell
+                                ? "#b3d7ff"
+                                : "#cce5ff"
+                              : "#ffffff",
+                            boxShadow: isActiveCell
+                              ? "inset 0 0 0 2px #1a73e8"
+                              : "none",
+                            zIndex: isActiveCell ? 10 : 1,
+                            position: "relative",
+                            borderColor: isCellInvalid ? "red" : "#d0d0d0",
+                          }}
+                          onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
+                          onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                          onMouseUp={handleMouseUp}
+                        >
+                          <input
+                            id={`cell-${rowIndex}-${colIndex}`}
+                            name={key}
+                            type={cellType}
+                            value={displayValue}
+                            onChange={(e) =>
+                              handleCellChange(rowIndex, colIndex, e.target.value)
+                            }
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                            onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
+                            disabled={
+                              disable || (shouldShowTimestamps && colIndex === 0)
+                            }
+                            readOnly={
+                              cellReadonly || (shouldShowTimestamps && colIndex === 0)
+                            }
+                            style={{
+                              ...inputStyle,
+                              cursor: "cell",
+                              pointerEvents: "auto",
+                              color: isCellInvalid ? "red" : undefined,
+                            }}
+                            placeholder={cellPlaceholder}
+                            required={cellRequired}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </>
+          )}
         </table>
       </div>
     </div>

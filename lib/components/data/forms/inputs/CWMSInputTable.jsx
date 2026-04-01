@@ -18,6 +18,7 @@ function CWMSInputTable({
   onChange,
   showTimestamps = true,
   required = false,
+  transpose = false, // When true, columns become rows and timeoffsets become columns
 }) {
   const { registerInput, getTimestampForInput } = useContext(FormContext);
 
@@ -153,6 +154,58 @@ function CWMSInputTable({
     return offsetTime.toLocaleString("sv-SE").replace("T", " ");
   };
 
+  if (transpose) {
+    // Transposed layout: columns (TSIDs) as rows, timeoffsets as columns
+    return (
+      <table className={`w-full border-collapse mb-5 ${className || ""}`} style={style}>
+        <thead>
+          <tr>
+            <th className="p-2 text-left border-b-2 border-gray-300">Parameter</th>
+            {timeoffsets.map((offset, index) => (
+              <th key={index} className="p-2 text-left border-b-2 border-gray-300">
+                {showTimestamps ? formatTimestamp(offset) : `Offset ${offset}s`}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {columns.map((column, colIndex) => {
+            const columnReadonly = column.readonly ?? readonly;
+            const columnRequired = column.required ?? required;
+
+            return (
+              <tr key={colIndex}>
+                <td className="p-2 font-medium">{column.label || column.tsid}</td>
+                {timeoffsets.map((offset, offsetIndex) => {
+                  const key = `${column.tsid}_${offset}`;
+                  return (
+                    <td key={offsetIndex} className="p-2">
+                      <Input
+                        name={key}
+                        type="number"
+                        value={matrixData[key] || ""}
+                        onChange={(e) =>
+                          handleInputChange(column.tsid, offset, e.target.value)
+                        }
+                        disabled={disable}
+                        readOnly={columnReadonly}
+                        invalid={invalidCells[key] || invalid ? "true" : undefined}
+                        placeholder="Enter value"
+                        className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
+                        required={columnRequired}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+  }
+
+  // Default layout: timeoffsets as rows, columns (TSIDs) as columns
   return (
     <table className={`w-full border-collapse mb-5 ${className || ""}`} style={style}>
       <thead>
