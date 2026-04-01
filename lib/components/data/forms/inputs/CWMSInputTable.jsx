@@ -43,6 +43,9 @@ function CWMSInputTable({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disable) return;
+
     // Clean up any previous registrations
     cleanupFunctions.current.forEach((cleanup) => cleanup());
     cleanupFunctions.current = [];
@@ -117,6 +120,7 @@ function CWMSInputTable({
     readonly,
     units,
     required,
+    disable,
   ]);
 
   const handleInputChange = (tsid, offset, value) => {

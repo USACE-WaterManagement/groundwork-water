@@ -37,6 +37,9 @@ function CWMSDropdown({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disable || dropdownProps.disabled) return;
+
     const dropdownRef = {
       name: dropdownProps.name,
       tsid,
@@ -74,6 +77,8 @@ function CWMSDropdown({
     label,
     placeholder,
     dropdownProps.name,
+    disable,
+    dropdownProps.disabled,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (newValue) => {

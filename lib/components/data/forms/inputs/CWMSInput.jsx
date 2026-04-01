@@ -36,6 +36,9 @@ function CWMSInput({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disable || inputProps.disabled) return;
+
     const inputRef = {
       name: inputProps.name,
       tsid,
@@ -73,6 +76,8 @@ function CWMSInput({
     label,
     placeholder,
     inputProps.name,
+    disable,
+    inputProps.disabled,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (e) => {

@@ -59,6 +59,9 @@ function CWMSSpreadsheet({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disable) return;
+
     cleanupFunctions.current.forEach((cleanup) => cleanup());
     cleanupFunctions.current = [];
 
@@ -161,6 +164,7 @@ function CWMSSpreadsheet({
     shouldShowTimestamps,
     timeoffsets,
     baseTimestamp,
+    disable,
   ]);
 
   // Calculate selected range from drag coordinates
