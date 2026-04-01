@@ -120,6 +120,12 @@ const componentProps = [
     desc: "When true, the calendarOffset is applied in fixed GMT (no daylight saving). Display still uses calendarTimezone if set. When false, the offset is applied in the calendarTimezone (DST-aware).",
   },
   {
+    name: "onCalendarChange",
+    type: "function",
+    default: "undefined",
+    desc: "Callback fired when the calendar timestamp changes. Receives the snapped Date object.",
+  },
+  {
     name: "toastAutoClose",
     type: "number|boolean",
     default: "5000",

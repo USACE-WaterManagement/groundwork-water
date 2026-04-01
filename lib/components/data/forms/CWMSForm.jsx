@@ -43,6 +43,7 @@ export function CWMSForm({
   calendarTimezone, // Optional dayjs timezone string (e.g. "US/Central", "America/New_York", "UTC")
   calendarOffset = 0, // Offset in seconds applied to the snap anchor (e.g. 25200 for 7hrs, 600 for 10min)
   calendarUseGmtOffset = false, // When true, snap/store uses fixed GMT+offset even if calendarTimezone is set for display
+  onCalendarChange, // Optional callback fired when the calendar timestamp changes. Receives the snapped Date object.
   toastAutoClose = 5000, // Set to false to disable auto-close for all toasts, or number for milliseconds
   className = "",
   style,
@@ -313,6 +314,10 @@ export function CWMSForm({
     // Snap with offset applied
     const snapped = snapWithOffset(newDate);
     setBaseTimestamp(formatForDisplay(snapped));
+
+    if (onCalendarChange) {
+      onCalendarChange(snapped);
+    }
   };
 
   // Combine default Tailwind classes with any custom className
