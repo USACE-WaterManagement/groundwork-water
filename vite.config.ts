@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
     console.log("Building library");
     return {
       plugins: [react(), tailwindcss()],
+      test: {
+        environment: "jsdom",
+        globals: true,
+      },
       publicDir: false,
       build: {
         minify: false,
@@ -47,6 +51,10 @@ export default defineConfig(({ mode }) => {
     const base = mode === "production" ? "/groundwork-water/" : "/";
     return {
       plugins: [react(), tailwindcss()],
+      test: {
+        environment: "jsdom",
+        globals: true,
+      },
       base: base,
       build: {
         outDir: "docs",
