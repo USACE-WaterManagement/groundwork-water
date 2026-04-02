@@ -7,8 +7,8 @@ on:
       - "docs/**"
 
 jobs:
-  build:
-    name: Build with React ${{ matrix.react }}
+  library-build:
+    name: Library build with React ${{ matrix.react }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,3 +32,44 @@ jobs:
 
       - name: Build library
         run: npm run build-lib
+
+  docs-build:
+    name: Docs build with React ${{ matrix.react }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ["18", "19"]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            docs/package-lock.json
+
+      - name: Install library dependencies
+        run: npm ci
+
+      - name: Install React ${{ matrix.react }} for library build
+        run: npm install --no-save react@${{ matrix.react }} react-dom@${{ matrix.react }} @types/react@${{ matrix.react }} @types/react-dom@${{ matrix.react }}
+
+      - name: Build library
+        run: npm run build-lib
+
+      - name: Install docs dependencies
+        run: npm ci
+        working-directory: ./docs
+
+      - name: Install React ${{ matrix.react }} and local library in docs
+        run: npm install --no-save react@${{ matrix.react }} react-dom@${{ matrix.react }} @types/react@${{ matrix.react }} @types/react-dom@${{ matrix.react }} @usace-watermanagement/groundwork-water@file:..
+        working-directory: ./docs
+
+      - name: Build docs
+        run: npm run build
+        working-directory: ./docs
