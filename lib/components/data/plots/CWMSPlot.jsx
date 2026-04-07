@@ -328,25 +328,60 @@ export default function CWMSPlot({
           let dates = [];
           let values = [];
 
-          ts.map((tsv) => {
-            if (tsv[0] && tsv[1]) {
-              const dt = tsv[0];
-              const val = tsv[1];
+          // Helper: linear interpolation between two [timestamp, value] points
+          const lerp = (t0, v0, t1, v1, t) => {
+            if (t1 === t0) return v0;
+            return v0 + (v1 - v0) * ((t - t0) / (t1 - t0));
+          };
 
-              if (dt > start && !dates.includes(start)) {
-                dates.push(start);
-                values.push(val);
-              }
-              if (dt < end && !dates.includes(end)) {
-                dates.push(end);
-                values.push(val);
-              }
-              if (dt > start && dt < end && !dates.includes(dt)) {
-                dates.push(dt);
-                values.push(val);
-              }
+          // Sort all valid level points by time (entire dataset, not just within range)
+          const sorted = ts
+            .filter((tsv) => tsv[0] != null && tsv[1] != null)
+            .sort((a, b) => a[0] - b[0]);
+
+          // Interpolate value at 'start' using the two surrounding points
+          const beforeStart = sorted.filter((tsv) => tsv[0] <= start);
+          const afterStart = sorted.filter((tsv) => tsv[0] >= start);
+          if (beforeStart.length > 0 && afterStart.length > 0) {
+            const p0 = beforeStart[beforeStart.length - 1];
+            const p1 = afterStart[0];
+            dates.push(start);
+            values.push(
+              p0[0] === p1[0] ? p0[1] : lerp(p0[0], p0[1], p1[0], p1[1], start),
+            );
+          } else if (afterStart.length > 0) {
+            dates.push(start);
+            values.push(afterStart[0][1]);
+          } else if (beforeStart.length > 0) {
+            dates.push(start);
+            values.push(beforeStart[beforeStart.length - 1][1]);
+          }
+
+          // Add all actual data points strictly within (start, end)
+          sorted.forEach(([dt, val]) => {
+            if (dt > start && dt < end) {
+              dates.push(dt);
+              values.push(val);
             }
           });
+
+          // Interpolate value at 'end' using the two surrounding points
+          const beforeEnd = sorted.filter((tsv) => tsv[0] <= end);
+          const afterEnd = sorted.filter((tsv) => tsv[0] >= end);
+          if (beforeEnd.length > 0 && afterEnd.length > 0) {
+            const p0 = beforeEnd[beforeEnd.length - 1];
+            const p1 = afterEnd[0];
+            dates.push(end);
+            values.push(
+              p0[0] === p1[0] ? p0[1] : lerp(p0[0], p0[1], p1[0], p1[1], end),
+            );
+          } else if (beforeEnd.length > 0) {
+            dates.push(end);
+            values.push(beforeEnd[beforeEnd.length - 1][1]);
+          } else if (afterEnd.length > 0) {
+            dates.push(end);
+            values.push(afterEnd[0][1]);
+          }
 
           // Defaults for trace
           const trace = {
