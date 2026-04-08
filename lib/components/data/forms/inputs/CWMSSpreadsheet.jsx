@@ -19,10 +19,10 @@ function CWMSSpreadsheet({
   showRowNumbers = true,
   showColumnHeaders = true,
   showTimestamps = false,
-  timeoffsets = [], // Array of time offsets in seconds (one per row)
+  timeoffsets = [],
   required = false,
-  cellOverrides = {}, // Per-cell overrides keyed by "rowIndex_colIndex"
-  transpose = false, // When true, rows and columns are visually swapped
+  cellOverrides = {},
+  transpose = false,
 }) {
   const { registerInput, baseTimestamp, getTimestampForInput } =
     useContext(FormContext);
@@ -55,6 +55,10 @@ function CWMSSpreadsheet({
   const [dragEnd, setDragEnd] = useState(null);
   const tableRef = useRef(null);
   const cleanupFunctions = useRef([]);
+
+  // Unique ID prefix for this spreadsheet instance so multiple spreadsheets
+  // on the same page don't collide when using document.getElementById
+  const instanceId = useMemo(() => `ss-${Math.random().toString(36).slice(2, 8)}`, []);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -167,6 +171,27 @@ function CWMSSpreadsheet({
     disable,
   ]);
 
+  // When transposed, visual rows = data cols and visual cols = data rows.
+  // These helpers convert between visual (what the user sees/interacts with)
+  // and data (the underlying spreadsheetData model) coordinates.
+  const visualToData = (visualRow, visualCol) => {
+    if (transpose) {
+      return { row: visualCol, col: visualRow };
+    }
+    return { row: visualRow, col: visualCol };
+  };
+
+  const dataToVisual = (dataRow, dataCol) => {
+    if (transpose) {
+      return { row: dataCol, col: dataRow };
+    }
+    return { row: dataRow, col: dataCol };
+  };
+
+  // Visual grid dimensions
+  const visualRows = transpose ? effectiveColumns.length : rows;
+  const visualCols = transpose ? rows : effectiveColumns.length;
+
   // Calculate selected range from drag coordinates
   const getSelectionRange = () => {
     if (!dragStart || !dragEnd) return null;
@@ -178,19 +203,22 @@ function CWMSSpreadsheet({
     };
   };
 
-  const isCellInSelection = (rowIndex, colIndex) => {
+  // Selection state is in visual coordinates, so this takes visual coords
+  const isCellInSelection = (visualRow, visualCol) => {
     const range = getSelectionRange();
     if (!range) {
-      // Single cell selection
-      return selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+      return selectedCell?.row === visualRow && selectedCell?.col === visualCol;
     }
-    // Multi-cell selection
     return (
-      rowIndex >= range.startRow &&
-      rowIndex <= range.endRow &&
-      colIndex >= range.startCol &&
-      colIndex <= range.endCol
+      visualRow >= range.startRow &&
+      visualRow <= range.endRow &&
+      visualCol >= range.startCol &&
+      visualCol <= range.endCol
     );
+  };
+
+  const isActiveCell = (visualRow, visualCol) => {
+    return selectedCell?.row === visualRow && selectedCell?.col === visualCol;
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
@@ -229,11 +257,12 @@ function CWMSSpreadsheet({
       // Single cell copy
       copyText = spreadsheetData[selectedCell.row][selectedCell.col];
     } else if (range) {
-      // Multi-cell copy
-      for (let row = range.startRow; row <= range.endRow; row++) {
+      // Multi-cell copy — iterate in visual order so copied output matches what the user sees
+      for (let vRow = range.startRow; vRow <= range.endRow; vRow++) {
         const rowData = [];
-        for (let col = range.startCol; col <= range.endCol; col++) {
-          rowData.push(spreadsheetData[row][col] || "");
+        for (let vCol = range.startCol; vCol <= range.endCol; vCol++) {
+          const { row: dRow, col: dCol } = visualToData(vRow, vCol);
+          rowData.push(spreadsheetData[dRow]?.[dCol] || "");
         }
         copyText += rowData.join("\t") + "\n";
       }
@@ -261,28 +290,42 @@ function CWMSSpreadsheet({
   };
 
   const copyAllData = () => {
-    // Create tab-separated string of all data
+    // Create tab-separated string of all data in visual order
     let copyText = "";
 
     // Add headers if they exist
     if (showColumnHeaders) {
       const headers = [];
-      if (showRowNumbers) headers.push(""); // Empty cell for row numbers column
-      for (let i = 0; i < effectiveColumns.length; i++) {
-        headers.push(effectiveColumns[i].label || getColumnLabel(i));
+      if (showRowNumbers) headers.push("");
+      if (transpose) {
+        // In transposed mode, column headers are data row numbers
+        for (let i = 0; i < rows; i++) {
+          headers.push(i + 1);
+        }
+      } else {
+        for (let i = 0; i < effectiveColumns.length; i++) {
+          headers.push(effectiveColumns[i].label || getColumnLabel(i));
+        }
       }
       copyText += headers.join("\t") + "\n";
     }
 
-    // Add data rows
-    for (let row = 0; row < spreadsheetData.length; row++) {
+    // Add data in visual order
+    for (let vRow = 0; vRow < visualRows; vRow++) {
       const rowData = [];
-      if (showRowNumbers) rowData.push(row + 1); // Add row number
-      for (let col = 0; col < effectiveColumns.length; col++) {
+      if (showRowNumbers) {
+        if (transpose) {
+          rowData.push(effectiveColumns[vRow]?.label || getColumnLabel(vRow));
+        } else {
+          rowData.push(vRow + 1);
+        }
+      }
+      for (let vCol = 0; vCol < visualCols; vCol++) {
+        const { row: dRow, col: dCol } = visualToData(vRow, vCol);
         // For time column, calculate the actual time
-        if (shouldShowTimestamps && col === 0) {
-          if (getTimestampForInput && timeoffsets[row] !== undefined) {
-            const timestamp = getTimestampForInput(timeoffsets[row]);
+        if (shouldShowTimestamps && dCol === 0) {
+          if (getTimestampForInput && timeoffsets[dRow] !== undefined) {
+            const timestamp = getTimestampForInput(timeoffsets[dRow]);
             const cellTime = new Date(timestamp);
             rowData.push(
               cellTime.toLocaleTimeString("en-US", {
@@ -295,7 +338,7 @@ function CWMSSpreadsheet({
             rowData.push("--:--");
           }
         } else {
-          rowData.push(spreadsheetData[row][col] || "");
+          rowData.push(spreadsheetData[dRow]?.[dCol] || "");
         }
       }
       copyText += rowData.join("\t") + "\n";
@@ -337,7 +380,7 @@ function CWMSSpreadsheet({
     document.body.removeChild(textArea);
   };
 
-  const handlePaste = (e, startRow, startCol) => {
+  const handlePaste = (e, startVisualRow, startVisualCol) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -345,10 +388,10 @@ function CWMSSpreadsheet({
     if (!pasteData) return;
 
     // Split by line breaks first (handles both \r\n and \n)
-    const rows = pasteData.split(/\r?\n/);
+    const pasteRows = pasteData.split(/\r?\n/);
     const updatedData = [...spreadsheetData];
 
-    rows.forEach((row, rowOffset) => {
+    pasteRows.forEach((row, rowOffset) => {
       // Skip empty rows
       if (!row.trim()) return;
 
@@ -356,12 +399,17 @@ function CWMSSpreadsheet({
       const cells = row.split("\t");
 
       cells.forEach((cell, colOffset) => {
-        const targetRow = startRow + rowOffset;
-        const targetCol = startCol + colOffset;
+        const vRow = startVisualRow + rowOffset;
+        const vCol = startVisualCol + colOffset;
 
-        // Check bounds and skip time column
+        // Check visual bounds
+        if (vRow >= visualRows || vCol >= visualCols) return;
+
+        // Convert visual to data coordinates
+        const { row: targetRow, col: targetCol } = visualToData(vRow, vCol);
+
+        // Check data bounds and skip time column
         if (targetRow < spreadsheetData.length && targetCol < effectiveColumns.length) {
-          // Skip pasting into time column
           if (shouldShowTimestamps && targetCol === 0) {
             return;
           }
@@ -371,7 +419,6 @@ function CWMSSpreadsheet({
           } else {
             updatedData[targetRow] = [...updatedData[targetRow]];
           }
-          // Trim the cell value to remove extra whitespace
           updatedData[targetRow][targetCol] = cell.trim();
         }
       });
@@ -383,23 +430,22 @@ function CWMSSpreadsheet({
     }
   };
 
-  const handleMouseDown = (rowIndex, colIndex, e) => {
+  // Mouse handlers receive visual coordinates
+  const handleMouseDown = (visualRow, visualCol, e) => {
     if (e.shiftKey && selectedCell) {
-      // Shift+click for range selection
       setDragStart(selectedCell);
-      setDragEnd({ row: rowIndex, col: colIndex });
+      setDragEnd({ row: visualRow, col: visualCol });
     } else {
-      // Start new selection
       setIsMouseDown(true);
-      setDragStart({ row: rowIndex, col: colIndex });
-      setDragEnd({ row: rowIndex, col: colIndex });
-      setSelectedCell({ row: rowIndex, col: colIndex });
+      setDragStart({ row: visualRow, col: visualCol });
+      setDragEnd({ row: visualRow, col: visualCol });
+      setSelectedCell({ row: visualRow, col: visualCol });
     }
   };
 
-  const handleMouseEnter = (rowIndex, colIndex) => {
+  const handleMouseEnter = (visualRow, visualCol) => {
     if (isMouseDown) {
-      setDragEnd({ row: rowIndex, col: colIndex });
+      setDragEnd({ row: visualRow, col: visualCol });
     }
   };
 
@@ -419,7 +465,10 @@ function CWMSSpreadsheet({
     };
   }, []);
 
-  const handleKeyDown = (e, rowIndex, colIndex) => {
+  // All selection state (selectedCell, dragStart, dragEnd) uses VISUAL coordinates.
+  // The handlers receive visual row/col and convert to data coords only when
+  // reading/writing spreadsheetData.
+  const handleKeyDown = (e, visualRow, visualCol) => {
     if (readonly || disable) return;
 
     // Handle copy
@@ -439,112 +488,115 @@ function CWMSSpreadsheet({
     if ((e.ctrlKey || e.metaKey) && e.key === "a") {
       e.preventDefault();
       setDragStart({ row: 0, col: 0 });
-      setDragEnd({ row: rows - 1, col: effectiveColumns.length - 1 });
+      setDragEnd({ row: visualRows - 1, col: visualCols - 1 });
       return;
     }
 
     switch (e.key) {
       case "ArrowUp":
         if (e.shiftKey && selectedCell) {
-          // Extend selection up
           e.preventDefault();
           if (!dragStart) setDragStart(selectedCell);
-          setDragEnd({ row: Math.max(0, rowIndex - 1), col: colIndex });
-        } else if (rowIndex > 0) {
+          setDragEnd({ row: Math.max(0, visualRow - 1), col: visualCol });
+        } else if (visualRow > 0) {
           e.preventDefault();
-          const newRow = rowIndex - 1;
-          setSelectedCell({ row: newRow, col: colIndex });
+          const newRow = visualRow - 1;
+          setSelectedCell({ row: newRow, col: visualCol });
           setDragStart(null);
           setDragEnd(null);
-          document.getElementById(`cell-${newRow}-${colIndex}`)?.focus();
+          const { row: dR, col: dC } = visualToData(newRow, visualCol);
+          document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
         }
         break;
       case "ArrowDown":
         if (e.shiftKey && selectedCell) {
-          // Extend selection down
           e.preventDefault();
           if (!dragStart) setDragStart(selectedCell);
-          setDragEnd({ row: Math.min(rows - 1, rowIndex + 1), col: colIndex });
-        } else if (rowIndex < rows - 1) {
+          setDragEnd({ row: Math.min(visualRows - 1, visualRow + 1), col: visualCol });
+        } else if (visualRow < visualRows - 1) {
           e.preventDefault();
-          const newRow = rowIndex + 1;
-          setSelectedCell({ row: newRow, col: colIndex });
+          const newRow = visualRow + 1;
+          setSelectedCell({ row: newRow, col: visualCol });
           setDragStart(null);
           setDragEnd(null);
-          document.getElementById(`cell-${newRow}-${colIndex}`)?.focus();
+          const { row: dR, col: dC } = visualToData(newRow, visualCol);
+          document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
         }
         break;
       case "ArrowLeft":
         if (e.shiftKey && selectedCell) {
-          // Extend selection left
           e.preventDefault();
           if (!dragStart) setDragStart(selectedCell);
-          setDragEnd({ row: rowIndex, col: Math.max(0, colIndex - 1) });
-        } else if (colIndex > 0) {
+          setDragEnd({ row: visualRow, col: Math.max(0, visualCol - 1) });
+        } else if (visualCol > 0) {
           e.preventDefault();
-          const newCol = colIndex - 1;
-          setSelectedCell({ row: rowIndex, col: newCol });
+          const newCol = visualCol - 1;
+          setSelectedCell({ row: visualRow, col: newCol });
           setDragStart(null);
           setDragEnd(null);
-          document.getElementById(`cell-${rowIndex}-${newCol}`)?.focus();
+          const { row: dR, col: dC } = visualToData(visualRow, newCol);
+          document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
         }
         break;
       case "ArrowRight":
         if (e.shiftKey && selectedCell) {
-          // Extend selection right
           e.preventDefault();
           if (!dragStart) setDragStart(selectedCell);
           setDragEnd({
-            row: rowIndex,
-            col: Math.min(effectiveColumns.length - 1, colIndex + 1),
+            row: visualRow,
+            col: Math.min(visualCols - 1, visualCol + 1),
           });
-        } else if (colIndex < effectiveColumns.length - 1) {
+        } else if (visualCol < visualCols - 1) {
           e.preventDefault();
-          const newCol = colIndex + 1;
-          setSelectedCell({ row: rowIndex, col: newCol });
+          const newCol = visualCol + 1;
+          setSelectedCell({ row: visualRow, col: newCol });
           setDragStart(null);
           setDragEnd(null);
-          document.getElementById(`cell-${rowIndex}-${newCol}`)?.focus();
+          const { row: dR, col: dC } = visualToData(visualRow, newCol);
+          document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
         }
         break;
       case "Enter":
         e.preventDefault();
-        if (rowIndex < rows - 1) {
-          document.getElementById(`cell-${rowIndex + 1}-${colIndex}`)?.focus();
+        if (visualRow < visualRows - 1) {
+          const { row: dR, col: dC } = visualToData(visualRow + 1, visualCol);
+          document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
         }
         break;
       case "Tab":
         e.preventDefault();
         if (e.shiftKey) {
-          if (colIndex > 0) {
-            document.getElementById(`cell-${rowIndex}-${colIndex - 1}`)?.focus();
-          } else if (rowIndex > 0) {
-            document
-              .getElementById(`cell-${rowIndex - 1}-${effectiveColumns.length - 1}`)
-              ?.focus();
+          if (visualCol > 0) {
+            const { row: dR, col: dC } = visualToData(visualRow, visualCol - 1);
+            document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
+          } else if (visualRow > 0) {
+            const { row: dR, col: dC } = visualToData(visualRow - 1, visualCols - 1);
+            document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
           }
         } else {
-          if (colIndex < effectiveColumns.length - 1) {
-            document.getElementById(`cell-${rowIndex}-${colIndex + 1}`)?.focus();
-          } else if (rowIndex < rows - 1) {
-            document.getElementById(`cell-${rowIndex + 1}-0`)?.focus();
+          if (visualCol < visualCols - 1) {
+            const { row: dR, col: dC } = visualToData(visualRow, visualCol + 1);
+            document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
+          } else if (visualRow < visualRows - 1) {
+            const { row: dR, col: dC } = visualToData(visualRow + 1, 0);
+            document.getElementById(`${instanceId}-${dR}-${dC}`)?.focus();
           }
         }
         break;
       case "Escape":
-        // Clear selection
         setDragStart(null);
         setDragEnd(null);
         break;
       case "Delete": {
-        // Delete all selected cells
         const range = getSelectionRange();
         if (range) {
           const updatedData = [...spreadsheetData];
-          for (let row = range.startRow; row <= range.endRow; row++) {
-            updatedData[row] = [...updatedData[row]];
-            for (let col = range.startCol; col <= range.endCol; col++) {
-              updatedData[row][col] = "";
+          for (let vRow = range.startRow; vRow <= range.endRow; vRow++) {
+            for (let vCol = range.startCol; vCol <= range.endCol; vCol++) {
+              const { row: dRow, col: dCol } = visualToData(vRow, vCol);
+              if (!updatedData[dRow]) continue;
+              updatedData[dRow] = [...updatedData[dRow]];
+              updatedData[dRow][dCol] = "";
             }
           }
           setSpreadsheetData(updatedData);
@@ -552,7 +604,8 @@ function CWMSSpreadsheet({
             onChange(updatedData);
           }
         } else {
-          handleCellChange(rowIndex, colIndex, "");
+          const { row: dRow, col: dCol } = visualToData(visualRow, visualCol);
+          handleCellChange(dRow, dCol, "");
         }
         break;
       }
@@ -657,9 +710,9 @@ function CWMSSpreadsheet({
         <button
           onClick={() => {
             setDragStart({ row: 0, col: 0 });
-            setDragEnd({ row: rows - 1, col: effectiveColumns.length - 1 });
+            setDragEnd({ row: visualRows - 1, col: visualCols - 1 });
             // Focus on first cell to enable keyboard copy
-            document.getElementById("cell-0-0")?.focus();
+            document.getElementById(`${instanceId}-0-0`)?.focus();
           }}
           style={{
             padding: "6px 12px",
@@ -695,98 +748,99 @@ function CWMSSpreadsheet({
                 </thead>
               )}
               <tbody>
-                {effectiveColumns.map((col, colIndex) => (
-                  <tr key={colIndex}>
-                    <td style={rowNumberStyle}>
-                      {col.label || getColumnLabel(colIndex)}
-                    </td>
-                    {spreadsheetData.map((row, rowIndex) => {
-                      const key = `${rowIndex}_${colIndex}`;
-                      const column = effectiveColumns[colIndex] || {};
-                      const cellOverride = cellOverrides[key] || {};
-                      const isSelected = isCellInSelection(rowIndex, colIndex);
-                      const isActiveCell =
-                        selectedCell?.row === rowIndex &&
-                        selectedCell?.col === colIndex;
-                      const isCellInvalid = invalidCells[key] || invalid;
+                {effectiveColumns.map((col, colIndex) => {
+                  // In transposed view: visual row = colIndex, visual col = rowIndex
+                  const vRow = colIndex;
+                  return (
+                    <tr key={colIndex}>
+                      <td style={rowNumberStyle}>
+                        {col.label || getColumnLabel(colIndex)}
+                      </td>
+                      {spreadsheetData.map((row, rowIndex) => {
+                        const vCol = rowIndex;
+                        // Data coordinates
+                        const dRow = rowIndex;
+                        const dCol = colIndex;
+                        const key = `${dRow}_${dCol}`;
+                        const column = effectiveColumns[dCol] || {};
+                        const cellOverride = cellOverrides[key] || {};
+                        const isSelected = isCellInSelection(vRow, vCol);
+                        const isCellActive = isActiveCell(vRow, vCol);
+                        const isCellInvalid = invalidCells[key] || invalid;
 
-                      const cellReadonly =
-                        cellOverride.readonly ?? column.readonly ?? readonly;
-                      const cellRequired =
-                        cellOverride.required ?? column.required ?? required;
-                      const cellType = cellOverride.type ?? column.type ?? "text";
-                      const cellPlaceholder =
-                        cellOverride.placeholder ?? column.placeholder ?? "";
+                        const cellReadonly =
+                          cellOverride.readonly ?? column.readonly ?? readonly;
+                        const cellRequired =
+                          cellOverride.required ?? column.required ?? required;
+                        const cellType = cellOverride.type ?? column.type ?? "text";
+                        const cellPlaceholder =
+                          cellOverride.placeholder ?? column.placeholder ?? "";
 
-                      let displayValue = row[colIndex];
-                      if (shouldShowTimestamps && colIndex === 0) {
-                        if (
-                          getTimestampForInput &&
-                          timeoffsets[rowIndex] !== undefined
-                        ) {
-                          const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
-                          const cellTime = new Date(timestamp);
-                          displayValue = cellTime.toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          });
-                        } else {
-                          displayValue = "--:--";
+                        let displayValue = row[dCol];
+                        if (shouldShowTimestamps && dCol === 0) {
+                          if (getTimestampForInput && timeoffsets[dRow] !== undefined) {
+                            const timestamp = getTimestampForInput(timeoffsets[dRow]);
+                            const cellTime = new Date(timestamp);
+                            displayValue = cellTime.toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            });
+                          } else {
+                            displayValue = "--:--";
+                          }
                         }
-                      }
 
-                      return (
-                        <td
-                          key={rowIndex}
-                          style={{
-                            ...cellStyle,
-                            backgroundColor: isSelected
-                              ? isActiveCell
-                                ? "#b3d7ff"
-                                : "#cce5ff"
-                              : "#ffffff",
-                            boxShadow: isActiveCell
-                              ? "inset 0 0 0 2px #1a73e8"
-                              : "none",
-                            zIndex: isActiveCell ? 10 : 1,
-                            position: "relative",
-                            borderColor: isCellInvalid ? "red" : "#d0d0d0",
-                          }}
-                          onMouseDown={(e) => handleMouseDown(rowIndex, colIndex, e)}
-                          onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-                          onMouseUp={handleMouseUp}
-                        >
-                          <input
-                            id={`cell-${rowIndex}-${colIndex}`}
-                            name={key}
-                            type={cellType}
-                            value={displayValue}
-                            onChange={(e) =>
-                              handleCellChange(rowIndex, colIndex, e.target.value)
-                            }
-                            onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                            onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
-                            disabled={
-                              disable || (shouldShowTimestamps && colIndex === 0)
-                            }
-                            readOnly={
-                              cellReadonly || (shouldShowTimestamps && colIndex === 0)
-                            }
+                        return (
+                          <td
+                            key={rowIndex}
                             style={{
-                              ...inputStyle,
-                              cursor: "cell",
-                              pointerEvents: "auto",
-                              color: isCellInvalid ? "red" : undefined,
+                              ...cellStyle,
+                              backgroundColor: isSelected
+                                ? isCellActive
+                                  ? "#b3d7ff"
+                                  : "#cce5ff"
+                                : "#ffffff",
+                              boxShadow: isCellActive
+                                ? "inset 0 0 0 2px #1a73e8"
+                                : "none",
+                              zIndex: isCellActive ? 10 : 1,
+                              position: "relative",
+                              borderColor: isCellInvalid ? "red" : "#d0d0d0",
                             }}
-                            placeholder={cellPlaceholder}
-                            required={cellRequired}
-                          />
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                            onMouseDown={(e) => handleMouseDown(vRow, vCol, e)}
+                            onMouseEnter={() => handleMouseEnter(vRow, vCol)}
+                            onMouseUp={handleMouseUp}
+                          >
+                            <input
+                              id={`${instanceId}-${dRow}-${dCol}`}
+                              name={key}
+                              type={cellType}
+                              value={displayValue}
+                              onChange={(e) =>
+                                handleCellChange(dRow, dCol, e.target.value)
+                              }
+                              onKeyDown={(e) => handleKeyDown(e, vRow, vCol)}
+                              onPaste={(e) => handlePaste(e, vRow, vCol)}
+                              disabled={disable || (shouldShowTimestamps && dCol === 0)}
+                              readOnly={
+                                cellReadonly || (shouldShowTimestamps && dCol === 0)
+                              }
+                              style={{
+                                ...inputStyle,
+                                cursor: "cell",
+                                pointerEvents: "auto",
+                                color: isCellInvalid ? "red" : undefined,
+                              }}
+                              placeholder={cellPlaceholder}
+                              required={cellRequired}
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
             </>
           ) : (
@@ -809,13 +863,12 @@ function CWMSSpreadsheet({
                   <tr key={rowIndex}>
                     {showRowNumbers && <td style={rowNumberStyle}>{rowIndex + 1}</td>}
                     {row.map((cellValue, colIndex) => {
+                      // In default layout, visual coords = data coords
                       const key = `${rowIndex}_${colIndex}`;
                       const column = effectiveColumns[colIndex] || {};
                       const cellOverride = cellOverrides[key] || {};
                       const isSelected = isCellInSelection(rowIndex, colIndex);
-                      const isActiveCell =
-                        selectedCell?.row === rowIndex &&
-                        selectedCell?.col === colIndex;
+                      const isCellActive = isActiveCell(rowIndex, colIndex);
                       const isCellInvalid = invalidCells[key] || invalid;
 
                       const cellReadonly =
@@ -850,14 +903,14 @@ function CWMSSpreadsheet({
                           style={{
                             ...cellStyle,
                             backgroundColor: isSelected
-                              ? isActiveCell
+                              ? isCellActive
                                 ? "#b3d7ff"
                                 : "#cce5ff"
                               : "#ffffff",
-                            boxShadow: isActiveCell
+                            boxShadow: isCellActive
                               ? "inset 0 0 0 2px #1a73e8"
                               : "none",
-                            zIndex: isActiveCell ? 10 : 1,
+                            zIndex: isCellActive ? 10 : 1,
                             position: "relative",
                             borderColor: isCellInvalid ? "red" : "#d0d0d0",
                           }}
@@ -866,7 +919,7 @@ function CWMSSpreadsheet({
                           onMouseUp={handleMouseUp}
                         >
                           <input
-                            id={`cell-${rowIndex}-${colIndex}`}
+                            id={`${instanceId}-${rowIndex}-${colIndex}`}
                             name={key}
                             type={cellType}
                             value={displayValue}

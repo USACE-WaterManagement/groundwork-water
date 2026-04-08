@@ -18,7 +18,7 @@ function CWMSInputTable({
   onChange,
   showTimestamps = true,
   required = false,
-  transpose = false, // When true, columns become rows and timeoffsets become columns
+  transpose = false,
 }) {
   const { registerInput, getTimestampForInput } = useContext(FormContext);
 
@@ -167,7 +167,16 @@ function CWMSInputTable({
             <th className="p-2 text-left border-b-2 border-gray-300">Parameter</th>
             {timeoffsets.map((offset, index) => (
               <th key={index} className="p-2 text-left border-b-2 border-gray-300">
-                {showTimestamps ? formatTimestamp(offset) : `Offset ${offset}s`}
+                {showTimestamps ? (
+                  <Input
+                    type="text"
+                    value={formatTimestamp(offset)}
+                    readOnly
+                    className="w-full bg-gray-50 border border-gray-300 p-1"
+                  />
+                ) : (
+                  `Offset ${offset}s`
+                )}
               </th>
             ))}
           </tr>
