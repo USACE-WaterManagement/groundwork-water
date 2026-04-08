@@ -4,7 +4,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
-import { getSnappedTimestamp } from "./helpers/timeSnapping";
+import { snapDayjs } from "./helpers/timeSnapping";
 import { useCwmsFormSubmit, useFormValidation } from "./hooks/useCwmsFormSubmit";
 
 import {
@@ -139,36 +139,32 @@ export function CWMSForm({
     return new Date(datetimeLocalStr);
   };
 
-  // Snap with offset applied
-  // The offset shifts the snap grid: subtract offset, snap normally, add offset back.
-  // When calendarUseGmtOffset is true, snapping is done in UTC.
-  // When calendarTimezone is set (and not useGmt), snapping is done in that timezone.
+  // Snap with offset applied.
+  // The offset shifts the snap grid: subtract offset, snap, add offset back.
+  //
+  // Three modes:
+  //   1. No timezone, no useGmt (default): snap in browser local time via dayjs()
+  //   2. calendarTimezone set, no useGmt: snap in the named timezone (DST-aware)
+  //   3. calendarUseGmtOffset: snap in UTC (fixed, no DST)
   const snapWithOffset = (date) => {
-    const offsetMs = calendarOffset * 1000;
-
-    let workingDate;
-    if (calendarUseGmtOffset || !calendarTimezone) {
-      // Snap in UTC: work with the UTC time directly
-      workingDate = new Date(date.getTime() - offsetMs);
+    let working;
+    if (calendarUseGmtOffset) {
+      // Snap in UTC — fixed offset, no DST
+      working = dayjs(date).utc();
+    } else if (calendarTimezone) {
+      // Snap in the target timezone — DST-aware
+      working = dayjs(date).tz(calendarTimezone);
     } else {
-      // Snap in the target timezone: shift into timezone-local space
-      const inTz = dayjs(date).tz(calendarTimezone);
-      // Subtract offset in timezone-local space
-      const shifted = inTz.subtract(calendarOffset, "second");
-      workingDate = shifted.toDate();
+      // Snap in browser local time (default, preserves original behavior)
+      working = dayjs(date);
     }
 
-    // Snap the shifted time using the existing snapping logic
-    const snapped = getSnappedTimestamp(workingDate, calendarInterval, calendarSnapTo);
-    const snappedDate = new Date(snapped);
+    // Subtract offset, snap, add offset back
+    const shifted = working.subtract(calendarOffset, "second");
+    const snapped = snapDayjs(shifted, calendarInterval, calendarSnapTo);
+    const result = snapped.add(calendarOffset, "second");
 
-    // Add the offset back
-    if (calendarUseGmtOffset || !calendarTimezone) {
-      return new Date(snappedDate.getTime() + offsetMs);
-    } else {
-      const snappedInTz = dayjs(snappedDate).tz(calendarTimezone);
-      return snappedInTz.add(calendarOffset, "second").toDate();
-    }
+    return result.toDate();
   };
 
   // State for timestamp management
