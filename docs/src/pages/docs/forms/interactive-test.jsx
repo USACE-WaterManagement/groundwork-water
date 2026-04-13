@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Text, Code, Input, Button } from "@usace/groundwork";
 import {
   CWMSForm,
@@ -15,6 +15,68 @@ import {
 } from "@usace-watermanagement/groundwork-water";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+
+const INTERACTIVE_TEST_STORAGE_KEY = "groundwork-water:interactive-auth-config";
+
+const getInteractiveTestRedirectUri = () => {
+  if (typeof window === "undefined") return "";
+
+  const url = new URL(window.location.href);
+  url.search = "";
+
+  if (!url.hash || url.hash === "#") {
+    url.hash = "#/docs/forms/interactive-test";
+  }
+
+  return url.toString();
+};
+
+const getDefaultInteractiveConfig = () => {
+  const redirectUri = getInteractiveTestRedirectUri();
+
+  return {
+    authMethod: "keycloak",
+    testCdaUrl: "https://water.dev.cwbi.us/cwms-data",
+    keycloakConfig: {
+      host: "https://identity-test.cwbi.us/auth",
+      realm: "cwbi",
+      client: "cwms",
+      flow: "authorization-code-pkce",
+      redirectUri,
+      postLogoutRedirectUri: redirectUri,
+      scope: "openid profile",
+      providerHint: "federation-eams",
+    },
+  };
+};
+
+const normalizeInteractiveKeycloakConfig = (keycloakConfig, defaultConfig) => {
+  if (!keycloakConfig) return defaultConfig;
+
+  const normalized = {
+    ...defaultConfig,
+    ...keycloakConfig,
+  };
+
+  const normalizedHost = normalized.host?.trim().replace(/\/$/, "");
+
+  if (
+    normalizedHost === "https://identityc-test.cwbi.us" ||
+    normalizedHost === "https://identity-test.cwbi.us"
+  ) {
+    normalized.host = "https://identity-test.cwbi.us/auth";
+  }
+
+  if (normalized.realm === "cwms") {
+    normalized.realm = "cwbi";
+  }
+
+  if (!normalized.providerHint) {
+    normalized.providerHint = defaultConfig.providerHint;
+  }
+
+  return normalized;
+};
 
 // Inner component that uses auth context
 function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
@@ -702,21 +764,51 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
 
 // Main component with AuthProvider wrapper
 function InteractiveFormTest() {
-  const [authMethod, setAuthMethod] = useState("keycloak");
-  const [testCdaUrl, setTestCdaUrl] = useState("http://localhost:8081/cwms-data");
-  const [keycloakConfig, setKeycloakConfig] = useState({
-    host: "http://localhost:8081/auth",
-    realm: "cwms",
-    client: "cwms",
-    flow: "direct-grant",
-    password: "m5hectest",
-    username: "m5hectest",
-  });
+  const defaultConfig = useMemo(() => getDefaultInteractiveConfig(), []);
+  const [authMethod, setAuthMethod] = useState(defaultConfig.authMethod);
+  const [testCdaUrl, setTestCdaUrl] = useState(defaultConfig.testCdaUrl);
+  const [keycloakConfig, setKeycloakConfig] = useState(defaultConfig.keycloakConfig);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const savedConfig = window.localStorage.getItem(INTERACTIVE_TEST_STORAGE_KEY);
+    if (!savedConfig) return;
+
+    try {
+      const parsed = JSON.parse(savedConfig);
+      if (parsed.authMethod) setAuthMethod(parsed.authMethod);
+      if (parsed.testCdaUrl) setTestCdaUrl(parsed.testCdaUrl);
+      if (parsed.keycloakConfig) {
+        setKeycloakConfig(
+          normalizeInteractiveKeycloakConfig(
+            parsed.keycloakConfig,
+            defaultConfig.keycloakConfig,
+          ),
+        );
+      }
+    } catch (error) {
+      console.warn("Failed to load interactive auth config from localStorage", error);
+    }
+  }, [defaultConfig.keycloakConfig]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    window.localStorage.setItem(
+      INTERACTIVE_TEST_STORAGE_KEY,
+      JSON.stringify({
+        authMethod,
+        testCdaUrl,
+        keycloakConfig,
+      }),
+    );
+  }, [authMethod, testCdaUrl, keycloakConfig]);
 
   // Check if we're already in an AuthProvider
   let hasAuthProvider = false;
   try {
-    const testAuth = useAuth();
+    useAuth();
     hasAuthProvider = true;
   } catch (e) {
     // No auth provider exists
@@ -733,56 +825,48 @@ function InteractiveFormTest() {
     );
   }
 
-  // Create auth method based on selection
-  let selectedAuthMethod;
+  const selectedAuthMethod = useMemo(() => {
+    if (authMethod === "cwms") {
+      const baseUrl = testCdaUrl.replace(/\/$/, "");
+      return createCwmsLoginAuthMethod({
+        authUrl: `${baseUrl}/auth`,
+        authCheckUrl: `${baseUrl}/auth/keys`,
+      });
+    }
 
-  if (authMethod === "cwms") {
-    const baseUrl = testCdaUrl.replace(/\/$/, "");
-    selectedAuthMethod = createCwmsLoginAuthMethod({
-      authUrl: `${baseUrl}/auth`,
-      authCheckUrl: `${baseUrl}/auth/keys`,
-    });
-  } else if (authMethod === "keycloak") {
-    selectedAuthMethod = createKeycloakAuthMethod(keycloakConfig);
-  } else {
-    // Custom inline auth method that doesn't redirect
-    const createInlineAuthMethod = () => {
-      let authState = { isAuthenticated: false, user: null };
+    if (authMethod === "keycloak") {
+      return createKeycloakAuthMethod({
+        ...keycloakConfig,
+        flow: "authorization-code-pkce",
+      });
+    }
 
-      // Listen for successful inline authentication
-      const handleAuthSuccess = (event) => {
-        authState.isAuthenticated = true;
-        authState.user = event.detail;
-      };
+    let authState = { isAuthenticated: false, user: null };
 
-      window.addEventListener("inline-auth-success", handleAuthSuccess);
-
-      return {
-        login: async () => {
-          // This will trigger the modal to show
-          // The actual authentication is handled in handleInlineAuth
-          window.dispatchEvent(new Event("show-inline-auth-modal"));
-          return Promise.resolve();
-        },
-        logout: async () => {
-          authState.isAuthenticated = false;
-          authState.user = null;
-          return Promise.resolve();
-        },
-        isAuth: async () => {
-          return authState.isAuthenticated;
-        },
-        getUser: async () => {
-          return authState.user;
-        },
-        cleanup: () => {
-          window.removeEventListener("inline-auth-success", handleAuthSuccess);
-        },
-      };
+    const handleAuthSuccess = (event) => {
+      authState.isAuthenticated = true;
+      authState.user = event.detail;
     };
 
-    selectedAuthMethod = createInlineAuthMethod();
-  }
+    window.addEventListener("inline-auth-success", handleAuthSuccess);
+
+    return {
+      login: async () => {
+        window.dispatchEvent(new Event("show-inline-auth-modal"));
+        return Promise.resolve();
+      },
+      logout: async () => {
+        authState.isAuthenticated = false;
+        authState.user = null;
+        return Promise.resolve();
+      },
+      isAuth: async () => authState.isAuthenticated,
+      getUser: async () => authState.user,
+      cleanup: () => {
+        window.removeEventListener("inline-auth-success", handleAuthSuccess);
+      },
+    };
+  }, [authMethod, keycloakConfig, testCdaUrl]);
 
   return (
     <div>
@@ -817,28 +901,84 @@ function InteractiveFormTest() {
         </div>
 
         {authMethod === "keycloak" && (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              <Input
+                value={keycloakConfig.host}
+                onChange={(e) =>
+                  setKeycloakConfig({ ...keycloakConfig, host: e.target.value })
+                }
+                placeholder="Keycloak URL"
+              />
+              <Input
+                value={keycloakConfig.realm}
+                onChange={(e) =>
+                  setKeycloakConfig({ ...keycloakConfig, realm: e.target.value })
+                }
+                placeholder="Realm"
+              />
+              <Input
+                value={keycloakConfig.client}
+                onChange={(e) =>
+                  setKeycloakConfig({ ...keycloakConfig, client: e.target.value })
+                }
+                placeholder="Client ID"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                value={keycloakConfig.redirectUri}
+                onChange={(e) =>
+                  setKeycloakConfig({ ...keycloakConfig, redirectUri: e.target.value })
+                }
+                placeholder="Redirect URI"
+              />
+              <Input
+                value={keycloakConfig.postLogoutRedirectUri}
+                onChange={(e) =>
+                  setKeycloakConfig({
+                    ...keycloakConfig,
+                    postLogoutRedirectUri: e.target.value,
+                  })
+                }
+                placeholder="Post-logout redirect URI"
+              />
+            </div>
+
             <Input
-              value={keycloakConfig.host}
+              value={keycloakConfig.scope}
               onChange={(e) =>
-                setKeycloakConfig({ ...keycloakConfig, host: e.target.value })
+                setKeycloakConfig({ ...keycloakConfig, scope: e.target.value })
               }
-              placeholder="Keycloak URL"
+              placeholder="OIDC scope"
             />
+
             <Input
-              value={keycloakConfig.realm}
+              value={keycloakConfig.providerHint ?? ""}
               onChange={(e) =>
-                setKeycloakConfig({ ...keycloakConfig, realm: e.target.value })
+                setKeycloakConfig({
+                  ...keycloakConfig,
+                  providerHint: e.target.value,
+                })
               }
-              placeholder="Realm"
+              placeholder="Provider hint (optional)"
             />
-            <Input
-              value={keycloakConfig.client}
-              onChange={(e) =>
-                setKeycloakConfig({ ...keycloakConfig, client: e.target.value })
-              }
-              placeholder="Client ID"
-            />
+
+            <div className="rounded border border-blue-200 bg-blue-50 p-3">
+              <Text className="text-sm font-semibold">PKCE Callback Route</Text>
+              <Text className="mt-1 text-sm">
+                Use the exact Keycloak base path your environment exposes. For the
+                working CWBI test setup, that is
+                <Code className="mx-1">https://identity-test.cwbi.us/auth</Code>
+                with realm <Code className="mx-1">cwbi</Code>.
+              </Text>
+              <Text className="mt-1 text-sm">
+                Register this URL in Keycloak for both the login callback and
+                post-logout redirect:
+              </Text>
+              <Code className="mt-2 block break-all">{keycloakConfig.redirectUri}</Code>
+            </div>
           </div>
         )}
 
@@ -849,7 +989,7 @@ function InteractiveFormTest() {
             {authMethod === "cwms" &&
               "🔄 CWMS Login will redirect to OAuth login page and back"}
             {authMethod === "keycloak" &&
-              "🔐 Keycloak SSO provides enterprise authentication"}
+              "🔐 Keycloak SSO will use the redirect-based PKCE flow"}
           </Text>
         </div>
       </div>
