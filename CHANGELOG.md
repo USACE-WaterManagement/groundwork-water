@@ -1,5 +1,15 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.7.0
+
+### Minor Changes
+
+- 72d40f1: Add Keycloak Auth Code + PKCE support while retaining the legacy direct-grant flow.
+
+### Patch Changes
+
+- f617d2a: Correct missing import for keycloakhost
+
 ## 3.6.4
 
 ### Patch Changes
