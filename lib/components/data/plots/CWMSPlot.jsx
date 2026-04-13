@@ -383,10 +383,16 @@ export default function CWMSPlot({
             values.push(afterEnd[0][1]);
           }
 
+          // Sort dates and values together by date
+          const pairs = dates.map((d, i) => [d, values[i]]);
+          pairs.sort((a, b) => a[0] - b[0]);
+          const sortedDates = pairs.map((p) => p[0]);
+          const sortedValues = pairs.map((p) => p[1]);
+
           // Defaults for trace
           const trace = {
-            x: dates.map((d) => new Date(d)),
-            y: values,
+            x: sortedDates.map((d) => new Date(d)),
+            y: sortedValues,
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
           };
