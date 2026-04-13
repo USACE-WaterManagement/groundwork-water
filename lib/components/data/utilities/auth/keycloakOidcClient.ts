@@ -1,4 +1,5 @@
 import { UserManager, UserManagerSettings, WebStorageStateStore } from "oidc-client-ts";
+import { normalizeKeycloakHost } from "./keycloakHost";
 
 export interface KeycloakPkceConfig {
   host: string;
@@ -36,7 +37,7 @@ export const createKeycloakOidcClient = ({
     throw new Error("Keycloak PKCE auth requires a redirect URI");
   }
 
-  const normalizedHost = host.trim().replace(/\/$/, "");
+  const normalizedHost = normalizeKeycloakHost(host);
 
   const settings: UserManagerSettings = {
     authority: `${normalizedHost}/realms/${realm}`,
