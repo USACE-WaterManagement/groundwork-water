@@ -5,6 +5,8 @@ import Divider from "../../components/divider";
 import { Code } from "../../components/code";
 import { DataStatus, useDataStatusFile } from "@usace-watermanagement/groundwork-water";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const returnParams = [
     {
         name: "office",
@@ -64,6 +66,46 @@ const returnParams = [
         name: "title",
         type: "string",
         desc: "The title of the Data Status component within UsaceBox",
+    },
+];
+
+const dataStatusFileParams = [
+    {
+        name: "fileUrl",
+        type: "string",
+        required: true,
+        desc: "Path or URL to a newline-delimited data status file.",
+    },
+    {
+        name: "queryOptions",
+        type: "object",
+        desc: (
+            <span>
+                Optional{" "}
+                <a href={`${BASE_URL}#/docs/react-query`} className="underline">
+                    TanStack Query
+                </a>{" "}
+                options passed through to <Code>useQuery</Code>.
+            </span>
+        ),
+    },
+];
+
+const dataStatusFileReturnParams = [
+    {
+        name: "data",
+        type: "string[]?",
+        desc: "Resolved TSID entries from the file with comment lines filtered out.",
+    },
+    {
+        name: "isPending",
+        type: "boolean",
+        desc: "True while the file is loading, then false once the query settles.",
+    },
+    {
+        name: "error",
+        type: "object?",
+        desc: "Null when successful, otherwise the fetch/query error.",
     },
 ];
 
@@ -138,6 +180,44 @@ default export function Example() {
             <Badge color="yellow" className="my-2">
                 You must specify tsids or the table will have no values!
             </Badge>
+            <Divider text="useDataStatusFile Hook" className="mt-8" />
+            <Text className="mb-2">
+                Use <Code>useDataStatusFile</Code> to load a newline-delimited TSID file
+                and turn it into an array that can be passed into <Code>DataStatus</Code>.
+                Lines beginning with <Code>:</Code> are treated as comments and ignored.
+            </Text>
+            <Code className="mt-4" language="jsx">
+                {`import { useDataStatusFile } from "@usace-watermanagement/groundwork-water";
+
+function Example() {
+    const { data: tsids = [], isPending, error } = useDataStatusFile({
+        fileUrl: "/data/summary/swt.datastatus",
+    });
+
+    if (isPending) return <div>Loading...</div>;
+    if (error) return <div>Failed to load file.</div>;
+
+    return <DataStatus office="SWT" tsids={tsids} />;
+}`}
+            </Code>
+            <div className="font-bold text-lg pt-6">
+                Hook Parameters
+                <Code
+                    enableCopy={false}
+                    className="p-2"
+                    language="jsx"
+                >{`useDataStatusFile({...})`}</Code>
+            </div>
+            <ParamsTable paramsList={dataStatusFileParams} showReq={true} />
+            <div className="font-bold text-lg pt-6">
+                Hook Return Parameters
+                <Code
+                    enableCopy={false}
+                    className="p-2"
+                    language="jsx"
+                >{`const { data, isPending, error } = useDataStatusFile({...})`}</Code>
+            </div>
+            <ParamsTable paramsList={dataStatusFileReturnParams} showReq={false} />
         </DocsPage>
     );
 }
