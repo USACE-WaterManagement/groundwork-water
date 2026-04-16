@@ -203,15 +203,18 @@ function UseCdaMultiTimeSeries() {
       </div>
       <CodeBlock language="jsx">
         {`import {
+  Badge,
   Card,
   H3, 
+  Skeleton,
   Table,
   TableHead,
   TableRow,
   TableBody,
   TableCell
   } from "@usace/groundwork";
-import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
+import { useCdaMultiTimeSeries } from "@usace-watermanagement/groundwork-water";
+import dayjs from "dayjs";
 
 const office = "SWT";
 const defaults = {
