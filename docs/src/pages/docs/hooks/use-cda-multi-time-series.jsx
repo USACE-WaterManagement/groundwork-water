@@ -41,6 +41,7 @@ const OutflowCard = () => {
   const cdaMultiTimeSeries = useCdaMultiTimeSeries({
     cdaParams: TSID_LIST,
   });
+  const getTsidLabel = (idx) => TSID_LIST[idx]?.name ?? "Unknown TSID";
   const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
   const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
   const data = cdaMultiTimeSeries
@@ -57,7 +58,7 @@ const OutflowCard = () => {
             return (
               <Card key={ts.data?.name + "-error"} className="gw-my-2">
                 <div className="gw-flex gw-flex-col gw-gap-2 gw-w-1/2">
-                  <Badge color="red">TimeSeries: {TSID_LIST.at(idx)}</Badge>
+                  <Badge color="red">TimeSeries: {getTsidLabel(idx)}</Badge>
                   <Badge color="red">Error: {ts.error.message} </Badge>
                 </div>
               </Card>
@@ -188,6 +189,7 @@ export default function OutflowCardExample() {
     const cdaMultiTimeSeries = useCdaMultiTimeSeries({
         cdaParams: TSID_LIST,
     });
+    const getTsidLabel = (idx) => TSID_LIST[idx]?.name ?? "Unknown TSID";
     const isError = cdaMultiTimeSeries.some((ts) => ts.isError);
     const isLoading = cdaMultiTimeSeries.some((ts) => ts.isLoading);
     const data = cdaMultiTimeSeries
@@ -203,7 +205,7 @@ export default function OutflowCardExample() {
                 return (
                 <Card key={ts.data?.name + "-error"} className="gw-my-2">
                     <div className="gw-flex gw-flex-col gw-gap-2 gw-w-1/2">
-                    <Badge color="red">TimeSeries: {TSID_LIST.at(idx)}</Badge>
+                    <Badge color="red">TimeSeries: {getTsidLabel(idx)}</Badge>
                     <Badge color="red">Error: {ts.error.message} </Badge>
                     </div>
                 </Card>
