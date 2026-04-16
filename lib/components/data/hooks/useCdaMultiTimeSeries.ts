@@ -16,8 +16,6 @@ interface UseCdaTimeSeriesParams {
   queryOptions?: Partial<UseQueryOptions<TimeSeries, Error, TimeSeries, QueryKey>>;
 }
 
-// Explicitly type the query options to ensure compatibility
-type QOpts = UseQueryOptions<TimeSeries, Error, TimeSeries, QueryKey>;
 type BaseReq = Omit<GetTimeSeriesRequest, "name">;
 
 function normalizeTsids(name?: string | string[]): string[] {
@@ -49,26 +47,34 @@ export default function useCdaMultiTimeSeries({
 
   // Normalize the names to an array of TSIDs
   const timeSeriesIds = useMemo(() => {
-    return (cdaParams ?? []).flatMap(({ name, ...rest }) => {
-      const baseReq: BaseReq = { ...(defaults ?? {}), ...rest };
-      const tsids = normalizeTsids(name);
-      return tsids.map((tsid) => ({ baseReq, tsid }));
-    });
+    return (cdaParams ?? []).reduce<Array<{ baseReq: BaseReq; tsid: string }>>(
+      (requests, request) => {
+        const { name, ...rest } = request;
+        const baseReq: BaseReq = { ...(defaults ?? {}), ...rest };
+        const tsids = normalizeTsids(name);
+        tsids.forEach((tsid) => {
+          requests.push({ baseReq, tsid });
+        });
+        return requests;
+      },
+      [],
+    );
   }, [cdaParams, defaults]);
 
   // Prevent unnecessary queries if no TSIDs are provided
   const enabled = timeSeriesIds.length > 0;
+  const queries = useMemo(
+    () =>
+      timeSeriesIds.map(({ baseReq, tsid }) => ({
+        ...(queryOptions || {}),
+        queryKey: ["cda", "timeseries", JSON.stringify(baseReq), tsid],
+        queryFn: () => timeSeriesApi.getTimeSeries({ ...baseReq, name: tsid }),
+        enabled,
+      })),
+    [enabled, queryOptions, timeSeriesApi, timeSeriesIds],
+  );
 
-  const queries = useQueries({
-    queries: timeSeriesIds.map<QOpts>(({ baseReq, tsid }) => ({
-      queryKey: ["cda", "timeseries", JSON.stringify(baseReq), tsid],
-      queryFn: () => timeSeriesApi.getTimeSeries({ ...baseReq, name: tsid }),
-      enabled,
-      ...(queryOptions || {}),
-    })),
-  });
-
-  return queries;
+  return useQueries({ queries });
 }
 
 export { useCdaMultiTimeSeries };
