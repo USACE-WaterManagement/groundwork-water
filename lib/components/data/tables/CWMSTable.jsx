@@ -10,6 +10,7 @@ import {
   TableCell,
 } from "@usace/groundwork";
 import { useCdaConfig } from "../helpers/cda";
+import { getPrecision } from "../utilities";
 
 export default function CWMSTable({
   timeseriesParams,
@@ -89,7 +90,9 @@ export default function CWMSTable({
             data.ts[result.name] = [];
           }
 
-          let precision = 2;
+          // Set default precision for table
+          let precision = getPrecision(result.units);
+          // Allow user to override precision
           timeseriesParams.map((entry) => {
             if (entry.tsid == result.name && entry.precision != null) {
               precision = entry.precision;

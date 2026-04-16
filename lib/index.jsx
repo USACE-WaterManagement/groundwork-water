@@ -54,6 +54,12 @@ import useCdaBlobs from "./components/data/hooks/useCdaBlobs";
 
 // Utility Hooks
 import useDebounce from "./components/data/utilities/useDebounce";
+// Utility Functions
+import {
+  PRECISION_BY_UNIT,
+  DEFAULT_PRECISION,
+  getPrecision,
+} from "./components/data/utilities";
 
 // auth
 import { AuthProvider } from "./components/data/utilities/auth/AuthProvider";
@@ -90,6 +96,9 @@ export {
   useAuth,
   createCwmsLoginAuthMethod,
   createKeycloakAuthMethod,
+  getPrecision,
+  PRECISION_BY_UNIT,
+  DEFAULT_PRECISION,
   // Input components
   CWMSInput,
   CWMSTextarea,

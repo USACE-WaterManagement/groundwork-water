@@ -1,4 +1,4 @@
-import { UsaceBox, Code, H3, Text } from "@usace/groundwork";
+import { UsaceBox, Code, H3, Text, Badge } from "@usace/groundwork";
 import { CWMSPlot } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code.jsx";
 import Divider from "../../components/divider.jsx";
@@ -259,10 +259,16 @@ const CWMSPlotExample = () => {
 }
 `}
       </CodeBlock>
+      <Divider text="Precision" className="mt-8" />
+
       <div className="gw-font-bold gw-text-lg gw-pt-6">
         Component API - <Code className="gw-p-2">{`<CWMSPlot />`}</Code>
       </div>
       <PropsTable propsList={cwmsPlotProps} showReq={false} />
+      <Badge color="blue" className="mt-2 text-[0.9em]">
+        <b>Precision</b> is determined based on the units provided by CDA for each Time
+        Series.
+      </Badge>
       <div className="gw-font-bold gw-text-lg gw-pt-6">TraceData</div>
       <PropsTable propsList={traceDataProps} showReq={false} />
     </DocsPage>

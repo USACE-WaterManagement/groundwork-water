@@ -4,6 +4,7 @@ import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 import { useMemo } from "react";
+import { getPrecision } from "../utilities";
 
 /**
  * Normalize a data prop to an array of objects
@@ -178,6 +179,23 @@ export default function CWMSPlot({
           if (!_data.ts[result.name]) {
             _data.ts[result.name] = [];
           }
+          // Apply default rounding
+          const precision = getPrecision(result.units);
+          result.values = result.values.map((value) => [
+            value[0], // Epoch
+            value[1] != null ? parseFloat(value[1].toFixed(precision)) : null, // Value
+            value[2], // Quality
+          ]);
+
+          // Update trace to include precision
+          const yaxis_id = getYAxisId(
+            timeSeriesArray.find((item) => {
+              return item.id == result.name;
+            }),
+          );
+          // Do not set tickformat if a precision is not required
+          if (precision != 0) defaultLayout[yaxis_id].tickformat = `.${precision}f`;
+
           _data.ts[result.name].push(result);
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);

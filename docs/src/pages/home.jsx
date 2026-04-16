@@ -1,13 +1,13 @@
 import { Container, Text, Code, UsaceBox, TextLink, Hero } from "@usace/groundwork";
 import CopyButton from "../components/CopyButton";
 
-const base = import.meta.env.BASE_URL;
+const BASE_URL = import.meta.env.BASE_URL;
 
 function Home() {
   return (
     <>
       <Hero
-        image={`${base}FT_GIBSON_20181115.min.jpg`}
+        image={`${BASE_URL}FT_GIBSON_20181115.min.jpg`}
         title="Groundwork Water"
         subtitle="React Component Library for USACE Water Management"
       />
@@ -44,7 +44,7 @@ function Home() {
                 your application!
               </Text>
               <div className="mt-3">
-                <TextLink href="/docs" className="text-lg font-bold">
+                <TextLink href={`${BASE_URL}#/docs`} className="text-lg font-bold">
                   Check out the docs
                 </TextLink>
               </div>

@@ -45,6 +45,7 @@ import CWMSInputTableDocs from "../pages/docs/forms/cwms-input-table";
 import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
+import GetPrecisionPage from "../pages/docs/utilities/get-precision";
 
 export default createRouteBundle(
   {
@@ -89,6 +90,7 @@ export default createRouteBundle(
       "/docs/forms/interactive-test": InteractiveFormTest,
     }),
     "/docs/utilities": UtilitiesDocs,
+    "/docs/utilities/get-precision": GetPrecisionPage,
     "/docs/utilities/use-debounce": useDebounce,
     "/docs/utilities/cda-url-provider": CdaUrlProviderDocs,
     "/docs/react-query": ReactQuery,

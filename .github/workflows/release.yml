@@ -10,6 +10,7 @@ jobs:
     name: Run Changesets
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
     outputs:
@@ -21,7 +22,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
+          registry-url: "https://registry.npmjs.org/"
 
       - run: npm ci
 
@@ -31,7 +33,6 @@ jobs:
         with:
           publish: npm run release
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   update-docs:

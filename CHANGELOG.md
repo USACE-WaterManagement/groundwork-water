@@ -1,5 +1,46 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.7.0
+
+### Minor Changes
+
+- 72d40f1: Add Keycloak Auth Code + PKCE support while retaining the legacy direct-grant flow.
+
+### Patch Changes
+
+- f617d2a: Correct missing import for keycloakhost
+
+## 3.6.4
+
+### Patch Changes
+
+- 7b44acf: Remove credentials from /user/profile request when token available
+
+## 3.6.3
+
+### Patch Changes
+
+- f3b83dc: Use trusted publishing for npm publishing access
+
+## 3.6.2
+
+### Patch Changes
+
+- 89bda0d: Add retries to useCdaUserProfile to return profile upon initial user creation
+
+## 3.6.1
+
+### Patch Changes
+
+- 38ffd1c: Fix routing for other docs pages and headers to allow for ctrl + click and copy/paste of URLS
+
+## 3.6.0
+
+### Minor Changes
+
+- ef0c492: Adds routing param to plots and allows for default rounding on plot and tables
+- 1e5425a: Update authentication handling to expose the user profile from CDA when available
+
 ## 3.5.2
 
 ### Patch Changes
