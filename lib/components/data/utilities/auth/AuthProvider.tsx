@@ -18,14 +18,12 @@ export interface AuthMethod {
 interface AuthProviderProps {
   method: AuthMethod;
   cdaUrl?: string;
-  refreshInterval?: number;
   statusPollInterval?: number;
 }
 
 export const AuthProvider = ({
   method,
   cdaUrl: propCdaUrl,
-  refreshInterval,
   statusPollInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
@@ -51,7 +49,7 @@ export const AuthProvider = ({
   const providedCdaUrl = useCdaUrl();
   const cdaUrl = propCdaUrl ?? providedCdaUrl;
 
-  useRefreshToken(isAuth, method, refreshInterval);
+  useRefreshToken(isAuth, method);
   const { data: profile, isLoading: profileLoading } = useCdaUserProfile(
     isAuth,
     cdaUrl,
