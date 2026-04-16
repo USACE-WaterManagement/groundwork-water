@@ -32,7 +32,7 @@ const returnParams = [
     {
         name: "linkPath",
         type: "string",
-        desc: "A url path to a project or some other page. I.e. /{office}/projects/ would end up pointing to /{office}/projects/{name}",
+        desc: "A url path to a project or some other page. I.e. /{office}/projects would end up pointing to /{office}/projects/{location}",
     },
     {
         name: "lookBackHours",
