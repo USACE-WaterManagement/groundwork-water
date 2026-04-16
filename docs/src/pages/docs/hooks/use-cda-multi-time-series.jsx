@@ -37,6 +37,16 @@ const TSID_LIST = [
   },
 ];
 
+const cdaMultiTsHookParams = cdaTSHookParams.map((param) =>
+  param.name === "name"
+    ? {
+        ...param,
+        type: "string | string[]",
+        desc: "Specifies the name(s) of the time series whose data is to be included in the response. Pass either an array of TSIDs or a comma-separated string. Case insensitive.",
+      }
+    : param,
+);
+
 const OutflowCard = () => {
   const cdaMultiTimeSeries = useCdaMultiTimeSeries({
     cdaParams: TSID_LIST,
@@ -271,7 +281,7 @@ export default function OutflowCardExample() {
         arrayOf={true}
       />
       <div className="font-bold text-lg pt-6">cdaParams</div>
-      <ParamsTable paramsList={cdaTSHookParams} />
+      <ParamsTable paramsList={cdaMultiTsHookParams} />
     </DocsPage>
   );
 }
