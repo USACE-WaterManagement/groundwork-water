@@ -26,7 +26,7 @@ export const AuthProvider = ({
   method,
   cdaUrl: propCdaUrl,
   refreshInterval,
-  statusPollInterval = 15,
+  statusPollInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
   const queryClient = useQueryClient();
