@@ -10,6 +10,7 @@ import { useCdaConfig } from "../helpers/cda";
 
 interface UseCdaTimeSeriesParams {
   cdaParams: GetTimeSeriesRequest[];
+  defaults?: Omit<GetTimeSeriesRequest, "name">;
   cdaUrl?: string;
   // Ensure all generics are present to avoid errors related to `unknown` types
   queryOptions?: Partial<UseQueryOptions<TimeSeries, Error, TimeSeries, QueryKey>>;
@@ -34,6 +35,7 @@ function normalizeTsids(name?: string | string[]): string[] {
  */
 export default function useCdaMultiTimeSeries({
   cdaParams,
+  defaults,
   cdaUrl,
   queryOptions,
 }: UseCdaTimeSeriesParams): UseQueryResult<TimeSeries, Error>[] {
@@ -48,11 +50,11 @@ export default function useCdaMultiTimeSeries({
   // Normalize the names to an array of TSIDs
   const timeSeriesIds = useMemo(() => {
     return (cdaParams ?? []).flatMap(({ name, ...rest }) => {
-      const baseReq: BaseReq = rest;
+      const baseReq: BaseReq = { ...(defaults ?? {}), ...rest };
       const tsids = normalizeTsids(name);
       return tsids.map((tsid) => ({ baseReq, tsid }));
     });
-  }, [cdaParams]);
+  }, [cdaParams, defaults]);
 
   // Prevent unnecessary queries if no TSIDs are provided
   const enabled = timeSeriesIds.length > 0;

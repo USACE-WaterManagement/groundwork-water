@@ -12,7 +12,6 @@ import {
   Skeleton,
 } from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
-import CdaParamsTable from "../../components/cda-params-table";
 import QueryClientWarning from "../../../components/QueryClientWarning";
 import { useCdaMultiTimeSeries } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code";
@@ -24,15 +23,17 @@ import CWMSTableInfo from "../../../components/CWMSTableInfo";
 import dayjs from "dayjs";
 
 const office = "SWT";
+const defaults = {
+  office,
+  begin: dayjs().subtract(6, "hour").toISOString(),
+};
 const TSID_LIST = [
   {
     name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-    office,
-    begin: dayjs().subtract(2, "hour").toISOString(),
   },
   {
     name: "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
-    office,
+    unit: "ac-ft",
     begin: dayjs().subtract(5, "hour").toISOString(),
   },
 ];
@@ -46,9 +47,36 @@ const cdaMultiTsHookParams = cdaTSHookParams.map((param) =>
       }
     : param,
 );
+const multiTsHookParams = [
+  {
+    name: "cdaParams",
+    type: "array<object>",
+    required: true,
+    desc: "Array of per-time-series CDA request objects. Existing usage remains supported, and per-item values override any matching defaults.",
+  },
+  {
+    name: "defaults",
+    type: "object",
+    required: false,
+    desc: "Optional shared CDA request values applied to every entry in cdaParams before each item's own fields are merged in. Useful for common office, begin, end, or unit values.",
+  },
+  {
+    name: "cdaUrl",
+    type: "string",
+    required: false,
+    desc: "Optional override for the CDA base URL.",
+  },
+  {
+    name: "queryOptions",
+    type: "object",
+    required: false,
+    desc: "Optional TanStack Query options applied to each generated query.",
+  },
+];
 
 const OutflowCard = () => {
   const cdaMultiTimeSeries = useCdaMultiTimeSeries({
+    defaults,
     cdaParams: TSID_LIST,
   });
   const getTsidLabel = (idx) => TSID_LIST[idx]?.name ?? "Unknown TSID";
@@ -138,6 +166,10 @@ function UseCdaMultiTimeSeries() {
           timeseries ids <b>or</b> a comma-separated list of timeseries IDs.
         </Text>
         <Text>
+          You can also provide shared request values through a `defaults` object and
+          override them on individual `cdaParams` entries as needed.
+        </Text>
+        <Text>
           The hook will return an array of{" "}
           <Link
             target="_blank"
@@ -182,21 +214,24 @@ function UseCdaMultiTimeSeries() {
 import { useCdaTimeSeries } from "@usace-watermanagement/groundwork-water";
 
 const office = "SWT";
+const defaults = {
+  office,
+  begin: dayjs().subtract(6, "hour").toISOString(),
+};
 const TSID_LIST = [
   {
     name: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
-    office,
-    begin: dayjs().subtract(2, "hour").toISOString(),
   },
   {
     name: "KEYS.Stor.Inst.1Hour.0.Ccp-Rev",
-    office,
+    unit: "ac-ft",
     begin: dayjs().subtract(5, "hour").toISOString(),
   },
 ];
 
 export default function OutflowCardExample() {
     const cdaMultiTimeSeries = useCdaMultiTimeSeries({
+        defaults,
         cdaParams: TSID_LIST,
     });
     const getTsidLabel = (idx) => TSID_LIST[idx]?.name ?? "Unknown TSID";
@@ -274,12 +309,7 @@ export default function OutflowCardExample() {
       <div className="font-bold text-lg pt-6">
         Hook Parameters - <Code className="p-2">{`useCdaMultiTimeSeries({...})`}</Code>
       </div>
-      <CdaParamsTable
-        requestObject="TimeSeries"
-        requestType="GET"
-        cwmsJsType="GetTimeSeriesRequest"
-        arrayOf={true}
-      />
+      <ParamsTable paramsList={multiTsHookParams} />
       <div className="font-bold text-lg pt-6">cdaParams</div>
       <ParamsTable paramsList={cdaMultiTsHookParams} />
     </DocsPage>
