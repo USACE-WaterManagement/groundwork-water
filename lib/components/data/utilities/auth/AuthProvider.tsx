@@ -30,7 +30,7 @@ export const AuthProvider = ({
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
   const queryClient = useQueryClient();
-  const pollSeconds = statusPollInterval ?? method.statusPollInterval ?? 0;
+  const pollSeconds = statusPollInterval ?? method.statusPollInterval ?? 15;
   const refetchIntervalMs = pollSeconds > 0 ? pollSeconds * 1000 : false;
 
   const {
