@@ -1,4 +1,3 @@
-
 import {
   UsaceBox,
   Badge,
@@ -26,14 +25,11 @@ function DataStatus({
 }) {
   // fetch the data status file from URL and parse it new line delimited
 
-
   if (!tsids) {
     console.error(
-      "Error: No data status URL or tsids provided to component <DataStatus />"
+      "Error: No data status URL or tsids provided to component <DataStatus />",
     );
-    return (
-      <Badge color="red">Error: No data status URL or tsids provided</Badge>
-    );
+    return <Badge color="red">Error: No data status URL or tsids provided</Badge>;
   }
 
   return (
@@ -68,15 +64,16 @@ function DataStatus({
         </TableHead>
         <TableBody>
           {tsids.map((name, idx) => {
-            if (name) {
+            const tsid = typeof name === "string" ? name.trim() : name;
+            if (tsid) {
               return (
                 <StatusRow
-                  key={`status-row-${idx}-${name}`}
+                  key={`status-row-${idx}-${tsid}`}
                   office={office}
                   pageSize={pageSize}
                   cdaUrl={cdaUrl}
                   linkPath={linkPath}
-                  name={name}
+                  name={tsid}
                   idx={idx}
                   lookBackHours={lookBackHours}
                   dateFormat={dateFormat}
