@@ -13,11 +13,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: isDevelopment
         ? [
+             // During development, alias to the source files for easier debugging
+            // Do not have to npm link if you do this: https://vitejs.dev/config/shared-options.html#resolve-alias
             {
               find: "@usace-watermanagement/groundwork-water/dist/style.css",
-              replacement: fileURLToPath(
-                new URL("../lib/css/tailwind.css", import.meta.url),
-              ),
+              replacement: fileURLToPath(new URL("../dist/style.css", import.meta.url)),
             },
             {
               find: "@usace-watermanagement/groundwork-water",
