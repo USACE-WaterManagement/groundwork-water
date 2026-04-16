@@ -117,6 +117,7 @@ function DataStatusPage() {
   } = useDataStatusFile({
     fileUrl: "/data/summary/nae.datastatus",
   });
+  const swtTsids = ["KEYS.Elev.Inst.1Hour.0.CCP-rev", "DENI.Elev.Inst.1Hour.0.CCP-rev"];
   return (
     <DocsPage middleText="Data Status Overview">
       <div>
@@ -132,6 +133,17 @@ function DataStatusPage() {
       ) : (
         <DataStatus office="NAE" tsids={fileTsids} />
       )}
+      <Divider text="SWT Example" className="mt-8" />
+      <DataStatus
+        office="SWT"
+        tsids={swtTsids}
+        pageSize={12}
+        linkPath="/SWT/projects"
+        lookBackHours={6}
+        dateFormat="MMM DD HH:mm z"
+        showBadges={true}
+        title="SWT Data Status"
+      />
       <Divider text="Code Example:" className="mt-8" />
       <div className="mt-8">
         <Code className="mt-8" language="jsx">

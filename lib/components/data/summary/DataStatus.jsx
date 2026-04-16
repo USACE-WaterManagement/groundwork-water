@@ -7,6 +7,7 @@ import {
   TableHead,
   TableCell,
 } from "@usace/groundwork";
+import { useEffect, useState } from "react";
 import { getQualityMeta } from "../utilities/qualityDecoder";
 import StatusRow from "./components/StatusRow";
 
@@ -22,6 +23,23 @@ function DataStatus({
   title = "Data Status",
 }) {
   const qualityLegend = ["MISSING", "REJECTED", "QUESTIONABLE", "UNKNOWN", "OKAY"];
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateIsMobile = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateIsMobile);
+    };
+  }, []);
 
   if (!tsids) {
     console.error(
@@ -65,32 +83,14 @@ function DataStatus({
           ) : null}
         </div>
       </div>
-      <Table
-        key="table"
-        className="gww-overflow-visible"
-        dense
-        bleed
-        overflow
-        stickyHeader
-        overflowHeight="gww-max-h-[72vh]"
-      >
-        {/* Build list of dates for column headers */}
-        <TableHead key="table-header">
-          <TableRow key="header-row">
-            <TableCell key="gage-header">Gage</TableCell>
-            <TableCell key="quality-header">Quality Info</TableCell>
-            <TableCell key="latest-header" title={dateFormat}>
-              Latest Date-time
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+      {isMobile ? (
+        <div className="gww-flex gww-flex-col gww-gap-3">
           {tsids.map((name, idx) => {
             const tsid = typeof name === "string" ? name.trim() : name;
             if (tsid) {
               return (
                 <StatusRow
-                  key={`status-row-${idx}-${tsid}`}
+                  key={`status-mobile-row-${idx}-${tsid}`}
                   office={office}
                   pageSize={pageSize}
                   cdaUrl={cdaUrl}
@@ -99,13 +99,56 @@ function DataStatus({
                   idx={idx}
                   lookBackHours={lookBackHours}
                   dateFormat={dateFormat}
+                  mobile
                 />
               );
             }
             return null;
           })}
-        </TableBody>
-      </Table>
+        </div>
+      ) : (
+        <Table
+          key="table"
+          className="gww-overflow-visible"
+          dense
+          bleed
+          overflow
+          stickyHeader
+          overflowHeight="gww-max-h-[72vh]"
+        >
+          {/* Build list of dates for column headers */}
+          <TableHead key="table-header">
+            <TableRow key="header-row">
+              <TableCell key="gage-header">Gage</TableCell>
+              <TableCell key="quality-header">Quality Info</TableCell>
+              <TableCell key="latest-header" title={dateFormat}>
+                Latest Date-time
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tsids.map((name, idx) => {
+              const tsid = typeof name === "string" ? name.trim() : name;
+              if (tsid) {
+                return (
+                  <StatusRow
+                    key={`status-row-${idx}-${tsid}`}
+                    office={office}
+                    pageSize={pageSize}
+                    cdaUrl={cdaUrl}
+                    linkPath={linkPath}
+                    name={tsid}
+                    idx={idx}
+                    lookBackHours={lookBackHours}
+                    dateFormat={dateFormat}
+                  />
+                );
+              }
+              return null;
+            })}
+          </TableBody>
+        </Table>
+      )}
     </UsaceBox>
   );
 }
