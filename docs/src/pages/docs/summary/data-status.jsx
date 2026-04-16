@@ -138,8 +138,7 @@ default export function Example() {
             <Divider text="API Reference" className="mt-8" />
             <ParamsTable paramsList={returnParams} showReq={true} />
             <Badge color="yellow" className="my-2">
-                You must specify either dataStatusUrl or tsids or the table will have no
-                values!
+                You must specify tsids or the table will have no values!
             </Badge>
         </DocsPage>
     );
