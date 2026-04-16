@@ -127,7 +127,6 @@ function DataStatusPage() {
             {!filePending && fileError ? <div>Failed to load TSID data status file! {fileError?.message}</div> : <DataStatus
                 office="SWT"
                 tsids={["KEYS.Elev.Inst.1Hour.0.Ccp-Rev", ...fileTsids]}
-                dataStatusUrl={"/data/summary/swt.datastatus"}
             />}
             <Divider text="Code Example:" className="mt-8" />
             <div className="mt-8">
@@ -161,7 +160,6 @@ default export function Example() {
     return <DataStatus
         office="SWT"
         tsids={[...tsids, ...fileTsids]}
-        dataStatusUrl={"/data/summary/swt.datastatus"}
     />
 }
 `}
