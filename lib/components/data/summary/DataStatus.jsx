@@ -1,15 +1,13 @@
 import {
   UsaceBox,
   Badge,
-  Text,
   Table,
   TableBody,
   TableRow,
   TableHead,
   TableCell,
 } from "@usace/groundwork";
-
-import "../../../css/alert.css";
+import { getQualityMeta } from "../utilities/qualityDecoder";
 import StatusRow from "./components/StatusRow";
 
 function DataStatus({
@@ -23,7 +21,7 @@ function DataStatus({
   showBadges = true,
   title = "Data Status",
 }) {
-  // fetch the data status file from URL and parse it new line delimited
+  const qualityLegend = ["MISSING", "REJECTED", "QUESTIONABLE", "UNKNOWN", "OKAY"];
 
   if (!tsids) {
     console.error(
@@ -34,24 +32,48 @@ function DataStatus({
 
   return (
     <UsaceBox title={title}>
-      {showBadges && (
-        <>
-          <Text key="info">Data Quality Flags are shown as: </Text>
-          <Badge key="missing" className="gww-ms-2 alert-missing">
-            Missing
+      <div className="gww-mb-2 gww-rounded-lg gww-border gww-border-slate-200 gww-bg-slate-50/90 gww-px-3 gww-py-2">
+        <div className="gww-flex gww-flex-wrap gww-items-center gww-gap-2">
+          <span className="gww-text-xs gww-font-semibold gww-uppercase gww-tracking-[0.18em] gww-text-slate-500">
+            Office
+          </span>
+          <Badge
+            color="blue"
+            className="gww-border gww-border-blue-200 gww-bg-blue-50 gww-text-blue-900"
+          >
+            {office}
           </Badge>
-          <Badge key="questionable" className="gww-ms-2 alert-questionable">
-            Questionable
-          </Badge>
-          <Badge key="unknown" className="gww-ms-2 alert-unknown">
-            Unknown or Undefined
-          </Badge>
-          <Badge key="okay" className="gww-ms-2 alert-okay">
-            Passed Screening and/or Validated
-          </Badge>
-        </>
-      )}
-      <Table key="table">
+          {showBadges ? (
+            <>
+              <span className="gww-ml-1 gww-text-sm gww-font-medium gww-text-slate-700">
+                Data Quality Status Flags
+              </span>
+              <div className="gww-flex gww-flex-wrap gww-items-center gww-gap-2">
+                {qualityLegend.map((quality) => {
+                  const meta = getQualityMeta(quality);
+                  return (
+                    <span
+                      key={quality}
+                      className={`gww-inline-flex gww-items-center gww-rounded-full gww-px-3 gww-py-1 gww-text-xs gww-font-semibold ${meta.badgeClassName}`}
+                    >
+                      {meta.label}
+                    </span>
+                  );
+                })}
+              </div>
+            </>
+          ) : null}
+        </div>
+      </div>
+      <Table
+        key="table"
+        className="gww-overflow-visible"
+        dense
+        bleed
+        overflow
+        stickyHeader
+        overflowHeight="gww-max-h-[72vh]"
+      >
         {/* Build list of dates for column headers */}
         <TableHead key="table-header">
           <TableRow key="header-row">
