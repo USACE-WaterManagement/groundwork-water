@@ -65,7 +65,6 @@ export const AuthProvider = ({
 
   const logout = useMutation({
     mutationFn: async () => {
-      queryClient.setQueryData(["auth", "status"], false);
       await method.logout();
     },
     onError: () => {
