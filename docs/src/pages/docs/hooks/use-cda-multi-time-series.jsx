@@ -194,6 +194,14 @@ function UseCdaMultiTimeSeries() {
           </Link>
           .
         </Text>
+        <Text className="my-4">
+          For display formatting, consider using{" "}
+          <Link href="/docs/utilities/get-precision" className="underline">
+            getPrecision
+          </Link>{" "}
+          to choose decimal precision from the returned units instead of hardcoding the
+          number of decimal places. (CWMSTable below does this for you)
+        </Text>
         <QueryClientWarning />
         <CWMSTableInfo />
       </div>
