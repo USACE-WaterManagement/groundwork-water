@@ -127,6 +127,13 @@ const cwmsTableParams = [
     desc: "Interval in minutes to use for the table. This is useful for reducing the number of data points in the table.",
   },
   {
+    name: "snapTopOfInterval",
+    type: "boolean",
+    required: false,
+    default: "true",
+    desc: "Controls whether interval filtering is anchored to the top of the interval or the most recent data value.",
+  },
+  {
     name: "pageSize",
     type: "string",
     default: "500",

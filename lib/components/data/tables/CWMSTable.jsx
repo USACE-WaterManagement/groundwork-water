@@ -23,6 +23,7 @@ export default function CWMSTable({
   trim = true,
   pageSize,
   interval = 1,
+  snapTopOfInterval = true,
   sortAscending = true,
   missingString = "",
   dateFormat = "ddd MMM DD HH:mm",
@@ -82,7 +83,7 @@ export default function CWMSTable({
 
       let values = await Promise.all(promises);
       let data = { ts: {}, dates: [] };
-      let dates = [];
+      let allDates = [];
 
       values.forEach((result) => {
         if (result && result.values) {
@@ -109,10 +110,8 @@ export default function CWMSTable({
               data.ts[result.name][dt] = val.toFixed(precision);
             }
 
-            if (!dates.includes(dt)) {
-              if (dt % (interval * 1000 * 60) == 0) {
-                dates.push(dt);
-              }
+            if (!allDates.includes(dt)) {
+              allDates.push(dt);
             }
           });
         } else if (result === null) {
@@ -123,10 +122,17 @@ export default function CWMSTable({
         }
       });
 
-      dates.sort();
+      const intervalMs = interval * 1000 * 60;
+      const sortedDates = allDates.sort((a, b) => a - b);
+      const mostRecentDate = sortedDates[sortedDates.length - 1];
+      let dates = sortAscending ? [...sortedDates] : [...sortedDates].reverse();
 
-      if (!sortAscending) {
-        dates.reverse();
+      if (interval && snapTopOfInterval) {
+        dates = dates.filter((dt) => dt % intervalMs == 0);
+      }
+
+      if (interval && !snapTopOfInterval) {
+        dates = dates.filter((dt) => (mostRecentDate - dt) % intervalMs == 0);
       }
 
       data.dates = dates;
@@ -148,6 +154,7 @@ export default function CWMSTable({
     sortAscending,
     missingString,
     interval,
+    snapTopOfInterval,
   ]);
 
   useEffect(() => {
