@@ -1,7 +1,9 @@
-import { UsaceBox, Text, H4 } from "@usace/groundwork";
+import { UsaceBox, Text, H4, Link } from "@usace/groundwork";
 import { Code } from "../components/code";
 import CopyButton from "../../components/CopyButton";
 import DocsPage from "./_docs-wrapper";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 export default function Docs() {
   return (
@@ -37,9 +39,9 @@ export default function Docs() {
               Vite documentation
             </a>{" "}
             for more details on getting started or visit the{" "}
-            <a className="gw-underline" href="/docs/quick-start">
+            <Link className="gw-underline" href={`${BASE_URL}#/docs/quick-start`}>
               quick start guide
-            </a>{" "}
+            </Link>{" "}
             for a step by step guide for getting set up using Vite with Groundwork.
           </Text>
           <Text className="gw-mt-3">

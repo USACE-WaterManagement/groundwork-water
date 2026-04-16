@@ -4,6 +4,7 @@ import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 import { useMemo } from "react";
+import { getPrecision } from "../utilities";
 
 /**
  * Normalize a data prop to an array of objects
@@ -178,6 +179,23 @@ export default function CWMSPlot({
           if (!_data.ts[result.name]) {
             _data.ts[result.name] = [];
           }
+          // Apply default rounding
+          const precision = getPrecision(result.units);
+          result.values = result.values.map((value) => [
+            value[0], // Epoch
+            value[1] != null ? parseFloat(value[1].toFixed(precision)) : null, // Value
+            value[2], // Quality
+          ]);
+
+          // Update trace to include precision
+          const yaxis_id = getYAxisId(
+            timeSeriesArray.find((item) => {
+              return item.id == result.name;
+            }),
+          );
+          // Do not set tickformat if a precision is not required
+          if (precision != 0) defaultLayout[yaxis_id].tickformat = `.${precision}f`;
+
           _data.ts[result.name].push(result);
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);
@@ -306,30 +324,25 @@ export default function CWMSPlot({
         for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
           ts = tsData.ts[key][ts_idx];
 
-          // Update start and end values
+          // Update trace with dates bounded by start and end dates
           let dates = [];
           let values = [];
-          let prev_date = ts[0][0];
 
           ts.map((tsv) => {
             if (tsv[0] && tsv[1]) {
               const dt = tsv[0];
               const val = tsv[1];
 
-              if (dt < start) {
-                prev_date = dt;
-              }
-              if (dt >= start && prev_date < start) {
-                prev_date = dt;
+              if (dt > start && !dates.includes(start)) {
                 dates.push(start);
                 values.push(val);
               }
-              if (dt > start && prev_date > start && dt < end) {
-                dates.push(dt);
+              if (dt < end && !dates.includes(end)) {
+                dates.push(end);
                 values.push(val);
               }
-              if (dt >= end) {
-                dates.push(end);
+              if (dt > start && dt < end && !dates.includes(dt)) {
+                dates.push(dt);
                 values.push(val);
               }
             }

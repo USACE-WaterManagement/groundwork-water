@@ -1,16 +1,18 @@
-import { Badge, Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import Alert from "../../components/alert";
 
+const BASE_URL = import.meta.env.BASE_URL;
+
 const componentProps = [
   {
     name: "host",
     type: "string",
     default: "undefined",
-    desc: "The URL for the Keycloak instance",
+    desc: "The Keycloak base URL for your environment. Include '/auth' when your realm endpoints are served under that path.",
   },
   {
     name: "realm",
@@ -28,19 +30,43 @@ const componentProps = [
     name: "flow",
     type: "string",
     default: "undefined",
-    desc: "The authentication flow to use.  Currently only 'direct-grant' is supported.",
+    desc: "The authentication flow to use. Use 'authorization-code-pkce' for the redirect-based OIDC flow, or 'direct-grant' for the legacy password grant flow.",
+  },
+  {
+    name: "redirectUri",
+    type: "string",
+    default: "current page URL without query params",
+    desc: "Optional - Redirect URI used by the PKCE flow.",
+  },
+  {
+    name: "postLogoutRedirectUri",
+    type: "string",
+    default: "redirectUri",
+    desc: "Optional - Redirect URI used after PKCE logout.",
+  },
+  {
+    name: "scope",
+    type: "string",
+    default: '"openid profile"',
+    desc: "Optional - OIDC scopes requested by the PKCE flow.",
+  },
+  {
+    name: "providerHint",
+    type: "string",
+    default: "undefined",
+    desc: "Optional - Keycloak identity provider hint sent as kc_idp_hint.",
   },
   {
     name: "username",
     type: "string",
     default: '""',
-    desc: "(DEVELOPMENT-USE ONLY) The username to use for login. Defaults to blank.",
+    desc: "(DIRECT-GRANT ONLY) The username to use for login. Defaults to blank.",
   },
   {
-    name: "flow",
+    name: "password",
     type: "string",
     default: '""',
-    desc: "(DEVELOPMENT-USE ONLY) The password to use for login. Defaults to blank.",
+    desc: "(DIRECT-GRANT ONLY) The password to use for login. Defaults to blank.",
   },
   {
     name: "refreshInterval",
@@ -52,9 +78,9 @@ const componentProps = [
 
 const keycloak = <Code>createKeycloakAuthMethod()</Code>;
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 
 function KeycloakDocs() {
@@ -68,7 +94,13 @@ function KeycloakDocs() {
         <Text className="mt-4">
           The function must be passed a configuration object identifying the host URL,
           realm, client, authentication flow, and optionally a custom refresh interval
-          for refresh token requests.
+          for refresh token requests. The recommended flow is Auth Code + PKCE.
+        </Text>
+        <Text className="mt-4">
+          Use the exact Keycloak base path that serves your realm endpoints. For the
+          CWBI test environment used by <Code>cwms-cli</Code>, that is
+          <Code> https://identity-test.cwbi.us/auth</Code> rather than the stripped root
+          URL.
         </Text>
         <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
@@ -83,15 +115,13 @@ function KeycloakDocs() {
         </Text>
         <Text className="mt-4">
           <Alert
-            title={"Warning"}
-            status={"warning"}
-            message={
-              "A username and password can optionally be provided directly to the auth handler, but are intended for development purposes and should not be used in production."
-            }
+            title={"Flow Guidance"}
+            status={"info"}
+            message={"Prefer the PKCE flow so credential entry stays within Keycloak."}
           >
-            A username and password can optionally be provided directly to the auth
-            handler, but this is intended for development purposes and should not be
-            used in production.
+            The legacy direct-grant flow remains available, but PKCE is the preferred
+            path. Direct username/password values should be treated as a compatibility
+            option rather than the default.
           </Alert>
         </Text>
       </div>
@@ -102,15 +132,17 @@ function KeycloakDocs() {
 // Set authHost from environment variables
 
 const authMethod = createKeycloakAuthMethod({
-  host: authHost,
-  realm: "cwms",
+  host: "https://identity-test.cwbi.us/auth",
+  realm: "cwbi",
   client: "cwms",
-  flow: "direct-grant",
+  flow: "authorization-code-pkce",
+  redirectUri: window.location.origin,
+  providerHint: "federation-eams",
 });`}
       </CodeBlock>
       <Divider text="API Reference" className="mt-6" />
       <div className="font-bold text-lg pt-6">
-        config - <Code className="p-2">{`createCwmsLoginAuthMethod(config)`}</Code>
+        config - <Code className="p-2">{`createKeycloakAuthMethod(config)`}</Code>
       </div>
       <PropsTable propsList={componentProps} />
     </DocsPage>

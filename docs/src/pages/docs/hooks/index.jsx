@@ -1,9 +1,11 @@
-import { Text } from "@usace/groundwork";
+import { Link, Text } from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
 import { Code } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import Alert from "../../components/alert";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 const returnParams = [
   {
@@ -90,9 +92,9 @@ function DataHooks() {
           <span>
             A quick walkthrough to get React Query set up in your application is
             available at{" "}
-            <a href="/docs/react-query" className="underline">
+            <Link href={`${BASE_URL}#/docs/react-query`} className="underline">
               Getting Started - React Query
-            </a>
+            </Link>
           </span>
         }
       />

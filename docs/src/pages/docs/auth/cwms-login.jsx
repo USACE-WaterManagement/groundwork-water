@@ -1,8 +1,10 @@
-import { Code, Text } from "@usace/groundwork";
+import { Code, Link, Text } from "@usace/groundwork";
 import { Code as CodeBlock } from "../../components/code";
 import PropsTable from "../../components/props-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 const componentProps = [
   {
@@ -21,9 +23,9 @@ const componentProps = [
 
 const cwmsLogin = <Code>createCwmsLoginAuthMethod()</Code>;
 const authMethod = (
-  <a href="/docs/auth/auth-method" className="hover:underline">
+  <Link href={`${BASE_URL}#/docs/auth/auth-method`} className="hover:underline">
     <Code>AuthMethod</Code>
-  </a>
+  </Link>
 );
 
 function CwmsLoginDocs() {
