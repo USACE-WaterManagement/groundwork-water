@@ -3,9 +3,7 @@ import ParamsTable from "../../components/params-table";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import { Code } from "../../components/code";
-// import { DataStatus } from "@usace-watermanagement/groundwork-water"
-import DataStatus from "../../../../../lib/components/data/summary/DataStatus";
-import { useDataStatusFile } from "@usace-watermanagement/groundwork-water";
+import { DataStatus, useDataStatusFile } from "@usace-watermanagement/groundwork-water";
 
 const returnParams = [
     {
