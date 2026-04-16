@@ -43,10 +43,10 @@ export default function useCdaMultiTimeSeries({
     cdaParams = [cdaParams];
   }
   // Stable API client across renders unless config changes
-  const TIME_SERIES_API = useMemo(() => new TimeSeriesApi(config), [config]);
+  const timeSeriesApi = useMemo(() => new TimeSeriesApi(config), [config]);
 
   // Normalize the names to an array of TSIDs
-  const TIME_SERIES_IDS = useMemo(() => {
+  const timeSeriesIds = useMemo(() => {
     return (cdaParams ?? []).flatMap(({ name, ...rest }) => {
       const baseReq: BaseReq = rest;
       const tsids = normalizeTsids(name);
@@ -55,12 +55,12 @@ export default function useCdaMultiTimeSeries({
   }, [cdaParams]);
 
   // Prevent unnecessary queries if no TSIDs are provided
-  const enabled = TIME_SERIES_IDS.length > 0;
+  const enabled = timeSeriesIds.length > 0;
 
   const queries = useQueries({
-    queries: TIME_SERIES_IDS.map<QOpts>(({ baseReq, tsid }) => ({
+    queries: timeSeriesIds.map<QOpts>(({ baseReq, tsid }) => ({
       queryKey: ["cda", "timeseries", JSON.stringify(baseReq), tsid],
-      queryFn: () => TIME_SERIES_API.getTimeSeries({ ...baseReq, name: tsid }),
+      queryFn: () => timeSeriesApi.getTimeSeries({ ...baseReq, name: tsid }),
       enabled,
       ...(queryOptions || {}),
     })),
