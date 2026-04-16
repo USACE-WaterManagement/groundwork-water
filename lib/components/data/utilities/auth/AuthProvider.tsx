@@ -18,17 +18,15 @@ export interface AuthMethod {
 interface AuthProviderProps {
   method: AuthMethod;
   cdaUrl?: string;
-  statusPollInterval?: number;
 }
 
 export const AuthProvider = ({
   method,
   cdaUrl: propCdaUrl,
-  statusPollInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
   const queryClient = useQueryClient();
-  const pollSeconds = statusPollInterval ?? method.statusPollInterval ?? 15;
+  const pollSeconds = method.statusPollInterval ?? 15;
   const refetchIntervalMs = pollSeconds > 0 ? pollSeconds * 1000 : false;
 
   const {
