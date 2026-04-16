@@ -17,6 +17,7 @@ import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import KeycloakDocs from "../pages/docs/auth/keycloak";
 import UseAuthDocs from "../pages/docs/auth/use-auth";
 import OfficesDropdownDocs from "../pages/docs/dropdowns/offices";
+import SearchInputDocs from "../pages/docs/dropdowns/search-input";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -60,6 +61,7 @@ export default createRouteBundle(
     "/docs/auth/keycloak": KeycloakDocs,
     "/docs/auth/use-auth": UseAuthDocs,
     "/docs/dropdowns/offices": OfficesDropdownDocs,
+    "/docs/dropdowns/search-input": SearchInputDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
