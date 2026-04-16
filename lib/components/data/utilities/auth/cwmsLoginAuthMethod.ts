@@ -25,7 +25,7 @@ export const createCwmsLoginAuthMethod = ({
   statusPollInterval = 15,
 }: CwmsLoginConfig) => {
   const cwmsLoginAuthMethod: AuthMethod = {
-    refreshInterval: statusPollInterval,
+    statusPollInterval,
 
     async login() {
       location.href =
