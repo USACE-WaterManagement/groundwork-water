@@ -10,6 +10,7 @@ import {
   TableCell,
 } from "@usace/groundwork";
 import { useCdaConfig } from "../helpers/cda";
+import { getPrecision } from "../utilities";
 
 export default function CWMSTable({
   timeseriesParams,
@@ -24,7 +25,19 @@ export default function CWMSTable({
   interval = 1,
   sortAscending = true,
   missingString = "",
+  dateFormat = "ddd MMM DD HH:mm",
   cdaUrl,
+  dateTimeTableColumnHeader = "Date & Time (Local)",
+  tableOptions = {
+    striped: false,
+    dense: false,
+    bleed: false,
+    stickyHeader: false,
+    overflow: false,
+    overflowHeight: "h-[65vh]",
+    grid: false,
+    className: "",
+  },
 }) {
   const tableElement = useRef([]);
   const [tableData, setTableData] = useState(null);
@@ -77,7 +90,9 @@ export default function CWMSTable({
             data.ts[result.name] = [];
           }
 
-          let precision = 2;
+          // Set default precision for table
+          let precision = getPrecision(result.units);
+          // Allow user to override precision
           timeseriesParams.map((entry) => {
             if (entry.tsid == result.name && entry.precision != null) {
               precision = entry.precision;
@@ -154,10 +169,10 @@ export default function CWMSTable({
   }, [tsData, timeseriesParams]);
 
   return (
-    <Table striped dense>
+    <Table {...tableOptions}>
       <TableHead>
         <TableRow>
-          <TableHeader>Date & Time (Local)</TableHeader>
+          <TableHeader>{dateTimeTableColumnHeader}</TableHeader>
           {timeseriesParams.map((item, index) => (
             <TableHeader key={`header${index}`}>{item.header}</TableHeader>
           ))}
@@ -169,7 +184,7 @@ export default function CWMSTable({
           <TableRow key={`row${index}`}>
             {/* Date-Time */}
             <TableCell key={`cell${index}`}>
-              {dayjs(item[0]).format("ddd MMM DD HH:mm")}
+              {dayjs(item[0]).format(dateFormat)}
             </TableCell>
 
             {/* Loop over columns */}

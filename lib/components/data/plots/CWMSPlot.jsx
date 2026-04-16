@@ -4,6 +4,7 @@ import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 import { useMemo } from "react";
+import { getPrecision } from "../utilities";
 
 /**
  * Normalize a data prop to an array of objects
@@ -66,14 +67,11 @@ export default function CWMSPlot({
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
 
-  const timeSeriesArray = useMemo(
-    () => normalizeDataProp(timeSeries),
-    [timeSeries]
-  );
+  const timeSeriesArray = useMemo(() => normalizeDataProp(timeSeries), [timeSeries]);
 
   const locationLevelsArray = useMemo(
     () => normalizeDataProp(locationLevels),
-    [locationLevels]
+    [locationLevels],
   );
 
   const config_v2 = new Configuration({
@@ -107,8 +105,7 @@ export default function CWMSPlot({
   };
 
   timeSeriesArray.forEach((item, index) => {
-    const yaxis_id =
-      getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
+    const yaxis_id = getYAxisId(item) ?? (index == 0 ? "yaxis" : "yaxis" + index);
     if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
@@ -123,14 +120,14 @@ export default function CWMSPlot({
   });
 
   defaultLayout.grid.rows = Object.keys(defaultLayout).filter((key) =>
-    key.includes("yaxis")
+    key.includes("yaxis"),
   ).length;
 
   const layout = deepmerge(defaultLayout, layoutOptions);
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
-    const levels = locationLevelsArray.map((level) => level.id);
+    const levels = locationLevelsArray;
 
     if (!tsids?.length) {
       setError("You must specify one or more Timeseries IDs to plot.");
@@ -142,16 +139,6 @@ export default function CWMSPlot({
     const fetchData = async () => {
       let ts_promises = tsids.map(async (name) => {
         try {
-          // Currently, large page size calls are blocked, so the default of 500 is used
-          // let pageSize = 500;
-          // const delta = dayjs(end.value).diff(dayjs(start.value), "day", true)
-          // let interval = tsid.split(".")[3]
-          // if (interval.includes("Minute")) {
-          //   if (interval.includes("15")) { pageSize = delta * 100 }
-          //   if (interval.includes("1Minute")) { pageSize = delta * 1500 }
-          // }
-          // if (interval.includes("Hour")) { pageSize = delta * 10 }
-          // if (interval.includes("Day")) { pageSize = delta * 1 }
           return await ts_api.getTimeSeries({
             name,
             office,
@@ -170,15 +157,13 @@ export default function CWMSPlot({
 
       let lev_promises = levels?.map(async (item) => {
         let level;
-        // The Level API doesn't accept the same date format
         try {
-          level = await level_api.getLevels({
-            levelIdMask: item,
-            begin: begin?.slice(0, 10),
-            end: end?.slice(0, 10),
+          level = await level_api.getLevelsWithLevelIdTimeSeries({
+            levelId: item.id,
+            unit: item.units,
             office: office,
-            format: "json",
-            unit: unit,
+            begin,
+            end,
           });
         } catch (error) {
           console.error("Error fetching location level data:", error);
@@ -194,6 +179,23 @@ export default function CWMSPlot({
           if (!_data.ts[result.name]) {
             _data.ts[result.name] = [];
           }
+          // Apply default rounding
+          const precision = getPrecision(result.units);
+          result.values = result.values.map((value) => [
+            value[0], // Epoch
+            value[1] != null ? parseFloat(value[1].toFixed(precision)) : null, // Value
+            value[2], // Quality
+          ]);
+
+          // Update trace to include precision
+          const yaxis_id = getYAxisId(
+            timeSeriesArray.find((item) => {
+              return item.id == result.name;
+            }),
+          );
+          // Do not set tickformat if a precision is not required
+          if (precision != 0) defaultLayout[yaxis_id].tickformat = `.${precision}f`;
+
           _data.ts[result.name].push(result);
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);
@@ -208,8 +210,21 @@ export default function CWMSPlot({
       }
 
       lev_values?.forEach((result) => {
-        const name = result["location-levels"]["location-levels"][0]?.name;
-        const levels = result["location-levels"]["location-levels"][0]?.values;
+        const name_arr = result?.name.split(".");
+        let name;
+        if (name_arr?.length > 0) {
+          name =
+            name_arr[0] +
+            "." +
+            name_arr[1] +
+            "." +
+            name_arr[2] +
+            "." +
+            name_arr[3] +
+            "." +
+            name_arr[5];
+        }
+        const levels = result?.values;
         if (result && name) {
           if (!_data.ts[name]) {
             _data.ts[name] = [];
@@ -260,7 +275,11 @@ export default function CWMSPlot({
       staticTraces.map((trace) => traces.push(trace));
     }
 
-    // Loop thru TS Data for timeseries and location levels
+    // Loop thru TS Data for timeseries to add to traces
+    // and build start and end timestamps to use with the location levels
+    let start = 2100 * 12 * 30 * 24 * 3600 * 1000;
+    let end = 0;
+
     for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
       const key = ts_keys[k_idx];
 
@@ -276,31 +295,68 @@ export default function CWMSPlot({
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const tsObj = timeSeriesArray?.filter(
-            (item) => item.id === ts.name
-          )[0];
+          const tsObj = timeSeriesArray?.filter((item) => item.id === ts.name)[0];
           const fullTrace = tsObj?.traceOptions
             ? deepmerge(trace, tsObj?.traceOptions)
             : trace;
           traces.push(fullTrace);
+          // Update start and end timestamps as necessary
+          ts.values.map((value) => {
+            if (value[1] != null) {
+              if (value[0] < start) {
+                start = value[0];
+              }
+              if (value[0] > end) {
+                end = value[0];
+              }
+            }
+          });
         }
       }
+    }
+
+    // Loop thru TS Data for location levels
+    for (let k_idx = 0; k_idx < ts_keys.length; k_idx++) {
+      const key = ts_keys[k_idx];
 
       // Add Location Levels to list of traces
       if (levels?.includes(key)) {
         for (let ts_idx = 0; ts_idx < tsData.ts[key].length; ts_idx++) {
           ts = tsData.ts[key][ts_idx];
+
+          // Update trace with dates bounded by start and end dates
+          let dates = [];
+          let values = [];
+
+          ts.map((tsv) => {
+            if (tsv[0] && tsv[1]) {
+              const dt = tsv[0];
+              const val = tsv[1];
+
+              if (dt > start && !dates.includes(start)) {
+                dates.push(start);
+                values.push(val);
+              }
+              if (dt < end && !dates.includes(end)) {
+                dates.push(end);
+                values.push(val);
+              }
+              if (dt > start && dt < end && !dates.includes(dt)) {
+                dates.push(dt);
+                values.push(val);
+              }
+            }
+          });
+
           // Defaults for trace
           const trace = {
-            x: ts.segments[0].values.map((value) => new Date(value[0])),
-            y: ts.segments[0].values.map((value) => value[1]),
+            x: dates.map((d) => new Date(d)),
+            y: values,
             showlegend: true,
             legend: { x: 1, xanchor: "right", y: 1 },
           };
           // Add all other parameters
-          const levelObj = locationLevelsArray?.filter(
-            (item) => item.id == key
-          )[0];
+          const levelObj = locationLevelsArray?.filter((item) => item.id == key)[0];
           const fullTrace = levelObj?.traceOptions
             ? deepmerge(trace, levelObj?.traceOptions)
             : trace;
@@ -314,14 +370,7 @@ export default function CWMSPlot({
     Plotly.newPlot(plotElement.current, traces, layout, {
       responsive: responsive,
     });
-  }, [
-    layout,
-    locationLevelsArray,
-    responsive,
-    staticTraces,
-    timeSeriesArray,
-    tsData,
-  ]);
+  }, [layout, locationLevelsArray, responsive, staticTraces, timeSeriesArray, tsData]);
 
   return (
     <div

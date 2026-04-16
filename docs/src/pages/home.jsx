@@ -1,20 +1,13 @@
-import {
-  Container,
-  Text,
-  Code,
-  UsaceBox,
-  TextLink,
-  Hero,
-} from "@usace/groundwork";
+import { Container, Text, Code, UsaceBox, TextLink, Hero } from "@usace/groundwork";
 import CopyButton from "../components/CopyButton";
 
-const base = import.meta.env.BASE_URL;
+const BASE_URL = import.meta.env.BASE_URL;
 
 function Home() {
   return (
     <>
       <Hero
-        image={`${base}FT_GIBSON_20181115.min.jpg`}
+        image={`${BASE_URL}FT_GIBSON_20181115.min.jpg`}
         title="Groundwork Water"
         subtitle="React Component Library for USACE Water Management"
       />
@@ -31,27 +24,27 @@ function Home() {
                 <Code className="block w-full p-1 px-2">
                   npm install @usace-watermanagement/groundwork-water
                 </Code>
-                <CopyButton text="npm install @usace/groundwork" />
+                <CopyButton text="npm install @usace-watermanagement/groundwork-water" />
               </div>
               <div className="flex flex-row justify-start space-between items-center gap-2 mb-3">
                 <Text>Uninstall: </Text>
                 <Code className="block w-full p-1 px-2">
                   npm uninstall @usace-watermanagement/groundwork-water
                 </Code>
-                <CopyButton text="npm install @usace/groundwork" />
+                <CopyButton text="npm uninstall @usace-watermanagement/groundwork-water" />
               </div>
               <Text>
-                To update Groundwork Water, run the uninstall command and then
-                the install command. Confirm in your package.json that the
-                version number has been updated.
+                To update Groundwork Water, run the uninstall command and then the
+                install command. Confirm in your package.json that the version number
+                has been updated.
               </Text>
 
               <Text>
-                Then, import the components you need and our CSS, and start
-                building your application!
+                Then, import the components you need and our CSS, and start building
+                your application!
               </Text>
               <div className="mt-3">
-                <TextLink href="/docs" className="text-lg font-bold">
+                <TextLink href={`${BASE_URL}#/docs`} className="text-lg font-bold">
                   Check out the docs
                 </TextLink>
               </div>

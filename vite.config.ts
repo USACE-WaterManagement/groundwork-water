@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
           fileName: (format) => `groundwork-water.${format}.js`,
           entry: "lib/index.jsx",
           formats: ["es", "umd"],
+          cssFileName: "style",
         },
         rollupOptions: {
           external: [
@@ -43,10 +44,7 @@ export default defineConfig(({ mode }) => {
     };
   } else {
     console.log("Building Docs App: ", mode);
-    const base =
-      mode === "production"
-        ? "https://USACE-WaterManagement.github.io/groundwork-water/"
-        : "http://localhost:5173/";
+    const base = mode === "production" ? "/groundwork-water/" : "/";
     return {
       plugins: [react(), tailwindcss()],
       base: base,

@@ -22,8 +22,7 @@ const useCdaTimeSeriesGroup = ({
 
   return useQuery({
     queryKey: ["cda", "timeseries-group", ...Object.values(cdaParams)],
-    queryFn: async () =>
-      timeseriesGroupsApi.getTimeSeriesGroupWithGroupId(cdaParams),
+    queryFn: async () => timeseriesGroupsApi.getTimeSeriesGroupWithGroupId(cdaParams),
     ...queryOptions,
   });
 };

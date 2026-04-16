@@ -38,9 +38,7 @@ const TSPlot = ({
       // Check for user inputs or use defaults
       // Set Defaults
       let plotTitle = data.name.split(".")[0];
-      let yaxisText = `${data.name.split(".")[1]} (${
-        data.verticalDatumInfo?.unit
-      })`;
+      let yaxisText = `${data.name.split(".")[1]} (${data.verticalDatumInfo?.unit})`;
       let xaxisText = "Date";
       let legendItem = null;
       let plotType = "scatter";
@@ -94,15 +92,7 @@ const TSPlot = ({
         responsive: responsive,
       });
     }
-  }, [
-    data,
-    cdaParams,
-    plotParams,
-    shapes,
-    annotations,
-    layoutGrid,
-    responsive,
-  ]); // Re-plot when data changes
+  }, [data, cdaParams, plotParams, shapes, annotations, layoutGrid, responsive]); // Re-plot when data changes
 
   if (isPending) {
     return loadingComponent ? <>{loadingComponent}</> : <div>Loading...</div>;

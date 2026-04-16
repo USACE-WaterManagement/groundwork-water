@@ -1,6 +1,8 @@
-import { Text } from "@usace/groundwork";
+import { Link, Text } from "@usace/groundwork";
 import { H4 } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 function PlotsDocs() {
   return (
@@ -14,19 +16,20 @@ function PlotsDocs() {
       <div>
         <Text className="pb-6">
           The groundwork-water plotting components are intended to create
-          consistently-styled water management plots while handling as much of
-          the data retrieval as possible for the user.
+          consistently-styled water management plots while handling as much of the data
+          retrieval as possible for the user.
         </Text>
       </div>
       <H4>Components</H4>
       <ul>
         <li>
-          <a href="/docs/plots/cwms-plot">
+          <Link href={`${BASE_URL}#/docs/plots/cwms-plot`}>
             CMWSPlot - A generic plot for displaying CWMS data
-          </a>
+          </Link>
         </li>
       </ul>
       <br />
+      ``
     </DocsPage>
   );
 }

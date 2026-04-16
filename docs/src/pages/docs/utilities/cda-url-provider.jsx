@@ -21,29 +21,27 @@ function CdaUrlProviderDocs() {
     <DocsPage middleText="{componentCode}">
       <div>
         <Text>
-          The {cdaUrlProvider} is offered as a mechanism to adjust the CDA URL
-          used by any contained (and compatible) CDA requests. While the CDA URL
-          could be changed for each request individually (e.g. by using a data
-          hook {cdaUrl} parameter), it is often desirable to use a custom URL
-          for an entire application or for a subset of an application such as a
-          page.
+          The {cdaUrlProvider} is offered as a mechanism to adjust the CDA URL used by
+          any contained (and compatible) CDA requests. While the CDA URL could be
+          changed for each request individually (e.g. by using a data hook {cdaUrl}{" "}
+          parameter), it is often desirable to use a custom URL for an entire
+          application or for a subset of an application such as a page.
         </Text>
         <Text className="mt-4">
-          This component is utilized by wrapping any it around any CDA requests
-          that are intended to use the custom CDA URL. A user could wrap their
-          entire application in a single {cdaUrlProvider} to use a custom CDA
-          URL for all requests, or could alternatively wrap a small group of
-          components or even a single component. For a single component,
-          however, it is often simpler to use a directly attached {cdaUrl}
+          This component is utilized by wrapping any it around any CDA requests that are
+          intended to use the custom CDA URL. A user could wrap their entire application
+          in a single {cdaUrlProvider} to use a custom CDA URL for all requests, or
+          could alternatively wrap a small group of components or even a single
+          component. For a single component, however, it is often simpler to use a
+          directly attached {cdaUrl}
           property or parameter if available.
         </Text>
         <Text className="mt-4">
-          It is important to note that the {cdaUrlProvider} will only affect
-          components and/or requests that are configured to utilize it. This
-          ideally includes all groundwork-water components, but at a minimum
-          will include the provided data hooks and any components that integrate
-          them. If a groundwork-water component does not support the{" "}
-          {cdaUrlProvider}, please submit an issue to the{" "}
+          It is important to note that the {cdaUrlProvider} will only affect components
+          and/or requests that are configured to utilize it. This ideally includes all
+          groundwork-water components, but at a minimum will include the provided data
+          hooks and any components that integrate them. If a groundwork-water component
+          does not support the {cdaUrlProvider}, please submit an issue to the{" "}
           <a
             href="https://github.com/USACE-WaterManagement/groundwork-water/"
             className="underline"
@@ -53,16 +51,14 @@ function CdaUrlProviderDocs() {
           .
         </Text>
         <Text className="mt-1">
-          If components or data hooks within the {cdaUrlProvider} utilize a
-          custom CDA URL (e.g. the {cdaUrl} parameter) it will override the URL
-          provided by this component. For reference, the CDA URL will use this
-          priority list:
+          If components or data hooks within the {cdaUrlProvider} utilize a custom CDA
+          URL (e.g. the {cdaUrl} parameter) it will override the URL provided by this
+          component. For reference, the CDA URL will use this priority list:
         </Text>
         <Text className="mt-1">
           <ol className="list-decimal ml-12">
             <li>
-              {cdaUrl} parameter assigned directly to the component and/or data
-              hook
+              {cdaUrl} parameter assigned directly to the component and/or data hook
             </li>
             <li>url property provided by a wrapping {cdaUrlProvider}</li>
             <li>default url used by the cwmsjs package</li>
@@ -70,9 +66,7 @@ function CdaUrlProviderDocs() {
         </Text>
       </div>
       <Divider text="Example Usage" />
-      <Text>
-        Import the CdaUrlProvider at the top of your component file with:
-      </Text>
+      <Text>Import the CdaUrlProvider at the top of your component file with:</Text>
       <CodeBlock language="jsx">
         {`import { CdaUrlProvider } from "@usace-watermanagement/groundwork-water";`}
       </CodeBlock>

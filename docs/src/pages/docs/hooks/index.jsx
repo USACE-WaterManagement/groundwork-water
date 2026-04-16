@@ -1,9 +1,11 @@
-import { Text } from "@usace/groundwork";
+import { Link, Text } from "@usace/groundwork";
 import ParamsTable from "../../components/params-table";
 import { Code } from "@usace/groundwork";
 import DocsPage from "../_docs-wrapper";
 import Divider from "../../components/divider";
 import Alert from "../../components/alert";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 const returnParams = [
   {
@@ -11,10 +13,10 @@ const returnParams = [
     type: "object?",
     desc: (
       <>
-        Undefined until the request has resolved, then an object containing the
-        response (if a valid response is received). The return object will vary
-        depending on the request endpoint, but response definitions for each CDA
-        endpoint are available in the{" "}
+        Undefined until the request has resolved, then an object containing the response
+        (if a valid response is received). The return object will vary depending on the
+        request endpoint, but response definitions for each CDA endpoint are available
+        in the{" "}
         <a
           href="https://cwms-data.usace.army.mil/cwms-data/swagger-ui.html"
           className="underline"
@@ -42,12 +44,11 @@ function DataHooks() {
     <DocsPage middleText="Data Hooks Overview">
       <div>
         <Text>
-          The groundwork-water data hooks provide easy access to data provided
-          by various APIs such as cwms-data-api (CDA) and the National Weather
-          Prediction Service (NWPS). While many groundwork-water components
-          handle the data-fetching process for the user, at times lower-level
-          data-fetching access is required to allow for the development of more
-          highly-customized components.
+          The groundwork-water data hooks provide easy access to data provided by
+          various APIs such as cwms-data-api (CDA) and the National Weather Prediction
+          Service (NWPS). While many groundwork-water components handle the
+          data-fetching process for the user, at times lower-level data-fetching access
+          is required to allow for the development of more highly-customized components.
         </Text>
       </div>
       <Divider text="Basic Usage" className="mt-8 mb-5" />
@@ -57,17 +58,16 @@ function DataHooks() {
           TanStack Query
         </a>{" "}
         (FKA React Query) library. This library handles the nitty gritty bits of
-        fetching, caching, synchronizing, and updating server state such as that
-        exposed by cwms-data-api (CDA).
+        fetching, caching, synchronizing, and updating server state such as that exposed
+        by cwms-data-api (CDA).
       </Text>
       <br />
       <Text>
-        The included hooks wrap a JavaScript <Code>fetch()</Code> call to the
-        associated API endpoint into a React Query <Code>useQuery()</Code>{" "}
-        function. This returns an object with a number of helpful properties
-        such as <Code>data</Code>,<Code>isPending</Code>, and <Code>error</Code>
-        , which all help manage the more complex parts of the fetch life-cycle
-        for you.
+        The included hooks wrap a JavaScript <Code>fetch()</Code> call to the associated
+        API endpoint into a React Query <Code>useQuery()</Code> function. This returns
+        an object with a number of helpful properties such as <Code>data</Code>,
+        <Code>isPending</Code>, and <Code>error</Code>, which all help manage the more
+        complex parts of the fetch life-cycle for you.
       </Text>
       <br />
       <Text>
@@ -92,18 +92,18 @@ function DataHooks() {
           <span>
             A quick walkthrough to get React Query set up in your application is
             available at{" "}
-            <a href="/docs/react-query" className="underline">
+            <Link href={`${BASE_URL}#/docs/react-query`} className="underline">
               Getting Started - React Query
-            </a>
+            </Link>
           </span>
         }
       />
       <Divider text="Configuration" className="mt-8 mb-5" />
       <Text>
-        While the default configuration will likely suffice for most use cases,
-        TanStack Query is highly configurable for individualized needs. The
-        configuration can be adjusted either when the QueryClient is
-        instantiated or for individual useQuery requests. See the docs for{" "}
+        While the default configuration will likely suffice for most use cases, TanStack
+        Query is highly configurable for individualized needs. The configuration can be
+        adjusted either when the QueryClient is instantiated or for individual useQuery
+        requests. See the docs for{" "}
         <a
           href="https://tanstack.com/query/latest/docs/reference/QueryClient"
           className="underline"
@@ -124,13 +124,11 @@ function DataHooks() {
       </Text>
       <Divider text="API Reference" className="mt-8" />
       <div className="font-bold text-lg pt-6">
-        Return Parameters -{" "}
-        <Code className="p-2">{`const {...} = useQuery()`}</Code>
+        Return Parameters - <Code className="p-2">{`const {...} = useQuery()`}</Code>
       </div>
       <ParamsTable paramsList={returnParams} showReq={false} />
       <Text className="pt-3">
-        A full list of the return parameters for useQuery hooks can be
-        referenced in the{" "}
+        A full list of the return parameters for useQuery hooks can be referenced in the{" "}
         <a
           href="https://tanstack.com/query/latest/docs/framework/react/reference/useQuery"
           className="underline"

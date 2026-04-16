@@ -18,11 +18,7 @@ interface useNwpsGaugeDataParams {
   queryOptions: Partial<UseQueryOptions<GaugeGetStageFlowAllResponse>>;
 }
 
-const useNwpsGaugeData = ({
-  sid,
-  product,
-  queryOptions,
-}: useNwpsGaugeDataParams) => {
+const useNwpsGaugeData = ({ sid, product, queryOptions }: useNwpsGaugeDataParams) => {
   return useQuery({
     queryKey: ["nwps", "gauge", sid, "data", `${product}`],
     queryFn: async () => {

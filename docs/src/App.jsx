@@ -1,9 +1,4 @@
-import {
-  SiteWrapper,
-  Button,
-  Breadcrumbs,
-  BreadcrumbItem,
-} from "@usace/groundwork";
+import { SiteWrapper, Button, Breadcrumbs, BreadcrumbItem } from "@usace/groundwork";
 import { getNavHelper } from "internal-nav-helper";
 import { useConnect } from "redux-bundler-hook";
 import links from "./nav-links";
@@ -14,6 +9,8 @@ const version = import.meta.env.PKG_VERSION;
 
 import externalLinks from "./external-links";
 import usaceLinks from "./usace-links";
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 function App() {
   const {
@@ -30,7 +27,12 @@ function App() {
   }
 
   return (
-    <div onClick={getNavHelper((url) => doUpdateHash(url))}>
+    <div
+      onClick={getNavHelper((url) => {
+        if (url.includes(`${BASE_URL}#`)) url = url.replace(`${BASE_URL}#`, "");
+        doUpdateHash(url);
+      })}
+    >
       <SiteWrapper
         fluidNav={true}
         links={links}

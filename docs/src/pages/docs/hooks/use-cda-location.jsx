@@ -59,9 +59,9 @@ function UseCdaLocation() {
       <div>
         <Text>
           The useCdaLocation hook can be used to retrieve location data using
-          cwms-data-api (CDA). It requires only a location ID and an office ID,
-          but can be further customized using additional parameters provided
-          through CDA if desired.
+          cwms-data-api (CDA). It requires only a location ID and an office ID, but can
+          be further customized using additional parameters provided through CDA if
+          desired.
         </Text>
         <QueryClientWarning />
       </div>

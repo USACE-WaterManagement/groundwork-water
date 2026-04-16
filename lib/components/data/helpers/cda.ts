@@ -7,9 +7,7 @@ import useCdaUrl from "../utilities/useCdaUrl";
  * @returns {[number, number, number]} The last CDA TimeSeries entry.
  */
 export const getLatestEntry = (cdaTimeSeries: TimeSeries) => {
-  return cdaTimeSeries.values
-    ?.filter((entry) => entry[1] !== null)
-    .slice(-1)[0];
+  return cdaTimeSeries.values?.filter((entry) => entry[1] !== null).slice(-1)[0];
 };
 
 /**

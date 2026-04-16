@@ -25,9 +25,7 @@ export default function Alert({ className, title, message, status, ...props }) {
         setCssStatus({
           bg: "bg-yellow-50",
           text: "text-yellow-800",
-          icon: (
-            <AiOutlineExclamationCircle className="h-5 w-5 text-yellow-400" />
-          ),
+          icon: <AiOutlineExclamationCircle className="h-5 w-5 text-yellow-400" />,
         });
         break;
       case "success":

@@ -10,19 +10,15 @@ import Alert from "../../components/alert";
 
 export default function Maps() {
   return (
-    <DocsPage
-      prevUrl="/docs/tables"
-      middleText="Maps"
-      prevText="Return to Tables Page"
-    >
+    <DocsPage prevUrl="/docs/tables" middleText="Maps" prevText="Return to Tables Page">
       {" "}
       <Alert
         title="Notice"
         status="error"
         message={
           <span>
-            This component is currently in development and is not yet ready for
-            use. But it does serve as a placeholder!
+            This component is currently in development and is not yet ready for use. But
+            it does serve as a placeholder!
           </span>
         }
       />

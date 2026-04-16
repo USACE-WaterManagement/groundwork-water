@@ -1,9 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import {
-  GetLocationsWithLocationIdRequest,
-  Location,
-  LocationsApi,
-} from "cwmsjs";
+import { GetLocationsWithLocationIdRequest, Location, LocationsApi } from "cwmsjs";
 import { useCdaConfig } from "../helpers/cda";
 
 interface useCdaLocationParams {
@@ -12,11 +8,7 @@ interface useCdaLocationParams {
   queryOptions?: Partial<UseQueryOptions<Location>>;
 }
 
-const useCdaLocation = ({
-  cdaParams,
-  cdaUrl,
-  queryOptions,
-}: useCdaLocationParams) => {
+const useCdaLocation = ({ cdaParams, cdaUrl, queryOptions }: useCdaLocationParams) => {
   const config = useCdaConfig("v2", cdaUrl);
   const locationsApi = new LocationsApi(config);
 
