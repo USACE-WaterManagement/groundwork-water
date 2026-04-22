@@ -80,6 +80,7 @@ function Tables() {
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
           interval="5"
+          snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
           tableOptions={{
@@ -166,6 +167,7 @@ default export function Example() {
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
           interval="5"
+          snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
           tableOptions={{
