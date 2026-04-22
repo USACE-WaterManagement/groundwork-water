@@ -19,6 +19,12 @@ const componentProps = [
     default: "undefined",
     desc: "The URL for a GET endpoint that can be used to check authentication status, e.g. https://host:8243/cwms-data/auth/keys",
   },
+  {
+    name: "statusPollInterval",
+    type: "number",
+    default: "15",
+    desc: "Optional - Time between authentication status checks, in seconds. Set to 0 to disable polling.",
+  },
 ];
 
 const cwmsLogin = <Code>createCwmsLoginAuthMethod()</Code>;
@@ -60,7 +66,8 @@ function CwmsLoginDocs() {
 
 const authMethod = createCwmsLoginAuthMethod({
   authUrl: authHost,
-  authCheckUrl: \`\${cdaUrl}/auth/keys
+  authCheckUrl: \`\${cdaUrl}/auth/keys\`,
+  statusPollInterval: 15,
 });`}
       </CodeBlock>
       <Divider text="API Reference" className="mt-6" />

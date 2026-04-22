@@ -37,6 +37,12 @@ const componentProps = [
     desc: "Optional - Time between refresh token requests, in seconds.",
   },
   {
+    name: "statusPollInterval",
+    type: "number",
+    default: "undefined",
+    desc: "Optional - Time between authentication status checks, in seconds. Set to 0 to disable polling.",
+  },
+  {
     name: "token",
     type: "string",
     default: "undefined",

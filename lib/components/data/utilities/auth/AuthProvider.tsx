@@ -1,9 +1,9 @@
-import { PropsWithChildren } from "react";
-import { useRefreshToken } from "./useRefreshToken";
+import { PropsWithChildren, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AuthContext } from "./AuthContext";
+import { AuthContext, AuthContextValue } from "./AuthContext";
 import useCdaUrl from "../useCdaUrl";
 import { useCdaUserProfile } from "./useCdaUserProfile";
+import { useRefreshToken } from "./useRefreshToken";
 
 export interface AuthMethod {
   login: () => Promise<void>;
@@ -11,22 +11,23 @@ export interface AuthMethod {
   isAuth: () => Promise<boolean>;
   refresh?: () => Promise<void>;
   refreshInterval?: number;
+  statusPollInterval?: number;
   token?: string;
 }
 
 interface AuthProviderProps {
   method: AuthMethod;
   cdaUrl?: string;
-  refreshInterval?: number;
 }
 
 export const AuthProvider = ({
   method,
   cdaUrl: propCdaUrl,
-  refreshInterval,
   children,
 }: PropsWithChildren<AuthProviderProps>) => {
   const queryClient = useQueryClient();
+  const pollSeconds = method.statusPollInterval ?? 15;
+  const refetchIntervalMs = pollSeconds > 0 ? pollSeconds * 1000 : false;
 
   const {
     data: isAuth = false,
@@ -35,14 +36,18 @@ export const AuthProvider = ({
   } = useQuery({
     queryKey: ["auth", "status"],
     queryFn: method.isAuth,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchInterval: refetchIntervalMs,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    retry: 1,
   });
 
   const providedCdaUrl = useCdaUrl();
   const cdaUrl = propCdaUrl ?? providedCdaUrl;
 
-  useRefreshToken(isAuth, method, refreshInterval);
+  useRefreshToken(isAuth, method);
   const { data: profile, isLoading: profileLoading } = useCdaUserProfile(
     isAuth,
     cdaUrl,
@@ -50,35 +55,48 @@ export const AuthProvider = ({
   );
 
   const login = useMutation({
-    mutationFn: method.login,
-    onSuccess: async () => {
-      await refetchAuthStatus();
+    mutationFn: async () => {
+      await method.login();
+    },
+    onError: () => {
+      queryClient.setQueryData(["auth", "status"], false);
     },
   });
 
   const logout = useMutation({
-    mutationFn: method.logout,
+    mutationFn: async () => {
+      await method.logout();
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth", "status"] });
+    },
     onSuccess: async () => {
-      await refetchAuthStatus();
       queryClient.removeQueries({ queryKey: ["auth", "profile"] });
+      await refetchAuthStatus();
     },
   });
 
   const isAnyLoading =
     isLoading || login.isPending || logout.isPending || profileLoading;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        login: login.mutateAsync,
-        logout: logout.mutateAsync,
-        isAuth,
-        isLoading: isAnyLoading,
-        profile,
-        token: method.token,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      login: login.mutateAsync,
+      logout: logout.mutateAsync,
+      isAuth,
+      isLoading: isAnyLoading,
+      profile,
+      token: method.token,
+    }),
+    [
+      login.mutateAsync,
+      logout.mutateAsync,
+      isAuth,
+      isAnyLoading,
+      profile,
+      method.token,
+    ],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
