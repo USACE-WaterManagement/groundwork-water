@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["lib", "declarejs.d.ts"],
-  "exclude": ["dist", "docs"]
+  "exclude": ["dist", "docs", "**/__tests__/**"]
 }
