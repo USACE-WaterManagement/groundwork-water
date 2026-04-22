@@ -11,6 +11,9 @@
     "dist",
     "types"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./types/lib/index.d.ts",
