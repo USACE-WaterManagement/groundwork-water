@@ -3,6 +3,7 @@ import PropsTable from "../../components/props-table";
 import {
   CWMSForm,
   CWMSInput,
+  CWMSFileUpload,
   CWMSTextarea,
   CWMSDropdown,
 } from "@usace-watermanagement/groundwork-water";
@@ -193,6 +194,37 @@ function CWMSFormDocs() {
     name="gate-position"
     placeholder="Select gate position"
     options={["Closed", "25% Open", "50% Open", "75% Open", "Fully Open"]}
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="With Blob Uploads" className="mt-8" />
+      <Text className="mb-4">
+        <Code>CWMSForm</Code> can coordinate blob uploads alongside the rest of the
+        forms feature set. <Code>CWMSFileUpload</Code> registers with the same form
+        context, validates locally, and uploads through <Code>cwmsjs</Code>.
+      </Text>
+
+      <CWMSForm office="SWT" onSubmit={(data) => console.log("File upload form", data)}>
+        <CWMSFileUpload
+          blobId="GROUNDWORK.DOCS.UPLOAD"
+          label="Upload a document"
+          helperText="Zero-byte files are rejected before submit."
+          maxFileSizeBytes={250000}
+          accept=".txt,.json,.csv"
+        />
+      </CWMSForm>
+
+      <CodeBlock language="jsx">
+        {`import { CWMSFileUpload, CWMSForm } from "@usace-watermanagement/groundwork-water";
+
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
+  <CWMSFileUpload
+    blobId="GROUNDWORK.DOCS.UPLOAD"
+    label="Upload a document"
+    helperText="Zero-byte files are rejected before submit."
+    accept=".txt,.json,.csv"
+    maxFileSizeBytes={250000}
   />
 </CWMSForm>`}
       </CodeBlock>

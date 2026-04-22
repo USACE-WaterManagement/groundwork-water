@@ -51,6 +51,15 @@ function FormsDocs() {
         </li>
         <li>
           <Link
+            href={`${BASE_URL}#/docs/forms/cwms-file-upload`}
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            CWMSFileUpload
+          </Link>{" "}
+          - Drag-and-drop blob upload input to CWMS Data API (CDA)
+        </li>
+        <li>
+          <Link
             href={`${BASE_URL}#/docs/forms/cwms-textarea`}
             className="text-blue-600 hover:underline font-semibold"
           >
