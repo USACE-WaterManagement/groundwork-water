@@ -49,6 +49,8 @@ import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
+import DataStatus from "./components/data/summary/DataStatus";
+import useDataStatusFile from "./components/data/hooks/useDataStatusFile";
 
 // files
 import useCdaBlob from "./components/data/hooks/useCdaBlob";
@@ -81,6 +83,7 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
+  DataStatus,
   OfficeDropdown,
   useCdaBlob,
   useCdaBlobs,
@@ -92,6 +95,7 @@ export {
   useCdaMultiTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
+  useDataStatusFile,
   useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,

@@ -34,6 +34,7 @@ import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
 import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
 import useDebounce from "../pages/docs/utilities/use-debounce";
+import DataStatus from "../pages/docs/summary/data-status";
 
 import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
@@ -78,6 +79,7 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/summary/data-status": DataStatus,
     "/docs/forms": FormsDocs,
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,

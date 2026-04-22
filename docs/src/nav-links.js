@@ -234,6 +234,18 @@ export default [
     href: `${BASE_URL}#/docs/maps`,
   },
   {
+    id: "summary",
+    text: "Summary",
+    href: `${BASE_URL}#/docs/summary`,
+    children: [
+      {
+        id: "data-status",
+        text: "Data Status",
+        href: `${BASE_URL}#/docs/summary/data-status`,
+      },
+    ],
+  },
+  {
     id: "utilities",
     text: "Utilities",
     href: `${BASE_URL}#/docs/utilities`,
