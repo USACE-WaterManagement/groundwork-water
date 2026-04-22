@@ -84,10 +84,17 @@ export function CWMSForm({
       if (error.errors) {
         error.errors.forEach((err) => {
           const input = inputsRef.current.find(
-            (i) => i.tsid === err.tsid || i.name === err.tsid,
+            (i) =>
+              i.tsid === err.tsid ||
+              i.name === err.tsid ||
+              i.blobId === err.blobId ||
+              i.name === err.blobId,
           );
           if (input?.setInvalid) {
             input.setInvalid(true);
+          }
+          if (input?.setValidationMessage) {
+            input.setValidationMessage(err.error || "Submission failed");
           }
         });
       }
@@ -183,22 +190,33 @@ export function CWMSForm({
         if (error.input?.setInvalid) {
           error.input.setInvalid(true);
         }
+        if (error.input?.setValidationMessage) {
+          error.input.setValidationMessage(error.message);
+        }
       });
 
       return;
     }
 
     // Collect all form data with timestamps
-    const formData = inputsRef.current.map((input) => ({
-      tsid: input.tsid,
-      values: input.getValues(),
-      units: input.units,
-      precision: input.precision,
-      offset: input.offset,
-      order: input.order,
-      timestamp: getTimestampForInput(input.timeOffset || 0),
-      timeOffset: input.timeOffset || 0,
-    }));
+    const formData = inputsRef.current.map((input) => {
+      const timestamp = getTimestampForInput(input.timeOffset || 0);
+
+      if (input.getSubmissionData) {
+        return input.getSubmissionData({ timestamp });
+      }
+
+      return {
+        tsid: input.tsid,
+        values: input.getValues(),
+        units: input.units,
+        precision: input.precision,
+        offset: input.offset,
+        order: input.order,
+        timestamp,
+        timeOffset: input.timeOffset || 0,
+      };
+    });
 
     // Call custom onSubmit if provided (runs alongside CWMS submission)
     if (onSubmit) {
@@ -206,13 +224,12 @@ export function CWMSForm({
     }
 
     // Submit using TanStack Query mutation
-    // Filter to only inputs with TSIDs for CWMS submission
-    const cwmsInputs = formData.filter((input) => input.tsid);
+    const submitInputs = formData.filter((input) => input.tsid || input.blobId);
 
-    if (cwmsInputs.length > 0) {
-      mutation.mutate(cwmsInputs);
+    if (submitInputs.length > 0) {
+      mutation.mutate(submitInputs);
     } else {
-      showWarningToast("No inputs with TSIDs to submit to CWMS", {
+      showWarningToast("No CWMS or blob inputs were configured for submission", {
         autoClose: toastAutoClose,
         containerId,
       });
