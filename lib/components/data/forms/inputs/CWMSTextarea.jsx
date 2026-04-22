@@ -36,6 +36,9 @@ function CWMSTextarea({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disable || textareaProps.disabled) return;
+
     const textareaRef = {
       name: textareaProps.name,
       tsid,
@@ -73,6 +76,8 @@ function CWMSTextarea({
     label,
     placeholder,
     textareaProps.name,
+    disable,
+    textareaProps.disabled,
   ]); // Include dependencies to update getValues reference
 
   const handleChange = (e) => {

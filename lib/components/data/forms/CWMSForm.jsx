@@ -1,8 +1,12 @@
 import React, { createContext, useRef, useState, useMemo } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
-import { getSnappedTimestamp } from "./helpers/timeSnapping";
+import { snapDayjs } from "./helpers/timeSnapping";
 import { useCwmsFormSubmit, useFormValidation } from "./hooks/useCwmsFormSubmit";
+
 import {
   showSuccessToast,
   showWarningToast,
@@ -10,6 +14,9 @@ import {
   showDetailedError,
 } from "./helpers/toastHelpers.jsx";
 import { EnsureToastContainer } from "./helpers/ToastProvider";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const FormContext = createContext();
 
@@ -33,6 +40,10 @@ export function CWMSForm({
   calendarLabel = "Submission Time",
   calendarInterval = "minute", // none, second, minute, 5minutes, 15minutes, 30minutes, hour, day
   calendarSnapTo = "nearest", // nearest, previous, next
+  calendarTimezone, // Optional dayjs timezone string (e.g. "US/Central", "America/New_York", "UTC")
+  calendarOffset = 0, // Offset in seconds applied to the snap anchor (e.g. 25200 for 7hrs, 600 for 10min)
+  calendarUseGmtOffset = false, // When true, snap/store uses fixed GMT+offset even if calendarTimezone is set for display
+  onCalendarChange, // Optional callback fired when the calendar timestamp changes. Receives the snapped Date object.
   toastAutoClose = 5000, // Set to false to disable auto-close for all toasts, or number for milliseconds
   className = "",
   style,
@@ -106,9 +117,60 @@ export function CWMSForm({
   // Form validation hook
   const { validateInputs } = useFormValidation();
 
+  // Helper to format a Date as a datetime-local string for display
+  const formatForDisplay = (date) => {
+    if (calendarTimezone) {
+      return dayjs(date).tz(calendarTimezone).format("YYYY-MM-DDTHH:mm");
+    }
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  // Helper to parse a datetime-local string into a Date
+  const parseDisplayValue = (datetimeLocalStr) => {
+    if (calendarTimezone) {
+      return dayjs.tz(datetimeLocalStr, calendarTimezone).toDate();
+    }
+    return new Date(datetimeLocalStr);
+  };
+
+  // Snap with offset applied.
+  // The offset shifts the snap grid: subtract offset, snap, add offset back.
+  //
+  // Three modes:
+  //   1. No timezone, no useGmt (default): snap in browser local time via dayjs()
+  //   2. calendarTimezone set, no useGmt: snap in the named timezone (DST-aware)
+  //   3. calendarUseGmtOffset: snap in UTC (fixed, no DST)
+  const snapWithOffset = (date) => {
+    let working;
+    if (calendarUseGmtOffset) {
+      // Snap in UTC — fixed offset, no DST
+      working = dayjs(date).utc();
+    } else if (calendarTimezone) {
+      // Snap in the target timezone — DST-aware
+      working = dayjs(date).tz(calendarTimezone);
+    } else {
+      // Snap in browser local time (default, preserves original behavior)
+      working = dayjs(date);
+    }
+
+    // Subtract offset, snap, add offset back
+    const shifted = working.subtract(calendarOffset, "second");
+    const snapped = snapDayjs(shifted, calendarInterval, calendarSnapTo);
+    const result = snapped.add(calendarOffset, "second");
+
+    return result.toDate();
+  };
+
   // State for timestamp management
   const [baseTimestamp, setBaseTimestamp] = useState(() => {
-    return getSnappedTimestamp(new Date(), calendarInterval, calendarSnapTo);
+    const snapped = snapWithOffset(new Date());
+    return formatForDisplay(snapped);
   });
 
   const registerInput = (input) => {
@@ -139,8 +201,8 @@ export function CWMSForm({
   };
 
   const getTimestampForInput = (timeOffset = 0) => {
-    // Parse the baseTimestamp (which is in datetime-local format)
-    const base = new Date(baseTimestamp);
+    // Parse the baseTimestamp (which is in datetime-local format) in the correct timezone
+    const base = parseDisplayValue(baseTimestamp);
 
     if (timeOffset !== 0) {
       // CWMSInputTable uses seconds, other components use minutes
@@ -239,18 +301,19 @@ export function CWMSForm({
     const inputValue = e.target.value;
     if (!inputValue) return;
 
-    // Parse the datetime-local value (which is in local time)
-    const newDate = new Date(inputValue);
+    // Parse the datetime-local value in the display timezone
+    const newDate = parseDisplayValue(inputValue);
 
     // Check if date is valid
     if (isNaN(newDate.getTime())) return;
 
-    const snappedTimestamp = getSnappedTimestamp(
-      newDate,
-      calendarInterval,
-      calendarSnapTo,
-    );
-    setBaseTimestamp(snappedTimestamp);
+    // Snap with offset applied
+    const snapped = snapWithOffset(newDate);
+    setBaseTimestamp(formatForDisplay(snapped));
+
+    if (onCalendarChange) {
+      onCalendarChange(snapped);
+    }
   };
 
   // Combine default Tailwind classes with any custom className
@@ -274,6 +337,9 @@ export function CWMSForm({
               />
               <div className="text-xs text-gray-500 mt-1">
                 Base timestamp for all form submissions.
+                {calendarTimezone && ` Timezone: ${calendarTimezone}.`}
+                {calendarOffset !== 0 &&
+                  ` Snap offset: ${calendarOffset}s${calendarUseGmtOffset ? " (GMT)" : ""}.`}
                 {calendarInterval !== "none" &&
                   ` Time will snap to ${calendarSnapTo} ${calendarInterval}.`}{" "}
                 Individual inputs can have time offsets.

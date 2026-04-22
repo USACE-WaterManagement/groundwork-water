@@ -102,6 +102,30 @@ const componentProps = [
     desc: "Snap direction when selecting time: 'nearest', 'previous', or 'next'.",
   },
   {
+    name: "calendarTimezone",
+    type: "string",
+    default: "undefined",
+    desc: "A dayjs timezone string (e.g. 'America/Chicago', 'US/Central', 'UTC'). When set, the calendar displays and interprets times in this timezone.",
+  },
+  {
+    name: "calendarOffset",
+    type: "number",
+    default: "0",
+    desc: "Offset in seconds applied to the snap anchor. Shifts where the snap lands (e.g. 25200 for 7 hours, 600 for 10 minutes). The snap grid is shifted by this amount.",
+  },
+  {
+    name: "calendarUseGmtOffset",
+    type: "boolean",
+    default: "false",
+    desc: "When true, the calendarOffset is applied in fixed GMT (no daylight saving). Display still uses calendarTimezone if set. When false, the offset is applied in the calendarTimezone (DST-aware).",
+  },
+  {
+    name: "onCalendarChange",
+    type: "function",
+    default: "undefined",
+    desc: "Callback fired when the calendar timestamp changes. Receives the snapped Date object.",
+  },
+  {
     name: "toastAutoClose",
     type: "number|boolean",
     default: "5000",
@@ -344,6 +368,90 @@ function CWMSFormDocs() {
           <Code>next</Code> - Always snap forward to the next boundary
         </li>
       </ul>
+
+      <Divider text="Timezone and Snap Offset" className="mt-8" />
+      <Text className="mb-4">
+        The <Code>calendarTimezone</Code>, <Code>calendarOffset</Code>, and{" "}
+        <Code>calendarUseGmtOffset</Code> props give you fine-grained control over how
+        times are displayed and where the snap lands.
+      </Text>
+
+      <Text className="mt-2 mb-2">
+        <strong>calendarTimezone</strong> sets the display timezone. The calendar input
+        will show and interpret times in this timezone instead of the browser's local
+        time.
+      </Text>
+
+      <Text className="mt-2 mb-2">
+        <strong>calendarOffset</strong> (in seconds) shifts the snap anchor point. For
+        example, with a daily interval and an offset of 25200 (7 hours), the snap target
+        becomes 07:00 instead of 00:00. With an hourly interval and an offset of 600 (10
+        minutes), the snap target becomes :10 past the hour.
+      </Text>
+
+      <Text className="mt-2 mb-4">
+        <strong>calendarUseGmtOffset</strong> controls whether the offset is applied in
+        fixed GMT or in the DST-aware timezone. When <Code>true</Code>, the snap always
+        lands at the same GMT time regardless of daylight saving changes, but the
+        calendar still displays in the selected timezone.
+      </Text>
+
+      <CWMSForm
+        office="SWT"
+        showCalendar={true}
+        calendarLabel="Daily at 07:00 GMT"
+        calendarInterval="day"
+        calendarSnapTo="nearest"
+        calendarOffset={25200}
+        calendarUseGmtOffset={true}
+        onSubmit={(data) => {
+          console.log("Timezone example submitted:", data);
+        }}
+      >
+        <CWMSInput
+          name="daily-reading"
+          placeholder="Daily reading (snaps to 07:00 GMT)"
+          type="number"
+        />
+      </CWMSForm>
+
+      <CodeBlock language="jsx">
+        {`// Daily snap at 07:00 GMT (fixed, no DST shift)
+<CWMSForm
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="day"
+  calendarOffset={25200}        // 7 hours in seconds
+  calendarUseGmtOffset={true}   // Use fixed GMT offset
+>
+  <CWMSInput name="daily-reading" type="number" />
+</CWMSForm>
+
+// Hourly snap at :10 past the hour in Chicago time (DST-aware)
+<CWMSForm
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="hour"
+  calendarOffset={600}                    // 10 minutes in seconds
+  calendarTimezone="America/Chicago"      // DST-aware timezone
+>
+  <CWMSInput name="hourly-reading" type="number" />
+</CWMSForm>
+
+// Display in Chicago time, but snap offset is fixed GMT
+// In summer (CDT, UTC-5) the user sees 02:00, in winter (CST, UTC-6) they see 01:00
+// but the stored time is always 07:00 UTC
+<CWMSForm
+  office="SWT"
+  showCalendar={true}
+  calendarInterval="day"
+  calendarOffset={25200}
+  calendarTimezone="America/Chicago"
+  calendarUseGmtOffset={true}
+>
+  <CWMSInput name="daily-reading" type="number" />
+</CWMSForm>`}
+      </CodeBlock>
 
       <Divider text="With CWMS Time Series" className="mt-8" />
       <Text className="mb-4">
