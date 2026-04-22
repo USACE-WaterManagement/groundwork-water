@@ -1,5 +1,19 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.8.0
+
+### Minor Changes
+
+- 3026339: Add multi-TS hook
+
+### Patch Changes
+
+- bbd29fb: Fix large Toastify icons
+- bd77504: Updates to the CWMS Table to allow whether to start the table at the top of the interval or using the most recent data value
+- 1448237: Fixes state management of auth for AAA login method
+- ac547ee: Expand the React peer dependency range to support React 18 and 19, and add PR build verification for both versions
+- a13fd5d: fix plotting variable location levels
+
 ## 3.7.0
 
 ### Minor Changes
