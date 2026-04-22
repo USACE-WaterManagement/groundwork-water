@@ -1,3 +1,4 @@
+import { AuthLoginOptions } from "./AuthContext";
 import { AuthMethod } from "./AuthProvider";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { normalizeKeycloakHost } from "./keycloakHost";
@@ -176,10 +177,12 @@ export const createKeycloakAuthMethod = ({
     return response;
   };
 
-  const login = async () => {
+  const login = async (options?: AuthLoginOptions) => {
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
-      await oidcClient.signinRedirect();
+      await oidcClient.signinRedirect({
+        redirect_uri: options?.redirectUri,
+      });
       return;
     }
 

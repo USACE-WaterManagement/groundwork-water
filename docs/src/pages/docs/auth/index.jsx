@@ -46,7 +46,7 @@ function Component() {
         />
       ) : (
         <LoginButton
-          onClick={auth.login}
+          onClick={() => auth.login({ redirectUri: window.location.href })}
         />
       )}
       {auth.isAuth && (

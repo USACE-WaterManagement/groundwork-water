@@ -1,8 +1,12 @@
 import { createContext } from "react";
 import { CdaUserProfile } from "./useCdaUserProfile";
 
+export interface AuthLoginOptions {
+  redirectUri?: string;
+}
+
 export interface AuthContextValue {
-  login: () => Promise<void>;
+  login: (options?: AuthLoginOptions) => Promise<void>;
   logout: () => Promise<void>;
   isAuth: boolean;
   isLoading: boolean;
