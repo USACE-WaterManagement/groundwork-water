@@ -101,6 +101,11 @@ function AuthenticationDocs() {
             needed
           </li>
         </ul>
+        <Text className="mt-4">
+          For Keycloak integrations, Auth Code + PKCE is the preferred flow. This keeps
+          credential entry within Keycloak rather than passing usernames and passwords
+          directly through the application.
+        </Text>
         <QueryClientWarning />
       </div>
       <Divider text="Setup" className="mt-6 mb-4" />
