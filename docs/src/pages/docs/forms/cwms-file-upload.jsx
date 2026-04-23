@@ -126,9 +126,11 @@ function CWMSFileUploadDocs() {
       <CodeBlock language="jsx">
         {`import { CWMSFileUpload, CWMSForm } from "@usace-watermanagement/groundwork-water";
 
+const CDA_API_ROOT = import.meta.env.VITE_CDA_API_ROOT;
+
 <CWMSForm
   office="SWT"
-  cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+  cdaUrl={CDA_API_ROOT}
 >
   <CWMSFileUpload
     blobId="GROUNDWORK.TEST.UPLOAD"
@@ -149,7 +151,7 @@ function CWMSFileUploadDocs() {
       </Text>
 
       <CodeBlock language="jsx">
-        {`<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data">
+        {`<CWMSForm office="SWT" cdaUrl={CDA_API_ROOT}>
   <CWMSFileUpload
     blobId="GROUNDWORK.CONFIG.JSON"
     label="Configuration JSON"
@@ -170,7 +172,7 @@ function CWMSFileUploadDocs() {
       <CodeBlock language="jsx">
         {`<CWMSForm
   office="SWT"
-  cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+  cdaUrl={CDA_API_ROOT}
   showCalendar={true}
   submitText="Store inspection package"
 >
