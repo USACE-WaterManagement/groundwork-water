@@ -48,15 +48,14 @@ export const AuthProvider = ({
   const cdaUrl = propCdaUrl ?? providedCdaUrl;
 
   useRefreshToken(isAuth, method);
-  const { data: profile, isLoading: profileLoading } = useCdaUserProfile(
-    isAuth,
-    cdaUrl,
-    method.token,
-  );
+  const { data: profile } = useCdaUserProfile(isAuth, cdaUrl, method.token);
 
   const login = useMutation({
     mutationFn: async () => {
       await method.login();
+    },
+    onSuccess: async () => {
+      await refetchAuthStatus();
     },
     onError: () => {
       queryClient.setQueryData(["auth", "status"], false);
@@ -76,8 +75,7 @@ export const AuthProvider = ({
     },
   });
 
-  const isAnyLoading =
-    isLoading || login.isPending || logout.isPending || profileLoading;
+  const isAnyLoading = isLoading || login.isPending || logout.isPending;
 
   const value = useMemo<AuthContextValue>(
     () => ({
