@@ -14,6 +14,7 @@ import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
 
 // Import input components
 import CWMSInput from "./components/data/forms/inputs/CWMSInput";
+import CWMSFileUpload from "./components/data/forms/inputs/CWMSFileUpload";
 import CWMSTextarea from "./components/data/forms/inputs/CWMSTextarea";
 import CWMSCheckboxes from "./components/data/forms/inputs/CWMSCheckboxes";
 import CWMSRadioGroup from "./components/data/forms/inputs/CWMSRadioGroup";
@@ -104,6 +105,7 @@ export {
   DEFAULT_PRECISION,
   // Input components
   CWMSInput,
+  CWMSFileUpload,
   CWMSTextarea,
   CWMSCheckboxes,
   CWMSRadioGroup,
