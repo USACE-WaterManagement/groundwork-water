@@ -1,11 +1,5 @@
 # @usace-watermanagement/groundwork-water
 
-## 3.8.1
-
-### Patch Changes
-
-- d2f2b82: Allow Keycloak auth login calls to override the redirect URI so applications can return users to the page that initiated sign-in.
-
 ## 3.8.0
 
 ### Minor Changes
