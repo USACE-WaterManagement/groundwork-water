@@ -1,12 +1,12 @@
 import { PropsWithChildren, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AuthContext, AuthContextValue } from "./AuthContext";
+import { AuthContext, AuthContextValue, AuthLoginOptions } from "./AuthContext";
 import useCdaUrl from "../useCdaUrl";
 import { useCdaUserProfile } from "./useCdaUserProfile";
 import { useRefreshToken } from "./useRefreshToken";
 
 export interface AuthMethod {
-  login: () => Promise<void>;
+  login: (options?: AuthLoginOptions) => Promise<void>;
   logout: () => Promise<void>;
   isAuth: () => Promise<boolean>;
   refresh?: () => Promise<void>;
@@ -51,8 +51,8 @@ export const AuthProvider = ({
   const { data: profile } = useCdaUserProfile(isAuth, cdaUrl, method.token);
 
   const login = useMutation({
-    mutationFn: async () => {
-      await method.login();
+    mutationFn: async (options?: AuthLoginOptions) => {
+      await method.login(options);
     },
     onSuccess: async () => {
       await refetchAuthStatus();

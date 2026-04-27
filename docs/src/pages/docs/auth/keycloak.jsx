@@ -128,6 +128,7 @@ function KeycloakDocs() {
       <Divider text="Example Usage" className="mt-6 mb-4" />
       <CodeBlock language="jsx">
         {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
+import { useAuth } from "@usace-watermanagement/groundwork-water";
       
 // Set authHost from environment variables
 
@@ -138,8 +139,22 @@ const authMethod = createKeycloakAuthMethod({
   flow: "authorization-code-pkce",
   redirectUri: window.location.origin,
   providerHint: "federation-eams",
-});`}
+});
+
+function LoginButton() {
+  const auth = useAuth();
+
+  return (
+    <button onClick={() => auth.login({ redirectUri: window.location.href })}>
+      Login
+    </button>
+  );
+}`}
       </CodeBlock>
+      <Text className="mt-4">
+        If you need the login flow to return users to the page that initiated sign-in,
+        pass that page URL into <Code>auth.login(&#123; redirectUri &#125;)</Code>.
+      </Text>
       <Divider text="API Reference" className="mt-6" />
       <div className="font-bold text-lg pt-6">
         config - <Code className="p-2">{`createKeycloakAuthMethod(config)`}</Code>
