@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.9.0
+
+### Minor Changes
+
+- 38170dd: Add component for uploading blobs via the UI making use of cwmsforms
+
 ## 3.8.1
 
 ### Patch Changes
