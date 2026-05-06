@@ -132,7 +132,7 @@ function KeycloakDocs() {
 // Set authHost from environment variables
 
 const authMethod = createKeycloakAuthMethod({
-  host: "https://identity-test.cwbi.us/auth",
+  host: "https://identity-test.cwbi.mil/auth",
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
