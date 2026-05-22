@@ -37,6 +37,9 @@ const AUTH_RESPONSE_PARAMS = [
   "error_uri",
 ];
 
+const getLoginReturnToStorageKey = (realm: string, client: string) =>
+  `groundwork-water:keycloak:return-to:${realm}:${client}`;
+
 interface KeycloakAuthConfig {
   host: string;
   realm: string;
@@ -86,6 +89,7 @@ export const createKeycloakAuthMethod = ({
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
   let pkceCallbackHandled = false;
+  const loginReturnToStorageKey = getLoginReturnToStorageKey(realm, client);
   const normalizedHost = normalizeKeycloakHost(host);
   const baseUrl = `${normalizedHost}/realms/${realm}/protocol/openid-connect`;
   const oidcClient =
@@ -157,6 +161,72 @@ export const createKeycloakAuthMethod = ({
     await oidcClient.removeUser();
   };
 
+  const clearLoginReturnTo = () => {
+    if (typeof window === "undefined") return;
+    window.sessionStorage.removeItem(loginReturnToStorageKey);
+  };
+
+  const setLoginReturnTo = (targetUrl?: string) => {
+    if (typeof window === "undefined") return;
+
+    if (!targetUrl) {
+      clearLoginReturnTo();
+      return;
+    }
+
+    try {
+      const resolvedTargetUrl = new URL(targetUrl, window.location.origin);
+      if (resolvedTargetUrl.origin !== window.location.origin) {
+        clearLoginReturnTo();
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        loginReturnToStorageKey,
+        resolvedTargetUrl.toString(),
+      );
+    } catch {
+      clearLoginReturnTo();
+    }
+  };
+
+  const restoreLoginReturnTo = () => {
+    if (typeof window === "undefined") return false;
+
+    const returnTo = window.sessionStorage.getItem(loginReturnToStorageKey);
+    clearLoginReturnTo();
+
+    if (!returnTo) return false;
+
+    try {
+      const targetUrl = new URL(returnTo, window.location.origin);
+      if (targetUrl.origin !== window.location.origin) return false;
+
+      if (targetUrl.toString() !== window.location.href) {
+        const previousUrl = window.location.href;
+        const nextUrl = `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
+
+        window.history.replaceState(window.history.state, document.title, nextUrl);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+
+        if (targetUrl.hash !== new URL(previousUrl).hash) {
+          window.dispatchEvent(
+            new HashChangeEvent("hashchange", {
+              oldURL: previousUrl,
+              newURL: targetUrl.toString(),
+            }),
+          );
+        }
+
+        return true;
+      }
+    } catch {
+      return false;
+    }
+
+    return false;
+  };
+
   const fetchKeycloakRequest = async (
     endpoint: "token" | "logout",
     formData: KeycloakRequest,
@@ -180,9 +250,8 @@ export const createKeycloakAuthMethod = ({
   const login = async (options?: AuthLoginOptions) => {
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
-      await oidcClient.signinRedirect({
-        redirect_uri: options?.redirectUri,
-      });
+      setLoginReturnTo(options?.redirectUri);
+      await oidcClient.signinRedirect();
       return;
     }
 
@@ -235,7 +304,10 @@ export const createKeycloakAuthMethod = ({
         if (!pkceCallbackHandled && hasPkceCallbackParams()) {
           await oidcClient.signinCallback();
           pkceCallbackHandled = true;
-          clearAuthResponseParams();
+
+          if (!restoreLoginReturnTo()) {
+            clearAuthResponseParams();
+          }
         }
 
         if (!pkceCallbackHandled && hasPkceSignoutCallbackParams()) {

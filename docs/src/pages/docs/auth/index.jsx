@@ -168,6 +168,12 @@ const authMethod = createCwmsLoginAuthMethod({
         </a>{" "}
         by incorporating our built-in authentication handling:
       </Text>
+      <Text className="mt-2">
+        For redirect-based auth, keep your configured Keycloak callback URI stable and
+        pass the current page into{" "}
+        <Code>auth.login(&#123; redirectUri: window.location.href &#125;)</Code> when
+        you want to restore the initiating route after sign-in.
+      </Text>
       <useAuthExample />
     </DocsPage>
   );

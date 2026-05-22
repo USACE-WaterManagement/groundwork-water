@@ -58,6 +58,9 @@ export const AuthProvider = ({
     mutationFn: async (options?: AuthLoginOptions) => {
       await method.login(options);
     },
+    onSuccess: async () => {
+      await refetchAuthStatus();
+    },
     onError: () => {
       queryClient.setQueryData(["auth", "status"], false);
     },
