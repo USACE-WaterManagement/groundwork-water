@@ -96,6 +96,12 @@ const componentProps = [
     default: "undefined",
     desc: "Custom inline styles to apply to the table.",
   },
+  {
+    name: "transpose",
+    type: "boolean",
+    default: "false",
+    desc: "When true, columns (TSIDs) become rows and time offsets become columns. Useful when you have many parameters but few time points.",
+  },
 ];
 
 function CWMSInputTableDocs() {
@@ -412,6 +418,44 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   className="rounded-lg shadow-md"
   style={{ backgroundColor: "#fafafa" }}
 />`}
+      </CodeBlock>
+
+      <Divider text="Transposed Layout" className="mt-8" />
+      <Text className="mb-4">
+        Set <Code>transpose={"{true}"}</Code> to swap the axes. Parameters (columns)
+        become rows and time offsets become columns. This is useful when you have many
+        parameters but only a few time points.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+          <CWMSInputTable
+            columns={[
+              { tsid: "Stage", label: "Stage (ft)", units: "ft", precision: 2 },
+              { tsid: "Flow", label: "Flow (cfs)", units: "cfs", precision: 0 },
+              { tsid: "Temp", label: "Temp (°F)", units: "F", precision: 1 },
+              { tsid: "DO", label: "Dissolved O₂", units: "mg/L", precision: 2 },
+            ]}
+            timeoffsets={[0, 3600, 7200]}
+            transpose={true}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Transposed — parameters as rows, time offsets as columns
+<CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+  <CWMSInputTable
+    columns={[
+      { tsid: "Stage", label: "Stage (ft)", units: "ft", precision: 2 },
+      { tsid: "Flow", label: "Flow (cfs)", units: "cfs", precision: 0 },
+      { tsid: "Temp", label: "Temp (°F)", units: "F", precision: 1 },
+      { tsid: "DO", label: "Dissolved O₂", units: "mg/L", precision: 2 },
+    ]}
+    timeoffsets={[0, 3600, 7200]}
+    transpose={true}
+  />
+</CWMSForm>`}
       </CodeBlock>
 
       <Divider text="API Reference" className="mt-8" />

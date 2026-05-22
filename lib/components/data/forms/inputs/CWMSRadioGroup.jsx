@@ -35,6 +35,9 @@ function CWMSRadioGroup({
   useEffect(() => {
     if (!registerInput || !tsid) return;
 
+    // Don't register disabled inputs for submission
+    if (disable) return;
+
     const inputRef = {
       name: name || tsid,
       tsid: tsid,
@@ -89,6 +92,7 @@ function CWMSRadioGroup({
     label,
     defaultValue,
     onChange,
+    disable,
   ]);
 
   // Handle value changes

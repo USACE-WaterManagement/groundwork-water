@@ -1,5 +1,18 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.9.0
+
+### Minor Changes
+
+- 38170dd: Add component for uploading blobs via the UI making use of cwmsforms
+
+## 3.8.1
+
+### Patch Changes
+
+- 634ff06: Improve auth state responsiveness
+- 89de5ed: Added features to CWMSForms, including updating the calendar componets, adding transpose for tables, and correctly handling disabled fields
+
 ## 3.8.0
 
 ### Minor Changes
