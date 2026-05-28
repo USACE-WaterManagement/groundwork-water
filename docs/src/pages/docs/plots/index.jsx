@@ -27,6 +27,11 @@ function PlotsDocs() {
             CMWSPlot - A generic plot for displaying CWMS data
           </Link>
         </li>
+        <li>
+          <Link href={`${BASE_URL}#/docs/plots/a2w-dam-profile`}>
+            A2WDamProfile - A graphic for displaying latest levels at a project
+          </Link>
+        </li>
       </ul>
       <br />
       ``

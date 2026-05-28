@@ -164,6 +164,11 @@ export default [
         text: "CWMS Plot",
         href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
+      {
+        id: "a2w-dam-profile",
+        text: "A2W Dam Profile",
+        href: `${BASE_URL}#/docs/plots/a2w-dam-profile`,
+      },
     ],
   },
   {

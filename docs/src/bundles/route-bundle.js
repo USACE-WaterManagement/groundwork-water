@@ -48,6 +48,7 @@ import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
 import GetPrecisionPage from "../pages/docs/utilities/get-precision";
+import A2wDamProfileDocs from "../pages/docs/plots/a2w-dam-profile";
 
 export default createRouteBundle(
   {
@@ -77,6 +78,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-blobs": useCdaBlobs,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
+    "/docs/plots/a2w-dam-profile": A2wDamProfileDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
     "/docs/forms": FormsDocs,
