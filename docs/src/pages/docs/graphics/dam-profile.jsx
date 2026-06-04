@@ -1,17 +1,17 @@
 import { UsaceBox, Code, H3, Text, Badge } from "@usace/groundwork";
-import { A2WDamProfile } from "@usace-watermanagement/groundwork-water";
+import { DamProfile } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code.jsx";
 import Divider from "../../components/divider.jsx";
 import DocsPage from "../_docs-wrapper.jsx";
 import PropsTable from "../../components/props-table.jsx";
 import chartProps from "../../../props-declarations/chart.jsx";
 
-function A2wDamProfileDocs() {
+function DamProfileDocs() {
   return (
-    <DocsPage middleText="A2W Dam Profile">
-      <UsaceBox title="A2W Dam Profile">
+    <DocsPage middleText="Dam Profile">
+      <UsaceBox title="Dam Profile">
         <Text>
-          The A2W Dam Profile is a graphic for displaying current levels and timeseries
+          The Dam Profile is a graphic for displaying current levels and timeseries
           values of a project.
         </Text>
         <Text className="mt-2">
@@ -20,10 +20,10 @@ function A2wDamProfileDocs() {
       </UsaceBox>
       <Divider text="Example" className="mt-8" />
       <div className="h-vh border border-red-500">
-        <A2WDamProfile
+        <DamProfile
           info={{
-            dambottom: 820,
-            damtop: 913,
+            damBottom: 820,
+            damTop: 913,
             gradientBottom: 901,
             gradientTop: 888,
             inflow: 0,
@@ -51,12 +51,12 @@ function A2wDamProfileDocs() {
         />
       </div>
       <CodeBlock className="mt-8" language="jsx">
-        {`import { A2WDamProfile } from "@usace-watermanagement/groundwork-water";
+        {`import { DamProfile } from "@usace-watermanagement/groundwork-water";
 
-        <A2WDamProfile 
+        <DamProfile 
           info={{
-            dambottom: 820,
-            damtop: 913,
+            damBottom: 820,
+            damTop: 913,
             gradientBottom: 901,
             gradientTop: 888,
             inflow: 0,
@@ -94,4 +94,4 @@ function A2wDamProfileDocs() {
   );
 }
 
-export default A2wDamProfileDocs;
+export default DamProfileDocs;

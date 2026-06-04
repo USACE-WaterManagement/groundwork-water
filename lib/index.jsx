@@ -11,7 +11,7 @@ import CWMSTable from "./components/data/tables/CWMSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
-import A2WDamProfile from "./components/data/plots/dam-profile/chart";
+import DamProfile from "./components/data/plots/dam-profile/chart";
 
 // Import input components
 import CWMSInput from "./components/data/forms/inputs/CWMSInput";
@@ -128,6 +128,6 @@ export {
   updateToast,
   formatSubmissionMessage,
   showDetailedError,
-  A2WDamProfile,
+  DamProfile,
 };
 // export { helperFunction };

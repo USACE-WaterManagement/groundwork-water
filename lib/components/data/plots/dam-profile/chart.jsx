@@ -2,7 +2,7 @@ import { createRef, useEffect } from "react";
 import { useConnect } from "redux-bundler-hook";
 import DamProfileChart from "./dam-profile-chart/dam-profile-chart";
 
-function A2WDamProfile({ info }) {
+function DamProfile({ info }) {
   const ref = createRef(); // element where DamProfileChart will be rendered
 
   useEffect(() => {
@@ -21,4 +21,4 @@ function A2WDamProfile({ info }) {
   );
 }
 
-export default A2WDamProfile;
+export default DamProfile;

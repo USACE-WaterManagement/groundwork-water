@@ -4,7 +4,7 @@ import DocsPage from "../_docs-wrapper";
 
 const BASE_URL = import.meta.env.BASE_URL;
 
-function PlotsDocs() {
+function GraphicsDocs() {
   return (
     <DocsPage
       nextUrl="/docs/tables"
@@ -15,16 +15,17 @@ function PlotsDocs() {
     >
       <div>
         <Text className="pb-6">
-          The groundwork-water plotting components are intended to create
-          consistently-styled water management plots while handling as much of the data
-          retrieval as possible for the user.
+          The groundwork-water graphics components are intended to create
+          consistently-styled water management graphics without being opinonated on the
+          source of the data,
         </Text>
       </div>
       <H4>Components</H4>
       <ul>
         <li>
-          <Link href={`${BASE_URL}#/docs/plots/cwms-plot`}>
-            CMWSPlot - A generic plot for displaying CWMS data
+          <Link href={`${BASE_URL}#/docs/graphics/dam-profile`}>
+            Dam Profile Graphic - A graphic for displaying levels and timeseries values
+            at a project.
           </Link>
         </li>
       </ul>
@@ -34,5 +35,5 @@ function PlotsDocs() {
   );
 }
 
-export { PlotsDocs as DataHooks };
-export default PlotsDocs;
+export { GraphicsDocs as DataHooks };
+export default GraphicsDocs;
