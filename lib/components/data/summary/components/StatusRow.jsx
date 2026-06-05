@@ -46,7 +46,6 @@ export default function StatusRow({
   office,
   linkPath,
   name,
-  idx,
   mobile = false,
   pageSize,
   lookBackHours,
@@ -55,8 +54,6 @@ export default function StatusRow({
   const tsid = typeof name === "string" ? name.trim() : name;
   const config = useCdaConfig("v2", cdaUrl);
   const tsApi = new TimeSeriesApi(config);
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [pinnedIndex, setPinnedIndex] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const label = useMemo(() => getLocationLabel(tsid), [tsid]);
 
@@ -105,8 +102,6 @@ export default function StatusRow({
       ),
     [tsData?.values],
   );
-  const displayIndex = pinnedIndex ?? activeIndex;
-  const activePoint = displayIndex != null ? values[displayIndex] : null;
   const precision = getPrecision(tsData?.units);
 
   if (!office) {
@@ -170,16 +165,5 @@ export default function StatusRow({
     );
   }
 
-  return (
-    <DesktopStatusRow
-      {...sharedProps}
-      activeIndex={activeIndex}
-      pinnedIndex={pinnedIndex}
-      setPinnedIndex={setPinnedIndex}
-      setActiveIndex={setActiveIndex}
-      displayIndex={displayIndex}
-      activePoint={activePoint}
-      idx={idx}
-    />
-  );
+  return <DesktopStatusRow {...sharedProps} />;
 }
