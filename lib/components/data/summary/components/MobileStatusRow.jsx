@@ -50,8 +50,7 @@ function summarizeQualities(values) {
   );
 }
 
-function buildSummaryLine(summary, total) {
-  const parts = [];
+function buildSummaryItems(summary, total) {
   const labels = [
     ["UNKNOWN", "Unknown"],
     ["QUESTIONABLE", "Questionable"],
@@ -60,12 +59,13 @@ function buildSummaryLine(summary, total) {
     ["OKAY", "Good"],
   ];
 
-  labels.forEach(([key, label]) => {
-    parts.push(`${label}: ${summary[key] ?? 0}`);
-  });
-  parts.push(`Total: ${total}`);
-
-  return parts.join(" | ");
+  return [
+    ...labels.map(([key, label]) => ({
+      label,
+      value: summary[key] ?? 0,
+    })),
+    { label: "Total", value: total },
+  ];
 }
 
 export default function MobileStatusRow({
@@ -85,7 +85,7 @@ export default function MobileStatusRow({
   const latestMeta = latestPoint ? getQualityMeta(getQualityStr(latestPoint)) : null;
   const qualityRuns = buildQualityRuns(values);
   const qualitySummary = summarizeQualities(values);
-  const summaryLine = buildSummaryLine(qualitySummary, values.length);
+  const summaryItems = buildSummaryItems(qualitySummary, values.length);
   const flaggedValues = values
     .slice()
     .reverse()
@@ -93,12 +93,12 @@ export default function MobileStatusRow({
   const hasFlaggedValues = flaggedValues.length > 0;
 
   return (
-    <div className="gww-rounded-2xl gww-border gww-border-slate-200 gww-bg-white gww-p-3 gww-shadow-sm">
+    <div className="gww-min-w-0 gww-max-w-full gww-overflow-hidden gww-rounded-2xl gww-border gww-border-slate-200 gww-bg-white gww-p-3 gww-shadow-sm">
       {tsPending ? (
         <Skeleton className="gww-h-28 gww-w-full" />
       ) : (
         <div className="gww-flex gww-flex-col gww-gap-3">
-          <div className="gww-flex gww-items-start gww-justify-between gww-gap-3">
+          <div className="gww-flex gww-min-w-0 gww-flex-col gww-gap-2">
             <div title={label.title} className="gww-min-w-0">
               {linkPath ? (
                 <TextLink href={`${linkPath}/${label.primary}`}>
@@ -122,11 +122,11 @@ export default function MobileStatusRow({
                 </div>
               )}
             </div>
-            <div className="gww-shrink-0 gww-text-right">
+            <div className="gww-min-w-0">
               <div className="gww-text-[0.68rem] gww-font-semibold gww-uppercase gww-tracking-[0.14em] gww-text-slate-500">
                 Latest
               </div>
-              <div className="gww-max-w-32 gww-text-sm gww-font-medium gww-leading-tight gww-text-slate-800">
+              <div className="gww-break-words gww-text-sm gww-font-medium gww-leading-tight gww-text-slate-800">
                 {latestPoint?.[0] ? formatDateWithZone(latestPoint[0]) : "Missing"}
               </div>
             </div>
@@ -178,10 +178,18 @@ export default function MobileStatusRow({
                     })}
                   </div>
                 </div>
-                <div className="gww-mt-2 gww-break-words gww-text-[0.72rem] gww-leading-5 gww-text-slate-600">
-                  {summaryLine}
+                <div className="gww-mt-2 gww-flex gww-flex-wrap gww-gap-x-2 gww-gap-y-1">
+                  {summaryItems.map((item) => (
+                    <span
+                      key={`${tsid}-${item.label}`}
+                      className="gww-inline-flex gww-min-w-0 gww-items-center gww-gap-1 gww-rounded-md gww-bg-white gww-px-1.5 gww-py-0.5 gww-text-[0.7rem] gww-leading-4 gww-text-slate-600"
+                    >
+                      <span className="gww-font-medium">{item.label}</span>
+                      <span>{item.value}</span>
+                    </span>
+                  ))}
                 </div>
-                <div className="gww-mt-1 gww-text-[0.72rem] gww-leading-5 gww-text-slate-500">
+                <div className="gww-mt-1 gww-break-words gww-text-[0.72rem] gww-leading-5 gww-text-slate-500">
                   {formatMobileDate(values[0][0])} to{" "}
                   {formatMobileDate(values[values.length - 1][0])}
                 </div>

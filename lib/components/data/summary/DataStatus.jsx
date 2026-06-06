@@ -50,7 +50,9 @@ function DataStatus({
 
   return (
     <UsaceBox title={title}>
-      <div className="gww-mb-2 gww-rounded-lg gww-border gww-border-slate-200 gww-bg-slate-50/90 gww-px-3 gww-py-2">
+      <div
+        className={`gww-mb-2 gww-min-w-0 gww-overflow-hidden gww-rounded-lg gww-border gww-border-slate-200 gww-bg-slate-50/90 gww-px-3 gww-py-2 ${isMobile ? "gww-w-full gww-max-w-[calc(100vw-4rem)]" : ""}`}
+      >
         <div className="gww-flex gww-flex-wrap gww-items-center gww-gap-2">
           <span className="gww-text-xs gww-font-semibold gww-uppercase gww-tracking-[0.18em] gww-text-slate-500">
             Office
@@ -84,7 +86,7 @@ function DataStatus({
         </div>
       </div>
       {isMobile ? (
-        <div className="gww-flex gww-flex-col gww-gap-3">
+        <div className="gww-flex gww-w-full gww-max-w-[calc(100vw-4rem)] gww-flex-col gww-gap-3">
           {tsids.map((name, idx) => {
             const tsid = typeof name === "string" ? name.trim() : name;
             if (tsid) {
