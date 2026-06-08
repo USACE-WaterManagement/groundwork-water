@@ -362,12 +362,12 @@ const SearchInput = <T,>({
   return (
     <div ref={containerRef} className={gwMerge("gww-relative gww-w-full", className)}>
       {label ? (
-        <label className="gww-mb-1 gww-block gww-text-sm gww-font-medium gww-text-slate-700">
+        <label className="gww-mb-1 gww-block gww-text-sm gww-font-medium gww-left-5 gww-text-slate-700">
           {label}
         </label>
       ) : null}
-      <div className="gww-relative">
-        <div className="gww-pointer-events-none gww-absolute gww-inset-y-0 gww-left-0 gww-flex gww-items-center gww-pl-3">
+      <div className="gww-flex gww-flex-row gww-items-center">
+        <div className="gww-pointer-events-none gww-flex gww-items-center gww-pr-3">
           <HiMagnifyingGlass
             className="gww-h-5 gww-w-5 gww-text-slate-400"
             aria-hidden="true"
@@ -385,7 +385,7 @@ const SearchInput = <T,>({
           value={currentQuery}
           placeholder={placeholder}
           className={gwMerge(
-            "gww-block gww-w-full gww-rounded-md gww-border gww-border-slate-300 gww-bg-white gww-py-2.5 gww-pl-10 gww-pr-3 gww-text-slate-900 placeholder:gww-text-slate-400 focus:gww-border-blue-600 focus:gww-outline-none focus:gww-ring-2 focus:gww-ring-blue-200 disabled:gww-cursor-not-allowed disabled:gww-bg-slate-100",
+            "gww-w-full gww-rounded-md gww-border gww-border-slate-300 gww-pr-3 gww-bg-white gww-flex gww-text-slate-900 placeholder:gww-text-slate-400 focus:gww-border-blue-600 focus:gww-outline-none focus:gww-ring-2 focus:gww-ring-blue-200 disabled:gww-cursor-not-allowed disabled:gww-bg-slate-100",
             inputClassName,
           )}
           onFocus={() => {
