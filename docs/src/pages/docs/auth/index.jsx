@@ -119,6 +119,22 @@ function AuthenticationDocs() {
         the {authProvider}. Typically, this can be done at the top level of your
         application, e.g. App.jsx/tsx, using the provided constructor functions.
       </Text>
+      <Text className="mt-2 font-semibold">Keycloak (PKCE - recommended):</Text>
+      <CodeBlock language="jsx">
+        {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
+
+const authMethod = createKeycloakAuthMethod({
+  host: "https://identity-test.cwbi.mil/auth",
+  realm: "cwbi",
+  client: "cwms",
+  flow: "authorization-code-pkce",
+  redirectUri: window.location.href,
+  postLogoutRedirectUri: window.location.href,
+  providerHint: "federation-eams",
+});
+`}
+      </CodeBlock>
+      <Text className="mt-2 font-semibold">CWMSLogin:</Text>
       <CodeBlock language="jsx">
         {`import { createCwmsLoginAuthMethod } from "@usace-watermanagement/groundwork-water";
 
@@ -133,21 +149,25 @@ const authMethod = createCwmsLoginAuthMethod({
         Your application (or the parts of your application requiring authentication)
         must be wrapped in an {authProvider} component. The previously-created{" "}
         {authMethod} will be passed to the {authProvider} to apply the configuration
-        within your application.
+        within your application. Wrap with a <Code>CdaUrlProvider</Code> to enable
+        automatic user profile retrieval via <Code>useAuth().profile</Code>.
       </Text>
       <CodeBlock language="jsx">
         {`import {
   AuthProvider,
-  createCwmsLoginAuthMethod,
+  CdaUrlProvider,
+  createKeycloakAuthMethod,
 } from "@usace-watermanagement/groundwork-water";
 
 // queryClient setup, authMethod setup, etc...
-        
+
 <React.StrictMode>
   <QueryClientProvider client={queryClient}>
-    <AuthProvider method={authMethod}>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <CdaUrlProvider url={cdaUrl}>
+      <AuthProvider method={authMethod}>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </CdaUrlProvider>
   </QueryClientProvider>
 </React.StrictMode>
 `}
