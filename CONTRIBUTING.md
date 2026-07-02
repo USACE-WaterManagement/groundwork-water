@@ -30,19 +30,41 @@ _Note: You must have nodejs installed and in your path!_
    Or use VSCode to create the branch after step 2
 
 4. **Install the root and docs packages**
-   Install the required dependencies for the docs page and library with:
-   From the root of the project run:
-   `npm install`
-   Then for the docs run
-   `cd docs && npm install`
 
-5. **Build the library**  
-   **_NOTE_ you must do this each time you make changes to the library itself for the docs pages to work locally.**
+   For a first-time setup, install the required dependencies for both the library and documentation site.
+
+   From the root of the project, run:
+
+   ```bash
+   npm install
+   ```
+
+   Then install the docs dependencies:
+
+   ```bash
+   cd docs
+   npm install
+   ```
+
+5. **Build the library and run the docs locally**  
+   **_NOTE_ you must rebuild the library each time you make changes to the library itself for the docs pages to work locally.**
+
+   For a first-time setup or after changing the library, run the following from the root of the project:
+
+   ```bash
+   npm run build
+
+   cd docs
+   npm run dev
+   ```
+
+   For later docs-only work, you can usually start the docs site from the `/docs` directory:
+
+   ```bash
+   npm run dev
+   ```
 
    Read more below under [workflow recommendations](#workflow-recommendations) for how the local library linking works.
-
-   From the root of the project you can build with:
-   `npm run build`
 
 6. **Make Changes**  
    Make your changes and attempt to commit one idea at a time within your branch to make it easier in review.
@@ -52,13 +74,6 @@ _Note: You must have nodejs installed and in your path!_
 
 7. **Run Tests**  
    Use the local dev instance to manually test your changes and ensure they work. We use a form of [Dogfooding](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) where we link the library to the documentation. Start the documentation locally. Then call the library itself in that documentation.
-
-   To start the localhost instance of the docs site:
-   (From root or /docs)
-
-   ```bash
-   npm run dev
-   ```
 
 8. **Commit Changes**  
    Use meaningful commit messages:
