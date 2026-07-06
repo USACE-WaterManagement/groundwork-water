@@ -47,9 +47,9 @@ _Note: You must have nodejs installed and in your path!_
    ```
 
 5. **Build the library and run the docs locally**  
-   **_NOTE_ you must rebuild the library each time you make changes to the library itself for the docs pages to work locally.**
+   **_NOTE_ you must rebuild the library after changing library source files (`.ts` or `.tsx`) for those changes to appear in the docs site. If you are only changing documentation files, you can run the docs site without rebuilding the library.**
 
-   For a first-time setup or after changing the library, run the following from the root of the project:
+   For a first-time setup or after changing library source files (`.ts` or `.tsx`), run the following from the root of the project:
 
    ```bash
    npm run build
