@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
+import useLoadNearestValues from "../hooks/useLoadNearestValues";
 
 function CWMSInputTable({
   className,
@@ -20,7 +21,8 @@ function CWMSInputTable({
   required = false,
   transpose = false,
 }) {
-  const { registerInput, getTimestampForInput } = useContext(FormContext);
+  const { registerInput, getTimestampForInput, office, cdaUrl, baseTimestamp } =
+    useContext(FormContext);
 
   // Initialize matrixData from column defaultValues
   const getInitialMatrixData = () => {
@@ -39,6 +41,41 @@ function CWMSInputTable({
   const [matrixData, setMatrixData] = useState(getInitialMatrixData);
   const [invalidCells, setInvalidCells] = useState({});
   const cleanupFunctions = useRef([]);
+  const userEdited = useRef(new Set());
+
+  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+    columns,
+    timeoffsets,
+    strategy: loadNearest,
+    getTimestampForInput,
+    office,
+    cdaUrl,
+    defaultUnits: units,
+    enabled: !!office && columns.length > 0 && timeoffsets.length > 0,
+  });
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+    setMatrixData((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      Object.entries(loadedValues).forEach(([key, value]) => {
+        if (
+          !userEdited.current.has(key) &&
+          value != null &&
+          next[key] !== String(value)
+        ) {
+          next[key] = String(value);
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [loadedValues, isLoadingNearest]);
+
+  useEffect(() => {
+    userEdited.current.clear();
+  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -125,6 +162,7 @@ function CWMSInputTable({
 
   const handleInputChange = (tsid, offset, value) => {
     const key = `${tsid}_${offset}`;
+    userEdited.current.add(key);
     const updatedData = {
       ...matrixData,
       [key]: value,
@@ -191,6 +229,7 @@ function CWMSInputTable({
                 <td className="p-2 font-medium">{column.label || column.tsid}</td>
                 {timeoffsets.map((offset, offsetIndex) => {
                   const key = `${column.tsid}_${offset}`;
+                  const cellLoading = isLoadingNearest && !matrixData[key];
                   return (
                     <td key={offsetIndex} className="p-2">
                       <Input
@@ -203,8 +242,8 @@ function CWMSInputTable({
                         disabled={disable}
                         readOnly={columnReadonly}
                         invalid={invalidCells[key] || invalid ? "true" : undefined}
-                        placeholder="Enter value"
-                        className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
+                        placeholder={cellLoading ? "Loading..." : "Enter value"}
+                        className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
                         required={columnRequired}
                       />
                     </td>
@@ -253,6 +292,7 @@ function CWMSInputTable({
                 const key = `${column.tsid}_${offset}`;
                 const columnReadonly = column.readonly ?? readonly;
                 const columnRequired = column.required ?? required;
+                const cellLoading = isLoadingNearest && !matrixData[key];
 
                 return (
                   <td key={colIndex} className="p-2">
@@ -266,8 +306,8 @@ function CWMSInputTable({
                       disabled={disable}
                       readOnly={columnReadonly}
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
-                      placeholder="Enter value"
-                      className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
+                      placeholder={cellLoading ? "Loading..." : "Enter value"}
+                      className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
                       required={columnRequired}
                     />
                   </td>
