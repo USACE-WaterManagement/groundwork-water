@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { FormContext } from "../CWMSForm";
+import useLoadNearestValues from "../hooks/useLoadNearestValues";
 
 function CWMSSpreadsheet({
   style,
@@ -26,7 +27,7 @@ function CWMSSpreadsheet({
   cellOverrides = {},
   transpose = false,
 }) {
-  const { registerInput, baseTimestamp, getTimestampForInput } =
+  const { registerInput, baseTimestamp, getTimestampForInput, office, cdaUrl } =
     useContext(FormContext);
   // Determine if we should show timestamps and prepare columns
   const shouldShowTimestamps = showTimestamps || timeoffsets.length > 0;
@@ -57,10 +58,64 @@ function CWMSSpreadsheet({
   const [dragEnd, setDragEnd] = useState(null);
   const tableRef = useRef(null);
   const cleanupFunctions = useRef([]);
+  const userEdited = useRef(new Set());
 
   // Unique ID prefix for this spreadsheet instance so multiple spreadsheets
   // on the same page don't collide when using document.getElementById
   const instanceId = useMemo(() => `ss-${Math.random().toString(36).slice(2, 8)}`, []);
+
+  const tsidColumns = useMemo(() => columns.filter((c) => c.tsid), [columns]);
+
+  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+    columns: tsidColumns,
+    timeoffsets,
+    strategy: loadNearest,
+    getTimestampForInput,
+    office,
+    cdaUrl,
+    defaultUnits: units,
+    enabled: !!office && tsidColumns.length > 0 && timeoffsets.length > 0,
+  });
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+    setSpreadsheetData((prev) => {
+      const next = prev.map((row) => [...row]);
+      let changed = false;
+      columns.forEach((column, colIdx) => {
+        if (!column.tsid) return;
+        const dataColIndex = shouldShowTimestamps ? colIdx + 1 : colIdx;
+        timeoffsets.forEach((offsetVal, rowIdx) => {
+          const nearestKey = `${column.tsid}_${offsetVal}`;
+          const cellKey = `${rowIdx}_${dataColIndex}`;
+          const val = loadedValues[nearestKey];
+          if (
+            !userEdited.current.has(cellKey) &&
+            val != null &&
+            next[rowIdx]?.[dataColIndex] !== String(val)
+          ) {
+            if (!next[rowIdx]) {
+              next[rowIdx] = Array(effectiveColumns.length).fill("");
+            }
+            next[rowIdx][dataColIndex] = String(val);
+            changed = true;
+          }
+        });
+      });
+      return changed ? next : prev;
+    });
+  }, [
+    loadedValues,
+    isLoadingNearest,
+    columns,
+    timeoffsets,
+    shouldShowTimestamps,
+    effectiveColumns.length,
+  ]);
+
+  useEffect(() => {
+    userEdited.current.clear();
+  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -224,12 +279,12 @@ function CWMSSpreadsheet({
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
-    // Don't allow editing time column
     if (shouldShowTimestamps && colIndex === 0) {
       return;
     }
 
     const key = `${rowIndex}_${colIndex}`;
+    userEdited.current.add(key);
     const updatedData = [...spreadsheetData];
     updatedData[rowIndex] = [...updatedData[rowIndex]];
     updatedData[rowIndex][colIndex] = value;
@@ -786,8 +841,12 @@ function CWMSSpreadsheet({
                         const cellRequired =
                           cellOverride.required ?? column.required ?? required;
                         const cellType = cellOverride.type ?? column.type ?? "text";
-                        const cellPlaceholder =
+                        const defaultPlaceholder =
                           cellOverride.placeholder ?? column.placeholder ?? "";
+                        const cellLoading = isLoadingNearest && !row[dCol];
+                        const cellPlaceholder = cellLoading
+                          ? "Loading..."
+                          : defaultPlaceholder;
 
                         let displayValue = row[dCol];
                         if (shouldShowTimestamps && dCol === 0) {
@@ -844,6 +903,7 @@ function CWMSSpreadsheet({
                                 cursor: "cell",
                                 pointerEvents: "auto",
                                 color: isCellInvalid ? "red" : undefined,
+                                opacity: cellLoading ? 0.6 : undefined,
                               }}
                               placeholder={cellPlaceholder}
                               required={cellRequired}
@@ -889,8 +949,12 @@ function CWMSSpreadsheet({
                       const cellRequired =
                         cellOverride.required ?? column.required ?? required;
                       const cellType = cellOverride.type ?? column.type ?? "text";
-                      const cellPlaceholder =
+                      const defaultPlaceholder =
                         cellOverride.placeholder ?? column.placeholder ?? "";
+                      const cellLoading = isLoadingNearest && !cellValue;
+                      const cellPlaceholder = cellLoading
+                        ? "Loading..."
+                        : defaultPlaceholder;
 
                       let displayValue = cellValue;
                       if (shouldShowTimestamps && colIndex === 0) {
@@ -952,6 +1016,7 @@ function CWMSSpreadsheet({
                               cursor: "cell",
                               pointerEvents: "auto",
                               color: isCellInvalid ? "red" : undefined,
+                              opacity: cellLoading ? 0.6 : undefined,
                             }}
                             placeholder={cellPlaceholder}
                             required={cellRequired}
