@@ -13,7 +13,7 @@ function CWMSInputTable({
   precision = 2,
   order = 1,
   AllowMissingData = true,
-  loadNearest = "prev",
+  loadNearest,
   readonly = false,
   units = "EN",
   onChange,
@@ -52,12 +52,12 @@ function CWMSInputTable({
   } = useLoadNearestValues({
     columns,
     timeoffsets,
-    strategy: loadNearest,
+    strategy: loadNearest || "prev",
     getTimestampForInput,
     office,
     cdaUrl,
     defaultUnits: units,
-    enabled: !!office && columns.length > 0 && timeoffsets.length > 0,
+    enabled: !!office && !!loadNearest && columns.length > 0 && timeoffsets.length > 0,
   });
 
   useEffect(() => {

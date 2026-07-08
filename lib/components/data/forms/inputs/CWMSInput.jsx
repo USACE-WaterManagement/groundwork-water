@@ -57,7 +57,7 @@ function CWMSInput({
     office,
     cdaUrl,
     defaultUnits: units || "EN",
-    enabled: !!office && !!tsid,
+    enabled: !!office && !!tsid && !!loadNearest,
   });
 
   useEffect(() => {
