@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { FormContext } from "../../CWMSForm";
 import { CWMSInput } from "../CWMSInput";
 
+vi.mock("../../hooks/useLoadNearestValues", () => ({
+  default: () => ({ values: {}, timestamps: {}, isPending: false }),
+}));
+
 describe("CWMSInput", () => {
   it("registers with the form context and propagates value changes", () => {
     const registerInput = vi.fn(() => vi.fn());
