@@ -43,6 +43,7 @@ function CWMSInputTable({
   const [invalidCells, setInvalidCells] = useState({});
   const cleanupFunctions = useRef([]);
   const userEdited = useRef(new Set());
+  const loadedValuesRef = useRef({});
 
   const {
     values: loadedValues,
@@ -58,6 +59,10 @@ function CWMSInputTable({
     defaultUnits: units,
     enabled: !!office && columns.length > 0 && timeoffsets.length > 0,
   });
+
+  useEffect(() => {
+    if (loadedValues) loadedValuesRef.current = loadedValues;
+  }, [loadedValues]);
 
   useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
@@ -126,9 +131,16 @@ function CWMSInputTable({
           label: column.label || `${tsid} at ${offset}s`,
           getValues: () => [matrixData[key] || ""],
           reset: () => {
+            userEdited.current.delete(key);
+            const nearestRaw = loadedValuesRef.current[key];
+            let resetVal = columnDefaultValues[offset] || "";
+            if (nearestRaw != null) {
+              const p = columnPrecision ?? precision;
+              resetVal = parseFloat(nearestRaw.toFixed(p)).toString();
+            }
             setMatrixData((prev) => ({
               ...prev,
-              [key]: columnDefaultValues[offset] || "",
+              [key]: resetVal,
             }));
             setInvalidCells((prev) => ({
               ...prev,

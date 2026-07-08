@@ -93,7 +93,10 @@ function CWMSInput({
       required: required || false,
       label: label || placeholder || inputProps.name,
       getValues: () => [inputValue],
-      reset: () => setInputValue(defaultValue || ""),
+      reset: () => {
+        userEdited.current = false;
+        setInputValue(defaultValue || "");
+      },
       setInvalid: setIsInvalid,
     };
 
