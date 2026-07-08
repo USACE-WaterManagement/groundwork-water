@@ -23,6 +23,9 @@ function CWMSInput({
   required,
   placeholder,
 
+  // Display options
+  showValueTimestamp,
+
   // Legacy prop names
   disable,
   readonly,
@@ -42,7 +45,11 @@ function CWMSInput({
   );
   const timeoffsetsArr = useMemo(() => [timeOffset || 0], [timeOffset]);
 
-  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useLoadNearestValues({
     columns: columnsArr,
     timeoffsets: timeoffsetsArr,
     strategy: loadNearest || "prev",
@@ -126,6 +133,11 @@ function CWMSInput({
   };
 
   const cellLoading = isLoadingNearest && !inputValue;
+  const tsKey = `${tsid}_${timeOffset || 0}`;
+  const valueTs =
+    showValueTimestamp && !userEdited.current && loadedTimestamps?.[tsKey]
+      ? new Date(loadedTimestamps[tsKey]).toLocaleString("sv-SE").replace("T", " ")
+      : null;
 
   return (
     <Input
@@ -138,6 +150,7 @@ function CWMSInput({
       required={required}
       placeholder={cellLoading ? "Loading..." : placeholder}
       className={`${inputProps.className || ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+      title={valueTs ? `Value from: ${valueTs}` : undefined}
     />
   );
 }

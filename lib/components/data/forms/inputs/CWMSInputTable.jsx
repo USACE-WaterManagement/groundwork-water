@@ -18,6 +18,7 @@ function CWMSInputTable({
   units = "EN",
   onChange,
   showTimestamps = true,
+  showValueTimestamp = false,
   required = false,
   transpose = false,
 }) {
@@ -43,7 +44,11 @@ function CWMSInputTable({
   const cleanupFunctions = useRef([]);
   const userEdited = useRef(new Set());
 
-  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useLoadNearestValues({
     columns,
     timeoffsets,
     strategy: loadNearest,
@@ -187,6 +192,12 @@ function CWMSInputTable({
     }
   };
 
+  const formatValueTimestamp = (tsMs) => {
+    if (!tsMs) return null;
+    const date = new Date(tsMs);
+    return date.toLocaleString("sv-SE").replace("T", " ");
+  };
+
   const formatTimestamp = (offset) => {
     if (getTimestampForInput) {
       // Use the form's timestamp function which includes snapping
@@ -242,6 +253,10 @@ function CWMSInputTable({
                 {timeoffsets.map((offset, offsetIndex) => {
                   const key = `${column.tsid}_${offset}`;
                   const cellLoading = isLoadingNearest && !matrixData[key];
+                  const valueTs =
+                    showValueTimestamp && !userEdited.current.has(key)
+                      ? formatValueTimestamp(loadedTimestamps?.[key])
+                      : null;
                   return (
                     <td key={offsetIndex} className="p-2">
                       <Input
@@ -258,6 +273,7 @@ function CWMSInputTable({
                         placeholder={cellLoading ? "Loading..." : "Enter value"}
                         className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
                         required={columnRequired}
+                        title={valueTs ? `Value from: ${valueTs}` : undefined}
                       />
                     </td>
                   );
@@ -311,6 +327,10 @@ function CWMSInputTable({
                 const columnReadonly = column.readonly ?? readonly;
                 const columnRequired = column.required ?? required;
                 const cellLoading = isLoadingNearest && !matrixData[key];
+                const valueTs =
+                  showValueTimestamp && !userEdited.current.has(key)
+                    ? formatValueTimestamp(loadedTimestamps?.[key])
+                    : null;
 
                 return (
                   <td key={colIndex} className="p-2">
@@ -328,6 +348,7 @@ function CWMSInputTable({
                       placeholder={cellLoading ? "Loading..." : "Enter value"}
                       className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
                       required={columnRequired}
+                      title={valueTs ? `Value from: ${valueTs}` : undefined}
                     />
                   </td>
                 );
