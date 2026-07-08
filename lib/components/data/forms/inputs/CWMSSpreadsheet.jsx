@@ -23,6 +23,7 @@ function CWMSSpreadsheet({
   timeoffsets = [],
   required = false,
   cellOverrides = {},
+  showValueTimestamp = false,
   transpose = false,
 }) {
   const { registerInput, baseTimestamp, getTimestampForInput, office, cdaUrl } =
@@ -64,7 +65,11 @@ function CWMSSpreadsheet({
 
   const tsidColumns = useMemo(() => columns.filter((c) => c.tsid), [columns]);
 
-  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useLoadNearestValues({
     columns: tsidColumns,
     timeoffsets,
     strategy: loadNearest,
@@ -74,6 +79,18 @@ function CWMSSpreadsheet({
     defaultUnits: units,
     enabled: !!office && tsidColumns.length > 0 && timeoffsets.length > 0,
   });
+
+  const getValueTimestampTitle = (dRow, dCol) => {
+    if (!showValueTimestamp || !loadedTimestamps) return undefined;
+    const cellKey = `${dRow}_${dCol}`;
+    if (userEdited.current.has(cellKey)) return undefined;
+    const colIdx = shouldShowTimestamps ? dCol - 1 : dCol;
+    const col = columns[colIdx];
+    if (!col?.tsid || timeoffsets[dRow] === undefined) return undefined;
+    const ts = loadedTimestamps[`${col.tsid}_${timeoffsets[dRow]}`];
+    if (!ts) return undefined;
+    return `Value from: ${new Date(ts).toLocaleString("sv-SE").replace("T", " ")}`;
+  };
 
   useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
@@ -885,6 +902,7 @@ function CWMSSpreadsheet({
                               readOnly={
                                 cellReadonly || (shouldShowTimestamps && dCol === 0)
                               }
+                              title={getValueTimestampTitle(dRow, dCol)}
                               style={{
                                 ...inputStyle,
                                 cursor: "cell",
@@ -998,6 +1016,7 @@ function CWMSSpreadsheet({
                             readOnly={
                               cellReadonly || (shouldShowTimestamps && colIndex === 0)
                             }
+                            title={getValueTimestampTitle(rowIndex, colIndex)}
                             style={{
                               ...inputStyle,
                               cursor: "cell",
