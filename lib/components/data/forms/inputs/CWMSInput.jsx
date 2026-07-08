@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
+import useLoadNearestValues from "../hooks/useLoadNearestValues";
 
 function CWMSInput({
   // CWMS-specific props
@@ -29,9 +30,41 @@ function CWMSInput({
   // All other props to pass through
   ...inputProps
 }) {
-  const { registerInput } = useContext(FormContext);
+  const { registerInput, getTimestampForInput, office, cdaUrl, baseTimestamp } =
+    useContext(FormContext);
   const [inputValue, setInputValue] = useState(defaultValue || value || "");
   const [isInvalid, setIsInvalid] = useState(invalid || false);
+  const userEdited = useRef(false);
+
+  const columnsArr = useMemo(
+    () => (tsid ? [{ tsid, units: units || "EN" }] : []),
+    [tsid, units],
+  );
+  const timeoffsetsArr = useMemo(() => [timeOffset || 0], [timeOffset]);
+
+  const { values: loadedValues, isPending: isLoadingNearest } = useLoadNearestValues({
+    columns: columnsArr,
+    timeoffsets: timeoffsetsArr,
+    strategy: loadNearest || "prev",
+    getTimestampForInput,
+    office,
+    cdaUrl,
+    defaultUnits: units || "EN",
+    enabled: !!office && !!tsid,
+  });
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+    const key = `${tsid}_${timeOffset || 0}`;
+    const val = loadedValues[key];
+    if (!userEdited.current && val != null && inputValue !== String(val)) {
+      setInputValue(String(val));
+    }
+  }, [loadedValues, isLoadingNearest, tsid, timeOffset, inputValue]);
+
+  useEffect(() => {
+    userEdited.current = false;
+  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -82,8 +115,8 @@ function CWMSInput({
 
   const handleChange = (e) => {
     const newValue = e.target.value;
+    userEdited.current = true;
     setInputValue(newValue);
-    // Clear invalid state when user starts typing
     if (isInvalid && newValue) {
       setIsInvalid(false);
     }
@@ -91,6 +124,8 @@ function CWMSInput({
       onChange(newValue);
     }
   };
+
+  const cellLoading = isLoadingNearest && !inputValue;
 
   return (
     <Input
@@ -101,6 +136,8 @@ function CWMSInput({
       value={inputValue}
       onChange={handleChange}
       required={required}
+      placeholder={cellLoading ? "Loading..." : placeholder}
+      className={`${inputProps.className || ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
     />
   );
 }
