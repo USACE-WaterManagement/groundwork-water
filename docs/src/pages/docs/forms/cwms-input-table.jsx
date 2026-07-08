@@ -73,6 +73,12 @@ const componentProps = [
     desc: "Whether to allow missing data in submissions.",
   },
   {
+    name: "showValueTimestamp",
+    type: "boolean",
+    default: "false",
+    desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on each input cell. The tooltip is removed when the user edits the cell.",
+  },
+  {
     name: "loadNearest",
     type: "string",
     default: "prev",
