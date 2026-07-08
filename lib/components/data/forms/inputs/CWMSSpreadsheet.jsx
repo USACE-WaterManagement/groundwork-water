@@ -12,7 +12,7 @@ function CWMSSpreadsheet({
   offset = 0,
   order = 1,
   AllowMissingData = true,
-  loadNearest = "prev",
+  loadNearest,
   readonly = false,
   units = "EN",
   onChange,
@@ -73,12 +73,13 @@ function CWMSSpreadsheet({
   } = useLoadNearestValues({
     columns: tsidColumns,
     timeoffsets,
-    strategy: loadNearest,
+    strategy: loadNearest || "prev",
     getTimestampForInput,
     office,
     cdaUrl,
     defaultUnits: units,
-    enabled: !!office && tsidColumns.length > 0 && timeoffsets.length > 0,
+    enabled:
+      !!office && !!loadNearest && tsidColumns.length > 0 && timeoffsets.length > 0,
   });
 
   const getValueTimestampTitle = (dRow, dCol) => {
