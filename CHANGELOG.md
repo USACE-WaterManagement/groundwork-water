@@ -1,5 +1,15 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.10.0
+
+### Minor Changes
+
+- 5592744: update auth documentation
+
+### Patch Changes
+
+- c4330b0: Allow downstream applications to install Groundwork Water alongside Groundwork 4.
+
 ## 3.9.0
 
 ### Minor Changes

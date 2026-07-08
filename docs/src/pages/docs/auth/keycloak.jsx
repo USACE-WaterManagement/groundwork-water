@@ -29,8 +29,8 @@ const componentProps = [
   {
     name: "flow",
     type: "string",
-    default: "undefined",
-    desc: "The authentication flow to use. Use 'authorization-code-pkce' for the redirect-based OIDC flow, or 'direct-grant' for the legacy password grant flow.",
+    default: '"authorization-code-pkce"',
+    desc: "The authentication flow to use. Use 'authorization-code-pkce' for the redirect-based OIDC flow (recommended), or 'direct-grant' for the legacy password grant flow.",
   },
   {
     name: "redirectUri",
@@ -99,8 +99,8 @@ function KeycloakDocs() {
         <Text className="mt-4">
           Use the exact Keycloak base path that serves your realm endpoints. For the
           CWBI test environment used by <Code>cwms-cli</Code>, that is
-          <Code> https://identity-test.cwbi.us/auth</Code> rather than the stripped root
-          URL.
+          <Code> https://identity-test.cwbi.mil/auth</Code> rather than the stripped
+          root URL.
         </Text>
         <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
@@ -129,7 +129,7 @@ function KeycloakDocs() {
       <CodeBlock language="jsx">
         {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
 import { useAuth } from "@usace-watermanagement/groundwork-water";
-      
+
 // Set authHost from environment variables
 
 const authMethod = createKeycloakAuthMethod({
@@ -138,6 +138,7 @@ const authMethod = createKeycloakAuthMethod({
   client: "cwms",
   flow: "authorization-code-pkce",
   redirectUri: window.location.origin,
+  postLogoutRedirectUri: window.location.origin,
   providerHint: "federation-eams",
 });
 

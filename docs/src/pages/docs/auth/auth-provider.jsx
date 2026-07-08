@@ -58,13 +58,35 @@ function AuthProviderDocs() {
         {`import { AuthProvider } from "@usace-watermanagement/groundwork-water";`}
       </CodeBlock>
       <Text className="mb-4">Create an appropriate {authMethod}.</Text>
-      <Text>Wrap your application with an {authProvider}:</Text>
+      <Text>
+        Wrap your application with an {authProvider}. To enable user profile retrieval
+        via <Code>useAuth().profile</Code>, provide a CDA URL either through a{" "}
+        <Code>CdaUrlProvider</Code> wrapper or the <Code>cdaUrl</Code> prop:
+      </Text>
       <CodeBlock language="jsx">
-        {`<React.StrictMode>
+        {`import {
+  AuthProvider,
+  CdaUrlProvider,
+  createKeycloakAuthMethod,
+} from "@usace-watermanagement/groundwork-water";
+
+const authMethod = createKeycloakAuthMethod({
+  host: "https://identity-test.cwbi.mil/auth",
+  realm: "cwbi",
+  client: "cwms",
+  flow: "authorization-code-pkce",
+  redirectUri: window.location.origin,
+  postLogoutRedirectUri: window.location.origin,
+  providerHint: "federation-eams",
+});
+
+<React.StrictMode>
   <QueryClientProvider client={queryClient}>
-    <AuthProvider method={authMethod}>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <CdaUrlProvider url={cdaUrl}>
+      <AuthProvider method={authMethod}>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </CdaUrlProvider>
   </QueryClientProvider>
 </React.StrictMode>
 `}
