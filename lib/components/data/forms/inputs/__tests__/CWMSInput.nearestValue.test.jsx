@@ -173,9 +173,15 @@ describe("CWMSInput nearest value loading", () => {
     expect(edited.title).toBeFalsy();
   });
 
+  it("does not overwrite caller-provided defaultValue", () => {
+    mockHook({ values: { [`${TSID}_0`]: 42.5 } });
+    renderInput({ defaultValue: "0" });
+    expect(screen.getByDisplayValue("0")).toBeTruthy();
+  });
+
   it("reset restores to defaultValue and allows reload", () => {
     mockHook({ values: { [`${TSID}_0`]: 42.5 } });
-    const { registerInput } = renderInput({ defaultValue: "0" });
+    const { registerInput } = renderInput();
 
     const input = screen.getByDisplayValue("42.5");
     fireEvent.change(input, { target: { value: "99" } });
