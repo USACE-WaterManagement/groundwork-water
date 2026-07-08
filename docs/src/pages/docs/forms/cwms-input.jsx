@@ -55,6 +55,18 @@ const componentProps = [
     desc: "Time offset in seconds for data timestamps.",
   },
   {
+    name: "timeOffset",
+    type: "number",
+    default: "0",
+    desc: "Time offset in seconds from the form's base time. Used with loadNearest to determine which timestamp to fetch data for.",
+  },
+  {
+    name: "loadNearest",
+    type: "string",
+    default: "prev",
+    desc: "Strategy for auto-loading the nearest time series value. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
+  },
+  {
     name: "units",
     type: "string",
     default: "EN",
@@ -182,6 +194,53 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
     placeholder="Enter flow value"
     precision={0}
     units="cfs"
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="Load Nearest Value" className="mt-8" />
+      <Text className="mb-4">
+        When a <Code className="p-1">tsid</Code> is provided and the parent{" "}
+        <Code className="p-1">CWMSForm</Code> has an <Code className="p-1">office</Code>
+        , CWMSInput automatically fetches the nearest time series value and
+        pre-populates the input. The <Code className="p-1">loadNearest</Code> prop
+        controls the strategy:
+      </Text>
+      <ul className="list-disc ml-6 mb-4">
+        <li>
+          <Code className="p-1">prev</Code> (default) — last value at or before the
+          target time
+        </li>
+        <li>
+          <Code className="p-1">next</Code> — first value at or after the target time
+        </li>
+        <li>
+          <Code className="p-1">nearest</Code> — closest value by absolute time
+          difference
+        </li>
+      </ul>
+      <Text className="mb-4">
+        The input shows a Loading placeholder while fetching. Once loaded, the value
+        fills in automatically. If the user edits the field, the loaded value will not
+        overwrite their input. Changing the calendar date resets the loaded values.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSForm
+  office="SWT"
+  cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+  showCalendar={true}
+  calendarInterval="hour"
+>
+  <CWMSInput
+    name="stage-input"
+    tsid="KEYS.Elev.Inst.1Hour.0.Ccp-Rev"
+    type="number"
+    placeholder="Enter stage value"
+    precision={2}
+    units="ft"
+    loadNearest="prev"
+    timeOffset={0}
   />
 </CWMSForm>`}
       </CodeBlock>

@@ -56,22 +56,27 @@ function CWMSInputTable({
 
   useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
+    const precisionByTsid = {};
+    columns.forEach((col) => {
+      precisionByTsid[col.tsid] = col.precision ?? precision;
+    });
     setMatrixData((prev) => {
       const next = { ...prev };
       let changed = false;
       Object.entries(loadedValues).forEach(([key, value]) => {
-        if (
-          !userEdited.current.has(key) &&
-          value != null &&
-          next[key] !== String(value)
-        ) {
-          next[key] = String(value);
-          changed = true;
+        if (!userEdited.current.has(key) && value != null) {
+          const tsid = key.substring(0, key.lastIndexOf("_"));
+          const p = precisionByTsid[tsid] ?? precision;
+          const rounded = parseFloat(value.toFixed(p)).toString();
+          if (next[key] !== rounded) {
+            next[key] = rounded;
+            changed = true;
+          }
         }
       });
       return changed ? next : prev;
     });
-  }, [loadedValues, isLoadingNearest]);
+  }, [loadedValues, isLoadingNearest, columns, precision]);
 
   useEffect(() => {
     userEdited.current.clear();
@@ -226,7 +231,14 @@ function CWMSInputTable({
 
             return (
               <tr key={colIndex}>
-                <td className="p-2 font-medium">{column.label || column.tsid}</td>
+                <td className="p-2 font-medium">
+                  {column.label || column.tsid}
+                  {column.displayUnits && (
+                    <span className="ml-1 text-sm text-gray-500">
+                      ({column.displayUnits})
+                    </span>
+                  )}
+                </td>
                 {timeoffsets.map((offset, offsetIndex) => {
                   const key = `${column.tsid}_${offset}`;
                   const cellLoading = isLoadingNearest && !matrixData[key];
@@ -235,6 +247,7 @@ function CWMSInputTable({
                       <Input
                         name={key}
                         type="number"
+                        step={column.step}
                         value={matrixData[key] || ""}
                         onChange={(e) =>
                           handleInputChange(column.tsid, offset, e.target.value)
@@ -268,6 +281,11 @@ function CWMSInputTable({
           {columns.map((column, index) => (
             <th key={index} className="p-2 text-left border-b-2 border-gray-300">
               {column.label || column.tsid}
+              {column.displayUnits && (
+                <span className="ml-1 text-sm text-gray-500 font-normal">
+                  ({column.displayUnits})
+                </span>
+              )}
             </th>
           ))}
         </tr>
@@ -299,6 +317,7 @@ function CWMSInputTable({
                     <Input
                       name={key}
                       type="number"
+                      step={column.step}
                       value={matrixData[key] || ""}
                       onChange={(e) =>
                         handleInputChange(column.tsid, offset, e.target.value)
