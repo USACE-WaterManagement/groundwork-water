@@ -340,7 +340,14 @@ export function CWMSForm({
     <>
       <EnsureToastContainer containerId={containerId} />
       <FormContext.Provider
-        value={{ registerInput, baseTimestamp, getTimestampForInput, containerId }}
+        value={{
+          registerInput,
+          baseTimestamp,
+          getTimestampForInput,
+          containerId,
+          office,
+          cdaUrl,
+        }}
       >
         <form onSubmit={handleSubmit} className={formClasses} style={style}>
           {showCalendar && (
