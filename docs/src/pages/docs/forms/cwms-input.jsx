@@ -67,6 +67,12 @@ const componentProps = [
     desc: "Strategy for auto-loading the nearest time series value. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
   },
   {
+    name: "showValueTimestamp",
+    type: "boolean",
+    default: "false",
+    desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on the input. The tooltip is removed when the user edits the value.",
+  },
+  {
     name: "units",
     type: "string",
     default: "EN",
