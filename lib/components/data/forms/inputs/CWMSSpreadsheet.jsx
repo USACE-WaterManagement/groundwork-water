@@ -58,6 +58,7 @@ function CWMSSpreadsheet({
   const tableRef = useRef(null);
   const cleanupFunctions = useRef([]);
   const userEdited = useRef(new Set());
+  const loadedValuesRef = useRef({});
 
   // Unique ID prefix for this spreadsheet instance so multiple spreadsheets
   // on the same page don't collide when using document.getElementById
@@ -91,6 +92,10 @@ function CWMSSpreadsheet({
     if (!ts) return undefined;
     return `Value from: ${new Date(ts).toLocaleString("sv-SE").replace("T", " ")}`;
   };
+
+  useEffect(() => {
+    if (loadedValues) loadedValuesRef.current = loadedValues;
+  }, [loadedValues]);
 
   useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
@@ -183,6 +188,10 @@ function CWMSSpreadsheet({
             return [spreadsheetData[rowIndex]?.[colIndex] || ""];
           },
           reset: () => {
+            userEdited.current.delete(key);
+            const nearestKey = `${cellTsid}_${cellTimeOffset}`;
+            const nearestRaw = loadedValuesRef.current[nearestKey];
+
             setSpreadsheetData((prev) => {
               const updated = [...prev];
               if (!updated[rowIndex]) {
@@ -190,12 +199,16 @@ function CWMSSpreadsheet({
               } else {
                 updated[rowIndex] = [...updated[rowIndex]];
               }
-              if (shouldShowTimestamps) {
-                updated[rowIndex][colIndex] =
-                  colIndex === 0 ? "" : defaultData[rowIndex]?.[dataColIndex] || "";
+
+              let resetVal;
+              if (nearestRaw != null) {
+                resetVal = String(nearestRaw);
+              } else if (shouldShowTimestamps) {
+                resetVal = defaultData[rowIndex]?.[dataColIndex] || "";
               } else {
-                updated[rowIndex][colIndex] = defaultData[rowIndex]?.[colIndex] || "";
+                resetVal = defaultData[rowIndex]?.[colIndex] || "";
               }
+              updated[rowIndex][colIndex] = resetVal;
               return updated;
             });
             setInvalidCells((prev) => ({
