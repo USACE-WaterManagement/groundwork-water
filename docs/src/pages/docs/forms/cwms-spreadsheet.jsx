@@ -106,7 +106,7 @@ const componentProps = [
     name: "loadNearest",
     type: "string",
     default: "prev",
-    desc: "Load nearest value strategy (prev, next, nearest).",
+    desc: "Strategy for auto-loading the nearest time series values into cells. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
   },
   {
     name: "className",
@@ -389,6 +389,60 @@ function CWMSSpreadsheetDocs() {
         <li>The number of rows should match the length of the timeoffsets array</li>
         <li>Each row's data is submitted with its corresponding time offset</li>
       </ul>
+
+      <Divider text="Load Nearest Values" className="mt-8" />
+      <Text className="mb-4">
+        When columns have a <Code className="p-1">tsid</Code> and the parent{" "}
+        <Code className="p-1">CWMSForm</Code> provides an{" "}
+        <Code className="p-1">office</Code>, the spreadsheet automatically fetches the
+        nearest time series values and pre-populates cells. The{" "}
+        <Code className="p-1">loadNearest</Code> prop controls the strategy:
+      </Text>
+      <ul className="list-disc ml-6 mb-4">
+        <li>
+          <Code className="p-1">prev</Code> (default) — last value at or before each
+          target time
+        </li>
+        <li>
+          <Code className="p-1">next</Code> — first value at or after each target time
+        </li>
+        <li>
+          <Code className="p-1">nearest</Code> — closest value by absolute time
+          difference
+        </li>
+      </ul>
+      <Text className="mb-4">
+        Cells show a Loading placeholder while data is being fetched. Once a user edits
+        a cell, the loaded value will not overwrite their input. Changing the calendar
+        date resets the loaded values.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Auto-populate cells with the most recent time series values
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data" showCalendar={true}>
+  <CWMSSpreadsheet
+    columns={[
+      {
+        label: "Stage (ft)",
+        type: "number",
+        tsid: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+        units: "ft",
+        precision: 2
+      },
+      {
+        label: "Flow (cfs)",
+        type: "number",
+        tsid: "KEYS.Flow.Inst.1Hour.0.Ccp-Rev",
+        units: "cfs",
+        precision: 0
+      }
+    ]}
+    timeoffsets={[0, 3600, 7200, 10800]}
+    rows={4}
+    loadNearest="prev"
+  />
+</CWMSForm>`}
+      </CodeBlock>
 
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
