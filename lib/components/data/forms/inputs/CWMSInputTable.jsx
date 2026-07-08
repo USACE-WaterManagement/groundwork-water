@@ -73,8 +73,16 @@ function CWMSInputTable({
     setMatrixData((prev) => {
       const next = { ...prev };
       let changed = false;
+      const defaultKeys = new Set();
+      columns.forEach((col) => {
+        if (col.defaultValues) {
+          Object.keys(col.defaultValues).forEach((offset) => {
+            defaultKeys.add(`${col.tsid}_${offset}`);
+          });
+        }
+      });
       Object.entries(loadedValues).forEach(([key, value]) => {
-        if (!userEdited.current.has(key) && value != null) {
+        if (!userEdited.current.has(key) && !defaultKeys.has(key) && value != null) {
           const tsid = key.substring(0, key.lastIndexOf("_"));
           const p = precisionByTsid[tsid] ?? precision;
           const rounded = parseFloat(value.toFixed(p)).toString();

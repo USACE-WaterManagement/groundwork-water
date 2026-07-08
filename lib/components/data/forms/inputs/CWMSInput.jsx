@@ -64,7 +64,12 @@ function CWMSInput({
     if (isLoadingNearest || !loadedValues) return;
     const key = `${tsid}_${timeOffset || 0}`;
     const val = loadedValues[key];
-    if (!userEdited.current && val != null && inputValue !== String(val)) {
+    if (
+      !userEdited.current &&
+      !(defaultValue || value) &&
+      val != null &&
+      inputValue !== String(val)
+    ) {
       setInputValue(String(val));
     }
   }, [loadedValues, isLoadingNearest, tsid, timeOffset, inputValue]);

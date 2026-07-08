@@ -110,8 +110,12 @@ function CWMSSpreadsheet({
           const nearestKey = `${column.tsid}_${offsetVal}`;
           const cellKey = `${rowIdx}_${dataColIndex}`;
           const val = loadedValues[nearestKey];
+          const hasDefault = shouldShowTimestamps
+            ? !!defaultData[rowIdx]?.[colIdx]
+            : !!defaultData[rowIdx]?.[dataColIndex];
           if (
             !userEdited.current.has(cellKey) &&
+            !hasDefault &&
             val != null &&
             next[rowIdx]?.[dataColIndex] !== String(val)
           ) {
