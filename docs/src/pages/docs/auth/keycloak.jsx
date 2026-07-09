@@ -35,14 +35,14 @@ const componentProps = [
   {
     name: "redirectUri",
     type: "string",
-    default: "current page URL without query params",
-    desc: "Optional - Redirect URI used by the PKCE flow.",
+    default: "current page URL without query or hash params",
+    desc: "Optional - Stable redirect URI used by the PKCE callback flow.",
   },
   {
     name: "postLogoutRedirectUri",
     type: "string",
     default: "redirectUri",
-    desc: "Optional - Redirect URI used after PKCE logout.",
+    desc: "Optional - Stable redirect URI used after PKCE logout.",
   },
   {
     name: "scope",
@@ -128,6 +128,7 @@ function KeycloakDocs() {
       <Divider text="Example Usage" className="mt-6 mb-4" />
       <CodeBlock language="jsx">
         {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
+import { useAuth } from "@usace-watermanagement/groundwork-water";
 
 // Set authHost from environment variables
 
@@ -136,11 +137,27 @@ const authMethod = createKeycloakAuthMethod({
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
-  redirectUri: window.location.href,
-  postLogoutRedirectUri: window.location.href,
+  redirectUri: window.location.origin,
+  postLogoutRedirectUri: window.location.origin,
   providerHint: "federation-eams",
-});`}
+});
+
+function LoginButton() {
+  const auth = useAuth();
+
+  return (
+    <button onClick={() => auth.login({ redirectUri: window.location.href })}>
+      Login
+    </button>
+  );
+}`}
       </CodeBlock>
+      <Text className="mt-4">
+        If you need the login flow to return users to the page that initiated sign-in,
+        pass that page URL into <Code>auth.login(&#123; redirectUri &#125;)</Code>.
+        Groundwork-Water stores that URL and restores it after Keycloak returns to the
+        configured callback URI.
+      </Text>
       <Divider text="API Reference" className="mt-6" />
       <div className="font-bold text-lg pt-6">
         config - <Code className="p-2">{`createKeycloakAuthMethod(config)`}</Code>

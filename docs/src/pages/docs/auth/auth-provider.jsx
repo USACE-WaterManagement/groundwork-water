@@ -75,8 +75,8 @@ const authMethod = createKeycloakAuthMethod({
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
-  redirectUri: window.location.href,
-  postLogoutRedirectUri: window.location.href,
+  redirectUri: window.location.origin,
+  postLogoutRedirectUri: window.location.origin,
   providerHint: "federation-eams",
 });
 

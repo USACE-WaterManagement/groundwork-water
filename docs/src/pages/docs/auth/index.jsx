@@ -46,7 +46,7 @@ function Component() {
         />
       ) : (
         <LoginButton
-          onClick={auth.login}
+          onClick={() => auth.login({ redirectUri: window.location.href })}
         />
       )}
       {auth.isAuth && (
@@ -128,8 +128,8 @@ const authMethod = createKeycloakAuthMethod({
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
-  redirectUri: window.location.href,
-  postLogoutRedirectUri: window.location.href,
+  redirectUri: window.location.origin,
+  postLogoutRedirectUri: window.location.origin,
   providerHint: "federation-eams",
 });
 `}
@@ -187,6 +187,12 @@ const authMethod = createCwmsLoginAuthMethod({
           Groundwork LoginButton example
         </a>{" "}
         by incorporating our built-in authentication handling:
+      </Text>
+      <Text className="mt-2">
+        For redirect-based auth, keep your configured Keycloak callback URI stable and
+        pass the current page into{" "}
+        <Code>auth.login(&#123; redirectUri: window.location.href &#125;)</Code> when
+        you want to restore the initiating route after sign-in.
       </Text>
       <useAuthExample />
     </DocsPage>
