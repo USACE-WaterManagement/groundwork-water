@@ -43,6 +43,7 @@ import CdaUrlProvider from "./components/data/utilities/CdaUrlProvider";
 import useCdaCatalog from "./components/data/hooks/useCdaCatalog";
 import useCdaLatestValue from "./components/data/hooks/useCdaLatestValue";
 import useCdaLocation from "./components/data/hooks/useCdaLocation";
+import useCdaLocationCatalog from "./components/data/hooks/useCdaLocationCatalog";
 import useCdaLevels from "./components/data/hooks/useCdaLevels";
 import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaMultiTimeSeries from "./components/data/hooks/useCdaMultiTimeSeries";
@@ -57,6 +58,10 @@ import useCdaBlobs from "./components/data/hooks/useCdaBlobs";
 
 // Utility Hooks
 import useDebounce from "./components/data/utilities/useDebounce";
+import {
+  getLocationCatalogCoordinates,
+  locationCatalogToFeatureCollection,
+} from "./components/data/maps/locationCatalog";
 // Utility Functions
 import {
   PRECISION_BY_UNIT,
@@ -88,12 +93,15 @@ export {
   useCdaCatalog,
   useCdaLatestValue,
   useCdaLocation,
+  useCdaLocationCatalog,
   useCdaLevels,
   useCdaTimeSeries,
   useCdaMultiTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
   useDebounce,
+  getLocationCatalogCoordinates,
+  locationCatalogToFeatureCollection,
   useNwpsGauge,
   useNwpsGaugeData,
   AuthProvider,
