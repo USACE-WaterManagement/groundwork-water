@@ -97,7 +97,10 @@ async function fetchLocationCatalog({
 
   return {
     ...pages[0],
-    entries: pages.flatMap((catalog) => catalog.entries ?? []),
+    entries: pages.reduce<NonNullable<Catalog["entries"]>>(
+      (entries, catalog) => [...entries, ...(catalog.entries ?? [])],
+      [],
+    ),
     nextPage: page,
     pageSize: pages[0]?.pageSize,
     total: pages[0]?.total,
