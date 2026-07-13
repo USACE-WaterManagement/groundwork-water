@@ -1,5 +1,15 @@
 # @usace-watermanagement/groundwork-water
 
+## 3.11.0
+
+### Minor Changes
+
+- 1adfa26: Prevent CWMSSpreadsheet toolbar buttons from submitting forms and add options to hide each button.
+
+### Patch Changes
+
+- adbc9fb: Allow Keycloak auth login calls to override the redirect URI so applications can return users to the page that initiated sign-in.
+
 ## 3.10.0
 
 ### Minor Changes
