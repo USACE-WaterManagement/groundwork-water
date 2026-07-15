@@ -8,6 +8,14 @@ import "react-toastify/dist/ReactToastify.css";
 // Import components
 import TSTable from "./components/data/tables/TSTable";
 import CWMSTable from "./components/data/tables/CWMSTable";
+import {
+  buildCsvContent,
+  buildSeriesLookup,
+  buildTableIndex,
+  buildTableRows,
+  buildTableRowValues,
+  downloadBlob,
+} from "./components/data/tables/tableData";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
@@ -78,6 +86,12 @@ import { OfficeDropdown } from "./components/data/dropdowns/OfficeDropdown";
 export {
   TSTable,
   CWMSTable,
+  buildCsvContent,
+  buildSeriesLookup,
+  buildTableIndex,
+  buildTableRows,
+  buildTableRowValues,
+  downloadBlob,
   GageMap,
   CWMSPlot,
   CdaLatestValueCard,
