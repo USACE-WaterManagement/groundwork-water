@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import useCdaTimeSeries from "../hooks/useCdaTimeSeries";
-import Plotly from "plotly.js-basic-dist";
 
 /**
  * Component to fetch and plot timeseries data from the USACE CDA endpoint.
@@ -35,6 +34,8 @@ const TSPlot = ({
   // Plot the data with Plotly
   useEffect(() => {
     if (data && data.values) {
+      let cancelled = false;
+
       // Check for user inputs or use defaults
       // Set Defaults
       let plotTitle = data.name.split(".")[0];
@@ -88,9 +89,22 @@ const TSPlot = ({
         yaxis: { title: yaxisText },
       };
       if (layoutGrid) layout.grid = layoutGrid;
-      Plotly.newPlot(plotContainerRef.current, plotData, layout, {
-        responsive: responsive,
-      });
+      async function renderPlot() {
+        const { default: Plotly } = await import("plotly.js-basic-dist");
+        if (cancelled || !plotContainerRef.current) {
+          return;
+        }
+
+        Plotly.newPlot(plotContainerRef.current, plotData, layout, {
+          responsive: responsive,
+        });
+      }
+
+      renderPlot();
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [data, cdaParams, plotParams, shapes, annotations, layoutGrid, responsive]); // Re-plot when data changes
 
