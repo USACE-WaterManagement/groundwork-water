@@ -7,9 +7,7 @@ import Map from "ol/Map";
 import View from "ol/View";
 import Overlay from "ol/Overlay";
 import OSM from "ol/source/OSM";
-import "ol/ol.css";
 
-import "../../../css/map.css";
 import { gwMerge } from "@usace/groundwork";
 
 function GageMap({ className }) {

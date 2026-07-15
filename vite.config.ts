@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "tailwindcss";
 import pkg from "./package.json";
+import fs from "node:fs";
+import path from "node:path";
 
 const externalPackages = [
   ...Object.keys(pkg.dependencies ?? {}),
@@ -15,6 +17,15 @@ const libraryAssetFileNames = (assetInfo: { name?: string }) => {
   }
   return "assets/[name][extname]";
 };
+const removeCssEntrypointPlugin = (fileName: string) => ({
+  name: "remove-css-entrypoint",
+  closeBundle() {
+    const filePath = path.resolve("dist", fileName);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  },
+});
 
 // Based off of Groundwork proper's lib vs doc config
 export default defineConfig(({ mode }) => {
@@ -65,6 +76,26 @@ export default defineConfig(({ mode }) => {
               },
             },
           ],
+        },
+      },
+    };
+  } else if (mode === "css") {
+    console.log("Building library CSS");
+    return {
+      plugins: [react(), tailwindcss(), removeCssEntrypointPlugin("style-entry.js")],
+      publicDir: false,
+      build: {
+        emptyOutDir: false,
+        lib: {
+          entry: "lib/style-entry.js",
+          name: "GroundworkWaterStyles",
+          fileName: () => "style-entry.js",
+          formats: ["es"],
+        },
+        rollupOptions: {
+          output: {
+            assetFileNames: libraryAssetFileNames,
+          },
         },
       },
     };
