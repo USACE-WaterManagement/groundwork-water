@@ -1,9 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
-import { useMemo } from "react";
 import { getPrecision } from "../utilities";
 
 /**
@@ -53,6 +52,7 @@ export default function CWMSPlot({
   timeSeries,
   pageSize,
   locationLevels,
+  inputTSValues,
   layoutOptions = {},
   className = "",
   responsive = true,
@@ -74,21 +74,25 @@ export default function CWMSPlot({
     [locationLevels],
   );
 
-  const config_v2 = new Configuration({
-    basePath: cdaUrl,
-    headers: {
-      accept: "application/json;version=2",
-    },
-  });
-  const ts_api = new TimeSeriesApi(config_v2);
+  const ts_api = useMemo(() => {
+    const config_v2 = new Configuration({
+      basePath: cdaUrl,
+      headers: {
+        accept: "application/json;version=2",
+      },
+    });
+    return new TimeSeriesApi(config_v2);
+  }, [cdaUrl]);
 
-  const config_level = new Configuration({
-    basePath: cdaUrl,
-    headers: {
-      accept: "*/*",
-    },
-  });
-  const level_api = new LevelsApi(config_level);
+  const level_api = useMemo(() => {
+    const config_level = new Configuration({
+      basePath: cdaUrl,
+      headers: {
+        accept: "*/*",
+      },
+    });
+    return new LevelsApi(config_level);
+  }, [cdaUrl]);
 
   const defaultLayout = {
     height: 750,
@@ -109,7 +113,9 @@ export default function CWMSPlot({
     if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
-          text: item.id.split(".")[1],
+          text:
+            item.id.split(".")[1] +
+            (item?.traceOptions?.units ? " (" + item.traceOptions.units + ")" : ""),
           font: {
             family: "Arial, sans-serif",
             size: 14,
@@ -137,23 +143,31 @@ export default function CWMSPlot({
     if (!office) setError("You must specify a 3 letter ID for the office");
 
     const fetchData = async () => {
-      let ts_promises = tsids.map(async (name) => {
-        try {
-          return await ts_api.getTimeSeries({
-            name,
-            office,
-            unit,
-            datum,
-            begin,
-            end,
-            pageSize,
-            timezone,
-            trim,
-          });
-        } catch (error) {
-          console.error("Error fetching timeseries data:", error);
-        }
-      });
+      let values = [];
+
+      if (!inputTSValues) {
+        const ts_promises = tsids.map(async (name) => {
+          try {
+            return await ts_api.getTimeSeries({
+              name,
+              office,
+              unit,
+              datum,
+              begin,
+              end,
+              pageSize,
+              timezone,
+              trim,
+            });
+          } catch (error) {
+            console.error("Error fetching timeseries data:", error);
+          }
+        });
+
+        values = await Promise.all(ts_promises);
+      } else {
+        values = inputTSValues;
+      }
 
       let lev_promises = levels?.map(async (item) => {
         let level;
@@ -173,7 +187,6 @@ export default function CWMSPlot({
 
       let _data = { ts: {} };
 
-      let values = await Promise.all(ts_promises);
       values.forEach((result) => {
         if (result && result.name) {
           if (!_data.ts[result.name]) {
@@ -245,6 +258,8 @@ export default function CWMSPlot({
     begin,
     datum,
     end,
+    inputTSValues,
+    level_api,
     locationLevelsArray,
     office,
     timeSeriesArray,
@@ -252,6 +267,7 @@ export default function CWMSPlot({
     trim,
     unit,
     pageSize,
+    ts_api,
   ]);
 
   useEffect(() => {
