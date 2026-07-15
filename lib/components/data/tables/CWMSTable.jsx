@@ -4,11 +4,7 @@ import { TimeSeriesApi } from "cwmsjs";
 import dayjs from "dayjs";
 import { useCdaConfig } from "../helpers/cda";
 import { getPrecision } from "../utilities";
-import {
-  buildPrecisionMap,
-  buildTableIndex,
-  buildTableRowValues,
-} from "./tableData";
+import { buildPrecisionMap, buildTableIndex, buildTableRowValues } from "./tableData";
 
 function getDefaultMobileColumns(timeseriesParams) {
   return timeseriesParams.slice(0, 2).map((param) => param.tsid);
@@ -21,6 +17,22 @@ function normalizeMobileColumns(columns, timeseriesParams) {
   return [
     ...new Set([...columns.filter((tsid) => validTsids.has(tsid)), ...fallback]),
   ].slice(0, Math.min(2, timeseriesParams.length));
+}
+
+function TableMessage({ children, tone = "info" }) {
+  const toneClass =
+    tone === "error"
+      ? "gww-border-red-200 gww-bg-red-50 gww-text-red-800"
+      : "gww-border-slate-200 gww-bg-white gww-text-slate-600";
+
+  return (
+    <div
+      className={`gww-rounded gww-border gww-p-4 gww-text-center gww-text-sm ${toneClass}`}
+      role={tone === "error" ? "alert" : "status"}
+    >
+      {children}
+    </div>
+  );
 }
 
 export default function CWMSTable({
@@ -48,6 +60,8 @@ export default function CWMSTable({
 }) {
   const parentRef = useRef(null);
   const [rawSeries, setRawSeries] = useState(inputTSValues || []);
+  const [isLoading, setIsLoading] = useState(!inputTSValues);
+  const [error, setError] = useState(null);
   const [mobileColumns, setMobileColumns] = useState(() =>
     getDefaultMobileColumns(timeseriesParams),
   );
@@ -63,17 +77,33 @@ export default function CWMSTable({
   }, [timeseriesParams]);
 
   useEffect(() => {
-    if (!tsids.length)
-      throw Error("You must specify one or more Timeseries IDs to table.");
+    let cancelled = false;
 
-    if (!office) throw Error("You must specify a 3 letter ID for the office");
+    if (!tsids.length) {
+      setIsLoading(false);
+      setRawSeries([]);
+      setError("You must specify one or more Timeseries IDs to table.");
+      return;
+    }
+
+    if (!office) {
+      setIsLoading(false);
+      setRawSeries([]);
+      setError("You must specify a 3 letter ID for the office.");
+      return;
+    }
 
     if (inputTSValues) {
+      setIsLoading(false);
+      setError(null);
       setRawSeries(inputTSValues);
       return;
     }
 
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
       const promises = tsids.map(async (name) => {
         try {
           return await ts_api.getTimeSeries({
@@ -91,16 +121,35 @@ export default function CWMSTable({
           if (error.response?.status === 404) {
             console.warn(`Data for ${name} not found: 404`);
             return null;
-          } else {
-            throw error;
           }
+          throw error;
         }
       });
 
-      setRawSeries((await Promise.all(promises)).filter(Boolean));
+      try {
+        const series = (await Promise.all(promises)).filter(Boolean);
+        if (!cancelled) {
+          setRawSeries(series);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setRawSeries([]);
+          setError(
+            error?.message || "Unable to load time-series values for the table.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     };
 
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     timeseriesParams,
     office,
@@ -169,11 +218,17 @@ export default function CWMSTable({
     minWidth: `${12 + visibleMobileParams.length * 8}rem`,
   };
 
+  if (error) {
+    return <TableMessage tone="error">{error}</TableMessage>;
+  }
+
+  if (isLoading) {
+    return <TableMessage>Loading table data...</TableMessage>;
+  }
+
   if (!tableIndex.dates.length) {
     return (
-      <div className="gww-rounded gww-border gww-border-slate-200 gww-bg-white gww-p-4 gww-text-center gww-text-sm gww-text-slate-600">
-        No table rows found for the selected time series.
-      </div>
+      <TableMessage>No table rows found for the selected time series.</TableMessage>
     );
   }
 
@@ -183,7 +238,10 @@ export default function CWMSTable({
     >
       <div className="gww-grid gww-gap-3 gww-border-b gww-border-slate-200 gww-p-3 md:gww-hidden">
         {mobileColumnSlots.map((_, slot) => (
-          <label key={slot} className="gww-grid gww-gap-1 gww-text-sm gww-text-slate-700">
+          <label
+            key={slot}
+            className="gww-grid gww-gap-1 gww-text-sm gww-text-slate-700"
+          >
             <span>Column {slot + 1}</span>
             <select
               className="gww-w-full gww-rounded gww-border gww-border-slate-300 gww-px-2 gww-py-2"
