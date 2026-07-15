@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
           external: [
             "react",
             "react-dom",
+            "@tanstack/react-virtual",
             "@tanstack/react-query",
             "ol",
             "plotly.js-basic-dist",
@@ -37,6 +38,7 @@ export default defineConfig(({ mode }) => {
             globals: {
               react: "React",
               "react-dom": "ReactDOM",
+              "@tanstack/react-virtual": "ReactVirtual",
               "@tanstack/react-query": "ReactQuery",
               ol: "ol",
               "plotly.js-basic-dist": "Plotly",

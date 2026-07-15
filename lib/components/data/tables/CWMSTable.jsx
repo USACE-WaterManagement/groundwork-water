@@ -1,16 +1,27 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { TimeSeriesApi } from "cwmsjs";
 import dayjs from "dayjs";
-import {
-  Table,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableHeader,
-  TableCell,
-} from "@usace/groundwork";
 import { useCdaConfig } from "../helpers/cda";
 import { getPrecision } from "../utilities";
+import {
+  buildPrecisionMap,
+  buildTableIndex,
+  buildTableRowValues,
+} from "./tableData";
+
+function getDefaultMobileColumns(timeseriesParams) {
+  return timeseriesParams.slice(0, 2).map((param) => param.tsid);
+}
+
+function normalizeMobileColumns(columns, timeseriesParams) {
+  const validTsids = new Set(timeseriesParams.map((param) => param.tsid));
+  const fallback = getDefaultMobileColumns(timeseriesParams);
+
+  return [
+    ...new Set([...columns.filter((tsid) => validTsids.has(tsid)), ...fallback]),
+  ].slice(0, Math.min(2, timeseriesParams.length));
+}
 
 export default function CWMSTable({
   timeseriesParams,
@@ -20,6 +31,7 @@ export default function CWMSTable({
   begin,
   end,
   timezone,
+  inputTSValues,
   trim = true,
   pageSize,
   interval = 1,
@@ -30,35 +42,39 @@ export default function CWMSTable({
   cdaUrl,
   dateTimeTableColumnHeader = "Date & Time (Local)",
   tableOptions = {
-    striped: false,
-    dense: false,
-    bleed: false,
-    stickyHeader: false,
-    overflow: false,
-    overflowHeight: "h-[65vh]",
-    grid: false,
+    overflowHeight: "gww-max-h-[65vh]",
     className: "",
   },
 }) {
-  const tableElement = useRef([]);
-  const [tableData, setTableData] = useState(null);
-  const [tsData, setTsData] = useState(null);
+  const parentRef = useRef(null);
+  const [rawSeries, setRawSeries] = useState(inputTSValues || []);
+  const [mobileColumns, setMobileColumns] = useState(() =>
+    getDefaultMobileColumns(timeseriesParams),
+  );
   const config = useCdaConfig("v2", cdaUrl);
-  const ts_api = new TimeSeriesApi(config);
+  const ts_api = useMemo(() => new TimeSeriesApi(config), [config]);
+  const tsids = useMemo(
+    () => timeseriesParams.map((item) => item.tsid),
+    [timeseriesParams],
+  );
 
   useEffect(() => {
-    const tsids = timeseriesParams.map((item) => item.tsid);
+    setMobileColumns((current) => normalizeMobileColumns(current, timeseriesParams));
+  }, [timeseriesParams]);
 
+  useEffect(() => {
     if (!tsids.length)
       throw Error("You must specify one or more Timeseries IDs to table.");
 
     if (!office) throw Error("You must specify a 3 letter ID for the office");
 
-    // Need support for page size, either defined or set with time delta
-    // And then code to page thru each page and append into ts data
+    if (inputTSValues) {
+      setRawSeries(inputTSValues);
+      return;
+    }
 
     const fetchData = async () => {
-      let promises = tsids.map(async (name) => {
+      const promises = tsids.map(async (name) => {
         try {
           return await ts_api.getTimeSeries({
             name,
@@ -81,63 +97,7 @@ export default function CWMSTable({
         }
       });
 
-      let values = await Promise.all(promises);
-      let data = { ts: {}, dates: [] };
-      let allDates = [];
-
-      values.forEach((result) => {
-        if (result && result.values) {
-          if (!data.ts[result.values]) {
-            data.ts[result.name] = [];
-          }
-
-          // Set default precision for table
-          let precision = getPrecision(result.units);
-          // Allow user to override precision
-          timeseriesParams.map((entry) => {
-            if (entry.tsid == result.name && entry.precision != null) {
-              precision = entry.precision;
-            }
-          });
-
-          result.values.forEach((item) => {
-            const dt = item[0];
-            const val = item[1];
-
-            if (val === null) {
-              data.ts[result.name][dt] = missingString;
-            } else {
-              data.ts[result.name][dt] = val.toFixed(precision);
-            }
-
-            if (!allDates.includes(dt)) {
-              allDates.push(dt);
-            }
-          });
-        } else if (result === null) {
-          console.warn(`Skipping as no data was found.`);
-          data.ts[null] = [];
-        } else {
-          console.warn(`No unit found for ${result?.name}`);
-        }
-      });
-
-      const intervalMs = interval * 1000 * 60;
-      const sortedDates = allDates.sort((a, b) => a - b);
-      const mostRecentDate = sortedDates[sortedDates.length - 1];
-      let dates = sortAscending ? [...sortedDates] : [...sortedDates].reverse();
-
-      if (interval && snapTopOfInterval) {
-        dates = dates.filter((dt) => dt % intervalMs == 0);
-      }
-
-      if (interval && !snapTopOfInterval) {
-        dates = dates.filter((dt) => (mostRecentDate - dt) % intervalMs == 0);
-      }
-
-      data.dates = dates;
-
-      setTsData(data);
+      setRawSeries((await Promise.all(promises)).filter(Boolean));
     };
 
     fetchData();
@@ -151,56 +111,239 @@ export default function CWMSTable({
     timezone,
     trim,
     pageSize,
-    sortAscending,
-    missingString,
-    interval,
-    snapTopOfInterval,
+    inputTSValues,
+    ts_api,
+    tsids,
   ]);
 
-  useEffect(() => {
-    if (!tableElement.current || !tsData) {
-      return;
-    }
+  const tableIndex = useMemo(
+    () =>
+      buildTableIndex({
+        rawSeries,
+        sortAscending,
+        timeseriesParams,
+        interval,
+        snapTopOfInterval,
+      }),
+    [interval, rawSeries, snapTopOfInterval, sortAscending, timeseriesParams],
+  );
+  const precisionByTsid = useMemo(
+    () => buildPrecisionMap({ rawSeries, timeseriesParams, getPrecision }),
+    [rawSeries, timeseriesParams],
+  );
 
-    const table = [];
+  const visibleMobileParams = useMemo(
+    () =>
+      mobileColumns
+        .map((tsid) => timeseriesParams.find((param) => param.tsid === tsid))
+        .filter(Boolean),
+    [mobileColumns, timeseriesParams],
+  );
 
-    tsData.dates.forEach((dt) => {
-      const row = [];
+  const visibleMobileIndexes = useMemo(
+    () =>
+      visibleMobileParams.map((param) =>
+        timeseriesParams.findIndex((item) => item.tsid === param.tsid),
+      ),
+    [timeseriesParams, visibleMobileParams],
+  );
 
-      Object.keys(tsData.ts).forEach((item) => {
-        row.push(tsData.ts[item][dt]);
-      });
-      table.push([new Date(dt), row]);
-    });
-    setTableData(table);
-  }, [tsData, timeseriesParams]);
+  const rowVirtualizer = useVirtualizer({
+    count: tableIndex.dates.length,
+    estimateSize: () => 36,
+    getScrollElement: () => parentRef.current,
+    overscan: 12,
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
+  const mobileColumnSlots = Array.from({
+    length: Math.min(2, timeseriesParams.length),
+  });
+  const desktopGridStyle = {
+    gridTemplateColumns: `12rem repeat(${timeseriesParams.length}, minmax(8rem, 1fr))`,
+    minWidth: `${12 + timeseriesParams.length * 8}rem`,
+  };
+  const mobileGridStyle = {
+    gridTemplateColumns: `12rem repeat(${visibleMobileParams.length}, minmax(8rem, 1fr))`,
+    minWidth: `${12 + visibleMobileParams.length * 8}rem`,
+  };
+
+  if (!tableIndex.dates.length) {
+    return (
+      <div className="gww-rounded gww-border gww-border-slate-200 gww-bg-white gww-p-4 gww-text-center gww-text-sm gww-text-slate-600">
+        No table rows found for the selected time series.
+      </div>
+    );
+  }
 
   return (
-    <Table {...tableOptions}>
-      <TableHead>
-        <TableRow>
-          <TableHeader>{dateTimeTableColumnHeader}</TableHeader>
-          {timeseriesParams.map((item, index) => (
-            <TableHeader key={`header${index}`}>{item.header}</TableHeader>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {/* Each Row */}
-        {tableData?.map((item, index) => (
-          <TableRow key={`row${index}`}>
-            {/* Date-Time */}
-            <TableCell key={`cell${index}`}>
-              {dayjs(item[0]).format(dateFormat)}
-            </TableCell>
-
-            {/* Loop over columns */}
-            {item[1].map((val, idx) => (
-              <TableCell key={`cell${idx}`}>{val}</TableCell>
-            ))}
-          </TableRow>
+    <div
+      className={`gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableOptions.className || ""}`}
+    >
+      <div className="gww-grid gww-gap-3 gww-border-b gww-border-slate-200 gww-p-3 md:gww-hidden">
+        {mobileColumnSlots.map((_, slot) => (
+          <label key={slot} className="gww-grid gww-gap-1 gww-text-sm gww-text-slate-700">
+            <span>Column {slot + 1}</span>
+            <select
+              className="gww-w-full gww-rounded gww-border gww-border-slate-300 gww-px-2 gww-py-2"
+              value={mobileColumns[slot] || ""}
+              onChange={(event) => {
+                const next = [...mobileColumns];
+                next[slot] = event.target.value;
+                setMobileColumns(normalizeMobileColumns(next, timeseriesParams));
+              }}
+            >
+              {timeseriesParams.map((param) => (
+                <option key={param.tsid} value={param.tsid}>
+                  {param.header}
+                </option>
+              ))}
+            </select>
+          </label>
         ))}
-      </TableBody>
-    </Table>
+      </div>
+
+      <div
+        ref={parentRef}
+        className={`gww-overflow-auto ${tableOptions.overflowHeight || "gww-max-h-[65vh]"}`}
+      >
+        <div className="gww-hidden gww-text-sm md:gww-block" role="table">
+          <div
+            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-semibold"
+            role="row"
+            style={desktopGridStyle}
+          >
+            <div
+              className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2"
+              role="columnheader"
+            >
+              {dateTimeTableColumnHeader}
+            </div>
+            {timeseriesParams.map((param) => (
+              <div
+                key={param.tsid}
+                className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2 gww-text-right"
+                role="columnheader"
+              >
+                {param.header}
+              </div>
+            ))}
+          </div>
+          <div
+            className="gww-relative"
+            role="rowgroup"
+            style={{ height: `${totalSize}px`, minWidth: desktopGridStyle.minWidth }}
+          >
+            {virtualRows.map((virtualRow) => {
+              const date = tableIndex.dates[virtualRow.index];
+              const values = buildTableRowValues({
+                date,
+                missingString,
+                precisionByTsid,
+                seriesLookup: tableIndex.seriesLookup,
+                visibleTsids: tableIndex.visibleTsids,
+              });
+              return (
+                <div
+                  key={date}
+                  className="gww-absolute gww-left-0 gww-grid gww-w-full gww-border-b gww-border-slate-100 odd:gww-bg-white even:gww-bg-slate-50"
+                  role="row"
+                  style={{
+                    ...desktopGridStyle,
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div
+                    className="gww-px-3 gww-py-2 gww-font-mono gww-text-xs gww-text-slate-700"
+                    role="cell"
+                  >
+                    {dayjs(date).format(dateFormat)}
+                  </div>
+                  {values.map((value, index) => (
+                    <div
+                      key={timeseriesParams[index].tsid}
+                      className="gww-px-3 gww-py-2 gww-text-right gww-font-mono gww-text-xs"
+                      role="cell"
+                    >
+                      {value}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="gww-text-sm md:gww-hidden" role="table">
+          <div
+            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-semibold"
+            role="row"
+            style={mobileGridStyle}
+          >
+            <div
+              className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2"
+              role="columnheader"
+            >
+              {dateTimeTableColumnHeader}
+            </div>
+            {visibleMobileParams.map((param) => (
+              <div
+                key={param.tsid}
+                className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2 gww-text-right"
+                role="columnheader"
+              >
+                {param.header}
+              </div>
+            ))}
+          </div>
+          <div
+            className="gww-relative"
+            role="rowgroup"
+            style={{ height: `${totalSize}px`, minWidth: mobileGridStyle.minWidth }}
+          >
+            {virtualRows.map((virtualRow) => {
+              const date = tableIndex.dates[virtualRow.index];
+              const values = buildTableRowValues({
+                date,
+                missingString,
+                precisionByTsid,
+                seriesLookup: tableIndex.seriesLookup,
+                visibleTsids: tableIndex.visibleTsids,
+              });
+              return (
+                <div
+                  key={date}
+                  className="gww-absolute gww-left-0 gww-grid gww-w-full gww-border-b gww-border-slate-100 odd:gww-bg-white even:gww-bg-slate-50"
+                  role="row"
+                  style={{
+                    ...mobileGridStyle,
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div
+                    className="gww-px-3 gww-py-2 gww-font-mono gww-text-xs gww-text-slate-700"
+                    role="cell"
+                  >
+                    {dayjs(date).format(dateFormat)}
+                  </div>
+                  {visibleMobileIndexes.map((index) => (
+                    <div
+                      key={timeseriesParams[index].tsid}
+                      className="gww-px-3 gww-py-2 gww-text-right gww-font-mono gww-text-xs"
+                      role="cell"
+                    >
+                      {values[index]}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
