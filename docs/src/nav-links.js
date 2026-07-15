@@ -167,6 +167,18 @@ export default [
     ],
   },
   {
+    id: "graphics",
+    text: "Graphics",
+    href: `${BASE_URL}#/docs/graphics`,
+    children: [
+      {
+        id: "dam-profile",
+        text: "Dam Profile",
+        href: `${BASE_URL}#/docs/graphics/dam-profile`,
+      },
+    ],
+  },
+  {
     id: "forms",
     text: "Forms",
     href: `${BASE_URL}#/docs/forms`,
