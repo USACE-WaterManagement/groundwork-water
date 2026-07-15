@@ -3,6 +3,19 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "tailwindcss";
 import pkg from "./package.json";
 
+const externalPackages = [
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {}),
+];
+const isExternalPackage = (id: string) =>
+  externalPackages.some((name) => id === name || id.startsWith(`${name}/`));
+const libraryAssetFileNames = (assetInfo: { name?: string }) => {
+  if (assetInfo.name?.endsWith(".css")) {
+    return "style.css";
+  }
+  return "assets/[name][extname]";
+};
+
 // Based off of Groundwork proper's lib vs doc config
 export default defineConfig(({ mode }) => {
   if (mode === "lib") {
@@ -18,31 +31,40 @@ export default defineConfig(({ mode }) => {
         minify: false,
         lib: {
           name: "GroundworkWater",
-          fileName: (format) => `groundwork-water.${format}.js`,
+          fileName: (format) =>
+            format === "umd" ? "groundwork-water.umd.cjs" : "index.js",
           entry: "lib/index.jsx",
           formats: ["es", "umd"],
           cssFileName: "style",
         },
         rollupOptions: {
-          external: [
-            "react",
-            "react-dom",
-            "@tanstack/react-query",
-            "ol",
-            "plotly.js-basic-dist",
-            "cwmsjs",
-            "@usace/groundwork",
-          ],
-          output: {
-            globals: {
-              react: "React",
-              "react-dom": "ReactDOM",
-              "@tanstack/react-query": "ReactQuery",
-              ol: "ol",
-              "plotly.js-basic-dist": "Plotly",
-              cwmsjs: "cwmsjs",
+          external: isExternalPackage,
+          output: [
+            {
+              format: "es",
+              dir: "dist",
+              preserveModules: true,
+              preserveModulesRoot: "lib",
+              entryFileNames: "es/[name].js",
+              chunkFileNames: "es/chunks/[name]-[hash].js",
+              assetFileNames: libraryAssetFileNames,
             },
-          },
+            {
+              format: "umd",
+              name: "GroundworkWater",
+              entryFileNames: "groundwork-water.umd.cjs",
+              assetFileNames: libraryAssetFileNames,
+              globals: {
+                react: "React",
+                "react-dom": "ReactDOM",
+                "@tanstack/react-query": "ReactQuery",
+                ol: "ol",
+                "plotly.js-basic-dist": "Plotly",
+                cwmsjs: "cwmsjs",
+                "@usace/groundwork": "Groundwork",
+              },
+            },
+          ],
         },
       },
     };
