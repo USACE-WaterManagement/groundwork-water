@@ -11,6 +11,7 @@ import CWMSTable from "./components/data/tables/CWMSTable";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
+import DataStatus from "./components/data/summary/DataStatus";
 
 // Import input components
 import CWMSInput from "./components/data/forms/inputs/CWMSInput";
@@ -50,6 +51,7 @@ import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
+import useDataStatusFile from "./components/data/hooks/useDataStatusFile";
 
 // files
 import useCdaBlob from "./components/data/hooks/useCdaBlob";
@@ -82,6 +84,7 @@ export {
   CWMSPlot,
   CdaLatestValueCard,
   CdaUrlProvider,
+  DataStatus,
   OfficeDropdown,
   useCdaBlob,
   useCdaBlobs,
@@ -93,6 +96,7 @@ export {
   useCdaMultiTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
+  useDataStatusFile,
   useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,
