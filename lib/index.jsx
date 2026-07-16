@@ -72,6 +72,7 @@ import { createKeycloakAuthMethod } from "./components/data/utilities/auth/keycl
 
 // dropdowns
 import { OfficeDropdown } from "./components/data/dropdowns/OfficeDropdown";
+import SearchInput from "./components/data/search/SearchInput";
 
 // import { helperFunction } from './utils/helpers';
 
@@ -83,6 +84,7 @@ export {
   CdaLatestValueCard,
   CdaUrlProvider,
   OfficeDropdown,
+  SearchInput,
   useCdaBlob,
   useCdaBlobs,
   useCdaCatalog,

@@ -62,6 +62,11 @@ export default [
     href: `${BASE_URL}#/docs/dropdowns`,
     children: [
       {
+        id: "search-input",
+        text: "Search Input",
+        href: `${BASE_URL}#/docs/dropdowns/search-input`,
+      },
+      {
         id: "offices",
         text: "Offices",
         href: `${BASE_URL}#/docs/dropdowns/offices`,
