@@ -132,6 +132,7 @@ function CWMSInput({
     const newValue = e.target.value;
     userEdited.current = true;
     setInputValue(newValue);
+    // Clear invalid state when user starts typing
     if (isInvalid && newValue) {
       setIsInvalid(false);
     }
