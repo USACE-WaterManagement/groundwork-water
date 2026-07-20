@@ -205,13 +205,16 @@ function CWMSSpreadsheet({
                 updated[rowIndex] = [...updated[rowIndex]];
               }
 
+              // Mirror the populate effect: a caller-supplied default takes
+              // precedence over the fetched nearest value.
+              const defaultVal = defaultData[rowIndex]?.[dataColIndex];
               let resetVal;
-              if (nearestRaw != null) {
+              if (defaultVal) {
+                resetVal = defaultVal;
+              } else if (nearestRaw != null) {
                 resetVal = String(nearestRaw);
-              } else if (shouldShowTimestamps) {
-                resetVal = defaultData[rowIndex]?.[dataColIndex] || "";
               } else {
-                resetVal = defaultData[rowIndex]?.[colIndex] || "";
+                resetVal = "";
               }
               updated[rowIndex][colIndex] = resetVal;
               return updated;
