@@ -317,6 +317,7 @@ function CWMSSpreadsheet({
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
+    // Don't allow editing time column
     if (shouldShowTimestamps && colIndex === 0) {
       return;
     }
