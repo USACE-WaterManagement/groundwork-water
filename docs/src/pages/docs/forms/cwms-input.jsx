@@ -63,8 +63,8 @@ const componentProps = [
   {
     name: "loadNearest",
     type: "string",
-    default: "prev",
-    desc: "Strategy for auto-loading the nearest time series value. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
+    default: "undefined (feature off)",
+    desc: "Opt-in strategy for auto-loading the nearest time series value. When omitted, no value is fetched. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
   },
   {
     name: "showValueTimestamp",
@@ -206,16 +206,16 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 
       <Divider text="Load Nearest Value" className="mt-8" />
       <Text className="mb-4">
-        When a <Code className="p-1">tsid</Code> is provided and the parent{" "}
+        This is an opt-in feature. When the <Code className="p-1">loadNearest</Code>{" "}
+        prop is set (and a <Code className="p-1">tsid</Code> is provided and the parent{" "}
         <Code className="p-1">CWMSForm</Code> has an <Code className="p-1">office</Code>
-        , CWMSInput automatically fetches the nearest time series value and
-        pre-populates the input. The <Code className="p-1">loadNearest</Code> prop
-        controls the strategy:
+        ), CWMSInput fetches the nearest time series value and pre-populates the input.
+        With <Code className="p-1">loadNearest</Code> omitted, no value is fetched. The
+        prop value selects the strategy:
       </Text>
       <ul className="list-disc ml-6 mb-4">
         <li>
-          <Code className="p-1">prev</Code> (default) — last value at or before the
-          target time
+          <Code className="p-1">prev</Code> — last value at or before the target time
         </li>
         <li>
           <Code className="p-1">next</Code> — first value at or after the target time

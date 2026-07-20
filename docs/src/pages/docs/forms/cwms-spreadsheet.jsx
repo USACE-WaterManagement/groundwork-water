@@ -105,8 +105,8 @@ const componentProps = [
   {
     name: "loadNearest",
     type: "string",
-    default: "prev",
-    desc: "Strategy for auto-loading the nearest time series values into cells. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
+    default: "undefined (feature off)",
+    desc: "Opt-in strategy for auto-loading the nearest time series values into cells. When omitted, no values are fetched. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
   },
   {
     name: "showValueTimestamp",
@@ -398,16 +398,17 @@ function CWMSSpreadsheetDocs() {
 
       <Divider text="Load Nearest Values" className="mt-8" />
       <Text className="mb-4">
-        When columns have a <Code className="p-1">tsid</Code> and the parent{" "}
+        This is an opt-in feature. When the <Code className="p-1">loadNearest</Code>{" "}
+        prop is set (and columns have a <Code className="p-1">tsid</Code> and the parent{" "}
         <Code className="p-1">CWMSForm</Code> provides an{" "}
-        <Code className="p-1">office</Code>, the spreadsheet automatically fetches the
-        nearest time series values and pre-populates cells. The{" "}
-        <Code className="p-1">loadNearest</Code> prop controls the strategy:
+        <Code className="p-1">office</Code>), the spreadsheet fetches the nearest time
+        series values and pre-populates cells. With{" "}
+        <Code className="p-1">loadNearest</Code> omitted, no values are fetched. The
+        prop value selects the strategy:
       </Text>
       <ul className="list-disc ml-6 mb-4">
         <li>
-          <Code className="p-1">prev</Code> (default) — last value at or before each
-          target time
+          <Code className="p-1">prev</Code> — last value at or before each target time
         </li>
         <li>
           <Code className="p-1">next</Code> — first value at or after each target time
