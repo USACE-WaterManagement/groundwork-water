@@ -20,6 +20,8 @@ function CWMSSpreadsheet({
   showRowNumbers = true,
   showColumnHeaders = true,
   showTimestamps = false,
+  showCopyAllDataButton = true,
+  showSelectAllButton = true,
   timeoffsets = [],
   required = false,
   cellOverrides = {},
@@ -718,7 +720,6 @@ function CWMSSpreadsheet({
     }
     return label;
   };
-
   // Excel-like styles
   const containerStyle = {
     overflowX: "auto",
@@ -779,50 +780,62 @@ function CWMSSpreadsheet({
 
   return (
     <div>
-      <div style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
-        <button
-          onClick={copyAllData}
-          style={{
-            padding: "6px 12px",
-            backgroundColor: "#0969da",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "13px",
-            fontFamily: "Arial, sans-serif",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#0860ca")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#0969da")}
-        >
-          📋 Copy All Data
-        </button>
-        <button
-          onClick={() => {
-            setDragStart({ row: 0, col: 0 });
-            setDragEnd({ row: visualRows - 1, col: visualCols - 1 });
-            // Focus on first cell to enable keyboard copy
-            document.getElementById(`${instanceId}-0-0`)?.focus();
-          }}
-          style={{
-            padding: "6px 12px",
-            backgroundColor: "#6c757d",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "13px",
-            fontFamily: "Arial, sans-serif",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#5a6268")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#6c757d")}
-        >
-          Select All
-        </button>
-      </div>
+      {(showCopyAllDataButton || showSelectAllButton) && (
+        <div style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
+          {showCopyAllDataButton && (
+            <button
+              type="button"
+              onClick={copyAllData}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: "#0969da",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontFamily: "Arial, sans-serif",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#0860ca")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#0969da")}
+            >
+              📋 Copy All Data
+            </button>
+          )}
+
+          {showSelectAllButton && (
+            <button
+              type="button"
+              onClick={() => {
+                setDragStart({ row: 0, col: 0 });
+                setDragEnd({
+                  row: visualRows - 1,
+                  col: visualCols - 1,
+                });
+                document.getElementById(`${instanceId}-0-0`)?.focus();
+              }}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: "#6c757d",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontFamily: "Arial, sans-serif",
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#5a6268")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#6c757d")}
+            >
+              Select All
+            </button>
+          )}
+        </div>
+      )}
+
       <div style={containerStyle} ref={tableRef}>
         <table style={tableStyle}>
           {transpose ? (
