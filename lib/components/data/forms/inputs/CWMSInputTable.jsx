@@ -140,9 +140,12 @@ function CWMSInputTable({
           getValues: () => [matrixData[key] || ""],
           reset: () => {
             userEdited.current.delete(key);
+            // Mirror the populate effect: a caller-supplied default takes
+            // precedence over the fetched nearest value.
+            const hasDefault = columnDefaultValues[offset] !== undefined;
             const nearestRaw = loadedValuesRef.current[key];
-            let resetVal = columnDefaultValues[offset] || "";
-            if (nearestRaw != null) {
+            let resetVal = hasDefault ? columnDefaultValues[offset] : "";
+            if (!hasDefault && nearestRaw != null) {
               const p = columnPrecision ?? precision;
               resetVal = parseFloat(nearestRaw.toFixed(p)).toString();
             }
