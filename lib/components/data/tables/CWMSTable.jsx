@@ -53,12 +53,15 @@ export default function CWMSTable({
   dateFormat = "ddd MMM DD HH:mm",
   cdaUrl,
   dateTimeTableColumnHeader = "Date & Time (Local)",
-  tableOptions = {
-    overflowHeight: "gww-max-h-[65vh]",
-    className: "",
-  },
+  tableOptions = {},
 }) {
   const parentRef = useRef(null);
+  // Merged rather than replaced, so a partial object keeps the defaults. overflowHeight
+  // was a Tailwind class, but arbitrary values written in consumer code are never
+  // emitted by this package's JIT build, so apply the length inline instead.
+  const { className: tableClassName = "", overflowHeight, maxHeight } = tableOptions;
+  const scrollMaxHeight =
+    maxHeight ?? overflowHeight?.match(/\[(.+?)\]/)?.[1] ?? "65vh";
   const [rawSeries, setRawSeries] = useState(inputTSValues || []);
   const [isLoading, setIsLoading] = useState(!inputTSValues);
   const [error, setError] = useState(null);
@@ -66,7 +69,10 @@ export default function CWMSTable({
     getDefaultMobileColumns(timeseriesParams),
   );
   const config = useCdaConfig("v2", cdaUrl);
-  const ts_api = useMemo(() => new TimeSeriesApi(config), [config]);
+  // useCdaConfig returns a fresh Configuration on every render, so it must not be an
+  // effect dependency — that re-ran the fetch on every render.
+  const configRef = useRef(config);
+  configRef.current = config;
   const tsids = useMemo(
     () => timeseriesParams.map((item) => item.tsid),
     [timeseriesParams],
@@ -101,6 +107,7 @@ export default function CWMSTable({
     }
 
     const fetchData = async () => {
+      const ts_api = new TimeSeriesApi(configRef.current);
       setIsLoading(true);
       setError(null);
 
@@ -160,8 +167,8 @@ export default function CWMSTable({
     timezone,
     trim,
     pageSize,
+    cdaUrl,
     inputTSValues,
-    ts_api,
     tsids,
   ]);
 
@@ -234,7 +241,7 @@ export default function CWMSTable({
 
   return (
     <div
-      className={`gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableOptions.className || ""}`}
+      className={`gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableClassName}`}
     >
       <div className="gww-grid gww-gap-3 gww-border-b gww-border-slate-200 gww-p-3 md:gww-hidden">
         {mobileColumnSlots.map((_, slot) => (
@@ -264,7 +271,8 @@ export default function CWMSTable({
 
       <div
         ref={parentRef}
-        className={`gww-overflow-auto ${tableOptions.overflowHeight || "gww-max-h-[65vh]"}`}
+        className="gww-overflow-auto"
+        style={{ maxHeight: scrollMaxHeight }}
       >
         <div className="gww-hidden gww-text-sm md:gww-block" role="table">
           <div
