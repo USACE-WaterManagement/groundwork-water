@@ -56,12 +56,12 @@ export default function CWMSTable({
   tableOptions = {},
 }) {
   const parentRef = useRef(null);
-  // Merged rather than replaced, so a partial object keeps the defaults. overflowHeight
-  // was a Tailwind class, but arbitrary values written in consumer code are never
-  // emitted by this package's JIT build, so apply the length inline instead.
+  // Merged rather than replaced, so a partial object keeps the defaults. The default
+  // height stays a Tailwind class because this package's JIT build scans for it; a
+  // consumer-supplied height cannot be a class, since Tailwind never sees consumer
+  // code, so that one is applied inline.
   const { className: tableClassName = "", overflowHeight, maxHeight } = tableOptions;
-  const scrollMaxHeight =
-    maxHeight ?? overflowHeight?.match(/\[(.+?)\]/)?.[1] ?? "65vh";
+  const customMaxHeight = maxHeight ?? overflowHeight?.match(/\[(.+?)\]/)?.[1];
   const [rawSeries, setRawSeries] = useState(inputTSValues || []);
   const [isLoading, setIsLoading] = useState(!inputTSValues);
   const [error, setError] = useState(null);
@@ -69,14 +69,12 @@ export default function CWMSTable({
     getDefaultMobileColumns(timeseriesParams),
   );
   const config = useCdaConfig("v2", cdaUrl);
-  // useCdaConfig returns a fresh Configuration on every render, so it must not be an
-  // effect dependency — that re-ran the fetch on every render.
-  const configRef = useRef(config);
-  configRef.current = config;
-  const tsids = useMemo(
-    () => timeseriesParams.map((item) => item.tsid),
-    [timeseriesParams],
-  );
+  const ts_api = useMemo(() => new TimeSeriesApi(config), [config]);
+  // Keyed on contents rather than identity: an inline timeseriesParams array is a new
+  // object on every parent render, which would otherwise re-run the fetch effect each
+  // time the parent renders.
+  const tsidKey = timeseriesParams.map((item) => item.tsid).join("|");
+  const tsids = useMemo(() => tsidKey.split("|").filter(Boolean), [tsidKey]);
 
   useEffect(() => {
     setMobileColumns((current) => normalizeMobileColumns(current, timeseriesParams));
@@ -107,7 +105,6 @@ export default function CWMSTable({
     }
 
     const fetchData = async () => {
-      const ts_api = new TimeSeriesApi(configRef.current);
       setIsLoading(true);
       setError(null);
 
@@ -158,7 +155,6 @@ export default function CWMSTable({
       cancelled = true;
     };
   }, [
-    timeseriesParams,
     office,
     unit,
     datum,
@@ -167,9 +163,9 @@ export default function CWMSTable({
     timezone,
     trim,
     pageSize,
-    cdaUrl,
     inputTSValues,
     tsids,
+    ts_api,
   ]);
 
   const tableIndex = useMemo(
@@ -261,7 +257,7 @@ export default function CWMSTable({
             >
               {timeseriesParams.map((param) => (
                 <option key={param.tsid} value={param.tsid}>
-                  {param.header}
+                  {typeof param.header === "string" ? param.header : param.tsid}
                 </option>
               ))}
             </select>
@@ -271,8 +267,10 @@ export default function CWMSTable({
 
       <div
         ref={parentRef}
-        className="gww-overflow-auto"
-        style={{ maxHeight: scrollMaxHeight }}
+        className={
+          customMaxHeight ? "gww-overflow-auto" : "gww-overflow-auto gww-max-h-[65vh]"
+        }
+        style={customMaxHeight ? { maxHeight: customMaxHeight } : undefined}
       >
         <div className="gww-hidden gww-text-sm md:gww-block" role="table">
           <div
