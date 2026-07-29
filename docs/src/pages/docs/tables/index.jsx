@@ -98,8 +98,9 @@ function Tables() {
         <Text className="mb-2">
           The header for the table can be set to an HTML tag or component with line
           breaks.
-          <Code enableCopy={false} className="p-2" language="jsx">
-            {`// For example:
+        </Text>
+        <Code enableCopy={false} className="p-2 mb-2" language="jsx">
+          {`// For example:
 const datum = "NGVD29";
 const tableTimeseriesParams = [
     {
@@ -109,8 +110,7 @@ const tableTimeseriesParams = [
       offset: offsetValue,
     }
 ]`}
-          </Code>
-        </Text>
+        </Code>
         <Badge color="blue" className="mb-2">
           Note: Using "\n" will NOT create a line break in the header.
         </Badge>

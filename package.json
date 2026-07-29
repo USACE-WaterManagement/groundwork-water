@@ -37,7 +37,7 @@
     "build-docs-prod": "cd docs && vite build",
     "check-changeset": "changeset status --since=main",
     "deploy": "gh-pages -d dist",
-    "prepare": "npm run build-lib",
+    "prepare": "husky || true && npm run build-lib",
     "watch": "vite build --mode lib --watch",
     "release": "npm run build && changeset publish",
     "login": "npm login"
