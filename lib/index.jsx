@@ -1,10 +1,3 @@
-// Bundle tailwind
-import "./css/tailwind.css";
-
-// Bundle groundwork-water styles
-import "@usace/groundwork/dist/style.css";
-import "react-toastify/dist/ReactToastify.css";
-
 // Import components
 import TSTable from "./components/data/tables/TSTable";
 import CWMSTable from "./components/data/tables/CWMSTable";

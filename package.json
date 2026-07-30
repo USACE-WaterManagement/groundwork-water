@@ -5,7 +5,7 @@
   "author": "Various",
   "description": "A library of react components for use with USACE Water Management Webpages",
   "main": "./dist/groundwork-water.umd.cjs",
-  "module": "./dist/groundwork-water.es.js",
+  "module": "./dist/es/index.js",
   "types": "types/lib/index.d.ts",
   "files": [
     "dist",
@@ -17,8 +17,52 @@
   "exports": {
     ".": {
       "types": "./types/lib/index.d.ts",
-      "import": "./dist/groundwork-water.es.js",
+      "import": "./dist/es/index.js",
       "require": "./dist/groundwork-water.umd.cjs"
+    },
+    "./auth/*": {
+      "types": "./types/lib/components/data/utilities/auth/*.d.ts",
+      "import": "./dist/es/components/data/utilities/auth/*.js"
+    },
+    "./cards/*": {
+      "types": "./types/lib/components/data/cards/*.d.ts",
+      "import": "./dist/es/components/data/cards/*.js"
+    },
+    "./dropdowns/*": {
+      "types": "./types/lib/components/data/dropdowns/*.d.ts",
+      "import": "./dist/es/components/data/dropdowns/*.js"
+    },
+    "./forms/*": {
+      "types": "./types/lib/components/data/forms/*.d.ts",
+      "import": "./dist/es/components/data/forms/*.js"
+    },
+    "./forms/inputs/*": {
+      "types": "./types/lib/components/data/forms/inputs/*.d.ts",
+      "import": "./dist/es/components/data/forms/inputs/*.js"
+    },
+    "./hooks/*": {
+      "types": "./types/lib/components/data/hooks/*.d.ts",
+      "import": "./dist/es/components/data/hooks/*.js"
+    },
+    "./maps/*": {
+      "types": "./types/lib/components/data/maps/*.d.ts",
+      "import": "./dist/es/components/data/maps/*.js"
+    },
+    "./plots/*": {
+      "types": "./types/lib/components/data/plots/*.d.ts",
+      "import": "./dist/es/components/data/plots/*.js"
+    },
+    "./tables/*": {
+      "types": "./types/lib/components/data/tables/*.d.ts",
+      "import": "./dist/es/components/data/tables/*.js"
+    },
+    "./utilities/*": {
+      "types": "./types/lib/components/data/utilities/*.d.ts",
+      "import": "./dist/es/components/data/utilities/*.js"
+    },
+    "./style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
     },
     "./dist/*.css": {
       "import": "./dist/*.css",
@@ -31,7 +75,7 @@
     "link": "npm link && cd docs && npm link @usace-watermanagement/groundwork-water",
     "dev": "cd docs && npm run dev",
     "build": "npm run build-lib",
-    "build-lib": "tsc && vite build --mode lib",
+    "build-lib": "tsc && vite build --mode lib && vite build --mode css",
     "build-local": "npm run build-lib && npm run link",
     "build-docs": "cd docs && vite build",
     "build-docs-prod": "cd docs && vite build",
