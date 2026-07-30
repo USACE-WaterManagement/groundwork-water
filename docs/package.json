@@ -35,7 +35,7 @@
     "@types/ol": "^7.0.0",
     "@types/react": "^18.2.66 || ^19.0.0",
     "@types/react-dom": "^18.2.22 || ^19.0.0",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
