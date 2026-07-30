@@ -90,17 +90,17 @@ export default function CWMSTable({
       return;
     }
 
-    if (!office) {
-      setIsLoading(false);
-      setRawSeries([]);
-      setError("You must specify a 3 letter ID for the office.");
-      return;
-    }
-
     if (inputTSValues) {
       setIsLoading(false);
       setError(null);
       setRawSeries(inputTSValues);
+      return;
+    }
+
+    if (!office) {
+      setIsLoading(false);
+      setRawSeries([]);
+      setError("You must specify a 3 letter ID for the office.");
       return;
     }
 
@@ -237,7 +237,7 @@ export default function CWMSTable({
 
   return (
     <div
-      className={`gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableClassName}`}
+      className={`gww-min-w-0 gww-max-w-full gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableClassName}`}
     >
       <div className="gww-grid gww-gap-3 gww-border-b gww-border-slate-200 gww-p-3 md:gww-hidden">
         {mobileColumnSlots.map((_, slot) => (
@@ -268,13 +268,15 @@ export default function CWMSTable({
       <div
         ref={parentRef}
         className={
-          customMaxHeight ? "gww-overflow-auto" : "gww-overflow-auto gww-max-h-[65vh]"
+          customMaxHeight
+            ? "gww-w-full gww-max-w-full gww-overflow-auto"
+            : "gww-w-full gww-max-w-full gww-overflow-auto gww-max-h-[65vh]"
         }
         style={customMaxHeight ? { maxHeight: customMaxHeight } : undefined}
       >
         <div className="gww-hidden gww-text-sm md:gww-block" role="table">
           <div
-            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-semibold"
+            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-medium gww-text-slate-500"
             role="row"
             style={desktopGridStyle}
           >
@@ -319,16 +321,13 @@ export default function CWMSTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div
-                    className="gww-px-3 gww-py-2 gww-font-mono gww-text-xs gww-text-slate-700"
-                    role="cell"
-                  >
+                  <div className="gww-px-3 gww-py-2 gww-text-slate-900" role="cell">
                     {dayjs(date).format(dateFormat)}
                   </div>
                   {values.map((value, index) => (
                     <div
                       key={timeseriesParams[index].tsid}
-                      className="gww-px-3 gww-py-2 gww-text-right gww-font-mono gww-text-xs"
+                      className="gww-px-3 gww-py-2 gww-text-right gww-text-slate-900"
                       role="cell"
                     >
                       {value}
@@ -342,7 +341,7 @@ export default function CWMSTable({
 
         <div className="gww-text-sm md:gww-hidden" role="table">
           <div
-            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-semibold"
+            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-medium gww-text-slate-500"
             role="row"
             style={mobileGridStyle}
           >
@@ -387,16 +386,13 @@ export default function CWMSTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div
-                    className="gww-px-3 gww-py-2 gww-font-mono gww-text-xs gww-text-slate-700"
-                    role="cell"
-                  >
+                  <div className="gww-px-3 gww-py-2 gww-text-slate-900" role="cell">
                     {dayjs(date).format(dateFormat)}
                   </div>
                   {visibleMobileIndexes.map((index) => (
                     <div
                       key={timeseriesParams[index].tsid}
-                      className="gww-px-3 gww-py-2 gww-text-right gww-font-mono gww-text-xs"
+                      className="gww-px-3 gww-py-2 gww-text-right gww-text-slate-900"
                       role="cell"
                     >
                       {values[index]}

@@ -134,6 +134,27 @@ describe("CWMSTable fetch effect", () => {
 
     expect(requestedUrl(0).origin).toBe("https://prop.example");
   });
+
+  it("renders supplied time-series values without an office or a CDA request", async () => {
+    render(
+      <CWMSTable
+        timeseriesParams={PARAMS}
+        inputTSValues={[
+          {
+            name: TSID,
+            units: "ft",
+            values: [[60_000, 1.111]],
+          },
+        ]}
+      />,
+    );
+
+    await loaded();
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getAllByRole("table")).toHaveLength(2);
+  });
 });
 
 describe("CWMSTable tableOptions", () => {
@@ -168,6 +189,10 @@ describe("CWMSTable tableOptions", () => {
     await loaded();
 
     expect(scrollBox(container).classList.contains(DEFAULT_HEIGHT_CLASS)).toBe(true);
+    expect(scrollBox(container).className).toContain("gww-w-full");
+    expect(scrollBox(container).className).toContain("gww-max-w-full");
+    expect(container.firstChild.className).toContain("gww-min-w-0");
+    expect(container.firstChild.className).toContain("gww-max-w-full");
     expect(scrollBox(container).style.maxHeight).toBe("");
   });
 

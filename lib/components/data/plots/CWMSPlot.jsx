@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
-import Plotly from "plotly.js-basic-dist";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
 import { useMemo } from "react";
@@ -352,11 +351,25 @@ export default function CWMSPlot({
       }
     }
 
-    setIsLoading(false);
+    let cancelled = false;
 
-    Plotly.newPlot(plotElement.current, traces, layout, {
-      responsive: responsive,
-    });
+    async function renderPlot() {
+      const { default: Plotly } = await import("plotly.js-basic-dist");
+      if (cancelled || !plotElement.current) {
+        return;
+      }
+
+      setIsLoading(false);
+      Plotly.newPlot(plotElement.current, traces, layout, {
+        responsive: responsive,
+      });
+    }
+
+    renderPlot();
+
+    return () => {
+      cancelled = true;
+    };
   }, [layout, locationLevelsArray, responsive, staticTraces, timeSeriesArray, tsData]);
 
   return (
