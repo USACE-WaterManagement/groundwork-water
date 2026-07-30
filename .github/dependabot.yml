@@ -1,0 +1,77 @@
+version: 2
+
+updates:
+  # The published component library and its documentation app share much of
+  # their toolchain. Keep updates for the same dependency aligned across both
+  # projects without combining unrelated dependencies into one pull request.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 6
+    versioning-strategy: "increase-if-necessary"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      # Minor and patch updates are grouped only when they update the same
+      # dependency in both npm projects. Major updates remain individual.
+      shared-minor-and-patch:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+        group-by: "dependency-name"
+
+      # Security updates for the build and test toolchain stay separated so
+      # one advisory cannot silently become a multi-package major migration.
+      vite-security:
+        applies-to: "security-updates"
+        patterns:
+          - "vite"
+      vitest-security:
+        applies-to: "security-updates"
+        patterns:
+          - "vitest"
+      vite-react-plugin-security:
+        applies-to: "security-updates"
+        patterns:
+          - "@vitejs/plugin-react"
+      esbuild-security:
+        applies-to: "security-updates"
+        patterns:
+          - "esbuild"
+      eslint-security:
+        applies-to: "security-updates"
+        patterns:
+          - "eslint"
+      typescript-eslint-security:
+        applies-to: "security-updates"
+        patterns:
+          - "@typescript-eslint/eslint-plugin"
+          - "@typescript-eslint/parser"
+
+  # Release, compatibility, and documentation publishing all depend on GitHub
+  # Actions. Check these less frequently and keep major upgrades isolated.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
+    groups:
+      actions-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
