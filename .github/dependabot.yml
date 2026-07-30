@@ -16,6 +16,13 @@ updates:
       semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 3
+    ignore:
+      # 0.5.x requires ESLint 9 and flat config. Keep compatible 0.4.x
+      # patches flowing until the repository completes that migration.
+      - dependency-name: "eslint-plugin-react-refresh"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
     groups:
       library-minor-and-patch:
         applies-to: "version-updates"
@@ -45,6 +52,11 @@ updates:
       semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 3
+    ignore:
+      - dependency-name: "eslint-plugin-react-refresh"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
     groups:
       docs-minor-and-patch:
         applies-to: "version-updates"
