@@ -19,13 +19,34 @@ jobs:
 
       - run: git fetch origin main:main
 
+      - name: Determine whether a changeset is required
+        id: changeset
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [[ "$HEAD_REF" == "changeset-release/main" ]]; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping validation for the Changesets release pull request."
+          elif git diff --quiet main...HEAD -- . \
+            ":(exclude)package-lock.json" \
+            ":(exclude)docs/**"; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping validation for a lockfile/docs-only pull request."
+          else
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Node
+        if: steps.changeset.outputs.required == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: 20
 
       - name: Install dependencies
+        if: steps.changeset.outputs.required == 'true'
         run: npm install --no-save @changesets/cli
 
       - name: Check for required changeset
+        if: steps.changeset.outputs.required == 'true'
         run: npm run check-changeset
