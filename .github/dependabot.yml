@@ -1,63 +1,62 @@
 version: 2
 
 updates:
-  # The published component library and its documentation app share much of
-  # their toolchain. Keep updates for the same dependency aligned across both
-  # projects without combining unrelated dependencies into one pull request.
+  # Batch routine library updates while keeping major and production security
+  # updates isolated for closer review.
   - package-ecosystem: "npm"
-    directories:
-      - "/"
-      - "/docs"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
       timezone: "America/Chicago"
-    open-pull-requests-limit: 6
+    open-pull-requests-limit: 3
     versioning-strategy: "increase-if-necessary"
     cooldown:
       semver-major-days: 30
       semver-minor-days: 7
       semver-patch-days: 3
     groups:
-      # Minor and patch updates are grouped only when they update the same
-      # dependency in both npm projects. Major updates remain individual.
-      shared-minor-and-patch:
+      library-minor-and-patch:
         applies-to: "version-updates"
         patterns:
           - "*"
         update-types:
           - "minor"
           - "patch"
-        group-by: "dependency-name"
+      library-development-security:
+        applies-to: "security-updates"
+        dependency-type: "development"
+        patterns:
+          - "*"
 
-      # Security updates for the build and test toolchain stay separated so
-      # one advisory cannot silently become a multi-package major migration.
-      vite-security:
+  # The documentation app is not published, so its routine and security
+  # updates can each be reviewed as a single batch.
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 2
+    versioning-strategy: "increase-if-necessary"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      docs-minor-and-patch:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      docs-security:
         applies-to: "security-updates"
         patterns:
-          - "vite"
-      vitest-security:
-        applies-to: "security-updates"
-        patterns:
-          - "vitest"
-      vite-react-plugin-security:
-        applies-to: "security-updates"
-        patterns:
-          - "@vitejs/plugin-react"
-      esbuild-security:
-        applies-to: "security-updates"
-        patterns:
-          - "esbuild"
-      eslint-security:
-        applies-to: "security-updates"
-        patterns:
-          - "eslint"
-      typescript-eslint-security:
-        applies-to: "security-updates"
-        patterns:
-          - "@typescript-eslint/eslint-plugin"
-          - "@typescript-eslint/parser"
+          - "*"
 
   # Release, compatibility, and documentation publishing all depend on GitHub
   # Actions. Check these less frequently and keep major upgrades isolated.
