@@ -9,6 +9,7 @@ export interface AuthMethod {
   login: (options?: AuthLoginOptions) => Promise<void>;
   logout: () => Promise<void>;
   isAuth: () => Promise<boolean>;
+  getValidToken?: (minValiditySeconds?: number) => Promise<string | undefined>;
   refresh?: () => Promise<void>;
   refreshInterval?: number;
   statusPollInterval?: number;
