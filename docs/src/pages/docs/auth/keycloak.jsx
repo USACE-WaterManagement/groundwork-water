@@ -104,7 +104,10 @@ function KeycloakDocs() {
         </Text>
         <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
-          requests and updates for the current access token. The interval between
+          requests and updates for the current access token. Call
+          <Code> getValidToken(minValiditySeconds)</Code> immediately before an API
+          request to refresh an expired or soon-to-expire token on demand. Concurrent
+          callers share a single refresh request. The interval between background
           refresh requests can be controlled by the refreshInterval option.
         </Text>
         <Text className="mt-4">
