@@ -1,5 +1,16 @@
 # @usace-watermanagement/groundwork-water
 
+## 4.0.0
+
+### Major Changes
+
+- fdc215b: Improve package output for downstream tree shaking by publishing preserved ESM modules, adding subpath exports, moving styles to an explicit CSS entry, and lazy-loading Plotly and OpenLayers from the components that need them.
+
+### Minor Changes
+
+- e452b73: Add Data Status Summary component
+- 37d2607: Add `getValidToken(minValiditySeconds)` to authentication methods so API clients can retrieve a usable Keycloak access token immediately before sending a request. The Keycloak implementation refreshes expired or soon-to-expire PKCE and direct-grant tokens and coalesces concurrent refresh attempts into one request.
+
 ## 3.11.0
 
 ### Minor Changes
