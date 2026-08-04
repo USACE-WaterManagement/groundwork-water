@@ -1,4 +1,5 @@
 import { Configuration, ConfigurationParameters, TimeSeries } from "cwmsjs";
+import { useMemo } from "react";
 import useCdaUrl from "../utilities/useCdaUrl";
 
 /**
@@ -19,21 +20,27 @@ export const getLatestEntry = (cdaTimeSeries: TimeSeries) => {
  *   1. cdaUrl argument to the data hook
  *   2. URL provided through a wrapping CdaUrlProvider
  *   3. cwmsjs default CDA URL
+ * The returned Configuration keeps a stable identity until the version or the resolved
+ * URL changes, so callers can safely use it (or an API client memoized on it) as an
+ * effect/memo dependency.  Anything new that feeds `configOptions` — a token, custom
+ * middleware, a fetch implementation — must be added to the dependency array below.
  * @param version String indicating the CDA API version to use for the request.
  * @param hookCdaUrl The cdaUrl passed to the CDA data hook as an argument.
  * @returns
  */
 export const useCdaConfig = (version: "v1" | "v2", hookCdaUrl?: string) => {
-  let accept = "application/json";
-  if (version == "v2") accept += ";version=2";
-
-  const configOptions: ConfigurationParameters = {
-    headers: { accept },
-  };
-
   const providedCdaUrl = useCdaUrl();
   const userCdaUrl = hookCdaUrl ?? providedCdaUrl;
-  if (userCdaUrl) configOptions.basePath = userCdaUrl;
 
-  return new Configuration(configOptions);
+  return useMemo(() => {
+    let accept = "application/json";
+    if (version == "v2") accept += ";version=2";
+
+    const configOptions: ConfigurationParameters = {
+      headers: { accept },
+    };
+    if (userCdaUrl) configOptions.basePath = userCdaUrl;
+
+    return new Configuration(configOptions);
+  }, [version, userCdaUrl]);
 };

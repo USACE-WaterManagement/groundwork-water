@@ -41,8 +41,8 @@ function DocsPage({
   return (
     <Container>
       {navigationButtons()}
-      <div className="flex flex-row flex-between mb-5">
-        <div className="flex flex-col flex-grow">{children}</div>
+      <div className="mb-5 flex min-w-0 flex-row flex-between">
+        <div className="flex min-w-0 flex-grow flex-col">{children}</div>
       </div>
       {navigationButtons()}
     </Container>
