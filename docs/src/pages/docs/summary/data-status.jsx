@@ -32,7 +32,7 @@ const returnParams = [
   {
     name: "linkPath",
     type: "string",
-    desc: "A url path to a project or some other page. I.e. /{office}/projects would end up pointing to /{office}/projects/{location}",
+    desc: "A url path to a gage or some other page. I.e. /{office}/gage would end up pointing to /{office}/gages/{gage}",
   },
   {
     name: "lookBackHours",
@@ -138,7 +138,7 @@ function DataStatusPage() {
         office="SWT"
         tsids={swtTsids}
         pageSize={12}
-        linkPath="/SWT/projects"
+      //  linkPath="/SWT/projects"
         lookBackHours={6}
         dateFormat="MMM DD HH:mm z"
         showBadges={true}
