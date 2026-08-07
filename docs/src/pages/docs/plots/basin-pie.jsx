@@ -16,7 +16,7 @@ const levels = {
   "CHAR.Stor.Inst.0.Top of Inactive": [0, 30],
 };
 
-const timeSeries = {
+const fixtureTsData = {
   "ALFA.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 72],
   "BRAV.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 96],
 };
@@ -41,7 +41,7 @@ const levelData = {
   "CHAR.Stor.Inst.0.Top of Inactive": ["2026-08-07T12:00:00Z", 30],
 };
 
-const timeSeriesData = {
+const tsData = {
   "ALFA.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [
     "2026-08-07T12:00:00Z",
     72,
@@ -57,8 +57,32 @@ const timeSeriesData = {
   projects={["ALFA", "BRAV", "CHAR"]}
   pool="conservation"
   levelData={levelData}
-  timeSeriesData={timeSeriesData}
+  tsData={tsData}
   asOf="2026-08-07T12"
+  onProjectSelect={(projectId) =>
+    navigate(\`/project/\${encodeURIComponent(projectId)}\`)
+  }
+/>`;
+
+const basinPieFetchExample = `import { BasinPie } from "@usace-watermanagement/groundwork-water";
+
+const projects = ["ALFA", "BRAV", "CHAR"];
+const levelIds = projects.flatMap((project) => [
+  \`\${project}.Stor.Inst.0.Top of Flood\`,
+  \`\${project}.Stor.Inst.0.Top of Conservation\`,
+  \`\${project}.Stor.Inst.0.Top of Inactive\`,
+]);
+const tsids = projects.map(
+  (project) =>
+    \`\${project}.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev\`,
+);
+
+<BasinPie
+  projects={projects}
+  pool="conservation"
+  office="SWT"
+  levelIds={levelIds}
+  tsids={tsids}
   onProjectSelect={(projectId) =>
     navigate(\`/project/\${encodeURIComponent(projectId)}\`)
   }
@@ -92,7 +116,8 @@ function BasinPieDocs() {
         <Text>
           BasinPie converts already-loaded CWMS storage levels and time-series values
           into an interactive basin storage graphic. Data fetching remains controlled by
-          the consuming application.
+          the consuming application when levelData and tsData are provided. In this
+          mode, no office is needed because BasinPie makes no CDA requests.
         </Text>
         <div
           className="gw-mx-auto gw-max-w-3xl gw-text-center"
@@ -102,14 +127,25 @@ function BasinPieDocs() {
             id="basin-pie-example"
             projects={["ALFA", "BRAV", "CHAR"]}
             levelData={levels}
-            timeSeriesData={timeSeries}
+            tsData={fixtureTsData}
             pool="conservation"
             asOf="2026-08-07T12"
             onProjectSelect={setSelected}
           />
           <Text>Selected project: {selected}</Text>
         </div>
+        <Text className="gw-font-bold gw-mt-4">
+          Using data already loaded by the app
+        </Text>
         <CodeBlock language="jsx">{basinPieExample}</CodeBlock>
+        <Text className="gw-font-bold gw-mt-6">Loading identifiers from CDA</Text>
+        <Text>
+          Provide office, levelIds, and tsids to let BasinPie load missing datasets.
+          Level IDs use CDA&apos;s level time-series endpoint; TSIDs use the standard
+          time-series endpoint. The default window is the three hours ending now and can
+          be overridden with begin and end.
+        </Text>
+        <CodeBlock language="jsx">{basinPieFetchExample}</CodeBlock>
       </UsaceBox>
 
       <Divider text="Generic radial chart" className="gw-mt-8" />

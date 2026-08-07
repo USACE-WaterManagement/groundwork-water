@@ -4,6 +4,7 @@ import BasinPie, {
   DEFAULT_LEVEL_ID_SUFFIXES,
   DEFAULT_TIME_SERIES_ID_SUFFIXES,
   createBasinPieModel,
+  loadBasinPieData,
 } from "../BasinPie";
 
 const levelData = {
@@ -62,6 +63,56 @@ describe("BasinPie", () => {
     expect(model.segments.every((segment) => segment.fillRatio === null)).toBe(true);
   });
 
+  it("loads levelIds and tsids with the office-scoped CDA time-series APIs", async () => {
+    const onProgress = vi.fn();
+    const levelsApi = {
+      getLevelsWithLevelIdTimeSeries: vi.fn().mockResolvedValue({
+        values: [
+          [1, 99, 0],
+          [2, 100, 0],
+        ],
+      }),
+    };
+    const timeSeriesApi = {
+      getTimeSeries: vi.fn().mockResolvedValue({
+        values: [
+          [1, null, 0],
+          [2, 50, 0],
+        ],
+      }),
+    };
+
+    const result = await loadBasinPieData({
+      levelIds: ["A.level"],
+      tsids: ["A.timeseries"],
+      office: "SWT",
+      begin: "2026-08-07T11:00:00Z",
+      end: "2026-08-07T12:00:00Z",
+      levelsApi,
+      timeSeriesApi,
+      onProgress,
+    });
+
+    expect(levelsApi.getLevelsWithLevelIdTimeSeries).toHaveBeenCalledWith(
+      expect.objectContaining({ levelId: "A.level", office: "SWT" }),
+    );
+    expect(timeSeriesApi.getTimeSeries).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "A.timeseries", office: "SWT" }),
+    );
+    expect(result).toEqual({
+      levelData: { "A.level": [2, 100, 0] },
+      tsData: { "A.timeseries": [2, 50, 0] },
+    });
+    expect(onProgress).toHaveBeenLastCalledWith(2, 2);
+  });
+
+  it("requires office only when identifiers need to be loaded", () => {
+    render(
+      <BasinPie projects={["A"]} levelIds={["A.level"]} tsids={["A.timeseries"]} />,
+    );
+    expect(screen.getByRole("alert").textContent).toContain("office");
+  });
+
   it("supports suffix overrides, loading, errors, and project selection", () => {
     const suffixes = {
       topOfFlood: ".tf",
@@ -74,7 +125,7 @@ describe("BasinPie", () => {
       <BasinPie
         projects={["X"]}
         levelData={{ "X.tc": [0, 100], "X.ti": [0, 0], "X.tf": [0, 200] }}
-        timeSeriesData={{ "X.c": [0, 40] }}
+        tsData={{ "X.c": [0, 40] }}
         levelIdSuffixes={suffixes}
         timeSeriesIdSuffixes={series}
         onProjectSelect={onProjectSelect}
