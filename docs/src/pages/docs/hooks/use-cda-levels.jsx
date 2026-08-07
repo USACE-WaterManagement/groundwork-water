@@ -106,6 +106,12 @@ function UseCdaLevels() {
             CWMSPlot
           </Link>
         </Text>
+        <Text className="mt-2">
+          This hook uses the exact <Code>/levels/&#123;level-id&#125;/timeseries</Code>{" "}
+          endpoint rather than the slower wildcard levels listing endpoint. Dynamic
+          request lists can use <Code>fetchCdaLevelValues</Code>, which uses the same
+          operation and keys results by each requested level ID.
+        </Text>
         <QueryClientWarning />
       </div>
       <Divider text="Example Usage" className="mt-8" />

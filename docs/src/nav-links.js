@@ -164,6 +164,11 @@ export default [
         text: "CWMS Plot",
         href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
+      {
+        id: "basin-pie",
+        text: "Basin Pie",
+        href: `${BASE_URL}#/docs/plots/basin-pie`,
+      },
     ],
   },
   {

@@ -11,6 +11,8 @@ import {
 } from "./components/data/tables/tableData";
 import GageMap from "./components/data/maps/GageMap";
 import CWMSPlot from "./components/data/plots/CWMSPlot";
+import BasinPie from "./components/data/plots/BasinPie";
+import RadialFillChart from "./components/data/plots/RadialFillChart";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
 import DataStatus from "./components/data/summary/DataStatus";
 
@@ -53,6 +55,10 @@ import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 import useDataStatusFile from "./components/data/hooks/useDataStatusFile";
+import {
+  fetchCdaLevelTimeSeries,
+  fetchCdaLevelValues,
+} from "./components/data/helpers/levels";
 
 // files
 import useCdaBlob from "./components/data/hooks/useCdaBlob";
@@ -89,6 +95,8 @@ export {
   downloadBlob,
   GageMap,
   CWMSPlot,
+  BasinPie,
+  RadialFillChart,
   CdaLatestValueCard,
   CdaUrlProvider,
   DataStatus,
@@ -104,6 +112,8 @@ export {
   useCdaTimeSeriesGroup,
   useCdaOffices,
   useDataStatusFile,
+  fetchCdaLevelTimeSeries,
+  fetchCdaLevelValues,
   useDebounce,
   useNwpsGauge,
   useNwpsGaugeData,
