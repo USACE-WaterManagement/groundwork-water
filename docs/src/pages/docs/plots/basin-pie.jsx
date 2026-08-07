@@ -27,6 +27,28 @@ const radialSegments = [
   { id: "west", label: "West", weight: 60, fillRatio: null },
 ];
 
+const cdaProjects = ["KEYS", "KAWL"];
+const cdaLevelIds = cdaProjects.flatMap((project) => [
+  `${project}.Stor.Inst.0.Top of Flood`,
+  `${project}.Stor.Inst.0.Top of Conservation`,
+  `${project}.Stor.Inst.0.Top of Inactive`,
+]);
+const cdaTsids = cdaProjects.map(
+  (project) => `${project}.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev`,
+);
+const cdaPreviewLevels = {
+  "KEYS.Stor.Inst.0.Top of Flood": [0, 500],
+  "KEYS.Stor.Inst.0.Top of Conservation": [0, 350],
+  "KEYS.Stor.Inst.0.Top of Inactive": [0, 50],
+  "KAWL.Stor.Inst.0.Top of Flood": [0, 600],
+  "KAWL.Stor.Inst.0.Top of Conservation": [0, 400],
+  "KAWL.Stor.Inst.0.Top of Inactive": [0, 100],
+};
+const cdaPreviewTsData = {
+  "KEYS.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 225],
+  "KAWL.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 150],
+};
+
 const basinPieExample = `import { BasinPie } from "@usace-watermanagement/groundwork-water";
 
 const levelData = {
@@ -66,7 +88,7 @@ const tsData = {
 
 const basinPieFetchExample = `import { BasinPie } from "@usace-watermanagement/groundwork-water";
 
-const projects = ["ALFA", "BRAV", "CHAR"];
+const projects = ["KEYS", "KAWL"];
 const levelIds = projects.flatMap((project) => [
   \`\${project}.Stor.Inst.0.Top of Flood\`,
   \`\${project}.Stor.Inst.0.Top of Conservation\`,
@@ -105,6 +127,7 @@ const segments = [
 
 function BasinPieDocs() {
   const [selected, setSelected] = useState("None");
+  const [cdaSelected, setCdaSelected] = useState("None");
 
   return (
     <DocsPage
@@ -118,6 +141,9 @@ function BasinPieDocs() {
           into an interactive basin storage graphic. Data fetching remains controlled by
           the consuming application when levelData and tsData are provided. In this
           mode, no office is needed because BasinPie makes no CDA requests.
+        </Text>
+        <Text className="gw-font-bold gw-mt-4">
+          Using data already loaded by the app
         </Text>
         <div
           className="gw-mx-auto gw-max-w-3xl gw-text-center"
@@ -134,9 +160,6 @@ function BasinPieDocs() {
           />
           <Text>Selected project: {selected}</Text>
         </div>
-        <Text className="gw-font-bold gw-mt-4">
-          Using data already loaded by the app
-        </Text>
         <CodeBlock language="jsx">{basinPieExample}</CodeBlock>
         <Text className="gw-font-bold gw-mt-6">Loading identifiers from CDA</Text>
         <Text>
@@ -145,6 +168,28 @@ function BasinPieDocs() {
           time-series endpoint. The default window is the three hours ending now and can
           be overridden with begin and end.
         </Text>
+        <Text>
+          This chart uses fixed representative responses so the documentation remains
+          available when CDA is offline. The example below it omits those data props and
+          performs the live requests.
+        </Text>
+        <div
+          className="gw-mx-auto gw-max-w-3xl gw-text-center"
+          style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        >
+          <BasinPie
+            id="basin-pie-cda-example"
+            projects={cdaProjects}
+            pool="conservation"
+            office="SWT"
+            levelIds={cdaLevelIds}
+            tsids={cdaTsids}
+            levelData={cdaPreviewLevels}
+            tsData={cdaPreviewTsData}
+            onProjectSelect={setCdaSelected}
+          />
+          <Text>Selected project: {cdaSelected}</Text>
+        </div>
         <CodeBlock language="jsx">{basinPieFetchExample}</CodeBlock>
       </UsaceBox>
 
