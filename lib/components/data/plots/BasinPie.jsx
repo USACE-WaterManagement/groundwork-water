@@ -13,8 +13,6 @@ const DEFAULT_TIME_SERIES_ID_SUFFIXES = {
   conservation: ".Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev",
 };
 
-const MISSING_VALUE = -901;
-
 const entryValue = (entry) => {
   const value = Array.isArray(entry) ? entry[1] : entry;
   return typeof value === "number" && Number.isFinite(value) ? value : null;
@@ -59,7 +57,7 @@ const createBasinPieModel = ({
         `${project}${pool === "flood" ? timeSeriesIdSuffixes.flood : timeSeriesIdSuffixes.conservation}`
       ],
     );
-    const missing = storage === null || storage === MISSING_VALUE;
+    const missing = storage === null;
 
     totalCapacity += capacity;
     if (!missing && storage > 0) totalStorage += storage;

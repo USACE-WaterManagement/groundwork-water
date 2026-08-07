@@ -56,9 +56,7 @@ describe("BasinPie", () => {
       projects: ["A", "B", "MISSING"],
       pool: "conservation",
       levelData,
-      timeSeriesData: {
-        [`A${DEFAULT_TIME_SERIES_ID_SUFFIXES.conservation}`]: [0, -901],
-      },
+      timeSeriesData: {},
     });
     expect(model.segments).toHaveLength(2);
     expect(model.segments.every((segment) => segment.fillRatio === null)).toBe(true);

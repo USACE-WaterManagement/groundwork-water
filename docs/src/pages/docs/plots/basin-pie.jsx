@@ -19,7 +19,6 @@ const levels = {
 const timeSeries = {
   "ALFA.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 72],
   "BRAV.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, 96],
-  "CHAR.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [0, -901],
 };
 
 const radialSegments = [
@@ -51,11 +50,7 @@ const timeSeriesData = {
     "2026-08-07T12:00:00Z",
     96,
   ],
-  // -901 is rendered as a missing-storage segment.
-  "CHAR.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [
-    "2026-08-07T12:00:00Z",
-    -901,
-  ],
+  // Omitting CHAR's series renders it as a missing-storage segment.
 };
 
 <BasinPie
