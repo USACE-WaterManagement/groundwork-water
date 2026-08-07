@@ -20,6 +20,25 @@ const polarPoint = (centerX, centerY, radius, angle) => {
   };
 };
 
+const TEXT_WIDTH_FACTOR = 0.62;
+
+const estimatedTextWidth = (text, fontSize) =>
+  String(text).length * fontSize * TEXT_WIDTH_FACTOR;
+
+const fittedFontSize = (text, preferredFontSize, availableWidth) => {
+  const estimatedWidth = estimatedTextWidth(text, preferredFontSize);
+  return estimatedWidth > availableWidth && estimatedWidth > 0
+    ? (preferredFontSize * availableWidth) / estimatedWidth
+    : preferredFontSize;
+};
+
+const clampedTextX = (x, text, fontSize, viewBoxWidth, padding = fontSize / 2) => {
+  const halfWidth = estimatedTextWidth(text, fontSize) / 2;
+  const minimum = padding + halfWidth;
+  const maximum = viewBoxWidth - padding - halfWidth;
+  return minimum > maximum ? viewBoxWidth / 2 : Math.min(maximum, Math.max(minimum, x));
+};
+
 const radialSegmentPath = (centerX, centerY, radius, startAngle, endAngle) => {
   if (!Number.isFinite(radius) || radius <= 0) return "";
 
@@ -59,6 +78,72 @@ const normalizeSegments = (segments) =>
           ? null
           : Math.min(1, Math.max(0, segment.fillRatio)),
     }));
+
+const layoutSegmentLabels = (
+  segments,
+  { centerX, centerY, radius, fontSize, viewBoxWidth, viewBoxHeight, title, caption },
+) => {
+  const labels = segments.map((segment, index) => {
+    const middleAngle =
+      segment.startAngle + (segment.endAngle - segment.startAngle) / 2;
+    const middleRadians = (middleAngle * Math.PI) / 180;
+    const labelRadius =
+      segment.endAngle - segment.startAngle < 10 ? radius * 1.135 : radius * 1.12;
+    const labelPoint = polarPoint(centerX, centerY, labelRadius, middleAngle);
+    const percentage =
+      segment.fillRatio === null ? null : Math.round(segment.fillRatio * 100);
+    const visibleLabel =
+      percentage === null
+        ? `${segment.label} Missing ⚠`
+        : `${segment.label} ${percentage}%`;
+    const labelFontSize = fittedFontSize(visibleLabel, fontSize, viewBoxWidth * 0.4);
+
+    return {
+      index,
+      segment,
+      middleRadians,
+      percentage,
+      visibleLabel,
+      labelFontSize,
+      labelX: clampedTextX(labelPoint.x, visibleLabel, labelFontSize, viewBoxWidth),
+      labelY: labelPoint.y,
+      side: Math.sin(middleRadians) < 0 ? "left" : "right",
+    };
+  });
+
+  const topLimit = title ? fontSize * 3 : fontSize;
+  const bottomLimit = caption
+    ? viewBoxHeight - fontSize * 2.25
+    : viewBoxHeight - fontSize;
+
+  ["left", "right"].forEach((side) => {
+    const sideLabels = labels
+      .filter((label) => label.side === side)
+      .sort((a, b) => a.labelY - b.labelY);
+
+    sideLabels.forEach((label, index) => {
+      if (index === 0) {
+        label.labelY = Math.max(topLimit, label.labelY);
+        return;
+      }
+      const previous = sideLabels[index - 1];
+      const gap = Math.max(previous.labelFontSize, label.labelFontSize) * 1.25;
+      label.labelY = Math.max(label.labelY, previous.labelY + gap);
+    });
+
+    if (sideLabels.at(-1)?.labelY > bottomLimit) {
+      sideLabels.at(-1).labelY = bottomLimit;
+      for (let index = sideLabels.length - 2; index >= 0; index -= 1) {
+        const label = sideLabels[index];
+        const next = sideLabels[index + 1];
+        const gap = Math.max(label.labelFontSize, next.labelFontSize) * 1.25;
+        label.labelY = Math.min(label.labelY, next.labelY - gap);
+      }
+    }
+  });
+
+  return labels.sort((a, b) => a.index - b.index);
+};
 
 const RadialFillChart = ({
   segments = [],
@@ -101,6 +186,16 @@ const RadialFillChart = ({
     const startAngle = laidOut.at(-1)?.endAngle ?? 0;
     return [...laidOut, { ...segment, startAngle, endAngle: startAngle + angle }];
   }, []);
+  const labelLayouts = layoutSegmentLabels(chartSegments, {
+    centerX,
+    centerY,
+    radius,
+    fontSize,
+    viewBoxWidth,
+    viewBoxHeight,
+    title,
+    caption,
+  });
   const interactive = typeof onSegmentSelect === "function";
 
   return (
@@ -122,7 +217,7 @@ const RadialFillChart = ({
           y={fontSize * 1.5}
           textAnchor="middle"
           fontFamily="Arial, sans-serif"
-          fontSize={fontSize}
+          fontSize={fittedFontSize(title, fontSize, viewBoxWidth - fontSize * 2)}
           fontWeight="bold"
         >
           {title}
@@ -130,22 +225,15 @@ const RadialFillChart = ({
       ) : null}
 
       <g data-chart-layer="segments">
-        {chartSegments.map((segment, index) => {
+        {labelLayouts.map((layout, index) => {
+          const { segment } = layout;
           const active = activeIndex === index;
-          const middleAngle =
-            segment.startAngle + (segment.endAngle - segment.startAngle) / 2;
-          const middleRadians = (middleAngle * Math.PI) / 180;
-          const offsetX = active ? hoverOffset * Math.sin(middleRadians) : 0;
-          const offsetY = active ? -hoverOffset * Math.cos(middleRadians) : 0;
-          const labelRadius =
-            segment.endAngle - segment.startAngle < 10 ? radius * 1.135 : radius * 1.12;
-          const labelPoint = polarPoint(centerX, centerY, labelRadius, middleAngle);
-          const percentage =
-            segment.fillRatio === null ? null : Math.round(segment.fillRatio * 100);
+          const offsetX = active ? hoverOffset * Math.sin(layout.middleRadians) : 0;
+          const offsetY = active ? -hoverOffset * Math.cos(layout.middleRadians) : 0;
           const accessibleLabel =
-            percentage === null
+            layout.percentage === null
               ? `${segment.label}: data missing`
-              : `${segment.label}: ${percentage}% full`;
+              : `${segment.label}: ${layout.percentage}% full`;
           const selectSegment = () => {
             if (interactive) onSegmentSelect(segment);
           };
@@ -199,19 +287,17 @@ const RadialFillChart = ({
                 ) : null}
               </g>
               <text
-                x={labelPoint.x}
-                y={labelPoint.y}
+                x={layout.labelX}
+                y={layout.labelY}
                 dy="0.35em"
                 textAnchor="middle"
-                fill={percentage === null ? "#b91c1c" : "black"}
+                fill={layout.percentage === null ? "#b91c1c" : "black"}
                 fontFamily="Arial, sans-serif"
-                fontSize={fontSize}
+                fontSize={layout.labelFontSize}
                 opacity={activeIndex !== null && !active ? 0.1 : 1}
                 aria-hidden="true"
               >
-                {percentage === null
-                  ? `${segment.label} Missing ⚠`
-                  : `${segment.label} ${percentage}%`}
+                {layout.visibleLabel}
               </text>
             </g>
           );
@@ -222,7 +308,7 @@ const RadialFillChart = ({
         {[1, 0.75, 0.5, 0.25].map((percentage) => (
           <g key={percentage}>
             <text
-              x={centerX - 15}
+              x={centerX - Math.max(15, fontSize * 3.25)}
               y={centerY - radius * percentage - strokeWidth * 2}
               textAnchor="middle"
               dominantBaseline="middle"
@@ -266,7 +352,7 @@ const RadialFillChart = ({
           y={viewBoxHeight - fontSize / 2}
           textAnchor="middle"
           fontFamily="Arial, sans-serif"
-          fontSize={fontSize}
+          fontSize={fittedFontSize(caption, fontSize, viewBoxWidth - fontSize * 2)}
           fontWeight="bold"
         >
           {caption}
@@ -276,5 +362,13 @@ const RadialFillChart = ({
   );
 };
 
-export { RadialFillChart, normalizeSegments, radialSegmentPath };
+export {
+  RadialFillChart,
+  clampedTextX,
+  estimatedTextWidth,
+  fittedFontSize,
+  layoutSegmentLabels,
+  normalizeSegments,
+  radialSegmentPath,
+};
 export default RadialFillChart;

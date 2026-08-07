@@ -3,6 +3,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import {
   RadialFillChart,
+  clampedTextX,
+  estimatedTextWidth,
+  fittedFontSize,
+  layoutSegmentLabels,
   normalizeSegments,
   radialSegmentPath,
 } from "../RadialFillChart";
@@ -26,6 +30,43 @@ describe("RadialFillChart", () => {
   it("creates finite paths, including a full-circle segment", () => {
     expect(radialSegmentPath(100, 100, 80, 0, 360)).toMatch(/A 80 80 0 1 1/);
     expect(radialSegmentPath(100, 100, 0, 0, 90)).toBe("");
+  });
+
+  it("keeps labels inside the view box and fits long text", () => {
+    const text = "KEYS 75%";
+    const fontSize = 16;
+    const x = clampedTextX(5, text, fontSize, 600);
+    const halfWidth = estimatedTextWidth(text, fontSize) / 2;
+
+    expect(x - halfWidth).toBeGreaterThanOrEqual(fontSize / 2);
+    expect(clampedTextX(595, text, fontSize, 600) + halfWidth).toBeLessThanOrEqual(
+      600 - fontSize / 2,
+    );
+    expect(fittedFontSize("A very long chart caption", 16, 80)).toBeLessThan(16);
+  });
+
+  it("separates labels clustered at the top of a large chart", () => {
+    const layouts = layoutSegmentLabels(
+      [
+        { label: "A", fillRatio: 0.01, startAngle: 0, endAngle: 4 },
+        { label: "B", fillRatio: 0.02, startAngle: 4, endAngle: 10 },
+        { label: "C", fillRatio: 0.03, startAngle: 10, endAngle: 18 },
+      ],
+      {
+        centerX: 300,
+        centerY: 300,
+        radius: 240,
+        fontSize: 16,
+        viewBoxWidth: 600,
+        viewBoxHeight: 600,
+        title: "Storage",
+        caption: "Updated now",
+      },
+    );
+
+    expect(layouts[0].labelY).toBeGreaterThanOrEqual(48);
+    expect(layouts[1].labelY - layouts[0].labelY).toBeGreaterThanOrEqual(20);
+    expect(layouts[2].labelY - layouts[1].labelY).toBeGreaterThanOrEqual(20);
   });
 
   it("renders percentages, missing data, and escaped text", () => {
