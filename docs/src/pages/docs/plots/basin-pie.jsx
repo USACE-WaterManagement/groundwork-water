@@ -30,6 +30,34 @@ const radialSegments = [
 
 const basinPieExample = `import { BasinPie } from "@usace-watermanagement/groundwork-water";
 
+const levelData = {
+  "ALFA.Stor.Inst.0.Top of Flood": ["2026-08-07T12:00:00Z", 220],
+  "ALFA.Stor.Inst.0.Top of Conservation": ["2026-08-07T12:00:00Z", 160],
+  "ALFA.Stor.Inst.0.Top of Inactive": ["2026-08-07T12:00:00Z", 40],
+  "BRAV.Stor.Inst.0.Top of Flood": ["2026-08-07T12:00:00Z", 180],
+  "BRAV.Stor.Inst.0.Top of Conservation": ["2026-08-07T12:00:00Z", 140],
+  "BRAV.Stor.Inst.0.Top of Inactive": ["2026-08-07T12:00:00Z", 20],
+  "CHAR.Stor.Inst.0.Top of Flood": ["2026-08-07T12:00:00Z", 150],
+  "CHAR.Stor.Inst.0.Top of Conservation": ["2026-08-07T12:00:00Z", 110],
+  "CHAR.Stor.Inst.0.Top of Inactive": ["2026-08-07T12:00:00Z", 30],
+};
+
+const timeSeriesData = {
+  "ALFA.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [
+    "2026-08-07T12:00:00Z",
+    72,
+  ],
+  "BRAV.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [
+    "2026-08-07T12:00:00Z",
+    96,
+  ],
+  // -901 is rendered as a missing-storage segment.
+  "CHAR.Stor-Conservation Pool.Inst.1Hour.0.Ccp-Rev": [
+    "2026-08-07T12:00:00Z",
+    -901,
+  ],
+};
+
 <BasinPie
   projects={["ALFA", "BRAV", "CHAR"]}
   pool="conservation"
