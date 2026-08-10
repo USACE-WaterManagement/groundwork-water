@@ -138,6 +138,12 @@ function CWMSPlotDocs() {
           customization of the appearance of the plot. Reasonable defaults are used if
           specific options are not provided.
         </Text>
+        <Text className="mt-2">
+          Applications that already loaded time-series data can pass those CDA responses
+          through <Code>inputTSValues</Code> to avoid duplicate requests. The plot shows
+          loading, warning, empty-data, and error feedback when CDA or Plotly cannot
+          complete the requested view.
+        </Text>
       </UsaceBox>
       <Divider text="Example" className="mt-8" />
       <CWMSPlotExample />

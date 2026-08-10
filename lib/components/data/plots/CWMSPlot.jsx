@@ -163,7 +163,7 @@ export default function CWMSPlot({
       return;
     }
 
-    if (!office) {
+    if (!office && (!inputTSValues || levels.length)) {
       setError("You must specify a 3 letter ID for the office.");
       setWarning(null);
       setIsLoading(false);
