@@ -155,6 +155,23 @@ describe("CWMSInputTable nearest value loading", () => {
     expect(tsidOffsets).toContain(`${COLUMNS[1].tsid}_3600`);
   });
 
+  // Reference-column pattern: a disabled table alongside an editable one shows
+  // the operator what the value was without competing to submit it. Relies on
+  // disable gating registration but not loading.
+  it("still loads values when disabled so it can act as a reference column", () => {
+    mockHook({ values: { [`${COLUMNS[0].tsid}_0`]: 100.5 } });
+    renderTable({ disable: true });
+
+    expect(screen.getByDisplayValue("100.5")).toBeTruthy();
+  });
+
+  it("does not register cells when disabled, leaving the entry table to submit", () => {
+    mockHook({ values: { [`${COLUMNS[0].tsid}_0`]: 100.5 } });
+    const { registerInput } = renderTable({ disable: true });
+
+    expect(registerInput).not.toHaveBeenCalled();
+  });
+
   it("shows value timestamp tooltip when showValueTimestamp is true", () => {
     const ts = new Date("2025-01-15T10:30:00Z").getTime();
     mockHook({

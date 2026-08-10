@@ -280,6 +280,76 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 </CWMSForm>`}
       </CodeBlock>
 
+      <Divider text="Previous Values as a Reference Column" className="mt-8" />
+      <Text className="mb-4">
+        Loading the previous value straight into the entry cells is not always what you
+        want - an operator updating one gate out of thirty may prefer to see the last
+        recorded setting <em>next to</em> an empty field rather than edit on top of it.
+        Pair a disabled reference table with a normal entry table to get that.
+      </Text>
+      <Text className="mb-4">
+        A disabled input does not register with the form, so the reference table
+        displays values but never submits them. The entry table registers as usual and
+        is the only one that writes. Because fetching happens at the form level, both
+        tables referencing the same time series still cost a single request.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+          <div className="font-medium mb-1">Last recorded</div>
+          <CWMSInputTable
+            columns={[
+              { tsid: "Gate 1", label: "Gate 1", units: "ft", precision: 2 },
+              { tsid: "Gate 2", label: "Gate 2", units: "ft", precision: 2 },
+            ]}
+            timeoffsets={[0]}
+            loadNearest="prev"
+            showValueTimestamp={true}
+            showTimestamps={false}
+            disable
+          />
+          <div className="font-medium mb-1 mt-4">New setting</div>
+          <CWMSInputTable
+            columns={[
+              { tsid: "Gate 1", label: "Gate 1", units: "ft", precision: 2 },
+              { tsid: "Gate 2", label: "Gate 2", units: "ft", precision: 2 },
+            ]}
+            timeoffsets={[0]}
+            showTimestamps={false}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Reference table: shows the last recorded value, never submits.
+// Entry table: starts empty and is the one that writes.
+const GATES = [
+  { tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1", units: "ft", precision: 2 },
+  { tsid: "PROJ.Opening-Gate2.Inst.15Minutes.0.Ccp-Rev", label: "Gate 2", units: "ft", precision: 2 },
+];
+
+<CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+  <CWMSInputTable
+    columns={GATES}
+    timeoffsets={[0]}
+    loadNearest="prev"
+    showValueTimestamp={true}   // hover a cell to see when the value is from
+    disable                     // disabled inputs do not register, so this never submits
+  />
+  <CWMSInputTable
+    columns={GATES}
+    timeoffsets={[0]}
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        Use <Code className="p-1">loadNearest</Code> directly on the entry table instead
+        when the operator is confirming or nudging existing values rather than entering
+        them fresh - the previous value becomes the starting point, and anything they do
+        not touch is submitted unchanged.
+      </Text>
+
       <Divider text="Without Timestamps" className="mt-8" />
       <Text className="mb-4">
         You can hide the timestamp column for a more compact view.
