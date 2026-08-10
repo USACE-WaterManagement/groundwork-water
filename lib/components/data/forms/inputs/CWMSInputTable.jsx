@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
-import useLoadNearestValues from "../hooks/useLoadNearestValues";
+import { useNearestValues } from "../hooks/useNearestValueStore";
 
 function CWMSInputTable({
   className,
@@ -22,7 +22,7 @@ function CWMSInputTable({
   required = false,
   transpose = false,
 }) {
-  const { registerInput, getTimestampForInput, office, cdaUrl, baseTimestamp } =
+  const { registerInput, getTimestampForInput, baseTimestamp } =
     useContext(FormContext);
 
   // Initialize matrixData from column defaultValues
@@ -49,15 +49,12 @@ function CWMSInputTable({
     values: loadedValues,
     timestamps: loadedTimestamps,
     isPending: isLoadingNearest,
-  } = useLoadNearestValues({
+  } = useNearestValues({
     columns,
     timeoffsets,
     strategy: loadNearest || "prev",
-    getTimestampForInput,
-    office,
-    cdaUrl,
     defaultUnits: units,
-    enabled: !!office && !!loadNearest && columns.length > 0 && timeoffsets.length > 0,
+    enabled: !!loadNearest && columns.length > 0 && timeoffsets.length > 0,
   });
 
   useEffect(() => {

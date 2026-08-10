@@ -25,7 +25,12 @@ import {
 } from "./components/data/forms/hooks/useCwmsFormSubmit";
 import useLoadNearestValues, {
   selectNearestValue,
+  useNearestSeriesData,
 } from "./components/data/forms/hooks/useLoadNearestValues";
+import {
+  useNearestValues,
+  useNearestValueStore,
+} from "./components/data/forms/hooks/useNearestValueStore";
 import {
   showSuccessToast,
   showErrorToast,
@@ -119,6 +124,9 @@ export {
   useFormValidation,
   useSubmissionFormatter,
   useLoadNearestValues,
+  useNearestSeriesData,
+  useNearestValues,
+  useNearestValueStore,
   selectNearestValue,
   // Toast utilities
   showSuccessToast,

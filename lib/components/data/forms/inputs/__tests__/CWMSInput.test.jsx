@@ -2,8 +2,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { FormContext } from "../../CWMSForm";
 import { CWMSInput } from "../CWMSInput";
 
-vi.mock("../../hooks/useLoadNearestValues", () => ({
-  default: () => ({ values: {}, timestamps: {}, isPending: false }),
+vi.mock("../../hooks/useNearestValueStore", () => ({
+  useNearestValues: () => ({ values: {}, timestamps: {}, isPending: false }),
 }));
 
 describe("CWMSInput", () => {

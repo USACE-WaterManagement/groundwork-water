@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { FormContext } from "../../CWMSForm";
 import { CWMSInputTable } from "../CWMSInputTable";
-import useLoadNearestValues from "../../hooks/useLoadNearestValues";
+import { useNearestValues } from "../../hooks/useNearestValueStore";
 
-vi.mock("../../hooks/useLoadNearestValues");
+vi.mock("../../hooks/useNearestValueStore");
 
 const COLUMNS = [
   { tsid: "LWG.Flow-In.Ave.1Hour.1Hour.CBT-REV", label: "Flow In", units: "EN" },
@@ -39,7 +39,7 @@ function renderTable(props = {}, contextOverrides = {}) {
 }
 
 function mockHook({ values = {}, timestamps = {}, isPending = false } = {}) {
-  useLoadNearestValues.mockReturnValue({ values, timestamps, isPending });
+  useNearestValues.mockReturnValue({ values, timestamps, isPending });
 }
 
 describe("CWMSInputTable nearest value loading", () => {
@@ -193,7 +193,7 @@ describe("CWMSInputTable nearest value loading", () => {
     mockHook();
     renderTable({ loadNearest: "nearest" });
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ strategy: "nearest" }),
     );
   });

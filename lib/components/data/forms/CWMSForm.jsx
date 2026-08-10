@@ -1,4 +1,4 @@
-import React, { createContext, useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
@@ -6,6 +6,8 @@ import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
 import { snapDayjs } from "./helpers/timeSnapping";
 import { useCwmsFormSubmit, useFormValidation } from "./hooks/useCwmsFormSubmit";
+import { useNearestValueStore } from "./hooks/useNearestValueStore";
+import { FormContext } from "./FormContext";
 
 import {
   showSuccessToast,
@@ -18,7 +20,7 @@ import { EnsureToastContainer } from "./helpers/ToastProvider";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const FormContext = createContext();
+export { FormContext };
 
 // Counter to generate unique IDs for each form instance
 let formInstanceCounter = 0;
@@ -207,29 +209,46 @@ export function CWMSForm({
     };
   };
 
-  const getTimestampForInput = (timeOffset = 0) => {
-    // Parse the baseTimestamp (which is in datetime-local format) in the correct timezone
-    const base = parseDisplayValue(baseTimestamp);
+  // Memoized so downstream memos can depend on its identity rather than
+  // re-deriving target timestamps on every render of the form.
+  const getTimestampForInput = useCallback(
+    (timeOffset = 0) => {
+      // Parse the baseTimestamp (which is in datetime-local format) in the correct timezone
+      const base = parseDisplayValue(baseTimestamp);
 
-    if (timeOffset !== 0) {
-      // CWMSInputTable uses seconds, other components use minutes
-      // Simple heuristic: if the absolute value is >= 60, it's likely seconds
-      // This handles common cases like 3600 (1 hour), 7200 (2 hours), etc.
-      // For smaller values (0-59), treat as minutes for backward compatibility
-      let offsetMs;
+      if (timeOffset !== 0) {
+        // CWMSInputTable uses seconds, other components use minutes
+        // Simple heuristic: if the absolute value is >= 60, it's likely seconds
+        // This handles common cases like 3600 (1 hour), 7200 (2 hours), etc.
+        // For smaller values (0-59), treat as minutes for backward compatibility
+        let offsetMs;
 
-      if (Math.abs(timeOffset) >= 60) {
-        // Treat as seconds (from CWMSInputTable)
-        offsetMs = timeOffset * 1000;
-      } else {
-        // Treat as minutes (from other components)
-        offsetMs = timeOffset * 60 * 1000;
+        if (Math.abs(timeOffset) >= 60) {
+          // Treat as seconds (from CWMSInputTable)
+          offsetMs = timeOffset * 1000;
+        } else {
+          // Treat as minutes (from other components)
+          offsetMs = timeOffset * 60 * 1000;
+        }
+
+        base.setTime(base.getTime() + offsetMs);
       }
+      return base.toISOString();
+    },
+    // parseDisplayValue is derived from calendarTimezone; baseTimestamp is the
+    // only other input.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [baseTimestamp, calendarTimezone],
+  );
 
-      base.setTime(base.getTime() + offsetMs);
-    }
-    return base.toISOString();
-  };
+  // Form-level orchestrator: collects every input's nearest-value need and
+  // issues one request per distinct tsid+units for the whole form.
+  const nearestValues = useNearestValueStore({
+    office,
+    cdaUrl,
+    getTimestampForInput,
+    baseTimestamp,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -347,6 +366,7 @@ export function CWMSForm({
           containerId,
           office,
           cdaUrl,
+          nearestValues,
         }}
       >
         <form onSubmit={handleSubmit} className={formClasses} style={style}>

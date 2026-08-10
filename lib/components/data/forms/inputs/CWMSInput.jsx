@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
-import useLoadNearestValues from "../hooks/useLoadNearestValues";
+import { useNearestValues } from "../hooks/useNearestValueStore";
 
 function CWMSInput({
   // CWMS-specific props
@@ -33,8 +33,7 @@ function CWMSInput({
   // All other props to pass through
   ...inputProps
 }) {
-  const { registerInput, getTimestampForInput, office, cdaUrl, baseTimestamp } =
-    useContext(FormContext);
+  const { registerInput, baseTimestamp } = useContext(FormContext);
   const [inputValue, setInputValue] = useState(defaultValue || value || "");
   const [isInvalid, setIsInvalid] = useState(invalid || false);
   const userEdited = useRef(false);
@@ -45,19 +44,18 @@ function CWMSInput({
   );
   const timeoffsetsArr = useMemo(() => [timeOffset || 0], [timeOffset]);
 
+  // Declares the need; the form-level store does the fetching and shares it
+  // with any other input asking for the same series.
   const {
     values: loadedValues,
     timestamps: loadedTimestamps,
     isPending: isLoadingNearest,
-  } = useLoadNearestValues({
+  } = useNearestValues({
     columns: columnsArr,
     timeoffsets: timeoffsetsArr,
     strategy: loadNearest || "prev",
-    getTimestampForInput,
-    office,
-    cdaUrl,
     defaultUnits: units || "EN",
-    enabled: !!office && !!tsid && !!loadNearest,
+    enabled: !!tsid && !!loadNearest,
   });
 
   useEffect(() => {

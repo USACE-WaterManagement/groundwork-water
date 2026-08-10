@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { FormContext } from "../../CWMSForm";
 import { CWMSSpreadsheet } from "../CWMSSpreadsheet";
-import useLoadNearestValues from "../../hooks/useLoadNearestValues";
+import { useNearestValues } from "../../hooks/useNearestValueStore";
 
-vi.mock("../../hooks/useLoadNearestValues");
+vi.mock("../../hooks/useNearestValueStore");
 
 const COLUMNS = [
   { tsid: "LWG.Flow-In.Ave.1Hour.1Hour.CBT-REV", label: "Flow In" },
@@ -46,7 +46,7 @@ function renderSpreadsheet(props = {}, contextOverrides = {}) {
 }
 
 function mockHook({ values = {}, timestamps = {}, isPending = false } = {}) {
-  useLoadNearestValues.mockReturnValue({ values, timestamps, isPending });
+  useNearestValues.mockReturnValue({ values, timestamps, isPending });
 }
 
 describe("CWMSSpreadsheet nearest value loading", () => {
@@ -166,16 +166,18 @@ describe("CWMSSpreadsheet nearest value loading", () => {
     mockHook();
     renderSpreadsheet({ loadNearest: "next" });
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ strategy: "next" }),
     );
   });
 
-  it("disables loading when no office is set", () => {
+  // Whether a fetch actually happens is the store's call (it needs an office);
+  // the component's only job is to declare the need when loadNearest is set.
+  it("does not declare a need when loadNearest is unset", () => {
     mockHook();
-    renderSpreadsheet({}, { office: undefined });
+    renderSpreadsheet({ loadNearest: undefined });
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ enabled: false }),
     );
   });

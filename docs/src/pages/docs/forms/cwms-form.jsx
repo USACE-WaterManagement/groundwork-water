@@ -524,6 +524,29 @@ function CWMSFormDocs() {
 </CWMSForm>`}
       </CodeBlock>
 
+      <Divider text="Shared Nearest-Value Loading" className="mt-8" />
+      <Text className="mb-4">
+        When inputs opt into <Code>loadNearest</Code>, the fetching is handled by the
+        form, not by each input. Every input registers the series and time offsets it
+        needs, and CWMSForm issues one request per distinct time series and unit -
+        however many inputs asked for it. Two tables that both reference the same TSID
+        share a single request rather than each issuing their own.
+      </Text>
+      <Text className="mb-4">
+        The shared fetch window covers the union of every registered time offset, and is
+        trimmed to what the registered strategies need: if every input uses{" "}
+        <Code>prev</Code>, no future data is requested. Each input still resolves its
+        own <Code>prev</Code> / <Code>next</Code> / <Code>nearest</Code> strategy
+        against the shared result, so inputs with different strategies do not cost extra
+        requests.
+      </Text>
+      <Text className="mb-4">
+        This requires an <Code>office</Code> on the form. Outside a CWMSForm, or when
+        you want to fetch independently, the standalone{" "}
+        <Code>useLoadNearestValues</Code> hook does the same resolution for a single
+        caller.
+      </Text>
+
       <Divider text="Controlling Form Reset Behavior" className="mt-8" />
       <Text className="mb-4">
         By default, forms automatically reset all fields after successful submission.

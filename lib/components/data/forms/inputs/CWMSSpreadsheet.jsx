@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { FormContext } from "../CWMSForm";
-import useLoadNearestValues from "../hooks/useLoadNearestValues";
+import { useNearestValues } from "../hooks/useNearestValueStore";
 
 function CWMSSpreadsheet({
   style,
@@ -28,7 +28,7 @@ function CWMSSpreadsheet({
   showValueTimestamp = false,
   transpose = false,
 }) {
-  const { registerInput, baseTimestamp, getTimestampForInput, office, cdaUrl } =
+  const { registerInput, baseTimestamp, getTimestampForInput } =
     useContext(FormContext);
   // Determine if we should show timestamps and prepare columns
   const shouldShowTimestamps = showTimestamps || timeoffsets.length > 0;
@@ -72,16 +72,12 @@ function CWMSSpreadsheet({
     values: loadedValues,
     timestamps: loadedTimestamps,
     isPending: isLoadingNearest,
-  } = useLoadNearestValues({
+  } = useNearestValues({
     columns: tsidColumns,
     timeoffsets,
     strategy: loadNearest || "prev",
-    getTimestampForInput,
-    office,
-    cdaUrl,
     defaultUnits: units,
-    enabled:
-      !!office && !!loadNearest && tsidColumns.length > 0 && timeoffsets.length > 0,
+    enabled: !!loadNearest && tsidColumns.length > 0 && timeoffsets.length > 0,
   });
 
   const getValueTimestampTitle = (dRow, dCol) => {

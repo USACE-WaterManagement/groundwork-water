@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { FormContext } from "../../CWMSForm";
 import { CWMSInput } from "../CWMSInput";
-import useLoadNearestValues from "../../hooks/useLoadNearestValues";
+import { useNearestValues } from "../../hooks/useNearestValueStore";
 
-vi.mock("../../hooks/useLoadNearestValues");
+vi.mock("../../hooks/useNearestValueStore");
 
 const TSID = "LWG.Flow-In.Ave.1Hour.1Hour.CBT-REV";
 
@@ -30,7 +30,7 @@ function renderInput(props = {}, contextOverrides = {}) {
 }
 
 function mockHook({ values = {}, timestamps = {}, isPending = false } = {}) {
-  useLoadNearestValues.mockReturnValue({ values, timestamps, isPending });
+  useNearestValues.mockReturnValue({ values, timestamps, isPending });
 }
 
 describe("CWMSInput nearest value loading", () => {
@@ -201,7 +201,7 @@ describe("CWMSInput nearest value loading", () => {
     mockHook();
     renderInput({ loadNearest: "next" });
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ strategy: "next" }),
     );
   });
@@ -210,7 +210,7 @@ describe("CWMSInput nearest value loading", () => {
     mockHook();
     renderInput();
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ strategy: "prev" }),
     );
   });
@@ -219,7 +219,7 @@ describe("CWMSInput nearest value loading", () => {
     mockHook();
     renderInput({ tsid: undefined });
 
-    expect(useLoadNearestValues).toHaveBeenCalledWith(
+    expect(useNearestValues).toHaveBeenCalledWith(
       expect.objectContaining({ enabled: false }),
     );
   });
