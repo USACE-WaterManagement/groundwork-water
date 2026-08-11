@@ -393,7 +393,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
                 id: "last",
                 label: "Last recorded",
                 loadNearest: "prev",
-                readonly: true,
+                disabled: true,
               },
               { offset: 0, id: "new", label: "New setting" },
             ]}
@@ -415,7 +415,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       { tsid: "PROJ.Opening-Gate3.Inst.15Minutes.0.Ccp-Rev", label: "Gate 3" },
     ]}
     timeoffsets={[
-      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", readonly: true },
+      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", disabled: true },
       { offset: 0, id: "new", label: "New setting" },
     ]}
     showTimestamps={false}
@@ -431,14 +431,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       </CodeBlock>
 
       <Text className="mb-4">
-        The reference row above uses <Code className="p-1">readonly</Code> rather than{" "}
-        <Code className="p-1">disabled</Code>, so it stays focusable and its value can
-        be selected and copied. Note the trade-off: a read-only row still registers with
-        the form, and both rows here sit at the same offset on the same time series, so
-        they share one registration. The entry row is declared second and therefore wins
-        - swap the order and the recorded value would be submitted instead. Use{" "}
-        <Code className="p-1">disabled</Code> on the reference row if you would rather
-        not depend on that.
+        The reference row uses <Code className="p-1">disabled</Code> rather than{" "}
+        <Code className="p-1">readonly</Code>. Both rows here sit at the same offset on
+        the same time series, and a read-only row still registers with the form, so the
+        two would share one registration and whichever was declared last would win.
+        Disabling the reference row keeps it out of the submission entirely, so the
+        entry row is unambiguously the one that submits.
       </Text>
 
       <Text className="mb-4">
