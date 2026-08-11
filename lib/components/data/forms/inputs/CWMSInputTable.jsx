@@ -277,6 +277,7 @@ function CWMSInputTable({
         value: matrixData[key],
         loadedRaw: loadedValues?.[key],
         precision: column.precision ?? precision,
+        defaultValue: column.defaultValues?.[row.offset],
       }),
       key,
       tsid: column.tsid,

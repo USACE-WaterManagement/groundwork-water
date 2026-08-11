@@ -127,6 +127,12 @@ const componentProps = [
     desc: "Callback fired when the calendar timestamp changes. Receives the snapped Date object.",
   },
   {
+    name: "onLoadError",
+    type: "function",
+    default: "undefined",
+    desc: "Callback fired when loading nearest values fails or times out. Receives the error. Without it a failed load is indistinguishable from no data existing - the fields simply stay empty.",
+  },
+  {
     name: "toastAutoClose",
     type: "number|boolean",
     default: "5000",
@@ -546,6 +552,26 @@ function CWMSFormDocs() {
         <Code>useLoadNearestValues</Code> hook does the same resolution for a single
         caller.
       </Text>
+
+      <div className="font-bold text-lg pt-4">When loading fails</div>
+      <Text className="mb-4">
+        A failed or timed-out fetch leaves the fields empty, which looks exactly like a
+        series having no data - an operator could reasonably read a blank cell as real.
+        Pass <Code>onLoadError</Code> to be told when that happens and surface it
+        however suits your app.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSForm
+  office="SWT"
+  onLoadError={(error) => {
+    console.error("Could not load previous values", error);
+    showBanner("Previous values are unavailable - enter readings manually.");
+  }}
+>
+  {/* ... */}
+</CWMSForm>`}
+      </CodeBlock>
 
       <div className="font-bold text-lg pt-4">After a submit</div>
       <Text className="mb-4">

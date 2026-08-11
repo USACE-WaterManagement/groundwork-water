@@ -380,9 +380,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         <Code className="p-1">highlightChanged={"{false}"}</Code> to turn that off.
       </Text>
       <Text className="mb-4">
-        The status is worked out by comparing the cell against the value loaded for it,
-        not by remembering that you typed - so typing a value and then putting the
-        original back correctly reads as unchanged.
+        The status is worked out by comparing the cell against the value it started
+        with, not by remembering that you typed - so typing a value and then putting the
+        original back correctly reads as unchanged. Where a column supplies{" "}
+        <Code className="p-1">defaultValues</Code> that default is the baseline, since a
+        default takes precedence over loading and the operator has not touched the cell
+        just because it differs from what CDA returned.
       </Text>
       <Text className="mb-4">
         For your own treatment, <Code className="p-1">cellClassName</Code> is called per

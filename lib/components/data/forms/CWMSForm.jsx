@@ -46,6 +46,7 @@ export function CWMSForm({
   calendarOffset = 0, // Offset in seconds applied to the snap anchor (e.g. 25200 for 7hrs, 600 for 10min)
   calendarUseGmtOffset = false, // When true, snap/store uses fixed GMT+offset even if calendarTimezone is set for display
   onCalendarChange, // Optional callback fired when the calendar timestamp changes. Receives the snapped Date object.
+  onLoadError, // Optional callback fired when loading nearest values fails. Receives the error.
   toastAutoClose = 5000, // Set to false to disable auto-close for all toasts, or number for milliseconds
   className = "",
   style,
@@ -266,6 +267,17 @@ export function CWMSForm({
   useEffect(() => {
     nearestValuesRef.current = nearestValues;
   }, [nearestValues]);
+
+  // A failed or timed-out load leaves fields empty, which is indistinguishable
+  // from "no data exists" - so hand the error to the caller rather than letting
+  // it pass silently.
+  const loadError = nearestValues.error;
+  useEffect(() => {
+    if (loadError && onLoadError) onLoadError(loadError);
+    // onLoadError is caller-supplied and often inline; keying on the error
+    // alone avoids re-firing for the same failure on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

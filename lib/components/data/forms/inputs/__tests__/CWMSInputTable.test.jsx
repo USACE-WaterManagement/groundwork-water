@@ -210,6 +210,61 @@ describe("CWMSInputTable nearest value loading", () => {
       expect(input.style.fontWeight).toBe("");
     });
 
+    // A caller-supplied default takes precedence over the fetched value, so the
+    // default is what the cell started at - it must not read as an edit.
+    it("treats a hard-coded default as the baseline, not as a change", () => {
+      mockHook({ values: { [KEY]: 100.5 } });
+      renderTable({
+        columns: [{ ...COLUMNS[0], defaultValues: { 0: "50" } }],
+        timeoffsets: [0],
+      });
+
+      const input = screen.getByRole("spinbutton");
+      expect(input.value).toBe("50");
+      expect(input.style.fontWeight).toBe("");
+      expect(input.style.opacity).toBe("0.7");
+    });
+
+    it("marks a defaulted cell changed once it is edited away from the default", () => {
+      mockHook({ values: { [KEY]: 100.5 } });
+      renderTable({
+        columns: [{ ...COLUMNS[0], defaultValues: { 0: "50" } }],
+        timeoffsets: [0],
+      });
+
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "51" } });
+      expect(input.style.fontWeight).toBe("600");
+
+      // ...and back to the default is unchanged again.
+      fireEvent.change(input, { target: { value: "50" } });
+      expect(input.style.opacity).toBe("0.7");
+      expect(input.style.fontWeight).toBe("");
+    });
+
+    it("reports the default as the baseline to cellClassName", () => {
+      const seen = [];
+      mockHook({ values: { [KEY]: 100.5 } });
+      renderTable({
+        columns: [{ ...COLUMNS[0], defaultValues: { 0: "50" } }],
+        timeoffsets: [0],
+        cellClassName: (status) => {
+          seen.push(status);
+          return "";
+        },
+      });
+
+      expect(seen.at(-1)).toMatchObject({
+        value: "50",
+        defaultValue: "50",
+        baseline: "50",
+        loadedValue: "100.5",
+        loaded: true,
+        changed: false,
+        prefilled: true,
+      });
+    });
+
     it("can be turned off with highlightChanged", () => {
       renderOne({ highlightChanged: false });
       expect(screen.getByRole("spinbutton").style.opacity).toBe("");
