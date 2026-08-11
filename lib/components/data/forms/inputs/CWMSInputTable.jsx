@@ -142,7 +142,6 @@ function CWMSInputTable({
         units: columnUnits,
         precision: columnPrecision,
         required: columnRequired,
-        readonly: columnReadonly,
         defaultValues: columnDefaultValues = {},
       } = column;
 
@@ -162,7 +161,7 @@ function CWMSInputTable({
           order: order,
           AllowMissingData: AllowMissingData,
           loadNearest: loadNearest,
-          readonly: columnReadonly ?? readonly,
+          readonly: resolveCellSetting(column, row, "readonly", readonly),
           units: columnUnits ?? units,
           timeOffset: offset,
           required: columnRequired ?? required,
@@ -296,7 +295,6 @@ function CWMSInputTable({
         </thead>
         <tbody>
           {columns.map((column, colIndex) => {
-            const columnReadonly = column.readonly ?? readonly;
             const columnRequired = column.required ?? required;
 
             return (
@@ -312,6 +310,12 @@ function CWMSInputTable({
                 {rows.map((row, offsetIndex) => {
                   const key = cellKeyFor(column, row);
                   const columnDisabled = cellIsDisabled(column, row);
+                  const columnReadonly = resolveCellSetting(
+                    column,
+                    row,
+                    "readonly",
+                    readonly,
+                  );
                   const cellLoading = isLoadingNearest && !matrixData[key];
                   const valueTs =
                     showValueTimestamp && !userEdited.current.has(key)
@@ -382,7 +386,12 @@ function CWMSInputTable({
               )}
               {columns.map((column, colIndex) => {
                 const key = cellKeyFor(column, row);
-                const columnReadonly = column.readonly ?? readonly;
+                const columnReadonly = resolveCellSetting(
+                  column,
+                  row,
+                  "readonly",
+                  readonly,
+                );
                 const columnRequired = column.required ?? required;
                 const columnDisabled = cellIsDisabled(column, row);
                 const cellLoading = isLoadingNearest && !matrixData[key];

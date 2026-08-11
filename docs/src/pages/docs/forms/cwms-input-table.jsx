@@ -785,8 +785,33 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             default: "table disable",
             desc: "Disables just this row. A disabled row does not register with the form, so it displays values but never submits them, and its cells reject edits.",
           },
+          {
+            name: "readonly",
+            type: "boolean",
+            default: "table readonly",
+            desc: "Makes just this row read-only. Unlike disabled, a read-only row still registers and still submits - use it for a value the operator should see and send but not change. It is not a substitute for disabled in the reference pattern (see below).",
+          },
         ]}
       />
+
+      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded">
+        <Text className="font-semibold mb-2">readonly is not disabled</Text>
+        <Text className="text-sm">
+          Both stop the operator typing, but only <Code className="p-1">disabled</Code>{" "}
+          keeps a cell out of the submission. A <Code className="p-1">readonly</Code>{" "}
+          cell still registers with the form and still submits its value.
+        </Text>
+        <Text className="text-sm mt-2">
+          That is why the reference pattern above uses{" "}
+          <Code className="p-1">disabled</Code>. The form keys its registry by time
+          series and time offset, so a read-only reference cell and the entry cell
+          beside it - same tsid, same offset - would register under the same key and one
+          would silently replace the other. Reach for{" "}
+          <Code className="p-1">readonly</Code> when a value should be sent but not
+          edited, and <Code className="p-1">disabled</Code> when it should only be
+          displayed.
+        </Text>
+      </div>
 
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>

@@ -346,6 +346,49 @@ describe("CWMSInputTable nearest value loading", () => {
       expect(inputs[0].value).toBe("12.3");
     });
 
+    it("applies readonly from a row", () => {
+      mockHook({ values: { [`${COLUMNS[0].tsid}_ref`]: 100.5 } });
+      renderTable({
+        columns: [COLUMNS[0]],
+        timeoffsets: [
+          { offset: 0, id: "ref", loadNearest: "prev", readonly: true },
+          { offset: 0, id: "entry" },
+        ],
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      expect(inputs[0].readOnly).toBe(true);
+      expect(inputs[1].readOnly).toBe(false);
+      // readonly is not disabled - the cell stays focusable and submittable.
+      expect(inputs[0].disabled).toBe(false);
+    });
+
+    // Documents why the reference pattern must use disabled, not readonly:
+    // readonly cells still register, and two cells on the same tsid+offset
+    // collide on the form's registration id.
+    it("readonly rows still register and collide on the same tsid+offset", () => {
+      mockHook({ values: { [`${COLUMNS[0].tsid}_ref`]: 100.5 } });
+      const { registerInput } = renderTable({
+        columns: [COLUMNS[0]],
+        timeoffsets: [
+          { offset: 0, id: "ref", loadNearest: "prev", readonly: true },
+          { offset: 0, id: "entry" },
+        ],
+        loadNearest: undefined,
+      });
+
+      const registered = registerInput.mock.calls.map((c) => c[0]);
+      // Both cells register...
+      expect(new Set(registered.map((r) => r.name))).toEqual(
+        new Set([`${COLUMNS[0].tsid}_ref`, `${COLUMNS[0].tsid}_entry`]),
+      );
+      // ...under the same tsid and timeOffset, which is what CWMSForm keys its
+      // registry by, so one silently replaces the other.
+      const ids = registered.map((r) => `${r.tsid}_${r.timeOffset}`);
+      expect(new Set(ids).size).toBe(1);
+    });
+
     it("lets a column override a row", () => {
       mockHook();
       renderTable({
