@@ -230,6 +230,21 @@ describe("CWMSInputTable nearest value loading", () => {
       expect(inputs[1].disabled).toBe(false);
     });
 
+    it("ignores a change event on a disabled cell", () => {
+      mockHook({ values: { previous_0: 100.5 } });
+      renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      // The DOM attribute stops a real user, but the component must not record
+      // an edit either if a change event reaches it anyway.
+      fireEvent.change(inputs[0], { target: { value: "777" } });
+      expect(inputs[0].value).toBe("100.5");
+    });
+
     it("lets a column override the table strategy", () => {
       mockHook();
       renderTable({
@@ -239,6 +254,65 @@ describe("CWMSInputTable nearest value loading", () => {
 
       const spec = useNearestValues.mock.calls.at(-1)[0];
       expect(spec.columns).toHaveLength(1);
+      expect(spec.columns[0].loadNearest).toBe("next");
+    });
+  });
+
+  describe("per-row overrides", () => {
+    // The transposed shape of the same idea: one row shows the last recorded
+    // value, the row beside it is for entry.
+    const REFERENCE_ROWS = [
+      { offset: 0, id: "last", label: "Last", loadNearest: "prev", disabled: true },
+      { offset: 0, id: "new", label: "New" },
+    ];
+
+    it("accepts row objects alongside plain offsets", () => {
+      mockHook({ values: { [`${COLUMNS[0].tsid}_last`]: 100.5 } });
+      renderTable({
+        columns: [COLUMNS[0]],
+        timeoffsets: REFERENCE_ROWS,
+        loadNearest: undefined,
+      });
+
+      expect(screen.queryAllByDisplayValue("100.5")).toHaveLength(1);
+    });
+
+    it("registers only the row that is not disabled", () => {
+      mockHook({ values: { [`${COLUMNS[0].tsid}_last`]: 100.5 } });
+      const { registerInput } = renderTable({
+        columns: [COLUMNS[0]],
+        timeoffsets: REFERENCE_ROWS,
+        loadNearest: undefined,
+      });
+
+      const names = new Set(registerInput.mock.calls.map((c) => c[0].name));
+      expect([...names]).toEqual([`${COLUMNS[0].tsid}_new`]);
+    });
+
+    it("keeps two rows on one instant from sharing cell state", () => {
+      mockHook({ values: { [`${COLUMNS[0].tsid}_last`]: 100.5 } });
+      renderTable({
+        columns: [COLUMNS[0]],
+        timeoffsets: REFERENCE_ROWS,
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      fireEvent.change(inputs[1], { target: { value: "42" } });
+      expect(inputs[0].value).toBe("100.5");
+      expect(inputs[1].value).toBe("42");
+    });
+
+    it("lets a column override a row", () => {
+      mockHook();
+      renderTable({
+        columns: [{ tsid: COLUMNS[0].tsid, loadNearest: "next" }],
+        timeoffsets: [{ offset: 0, loadNearest: "prev" }],
+        loadNearest: undefined,
+      });
+
+      // Most specific wins: column over row over table.
+      const spec = useNearestValues.mock.calls.at(-1)[0];
       expect(spec.columns[0].loadNearest).toBe("next");
     });
   });

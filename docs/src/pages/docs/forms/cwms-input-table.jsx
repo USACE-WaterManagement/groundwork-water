@@ -16,7 +16,7 @@ const componentProps = [
     name: "timeoffsets",
     type: "array",
     default: "[]",
-    desc: "Array of time offsets in seconds for row timestamps.",
+    desc: "Row definitions. Each entry is either a time offset in seconds, or an object { offset, id, label, loadNearest, disabled } to override those settings for that row. The two forms can be mixed.",
   },
   {
     name: "showTimestamps",
@@ -354,9 +354,42 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       <Text className="mb-4">
         A column may also override the table-level strategy - set{" "}
         <Code className="p-1">loadNearest</Code> on the table for the common case and on
-        an individual column where it should differ. Columns with different strategies
+        an individual column where it should differ. Cells with different strategies
         still share one request; only the value each one picks out of the result
         changes.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">Rows can override too</div>
+      <Text className="mb-4">
+        Entries in <Code className="p-1">timeoffsets</Code> may be objects instead of
+        plain numbers, carrying the same overrides a column can:{" "}
+        <Code className="p-1">loadNearest</Code>, <Code className="p-1">disabled</Code>,{" "}
+        <Code className="p-1">id</Code> and <Code className="p-1">label</Code>. That
+        gives you the reference pattern along the other axis - useful in a transposed
+        table, or when the same instant needs both a recorded row and an entry row.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Same instant twice: one row shows the last value, the next is for entry.
+// As with columns, the id keeps their cell state separate.
+<CWMSInputTable
+  columns={[{ tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1" }]}
+  timeoffsets={[
+    { offset: 0, id: "last", label: "Last", loadNearest: "prev", disabled: true },
+    { offset: 0, id: "new", label: "New" },
+  ]}
+/>
+
+// Plain numbers still work, and can be mixed with row objects.
+<CWMSInputTable
+  columns={COLUMNS}
+  timeoffsets={[-3600, 0, { offset: 3600, loadNearest: "next" }]}
+/>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        Where both a column and a row set the same option, the more specific wins:
+        column over row, row over the table-level prop.
       </Text>
 
       <Text className="mb-4">
