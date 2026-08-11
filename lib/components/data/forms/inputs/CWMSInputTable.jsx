@@ -225,9 +225,10 @@ function CWMSInputTable({
   ]);
 
   const handleInputChange = (column, row, value) => {
-    // Belt and braces: a disabled cell is display-only, so never record an edit
-    // for one even if a change event reaches us.
+    // Belt and braces: a disabled or read-only cell is not user editable, so
+    // never record an edit for one even if a change event reaches us.
     if (cellIsDisabled(column, row)) return;
+    if (resolveCellSetting(column, row, "readonly", readonly)) return;
 
     const key = cellKeyFor(column, row);
     userEdited.current.add(key);

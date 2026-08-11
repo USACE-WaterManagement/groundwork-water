@@ -389,6 +389,59 @@ describe("CWMSInputTable nearest value loading", () => {
       expect(new Set(ids).size).toBe(1);
     });
 
+    // Renders the transposed docs example verbatim and checks the three things
+    // that break when timeoffsets row objects are not normalized: headers
+    // stringify the object, both rows collapse onto one cell key, and the
+    // reference cell is editable.
+    it("renders the transposed docs example correctly", () => {
+      mockHook({ values: { "Gate 1_last": 12.3, "Gate 2_last": 4.5 } });
+      renderTable({
+        transpose: true,
+        columns: [
+          { tsid: "Gate 1", label: "Gate 1" },
+          { tsid: "Gate 2", label: "Gate 2" },
+        ],
+        timeoffsets: [
+          {
+            offset: 0,
+            id: "last",
+            label: "Last recorded",
+            loadNearest: "prev",
+            readonly: true,
+          },
+          { offset: 0, id: "new", label: "New setting" },
+        ],
+        showTimestamps: false,
+        loadNearest: undefined,
+      });
+
+      // 1. Row labels, not "Offset [object Object]s"
+      expect(screen.getByText("Last recorded")).toBeTruthy();
+      expect(screen.getByText("New setting")).toBeTruthy();
+      expect(screen.queryByText(/\[object Object\]/)).toBeNull();
+
+      const inputs = screen.getAllByRole("spinbutton");
+      expect(inputs.map((el) => el.name)).toEqual([
+        "Gate 1_last",
+        "Gate 1_new",
+        "Gate 2_last",
+        "Gate 2_new",
+      ]);
+
+      // 2. readonly is applied to the reference cells only
+      expect(inputs[0].readOnly).toBe(true);
+      expect(inputs[1].readOnly).toBe(false);
+
+      // 3. Typing in the entry cell does not leak into the reference cell
+      fireEvent.change(inputs[1], { target: { value: "77" } });
+      expect(inputs[1].value).toBe("77");
+      expect(inputs[0].value).toBe("12.3");
+
+      // ...and the read-only cell rejects an edit that reaches it
+      fireEvent.change(inputs[0], { target: { value: "999" } });
+      expect(inputs[0].value).toBe("12.3");
+    });
+
     it("lets a column override a row", () => {
       mockHook();
       renderTable({
