@@ -369,16 +369,58 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         table, or when the same instant needs both a recorded row and an entry row.
       </Text>
 
+      <Text className="mb-4">
+        Combined with <Code className="p-1">transpose</Code> this gives the layout most
+        gate-entry screens want: one row per parameter, a read-only column showing what
+        was last recorded, and an empty column to type into. Rows become the visual
+        columns when transposed, so the row overrides are what define the two columns
+        below.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+          <CWMSInputTable
+            transpose={true}
+            columns={[
+              { tsid: "Gate 1", label: "Gate 1" },
+              { tsid: "Gate 2", label: "Gate 2" },
+              { tsid: "Gate 3", label: "Gate 3" },
+            ]}
+            timeoffsets={[
+              {
+                offset: 0,
+                id: "last",
+                label: "Last recorded",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { offset: 0, id: "new", label: "New setting" },
+            ]}
+            showTimestamps={false}
+            showValueTimestamp={true}
+          />
+        </CWMSForm>
+      </div>
+
       <CodeBlock language="jsx">
-        {`// Same instant twice: one row shows the last value, the next is for entry.
-// As with columns, the id keeps their cell state separate.
-<CWMSInputTable
-  columns={[{ tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1" }]}
-  timeoffsets={[
-    { offset: 0, id: "last", label: "Last", loadNearest: "prev", disabled: true },
-    { offset: 0, id: "new", label: "New" },
-  ]}
-/>
+        {`// Transposed: parameters down the side, "last recorded" and "new" across.
+// The two visual columns come from the two row definitions.
+<CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+  <CWMSInputTable
+    transpose={true}
+    columns={[
+      { tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1" },
+      { tsid: "PROJ.Opening-Gate2.Inst.15Minutes.0.Ccp-Rev", label: "Gate 2" },
+      { tsid: "PROJ.Opening-Gate3.Inst.15Minutes.0.Ccp-Rev", label: "Gate 3" },
+    ]}
+    timeoffsets={[
+      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", disabled: true },
+      { offset: 0, id: "new", label: "New setting" },
+    ]}
+    showTimestamps={false}
+    showValueTimestamp={true}
+  />
+</CWMSForm>
 
 // Plain numbers still work, and can be mixed with row objects.
 <CWMSInputTable
@@ -706,6 +748,46 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         ]}
       />
 
+      <div className="font-bold text-lg pt-6 mt-8">Row Configuration Object</div>
+      <Text className="mb-4">
+        Entries in <Code className="p-1">timeoffsets</Code> may be a plain number, or an
+        object with the following properties. Both forms can be mixed in one array.
+      </Text>
+      <PropsTable
+        propsList={[
+          {
+            name: "offset",
+            type: "number",
+            default: "required",
+            desc: "Time offset in seconds from the form's base time. This is what a plain number entry sets.",
+          },
+          {
+            name: "id",
+            type: "string",
+            default: "offset value",
+            desc: "Identity for this row's cells. Only needed when two rows use the same offset - give each an id so they keep separate values instead of sharing one cell.",
+          },
+          {
+            name: "label",
+            type: "string",
+            default: "undefined",
+            desc: "Heading for the row. Used in transposed layouts, where rows are rendered as columns, and when showTimestamps is false.",
+          },
+          {
+            name: "loadNearest",
+            type: "string",
+            default: "table loadNearest",
+            desc: "Per-row override of the loadNearest strategy ('prev', 'next', 'nearest'). Set it on a single row to load only that row. Rows with different strategies still share one request.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            default: "table disable",
+            desc: "Disables just this row. A disabled row does not register with the form, so it displays values but never submits them, and its cells reject edits.",
+          },
+        ]}
+      />
+
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
         <Text className="text-sm">
@@ -719,6 +801,14 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           This allows you to set global defaults and selectively override them for
           specific columns.
         </Text>
+        <Text className="text-sm mt-3">
+          For the options a row can also set - <Code className="p-1">loadNearest</Code>{" "}
+          and <Code className="p-1">disabled</Code> - the row sits between the column
+          and the component-wide prop:
+        </Text>
+        <Code className="block mt-2 p-2 bg-white">
+          column.property → row.property → global property
+        </Code>
       </div>
     </DocsPage>
   );

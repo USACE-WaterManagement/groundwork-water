@@ -303,6 +303,49 @@ describe("CWMSInputTable nearest value loading", () => {
       expect(inputs[1].value).toBe("42");
     });
 
+    // Mirrors the transposed docs example exactly: rows become the visual
+    // columns, so the disabled row must still render disabled cells.
+    it("disables the right cells when transposed", () => {
+      mockHook({
+        values: {
+          "Gate 1_last": 12.3,
+          "Gate 2_last": 4.5,
+        },
+      });
+      renderTable({
+        transpose: true,
+        columns: [
+          { tsid: "Gate 1", label: "Gate 1" },
+          { tsid: "Gate 2", label: "Gate 2" },
+        ],
+        timeoffsets: [
+          {
+            offset: 0,
+            id: "last",
+            label: "Last recorded",
+            loadNearest: "prev",
+            disabled: true,
+          },
+          { offset: 0, id: "new", label: "New setting" },
+        ],
+        showTimestamps: false,
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      const state = inputs.map((el) => ({ name: el.name, disabled: el.disabled }));
+      expect(state).toEqual([
+        { name: "Gate 1_last", disabled: true },
+        { name: "Gate 1_new", disabled: false },
+        { name: "Gate 2_last", disabled: true },
+        { name: "Gate 2_new", disabled: false },
+      ]);
+
+      // And the disabled cell rejects an edit that reaches it anyway.
+      fireEvent.change(inputs[0], { target: { value: "999" } });
+      expect(inputs[0].value).toBe("12.3");
+    });
+
     it("lets a column override a row", () => {
       mockHook();
       renderTable({
