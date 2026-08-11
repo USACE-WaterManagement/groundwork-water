@@ -364,9 +364,10 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         Entries in <Code className="p-1">timeoffsets</Code> may be objects instead of
         plain numbers, carrying the same overrides a column can:{" "}
         <Code className="p-1">loadNearest</Code>, <Code className="p-1">disabled</Code>,{" "}
-        <Code className="p-1">id</Code> and <Code className="p-1">label</Code>. That
-        gives you the reference pattern along the other axis - useful in a transposed
-        table, or when the same instant needs both a recorded row and an entry row.
+        <Code className="p-1">readonly</Code>, <Code className="p-1">id</Code> and{" "}
+        <Code className="p-1">label</Code>. That gives you the reference pattern along
+        the other axis - useful in a transposed table, or when the same instant needs
+        both a recorded row and an entry row.
       </Text>
 
       <Text className="mb-4">
@@ -392,7 +393,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
                 id: "last",
                 label: "Last recorded",
                 loadNearest: "prev",
-                disabled: true,
+                readonly: true,
               },
               { offset: 0, id: "new", label: "New setting" },
             ]}
@@ -414,7 +415,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       { tsid: "PROJ.Opening-Gate3.Inst.15Minutes.0.Ccp-Rev", label: "Gate 3" },
     ]}
     timeoffsets={[
-      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", disabled: true },
+      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", readonly: true },
       { offset: 0, id: "new", label: "New setting" },
     ]}
     showTimestamps={false}
@@ -428,6 +429,17 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   timeoffsets={[-3600, 0, { offset: 3600, loadNearest: "next" }]}
 />`}
       </CodeBlock>
+
+      <Text className="mb-4">
+        The reference row above uses <Code className="p-1">readonly</Code> rather than{" "}
+        <Code className="p-1">disabled</Code>, so it stays focusable and its value can
+        be selected and copied. Note the trade-off: a read-only row still registers with
+        the form, and both rows here sit at the same offset on the same time series, so
+        they share one registration. The entry row is declared second and therefore wins
+        - swap the order and the recorded value would be submitted instead. Use{" "}
+        <Code className="p-1">disabled</Code> on the reference row if you would rather
+        not depend on that.
+      </Text>
 
       <Text className="mb-4">
         Where both a column and a row set the same option, the more specific wins:
