@@ -4,9 +4,19 @@ import { FormContext } from "../CWMSForm";
 import { useNearestValues } from "../hooks/useNearestValueStore";
 import {
   cellKeyFor,
+  getCellStatus,
   normalizeRows,
   resolveCellSetting,
 } from "../hooks/useLoadNearestValues";
+
+// Distinguishes a value the operator entered from one that was loaded for them.
+// Applied as inline style rather than a class: the Groundwork Input puts
+// className on its wrapping control element while the inner input carries its
+// own text colour, so a class here would never win. Weight carries the signal
+// as well as dimming, so it survives greyscale and colour-vision deficiency,
+// and neither cue assumes a light or dark theme.
+const PREFILLED_STYLE = { opacity: 0.7 };
+const CHANGED_STYLE = { fontWeight: 600 };
 
 function CWMSInputTable({
   className,
@@ -26,6 +36,8 @@ function CWMSInputTable({
   showValueTimestamp = false,
   required = false,
   transpose = false,
+  highlightChanged = true,
+  cellClassName,
 }) {
   const { registerInput, getTimestampForInput, baseTimestamp } =
     useContext(FormContext);
@@ -251,6 +263,40 @@ function CWMSInputTable({
     }
   };
 
+  /**
+   * Status of one cell relative to the value loaded for it, plus how to present
+   * it. `cellClassName` receives the same status so callers can react to
+   * changed / unchanged however they like; what it returns is applied to the
+   * cell, which is ours to style, rather than to the input the Groundwork
+   * component owns.
+   */
+  const cellPresentation = (column, row) => {
+    const key = cellKeyFor(column, row);
+    const status = {
+      ...getCellStatus({
+        value: matrixData[key],
+        loadedRaw: loadedValues?.[key],
+        precision: column.precision ?? precision,
+      }),
+      key,
+      tsid: column.tsid,
+      offset: row.offset,
+      column,
+      row,
+    };
+
+    let inputStyle;
+    if (highlightChanged && status.loaded) {
+      inputStyle = status.changed ? CHANGED_STYLE : PREFILLED_STYLE;
+    }
+
+    return {
+      status,
+      inputStyle,
+      cellClass: cellClassName ? cellClassName(status) || "" : "",
+    };
+  };
+
   const formatValueTimestamp = (tsMs) => {
     if (!tsMs) return null;
     const date = new Date(tsMs);
@@ -310,6 +356,7 @@ function CWMSInputTable({
                 </td>
                 {rows.map((row, offsetIndex) => {
                   const key = cellKeyFor(column, row);
+                  const { inputStyle, cellClass } = cellPresentation(column, row);
                   const columnDisabled = cellIsDisabled(column, row);
                   const columnReadonly = resolveCellSetting(
                     column,
@@ -323,7 +370,7 @@ function CWMSInputTable({
                       ? formatValueTimestamp(loadedTimestamps?.[key])
                       : null;
                   return (
-                    <td key={offsetIndex} className="p-2">
+                    <td key={offsetIndex} className={`p-2 ${cellClass}`.trim()}>
                       <Input
                         name={key}
                         type="number"
@@ -335,6 +382,7 @@ function CWMSInputTable({
                         invalid={invalidCells[key] || invalid ? "true" : undefined}
                         placeholder={cellLoading ? "Loading..." : "Enter value"}
                         className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+                        style={inputStyle}
                         required={columnRequired}
                         title={valueTs ? `Value from: ${valueTs}` : undefined}
                       />
@@ -387,6 +435,7 @@ function CWMSInputTable({
               )}
               {columns.map((column, colIndex) => {
                 const key = cellKeyFor(column, row);
+                const { inputStyle, cellClass } = cellPresentation(column, row);
                 const columnReadonly = resolveCellSetting(
                   column,
                   row,
@@ -402,7 +451,7 @@ function CWMSInputTable({
                     : null;
 
                 return (
-                  <td key={colIndex} className="p-2">
+                  <td key={colIndex} className={`p-2 ${cellClass}`.trim()}>
                     <Input
                       name={key}
                       type="number"
@@ -414,6 +463,7 @@ function CWMSInputTable({
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
                       placeholder={cellLoading ? "Loading..." : "Enter value"}
                       className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+                      style={inputStyle}
                       required={columnRequired}
                       title={valueTs ? `Value from: ${valueTs}` : undefined}
                     />

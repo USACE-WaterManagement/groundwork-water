@@ -79,6 +79,18 @@ const componentProps = [
     desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on each input cell. The tooltip is removed when the user edits the cell.",
   },
   {
+    name: "highlightChanged",
+    type: "boolean",
+    default: "true",
+    desc: "When values have been loaded, dims cells still showing the loaded value and emboldens ones the operator has changed, so it is obvious at a glance which cells will carry new data. Has no effect on cells nothing was loaded for.",
+  },
+  {
+    name: "cellClassName",
+    type: "function",
+    default: "undefined",
+    desc: "Called per cell with its status - { value, loadedValue, loaded, changed, prefilled, key, tsid, offset, column, row } - and whatever it returns is applied as a class on the table cell. Use it to react to changed or unchanged values with your own styling.",
+  },
+  {
     name: "loadNearest",
     type: "string",
     default: "undefined (feature off)",
@@ -357,6 +369,50 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         an individual column where it should differ. Cells with different strategies
         still share one request; only the value each one picks out of the result
         changes.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">Seeing what you changed</div>
+      <Text className="mb-4">
+        Once values are loaded every cell holds a number, so nothing distinguishes the
+        one gate you moved from the twenty-nine you did not. By default the table dims
+        cells still showing the loaded value and emboldens ones you have changed, so the
+        cells about to carry new data stand out. Set{" "}
+        <Code className="p-1">highlightChanged={"{false}"}</Code> to turn that off.
+      </Text>
+      <Text className="mb-4">
+        The status is worked out by comparing the cell against the value loaded for it,
+        not by remembering that you typed - so typing a value and then putting the
+        original back correctly reads as unchanged.
+      </Text>
+      <Text className="mb-4">
+        For your own treatment, <Code className="p-1">cellClassName</Code> is called per
+        cell with that status and its result is applied to the table cell:
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSInputTable
+  columns={GATES}
+  timeoffsets={[0]}
+  loadNearest="prev"
+  cellClassName={({ changed, prefilled, value, loadedValue }) => {
+    if (!changed) return "";
+    // e.g. flag a change larger than a foot
+    return Math.abs(Number(value) - Number(loadedValue)) > 1
+      ? "ring-2 ring-amber-400 rounded"
+      : "bg-emerald-50";
+  }}
+/>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        The status object holds <Code className="p-1">value</Code>,{" "}
+        <Code className="p-1">loadedValue</Code>, <Code className="p-1">loaded</Code>,{" "}
+        <Code className="p-1">changed</Code>, <Code className="p-1">prefilled</Code>,{" "}
+        <Code className="p-1">key</Code>, <Code className="p-1">tsid</Code>,{" "}
+        <Code className="p-1">offset</Code>, and the <Code className="p-1">column</Code>{" "}
+        and <Code className="p-1">row</Code> it came from.{" "}
+        <Code className="p-1">loaded</Code> is false where nothing was fetched, in which
+        case there is no baseline and <Code className="p-1">changed</Code> stays false.
       </Text>
 
       <div className="font-bold text-lg pt-4">Rows can override too</div>

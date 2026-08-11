@@ -160,6 +160,94 @@ describe("CWMSInputTable nearest value loading", () => {
     expect(tsidOffsets).toContain(`${COLUMNS[1].tsid}_3600`);
   });
 
+  describe("changed vs prefilled styling", () => {
+    const KEY = `${COLUMNS[0].tsid}_0`;
+
+    function renderOne(props = {}) {
+      mockHook({ values: { [KEY]: 100.5 } });
+      return renderTable({ columns: [COLUMNS[0]], timeoffsets: [0], ...props });
+    }
+
+    // Asserted on inline style, not className: the Groundwork Input applies
+    // className to its wrapping control, so only style reaches the input.
+    it("dims a prefilled cell and does not embolden it", () => {
+      renderOne();
+      const input = screen.getByRole("spinbutton");
+      expect(input.value).toBe("100.5");
+      expect(input.style.opacity).toBe("0.7");
+      expect(input.style.fontWeight).toBe("");
+    });
+
+    it("emboldens a cell the operator changed", () => {
+      renderOne();
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "108" } });
+
+      expect(input.style.fontWeight).toBe("600");
+      expect(input.style.opacity).toBe("");
+    });
+
+    // The reason status is derived by comparison rather than tracked as a flag:
+    // typing the loaded value back is not a change.
+    it("treats a cell typed back to the loaded value as unchanged", () => {
+      renderOne();
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "108" } });
+      fireEvent.change(input, { target: { value: "100.5" } });
+
+      expect(input.style.opacity).toBe("0.7");
+      expect(input.style.fontWeight).toBe("");
+    });
+
+    it("leaves cells alone when nothing was loaded for them", () => {
+      mockHook({ values: {} });
+      renderTable({ columns: [COLUMNS[0]], timeoffsets: [0] });
+      const input = screen.getByRole("spinbutton");
+      fireEvent.change(input, { target: { value: "5" } });
+
+      // No baseline to compare against, so no changed/prefilled styling.
+      expect(input.style.opacity).toBe("");
+      expect(input.style.fontWeight).toBe("");
+    });
+
+    it("can be turned off with highlightChanged", () => {
+      renderOne({ highlightChanged: false });
+      expect(screen.getByRole("spinbutton").style.opacity).toBe("");
+    });
+
+    it("passes cell status to cellClassName and applies it to the cell", () => {
+      const seen = [];
+      renderOne({
+        cellClassName: (status) => {
+          seen.push(status);
+          return status.changed ? "ring-2 ring-amber-400" : "gw-unchanged";
+        },
+      });
+
+      const input = screen.getByRole("spinbutton");
+      const cell = input.closest("td");
+      expect(cell.className).toContain("gw-unchanged");
+      expect(seen.at(-1)).toMatchObject({
+        tsid: COLUMNS[0].tsid,
+        offset: 0,
+        key: KEY,
+        loadedValue: "100.5",
+        loaded: true,
+        changed: false,
+        prefilled: true,
+      });
+
+      fireEvent.change(input, { target: { value: "108" } });
+      expect(cell.className).toContain("ring-2");
+      expect(seen.at(-1)).toMatchObject({ changed: true, prefilled: false });
+    });
+
+    it("keeps default styling when cellClassName returns nothing", () => {
+      renderOne({ cellClassName: () => undefined });
+      expect(screen.getByRole("spinbutton").style.opacity).toBe("0.7");
+    });
+  });
+
   describe("per-column overrides", () => {
     // A read-only "previous value" column beside an editable entry column, both
     // pointing at the same series. The id is what keeps their cells distinct.
