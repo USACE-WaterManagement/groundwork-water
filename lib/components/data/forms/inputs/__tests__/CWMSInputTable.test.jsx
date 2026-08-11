@@ -31,7 +31,12 @@ function renderTable(props = {}, contextOverrides = {}) {
 
   const result = render(
     <FormContext.Provider value={context}>
-      <CWMSInputTable columns={COLUMNS} timeoffsets={TIMEOFFSETS} {...props} />
+      <CWMSInputTable
+        columns={COLUMNS}
+        timeoffsets={TIMEOFFSETS}
+        loadNearest="prev"
+        {...props}
+      />
     </FormContext.Provider>,
   );
 
@@ -153,6 +158,89 @@ describe("CWMSInputTable nearest value loading", () => {
     expect(tsidOffsets).toContain(`${COLUMNS[0].tsid}_3600`);
     expect(tsidOffsets).toContain(`${COLUMNS[1].tsid}_0`);
     expect(tsidOffsets).toContain(`${COLUMNS[1].tsid}_3600`);
+  });
+
+  describe("per-column overrides", () => {
+    // A read-only "previous value" column beside an editable entry column, both
+    // pointing at the same series. The id is what keeps their cells distinct.
+    const REFERENCE_PAIR = [
+      {
+        tsid: COLUMNS[0].tsid,
+        id: "previous",
+        label: "Previous",
+        loadNearest: "prev",
+        disabled: true,
+      },
+      { tsid: COLUMNS[0].tsid, id: "entry", label: "New" },
+    ];
+
+    it("loads only the columns that opted in", () => {
+      mockHook({ values: { previous_0: 100.5, entry_0: 100.5 } });
+      renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+
+      // Reference column shows the previous value; the entry column stays empty
+      // even though it points at the same time series.
+      expect(screen.getByDisplayValue("100.5")).toBeTruthy();
+      expect(screen.queryAllByDisplayValue("100.5")).toHaveLength(1);
+    });
+
+    it("keeps two columns on one series from sharing cell state", () => {
+      mockHook({ values: { previous_0: 100.5 } });
+      renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      fireEvent.change(inputs[1], { target: { value: "42" } });
+
+      // Editing the entry column must not disturb the reference column.
+      expect(inputs[0].value).toBe("100.5");
+      expect(inputs[1].value).toBe("42");
+    });
+
+    it("registers only the column that is not disabled", () => {
+      mockHook({ values: { previous_0: 100.5 } });
+      const { registerInput } = renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+
+      // Registration re-runs as matrixData changes, so check the distinct set.
+      const names = new Set(registerInput.mock.calls.map((c) => c[0].name));
+      expect([...names]).toEqual(["entry_0"]);
+    });
+
+    it("renders a disabled column as disabled and leaves siblings editable", () => {
+      mockHook({ values: { previous_0: 100.5 } });
+      renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+
+      const inputs = screen.getAllByRole("spinbutton");
+      expect(inputs[0].disabled).toBe(true);
+      expect(inputs[1].disabled).toBe(false);
+    });
+
+    it("lets a column override the table strategy", () => {
+      mockHook();
+      renderTable({
+        columns: [{ tsid: COLUMNS[0].tsid, loadNearest: "next" }],
+        loadNearest: "prev",
+      });
+
+      const spec = useNearestValues.mock.calls.at(-1)[0];
+      expect(spec.columns).toHaveLength(1);
+      expect(spec.columns[0].loadNearest).toBe("next");
+    });
   });
 
   // Reference-column pattern: a disabled table alongside an editable one shows

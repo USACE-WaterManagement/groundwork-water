@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
 import { useNearestValues } from "../hooks/useNearestValueStore";
+import { cellKeyFor } from "../hooks/useLoadNearestValues";
 
 function CWMSInputTable({
   className,
@@ -31,13 +32,22 @@ function CWMSInputTable({
     columns.forEach((column) => {
       if (column.defaultValues) {
         Object.entries(column.defaultValues).forEach(([offset, value]) => {
-          const key = `${column.tsid}_${offset}`;
-          data[key] = value;
+          data[cellKeyFor(column, offset)] = value;
         });
       }
     });
     return data;
   };
+
+  // Whether a column loads values is decided per column, falling back to the
+  // table. Only the opted-in columns are handed to the store, so a column left
+  // out stays empty for entry.
+  const columnLoadsNearest = (column) => !!(column.loadNearest ?? loadNearest);
+  const loadingColumns = useMemo(
+    () => columns.filter(columnLoadsNearest),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [columns, loadNearest],
+  );
 
   const [matrixData, setMatrixData] = useState(getInitialMatrixData);
   const [invalidCells, setInvalidCells] = useState({});
@@ -50,11 +60,11 @@ function CWMSInputTable({
     timestamps: loadedTimestamps,
     isPending: isLoadingNearest,
   } = useNearestValues({
-    columns,
+    columns: loadingColumns,
     timeoffsets,
     strategy: loadNearest || "prev",
     defaultUnits: units,
-    enabled: !!loadNearest && columns.length > 0 && timeoffsets.length > 0,
+    enabled: loadingColumns.length > 0 && timeoffsets.length > 0,
   });
 
   useEffect(() => {
@@ -63,35 +73,37 @@ function CWMSInputTable({
 
   useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
-    const precisionByTsid = {};
-    columns.forEach((col) => {
-      precisionByTsid[col.tsid] = col.precision ?? precision;
-    });
+
     setMatrixData((prev) => {
       const next = { ...prev };
       let changed = false;
-      const defaultKeys = new Set();
-      columns.forEach((col) => {
-        if (col.defaultValues) {
-          Object.keys(col.defaultValues).forEach((offset) => {
-            defaultKeys.add(`${col.tsid}_${offset}`);
-          });
-        }
-      });
-      Object.entries(loadedValues).forEach(([key, value]) => {
-        if (!userEdited.current.has(key) && !defaultKeys.has(key) && value != null) {
-          const tsid = key.substring(0, key.lastIndexOf("_"));
-          const p = precisionByTsid[tsid] ?? precision;
+
+      // Walk the opted-in columns rather than the loaded map, so a column that
+      // did not ask to load is left alone even when a sibling column pulls the
+      // same time series.
+      loadingColumns.forEach((column) => {
+        const columnDefaults = column.defaultValues ?? {};
+        const p = column.precision ?? precision;
+
+        timeoffsets.forEach((offset) => {
+          const key = cellKeyFor(column, offset);
+          const value = loadedValues[key];
+          if (value == null) return;
+          // A caller-supplied default takes precedence over a fetched value.
+          if (columnDefaults[offset] !== undefined) return;
+          if (userEdited.current.has(key)) return;
+
           const rounded = parseFloat(value.toFixed(p)).toString();
           if (next[key] !== rounded) {
             next[key] = rounded;
             changed = true;
           }
-        }
+        });
       });
+
       return changed ? next : prev;
     });
-  }, [loadedValues, isLoadingNearest, columns, precision]);
+  }, [loadedValues, isLoadingNearest, loadingColumns, timeoffsets, precision]);
 
   useEffect(() => {
     userEdited.current.clear();
@@ -118,8 +130,12 @@ function CWMSInputTable({
         defaultValues: columnDefaultValues = {},
       } = column;
 
+      // A disabled column is display-only: skip it so it never submits, and so
+      // a reference column cannot collide with the entry column beside it.
+      if (column.disabled ?? column.disable) return;
+
       timeoffsets.forEach((offset) => {
-        const key = `${tsid}_${offset}`;
+        const key = cellKeyFor(column, offset);
 
         const cellRef = {
           name: key,
@@ -190,8 +206,8 @@ function CWMSInputTable({
     disable,
   ]);
 
-  const handleInputChange = (tsid, offset, value) => {
-    const key = `${tsid}_${offset}`;
+  const handleInputChange = (column, offset, value) => {
+    const key = cellKeyFor(column, offset);
     userEdited.current.add(key);
     const updatedData = {
       ...matrixData,
@@ -259,6 +275,7 @@ function CWMSInputTable({
           {columns.map((column, colIndex) => {
             const columnReadonly = column.readonly ?? readonly;
             const columnRequired = column.required ?? required;
+            const columnDisabled = column.disabled ?? column.disable ?? disable;
 
             return (
               <tr key={colIndex}>
@@ -271,7 +288,7 @@ function CWMSInputTable({
                   )}
                 </td>
                 {timeoffsets.map((offset, offsetIndex) => {
-                  const key = `${column.tsid}_${offset}`;
+                  const key = cellKeyFor(column, offset);
                   const cellLoading = isLoadingNearest && !matrixData[key];
                   const valueTs =
                     showValueTimestamp && !userEdited.current.has(key)
@@ -285,9 +302,9 @@ function CWMSInputTable({
                         step={column.step}
                         value={matrixData[key] || ""}
                         onChange={(e) =>
-                          handleInputChange(column.tsid, offset, e.target.value)
+                          handleInputChange(column, offset, e.target.value)
                         }
-                        disabled={disable}
+                        disabled={columnDisabled}
                         readOnly={columnReadonly}
                         invalid={invalidCells[key] || invalid ? "true" : undefined}
                         placeholder={cellLoading ? "Loading..." : "Enter value"}
@@ -343,9 +360,10 @@ function CWMSInputTable({
                 </td>
               )}
               {columns.map((column, colIndex) => {
-                const key = `${column.tsid}_${offset}`;
+                const key = cellKeyFor(column, offset);
                 const columnReadonly = column.readonly ?? readonly;
                 const columnRequired = column.required ?? required;
+                const columnDisabled = column.disabled ?? column.disable ?? disable;
                 const cellLoading = isLoadingNearest && !matrixData[key];
                 const valueTs =
                   showValueTimestamp && !userEdited.current.has(key)
@@ -360,9 +378,9 @@ function CWMSInputTable({
                       step={column.step}
                       value={matrixData[key] || ""}
                       onChange={(e) =>
-                        handleInputChange(column.tsid, offset, e.target.value)
+                        handleInputChange(column, offset, e.target.value)
                       }
-                      disabled={disable}
+                      disabled={columnDisabled}
                       readOnly={columnReadonly}
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
                       placeholder={cellLoading ? "Loading..." : "Enter value"}

@@ -284,67 +284,83 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       <Text className="mb-4">
         Loading the previous value straight into the entry cells is not always what you
         want - an operator updating one gate out of thirty may prefer to see the last
-        recorded setting <em>next to</em> an empty field rather than edit on top of it.
-        Pair a disabled reference table with a normal entry table to get that.
+        recorded setting <em>beside</em> an empty field rather than edit on top of it.
+        Both <Code className="p-1">loadNearest</Code> and{" "}
+        <Code className="p-1">disabled</Code> can be set per column, so a single table
+        can hold a read-only reference column next to the editable one.
       </Text>
       <Text className="mb-4">
-        A disabled input does not register with the form, so the reference table
-        displays values but never submits them. The entry table registers as usual and
-        is the only one that writes. Because fetching happens at the form level, both
-        tables referencing the same time series still cost a single request.
+        Two columns may point at the same time series. Give each an{" "}
+        <Code className="p-1">id</Code> so they keep separate cell state - without one
+        they share a cell and editing the entry column would change the reference column
+        too. A disabled column never registers with the form, so only the entry column
+        submits, and because fetching happens at the form level both columns still cost
+        a single request.
       </Text>
 
       <div className="overflow-x-auto">
         <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
-          <div className="font-medium mb-1">Last recorded</div>
           <CWMSInputTable
             columns={[
-              { tsid: "Gate 1", label: "Gate 1", units: "ft", precision: 2 },
-              { tsid: "Gate 2", label: "Gate 2", units: "ft", precision: 2 },
+              {
+                tsid: "Gate 1",
+                id: "gate1-prev",
+                label: "Gate 1 (last)",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { tsid: "Gate 1", id: "gate1", label: "Gate 1 (new)" },
+              {
+                tsid: "Gate 2",
+                id: "gate2-prev",
+                label: "Gate 2 (last)",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { tsid: "Gate 2", id: "gate2", label: "Gate 2 (new)" },
             ]}
             timeoffsets={[0]}
-            loadNearest="prev"
             showValueTimestamp={true}
-            showTimestamps={false}
-            disable
-          />
-          <div className="font-medium mb-1 mt-4">New setting</div>
-          <CWMSInputTable
-            columns={[
-              { tsid: "Gate 1", label: "Gate 1", units: "ft", precision: 2 },
-              { tsid: "Gate 2", label: "Gate 2", units: "ft", precision: 2 },
-            ]}
-            timeoffsets={[0]}
             showTimestamps={false}
           />
         </CWMSForm>
       </div>
 
       <CodeBlock language="jsx">
-        {`// Reference table: shows the last recorded value, never submits.
-// Entry table: starts empty and is the one that writes.
-const GATES = [
-  { tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1", units: "ft", precision: 2 },
-  { tsid: "PROJ.Opening-Gate2.Inst.15Minutes.0.Ccp-Rev", label: "Gate 2", units: "ft", precision: 2 },
-];
-
+        {`// A read-only "last recorded" column beside each entry column.
+// Same tsid on both - the id is what keeps their cell state separate.
 <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
   <CWMSInputTable
-    columns={GATES}
+    columns={[
+      {
+        tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev",
+        id: "gate1-prev",
+        label: "Gate 1 (last)",
+        loadNearest: "prev",   // only this column loads
+        disabled: true,        // display only - never registers, never submits
+      },
+      {
+        tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev",
+        id: "gate1",
+        label: "Gate 1 (new)", // starts empty, this is what submits
+      },
+    ]}
     timeoffsets={[0]}
-    loadNearest="prev"
-    showValueTimestamp={true}   // hover a cell to see when the value is from
-    disable                     // disabled inputs do not register, so this never submits
-  />
-  <CWMSInputTable
-    columns={GATES}
-    timeoffsets={[0]}
+    showValueTimestamp={true}  // hover a cell to see when the value is from
   />
 </CWMSForm>`}
       </CodeBlock>
 
       <Text className="mb-4">
-        Use <Code className="p-1">loadNearest</Code> directly on the entry table instead
+        A column may also override the table-level strategy - set{" "}
+        <Code className="p-1">loadNearest</Code> on the table for the common case and on
+        an individual column where it should differ. Columns with different strategies
+        still share one request; only the value each one picks out of the result
+        changes.
+      </Text>
+
+      <Text className="mb-4">
+        Use <Code className="p-1">loadNearest</Code> on the table as a whole instead
         when the operator is confirming or nudging existing values rather than entering
         them fresh - the previous value becomes the starting point, and anything they do
         not touch is submitted unchanged.
@@ -599,6 +615,24 @@ const GATES = [
             type: "string",
             default: "required",
             desc: "Time Series ID for this column. This is the only required property.",
+          },
+          {
+            name: "id",
+            type: "string",
+            default: "tsid value",
+            desc: "Identity for this column's cells. Only needed when two columns reference the same tsid - give each an id so they keep separate values instead of sharing one cell.",
+          },
+          {
+            name: "loadNearest",
+            type: "string",
+            default: "table loadNearest",
+            desc: "Per-column override of the table's loadNearest strategy ('prev', 'next', 'nearest'). Set it on a single column to load only that column, or to use a different strategy from the rest of the table. Columns with different strategies still share one request.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            default: "table disable",
+            desc: "Disables just this column. A disabled column does not register with the form, so it displays values but never submits them - which is what lets it sit beside an editable column on the same tsid.",
           },
           {
             name: "label",
