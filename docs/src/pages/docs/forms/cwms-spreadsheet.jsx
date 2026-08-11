@@ -46,7 +46,7 @@ const componentProps = [
     name: "timeoffsets",
     type: "array",
     default: "[]",
-    desc: "Array of time offsets in seconds from the base time. Each offset corresponds to a row. When provided, automatically enables showTimestamps.",
+    desc: "Row definitions, one per row. Each entry is either a time offset in seconds from the base time, or an object { offset, id, label, loadNearest, disabled, readonly } overriding those settings for that row. The two forms can be mixed. When provided, automatically enables showTimestamps.",
   },
   {
     name: "precision",
@@ -101,6 +101,18 @@ const componentProps = [
     type: "boolean",
     default: "true",
     desc: "Whether to allow missing data in submissions.",
+  },
+  {
+    name: "highlightChanged",
+    type: "boolean",
+    default: "true",
+    desc: "When values have been loaded, dims cells still showing the loaded value and emboldens ones the operator has changed. Has no effect on cells nothing was loaded for.",
+  },
+  {
+    name: "cellClassName",
+    type: "function",
+    default: "undefined",
+    desc: "Called per cell with its status - { value, loadedValue, defaultValue, baseline, loaded, changed, prefilled, key, tsid, offset, column, row } - and whatever it returns is applied as a class on the cell.",
   },
   {
     name: "loadNearest",

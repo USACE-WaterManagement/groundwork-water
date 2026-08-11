@@ -49,6 +49,113 @@ function mockHook({ values = {}, timestamps = {}, isPending = false } = {}) {
   useNearestValues.mockReturnValue({ values, timestamps, isPending });
 }
 
+describe("CWMSSpreadsheet row objects and change styling", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const TSID = COLUMNS[0].tsid;
+
+  it("accepts row objects in timeoffsets", () => {
+    mockHook({ values: { [`${TSID}_first`]: 100.5 } });
+    renderSpreadsheet({
+      columns: [COLUMNS[0]],
+      rows: 1,
+      timeoffsets: [{ offset: 0, id: "first" }],
+      loadNearest: "prev",
+    });
+
+    expect(screen.getByDisplayValue("100.5")).toBeTruthy();
+    // Regression: an un-normalized row object stringifies into the cell key.
+    expect(screen.queryByDisplayValue(/\[object Object\]/)).toBeNull();
+  });
+
+  it("rounds loaded values to precision, like the table does", () => {
+    mockHook({ values: { [`${TSID}_0`]: 42.56789 } });
+    renderSpreadsheet({
+      columns: [{ ...COLUMNS[0], precision: 1 }],
+      rows: 1,
+      timeoffsets: [0],
+      loadNearest: "prev",
+    });
+
+    expect(screen.getByDisplayValue("42.6")).toBeTruthy();
+  });
+
+  it("dims a prefilled cell and emboldens a changed one", () => {
+    mockHook({ values: { [`${TSID}_0`]: 100.5 } });
+    renderSpreadsheet({
+      columns: [COLUMNS[0]],
+      rows: 1,
+      timeoffsets: [0],
+      loadNearest: "prev",
+    });
+
+    const input = screen.getByDisplayValue("100.5");
+    expect(input.style.opacity).toBe("0.7");
+    expect(input.style.fontWeight).toBe("");
+
+    fireEvent.change(input, { target: { value: "108" } });
+    expect(input.style.fontWeight).toBe("600");
+    expect(input.style.opacity).toBe("");
+  });
+
+  it("treats a cell typed back to the loaded value as unchanged", () => {
+    mockHook({ values: { [`${TSID}_0`]: 100.5 } });
+    renderSpreadsheet({
+      columns: [COLUMNS[0]],
+      rows: 1,
+      timeoffsets: [0],
+      loadNearest: "prev",
+    });
+
+    const input = screen.getByDisplayValue("100.5");
+    fireEvent.change(input, { target: { value: "108" } });
+    fireEvent.change(input, { target: { value: "100.5" } });
+    expect(input.style.opacity).toBe("0.7");
+    expect(input.style.fontWeight).toBe("");
+  });
+
+  it("passes cell status to cellClassName and applies it to the cell", () => {
+    const seen = [];
+    mockHook({ values: { [`${TSID}_0`]: 100.5 } });
+    renderSpreadsheet({
+      columns: [COLUMNS[0]],
+      rows: 1,
+      timeoffsets: [0],
+      loadNearest: "prev",
+      cellClassName: (status) => {
+        seen.push(status);
+        return status.changed ? "is-changed" : "is-prefilled";
+      },
+    });
+
+    const input = screen.getByDisplayValue("100.5");
+    expect(input.closest("td").className).toContain("is-prefilled");
+    expect(seen.at(-1)).toMatchObject({
+      tsid: TSID,
+      offset: 0,
+      loadedValue: "100.5",
+      loaded: true,
+      changed: false,
+      prefilled: true,
+    });
+  });
+
+  it("can be turned off with highlightChanged", () => {
+    mockHook({ values: { [`${TSID}_0`]: 100.5 } });
+    renderSpreadsheet({
+      columns: [COLUMNS[0]],
+      rows: 1,
+      timeoffsets: [0],
+      loadNearest: "prev",
+      highlightChanged: false,
+    });
+
+    expect(screen.getByDisplayValue("100.5").style.opacity).toBe("");
+  });
+});
+
 describe("CWMSSpreadsheet nearest value loading", () => {
   beforeEach(() => {
     vi.clearAllMocks();
