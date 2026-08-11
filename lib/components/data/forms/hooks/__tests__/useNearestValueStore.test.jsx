@@ -1,7 +1,8 @@
-import { render } from "@testing-library/react";
-import { useCallback } from "react";
+import { render, act } from "@testing-library/react";
+import { useCallback, useContext } from "react";
 import { FormContext } from "../../FormContext";
 import { useNearestValueStore, useNearestValues } from "../useNearestValueStore";
+import { selectNearestValue } from "../useLoadNearestValues";
 import useCdaMultiTimeSeries from "../../../hooks/useCdaMultiTimeSeries";
 import useCdaCatalog from "../../../hooks/useCdaCatalog";
 
@@ -31,6 +32,11 @@ const SERIES = {
 };
 
 let lastParams = [];
+
+// Resolve what a "prev" lookup at `targetMs` sees in a (possibly seeded) series.
+function selectAt(series, targetMs) {
+  return selectNearestValue(series?.values, targetMs, "prev")?.value;
+}
 
 function Harness({ children, office = "SWD" }) {
   const getTimestampForInput = useCallback((offset = 0) => {
@@ -201,6 +207,107 @@ describe("useNearestValueStore", () => {
     expect(prev.values[`${FLOW}_-3600`]).toBe(100.5);
     expect(next.values[`${FLOW}_-3600`]).toBe(100.5);
     expect(lastParams).toHaveLength(1);
+  });
+
+  describe("submitted-value seeding", () => {
+    // Simulates CDA's response cache: the fetch keeps returning pre-submit data
+    // for a few minutes after a write.
+    function renderWithSeeder() {
+      const seen = { store: null, result: null };
+
+      function Seeder() {
+        seen.store = useContext(FormContext).nearestValues;
+        return null;
+      }
+
+      render(
+        <Harness>
+          <Seeder />
+          <Consumer
+            columns={[{ tsid: FLOW, units: "EN" }]}
+            timeoffsets={[0]}
+            onResult={(r) => {
+              seen.result = r;
+            }}
+          />
+        </Harness>,
+      );
+
+      return seen;
+    }
+
+    // The case this exists for: submitting over an existing value. CDA's cached
+    // response still reports the old number at that instant.
+    it("shows the submitted value while the cached fetch still reports the old one", () => {
+      const seen = renderWithSeeder();
+      expect(seen.result.values[`${FLOW}_0`]).toBe(101.5);
+
+      act(() => {
+        seen.store.seedSubmittedValues([
+          {
+            tsid: FLOW,
+            units: "EN",
+            value: 999.9,
+            timestamp: new Date(BASE_MS).toISOString(),
+          },
+        ]);
+      });
+
+      expect(seen.result.values[`${FLOW}_0`]).toBe(999.9);
+    });
+
+    it("shows a submitted value at an instant the series had no point for", () => {
+      const seen = renderWithSeeder();
+
+      act(() => {
+        seen.store.seedSubmittedValues([
+          {
+            tsid: FLOW,
+            units: "EN",
+            value: 42.5,
+            timestamp: new Date(BASE_MS - 1800 * 1000).toISOString(),
+          },
+        ]);
+      });
+
+      // Between the two fetched samples, so a "prev" lookup just after it finds
+      // the submitted value rather than the older sample.
+      expect(selectAt(seen.store.seriesByKey[`${FLOW}|EN`], BASE_MS - 60_000)).toBe(
+        42.5,
+      );
+    });
+
+    it("drops the seed once the fetch reports the same value", () => {
+      const seen = renderWithSeeder();
+
+      act(() => {
+        // Seeding what CDA already reports means its cache has caught up.
+        seen.store.seedSubmittedValues([
+          {
+            tsid: FLOW,
+            units: "EN",
+            value: 101.5,
+            timestamp: new Date(BASE_MS).toISOString(),
+          },
+        ]);
+      });
+
+      // Series is back to exactly what was fetched - no lingering seeded point.
+      expect(seen.store.seriesByKey[`${FLOW}|EN`].values).toEqual(SERIES[FLOW].values);
+    });
+
+    it("ignores entries without a usable timestamp or value", () => {
+      const seen = renderWithSeeder();
+
+      act(() => {
+        seen.store.seedSubmittedValues([
+          { tsid: FLOW, units: "EN", value: null, timestamp: "2025-01-15T12:00:00Z" },
+          { tsid: FLOW, units: "EN", value: 5, timestamp: "not-a-date" },
+        ]);
+      });
+
+      expect(seen.result.values[`${FLOW}_0`]).toBe(101.5);
+    });
   });
 
   it("does not fetch without an office", () => {

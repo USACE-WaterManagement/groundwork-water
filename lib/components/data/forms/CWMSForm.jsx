@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
@@ -53,6 +53,7 @@ export function CWMSForm({
 }) {
   const inputsRef = useRef([]);
   const registeredIds = useRef(new Set());
+  const nearestValuesRef = useRef(null);
 
   // Generate a unique container ID for this form instance
   const containerId = useMemo(() => {
@@ -75,6 +76,18 @@ export function CWMSForm({
     auth,
     storeRule,
     onSuccess: (data) => {
+      // Hand what we just wrote to the nearest-value store before anything
+      // re-reads. CDA caches time series responses for several minutes, so the
+      // refetch this submission triggers can return the pre-submit value; the
+      // seeded points keep the operator looking at their own entry until CDA
+      // reports it back. Accessed via ref because the store is created further
+      // down this component.
+      if (data?.results?.length) {
+        nearestValuesRef.current?.seedSubmittedValues(
+          data.results.filter((result) => result.tsid),
+        );
+      }
+
       // Show success toast
       const message = formatSubmissionMessage(data);
       showSuccessToast(message, { autoClose: toastAutoClose, containerId });
@@ -249,6 +262,10 @@ export function CWMSForm({
     getTimestampForInput,
     baseTimestamp,
   });
+
+  useEffect(() => {
+    nearestValuesRef.current = nearestValues;
+  }, [nearestValues]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

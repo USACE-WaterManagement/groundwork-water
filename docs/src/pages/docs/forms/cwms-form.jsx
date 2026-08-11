@@ -547,6 +547,22 @@ function CWMSFormDocs() {
         caller.
       </Text>
 
+      <div className="font-bold text-lg pt-4">After a submit</div>
+      <Text className="mb-4">
+        Submitting invalidates the queries for the time series that were written, so the
+        form re-reads them. CDA caches time series responses for several minutes, which
+        means that read can come back with the value as it was <em>before</em> the
+        submission - the operator would watch their entry revert to the old number.
+      </Text>
+      <Text className="mb-4">
+        To avoid that, the form keeps the values it just wrote and shows them in place
+        of the cached response, until CDA reports the same value back and the local copy
+        is dropped. This needs no configuration. Be aware that what you see immediately
+        after submitting is what the form sent, not a confirmed read-back - the
+        displayed value only reflects a genuine server read once CDA&apos;s cache has
+        expired.
+      </Text>
+
       <Divider text="Controlling Form Reset Behavior" className="mt-8" />
       <Text className="mb-4">
         By default, forms automatically reset all fields after successful submission.
