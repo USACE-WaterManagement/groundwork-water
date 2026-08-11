@@ -62,7 +62,13 @@ const fetchCdaLevelValues = async ({
     }),
   );
 
-  return Object.fromEntries(entries.filter((entry) => entry[1] !== undefined));
+  return entries.reduce<Record<string, (typeof entries)[number][1]>>(
+    (values, [levelId, entry]) => {
+      if (entry !== undefined) values[levelId] = entry;
+      return values;
+    },
+    {},
+  );
 };
 
 export { fetchCdaLevelTimeSeries, fetchCdaLevelValues };
