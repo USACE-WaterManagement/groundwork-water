@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Configuration, LevelsApi, TimeSeriesApi } from "cwmsjs";
 import { gwMerge, Skeleton } from "@usace/groundwork";
 import deepmerge from "deepmerge";
-import { useMemo } from "react";
 import { getPrecision } from "../utilities";
 
 /**
@@ -44,6 +43,25 @@ const getYAxisId = (timeseriesParam) => {
   }
 };
 
+function PlotMessage({ children, height, tone = "info" }) {
+  const toneClass =
+    tone === "error"
+      ? "gww-border-red-200 gww-bg-red-50 gww-text-red-800"
+      : tone === "warning"
+        ? "gww-border-amber-200 gww-bg-amber-50 gww-text-amber-900"
+        : "gww-border-slate-200 gww-bg-white gww-text-slate-600";
+
+  return (
+    <div
+      className={`gww-flex gww-items-center gww-justify-center gww-rounded gww-border gww-p-4 gww-text-center gww-text-sm ${toneClass}`}
+      role={tone === "error" ? "alert" : "status"}
+      style={{ minHeight: height || 240 }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function CWMSPlot({
   begin,
   end,
@@ -52,6 +70,7 @@ export default function CWMSPlot({
   timeSeries,
   pageSize,
   locationLevels,
+  inputTSValues,
   layoutOptions = {},
   className = "",
   responsive = true,
@@ -65,6 +84,7 @@ export default function CWMSPlot({
   const [tsData, setTsData] = useState(null);
   const plotElement = useRef(null);
   const [error, setError] = useState(null);
+  const [warning, setWarning] = useState(null);
 
   const timeSeriesArray = useMemo(() => normalizeDataProp(timeSeries), [timeSeries]);
 
@@ -73,21 +93,25 @@ export default function CWMSPlot({
     [locationLevels],
   );
 
-  const config_v2 = new Configuration({
-    basePath: cdaUrl,
-    headers: {
-      accept: "application/json;version=2",
-    },
-  });
-  const ts_api = new TimeSeriesApi(config_v2);
+  const ts_api = useMemo(() => {
+    const config_v2 = new Configuration({
+      basePath: cdaUrl,
+      headers: {
+        accept: "application/json;version=2",
+      },
+    });
+    return new TimeSeriesApi(config_v2);
+  }, [cdaUrl]);
 
-  const config_level = new Configuration({
-    basePath: cdaUrl,
-    headers: {
-      accept: "*/*",
-    },
-  });
-  const level_api = new LevelsApi(config_level);
+  const level_api = useMemo(() => {
+    const config_level = new Configuration({
+      basePath: cdaUrl,
+      headers: {
+        accept: "*/*",
+      },
+    });
+    return new LevelsApi(config_level);
+  }, [cdaUrl]);
 
   const defaultLayout = {
     height: 750,
@@ -108,7 +132,9 @@ export default function CWMSPlot({
     if (!(yaxis_id in defaultLayout)) {
       defaultLayout[yaxis_id] = {
         title: {
-          text: item.id.split(".")[1],
+          text:
+            item.id.split(".")[1] +
+            (item?.traceOptions?.units ? " (" + item.traceOptions.units + ")" : ""),
           font: {
             family: "Arial, sans-serif",
             size: 14,
@@ -123,58 +149,79 @@ export default function CWMSPlot({
   ).length;
 
   const layout = deepmerge(defaultLayout, layoutOptions);
+  const plotHeight = layoutOptions.height || layout.height;
 
   useEffect(() => {
     const tsids = timeSeriesArray.map((ts) => ts.id);
     const levels = locationLevelsArray;
+    let cancelled = false;
 
     if (!tsids?.length) {
       setError("You must specify one or more Timeseries IDs to plot.");
+      setWarning(null);
+      setIsLoading(false);
       return;
     }
 
-    if (!office) setError("You must specify a 3 letter ID for the office");
+    if (!office && (!inputTSValues || levels.length)) {
+      setError("You must specify a 3 letter ID for the office.");
+      setWarning(null);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
-      let ts_promises = tsids.map(async (name) => {
-        try {
-          return await ts_api.getTimeSeries({
-            name,
-            office,
-            unit,
-            datum,
-            begin,
-            end,
-            pageSize,
-            timezone,
-            trim,
-          });
-        } catch (error) {
-          console.error("Error fetching timeseries data:", error);
-        }
-      });
+      setIsLoading(true);
+      setError(null);
+      setWarning(null);
 
-      let lev_promises = levels?.map(async (item) => {
-        let level;
-        try {
-          level = await level_api.getLevelsWithLevelIdTimeSeries({
+      let values = [];
+      const failures = [];
+
+      if (!inputTSValues) {
+        const tsResults = await Promise.allSettled(
+          tsids.map((name) =>
+            ts_api.getTimeSeries({
+              name,
+              office,
+              unit,
+              datum,
+              begin,
+              end,
+              pageSize,
+              timezone,
+              trim,
+            }),
+          ),
+        );
+
+        values = tsResults
+          .map((result, index) => {
+            if (result.status === "fulfilled") return result.value;
+            failures.push(`Time series ${tsids[index]}: ${result.reason?.message}`);
+            return null;
+          })
+          .filter(Boolean);
+      } else {
+        values = inputTSValues;
+      }
+
+      const levelResults = await Promise.allSettled(
+        levels.map((item) =>
+          level_api.getLevelsWithLevelIdTimeSeries({
             levelId: item.id,
             unit: item.units,
             office: office,
             begin,
             end,
-          });
-        } catch (error) {
-          console.error("Error fetching location level data:", error);
-        }
-        return level;
-      });
+          }),
+        ),
+      );
 
       let _data = { ts: {} };
 
-      let values = await Promise.all(ts_promises);
       values.forEach((result) => {
-        if (result && result.name) {
+        if (result?.name && Array.isArray(result.values)) {
           if (!_data.ts[result.name]) {
             _data.ts[result.name] = [];
           }
@@ -182,7 +229,7 @@ export default function CWMSPlot({
           const precision = getPrecision(result.units);
           result.values = result.values.map((value) => [
             value[0], // Epoch
-            value[1] != null ? parseFloat(value[1].toFixed(precision)) : null, // Value
+            value[1] != null ? parseFloat(Number(value[1]).toFixed(precision)) : null, // Value
             value[2], // Quality
           ]);
 
@@ -193,20 +240,27 @@ export default function CWMSPlot({
             }),
           );
           // Do not set tickformat if a precision is not required
-          if (precision != 0) defaultLayout[yaxis_id].tickformat = `.${precision}f`;
+          if (precision != 0 && yaxis_id && defaultLayout[yaxis_id]) {
+            defaultLayout[yaxis_id].tickformat = `.${precision}f`;
+          }
 
           _data.ts[result.name].push(result);
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);
         } else {
-          console.warn(`No timeseries data found for ${result?.name}`);
+          failures.push(`No time-series data found for ${result?.name || "unknown"}.`);
         }
       });
 
-      let lev_values;
-      if (lev_promises) {
-        lev_values = await Promise.all(lev_promises);
-      }
+      const lev_values = levelResults
+        .map((result, index) => {
+          if (result.status === "fulfilled") return result.value;
+          failures.push(
+            `Location level ${levels[index]?.id}: ${result.reason?.message}`,
+          );
+          return null;
+        })
+        .filter(Boolean);
 
       lev_values?.forEach((result) => {
         const name_arr = result?.name.split(".");
@@ -232,18 +286,37 @@ export default function CWMSPlot({
         } else if (result === null) {
           console.warn(`Skipping as no data was found.`);
         } else {
-          console.warn(`No location level data found for ${result?.name}`);
+          failures.push(
+            `No location level data found for ${result?.name || "unknown"}.`,
+          );
         }
       });
 
+      if (cancelled) return;
+
       setTsData(_data);
+      setWarning(failures.length ? failures.join(" ") : null);
+      setIsLoading(false);
     };
 
-    fetchData();
+    fetchData().catch((error) => {
+      if (!cancelled) {
+        setTsData(null);
+        setError(error?.message || "Unable to load plot data.");
+        setWarning(null);
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     begin,
     datum,
     end,
+    inputTSValues,
+    level_api,
     locationLevelsArray,
     office,
     timeSeriesArray,
@@ -251,6 +324,7 @@ export default function CWMSPlot({
     trim,
     unit,
     pageSize,
+    ts_api,
   ]);
 
   useEffect(() => {
@@ -261,7 +335,9 @@ export default function CWMSPlot({
       return;
     }
 
-    setIsLoading(true);
+    if (error) {
+      return;
+    }
 
     let ts_keys = Object.keys(tsData.ts);
 
@@ -351,18 +427,29 @@ export default function CWMSPlot({
       }
     }
 
+    if (!traces.length) {
+      setError("No plot data found for the selected time series or levels.");
+      return;
+    }
+
     let cancelled = false;
 
     async function renderPlot() {
-      const { default: Plotly } = await import("plotly.js-basic-dist");
-      if (cancelled || !plotElement.current) {
-        return;
-      }
+      try {
+        const { default: Plotly } = await import("plotly.js-basic-dist");
+        if (cancelled || !plotElement.current) {
+          return;
+        }
 
-      setIsLoading(false);
-      Plotly.newPlot(plotElement.current, traces, layout, {
-        responsive: responsive,
-      });
+        await Plotly.newPlot(plotElement.current, traces, layout, {
+          responsive: responsive,
+        });
+      } catch (error) {
+        if (!cancelled) {
+          setError(error?.message || "Unable to render the plot.");
+          setWarning(null);
+        }
+      }
     }
 
     renderPlot();
@@ -370,29 +457,44 @@ export default function CWMSPlot({
     return () => {
       cancelled = true;
     };
-  }, [layout, locationLevelsArray, responsive, staticTraces, timeSeriesArray, tsData]);
+  }, [
+    error,
+    layout,
+    locationLevelsArray,
+    responsive,
+    staticTraces,
+    timeSeriesArray,
+    tsData,
+  ]);
 
   return (
     <div
       className={gwMerge("gww-h-full gww-w-full", className)}
-      style={{ height: layoutOptions.height }}
+      style={{ height: plotHeight }}
     >
-      <div
-        ref={plotElement}
-        id="plot"
-        className="gww-h-full gww-w-full"
-        style={{ height: layoutOptions.height }}
-      >
-        {error ? (
-          <div>Error: {error}</div>
-        ) : isLoading ? (
-          <div style={{ height: `${layoutOptions.height}px` }}>
-            <Skeleton className="gww-h-full gww-w-full" />
-          </div>
-        ) : (
-          <></>
-        )}
-      </div>
+      {error ? (
+        <PlotMessage height={plotHeight} tone="error">
+          {error}
+        </PlotMessage>
+      ) : isLoading ? (
+        <div style={{ height: plotHeight }}>
+          <Skeleton className="gww-h-full gww-w-full" />
+        </div>
+      ) : (
+        <>
+          {warning ? (
+            <div className="gww-mb-2">
+              <PlotMessage tone="warning">{warning}</PlotMessage>
+            </div>
+          ) : null}
+          <div
+            ref={plotElement}
+            id="plot"
+            className="gww-h-full gww-w-full"
+            style={{ height: plotHeight }}
+          />
+        </>
+      )}
     </div>
   );
 }
