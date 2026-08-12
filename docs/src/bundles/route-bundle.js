@@ -4,6 +4,7 @@ import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
 import PlotsDocs from "../pages/docs/plots";
 import CWMSPlotDocs from "../pages/docs/plots/cwms-plot";
+import BasinPieDocs from "../pages/docs/plots/basin-pie";
 import Tables from "../pages/docs/tables";
 import Maps from "../pages/docs/maps";
 import Docs from "../pages/docs/";
@@ -78,6 +79,7 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-blobs": useCdaBlobs,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
+    "/docs/plots/basin-pie": BasinPieDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
     "/docs/summary/data-status": DataStatus,
