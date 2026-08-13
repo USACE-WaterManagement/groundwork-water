@@ -36,6 +36,12 @@ const cwmsPlotProps = [
     desc: "An array of objects that define the location level ids to plot and, optionally, styling options.  Details below.",
   },
   {
+    name: "inputTSValues",
+    type: "TimeSeries[]",
+    default: "undefined",
+    desc: "Previously fetched CWMS time-series responses. When supplied, CWMSPlot renders those values instead of requesting time-series data from CDA. An office is still required when locationLevels are supplied.",
+  },
+  {
     name: "units",
     type: "string",
     default: "undefined",

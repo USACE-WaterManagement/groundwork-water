@@ -1,3 +1,4 @@
+import { AuthLoginOptions } from "./AuthContext";
 import { AuthMethod } from "./AuthProvider";
 import { createKeycloakOidcClient } from "./keycloakOidcClient";
 import { normalizeKeycloakHost } from "./keycloakHost";
@@ -35,6 +36,9 @@ const AUTH_RESPONSE_PARAMS = [
   "error_description",
   "error_uri",
 ];
+
+const getLoginReturnToStorageKey = (realm: string, client: string) =>
+  `groundwork-water:keycloak:return-to:${realm}:${client}`;
 
 interface KeycloakAuthConfig {
   host: string;
@@ -84,7 +88,10 @@ export const createKeycloakAuthMethod = ({
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
+  let accessTokenExpiresAt: number | undefined;
+  let refreshInFlight: Promise<void> | undefined;
   let pkceCallbackHandled = false;
+  const loginReturnToStorageKey = getLoginReturnToStorageKey(realm, client);
   const normalizedHost = normalizeKeycloakHost(host);
   const baseUrl = `${normalizedHost}/realms/${realm}/protocol/openid-connect`;
   const oidcClient =
@@ -106,7 +113,14 @@ export const createKeycloakAuthMethod = ({
     const user = await oidcClient.getUser();
     accessToken = user?.access_token;
     refreshToken = user?.refresh_token;
+    accessTokenExpiresAt = user?.expires_at;
     return !!user?.access_token;
+  };
+
+  const storeDirectGrantTokens = (tokenResponse: KeycloakTokenResponse) => {
+    accessToken = tokenResponse.access_token;
+    refreshToken = tokenResponse.refresh_token;
+    accessTokenExpiresAt = Date.now() / 1000 + tokenResponse.expires_in;
   };
 
   const getOidcUser = async () => {
@@ -150,10 +164,77 @@ export const createKeycloakAuthMethod = ({
   const clearPkceState = async () => {
     accessToken = undefined;
     refreshToken = undefined;
+    accessTokenExpiresAt = undefined;
     pkceCallbackHandled = false;
 
     if (!oidcClient) return;
     await oidcClient.removeUser();
+  };
+
+  const clearLoginReturnTo = () => {
+    if (typeof window === "undefined") return;
+    window.sessionStorage.removeItem(loginReturnToStorageKey);
+  };
+
+  const setLoginReturnTo = (targetUrl?: string) => {
+    if (typeof window === "undefined") return;
+
+    if (!targetUrl) {
+      clearLoginReturnTo();
+      return;
+    }
+
+    try {
+      const resolvedTargetUrl = new URL(targetUrl, window.location.origin);
+      if (resolvedTargetUrl.origin !== window.location.origin) {
+        clearLoginReturnTo();
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        loginReturnToStorageKey,
+        resolvedTargetUrl.toString(),
+      );
+    } catch {
+      clearLoginReturnTo();
+    }
+  };
+
+  const restoreLoginReturnTo = () => {
+    if (typeof window === "undefined") return false;
+
+    const returnTo = window.sessionStorage.getItem(loginReturnToStorageKey);
+    clearLoginReturnTo();
+
+    if (!returnTo) return false;
+
+    try {
+      const targetUrl = new URL(returnTo, window.location.origin);
+      if (targetUrl.origin !== window.location.origin) return false;
+
+      if (targetUrl.toString() !== window.location.href) {
+        const previousUrl = window.location.href;
+        const nextUrl = `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
+
+        window.history.replaceState(window.history.state, document.title, nextUrl);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+
+        if (targetUrl.hash !== new URL(previousUrl).hash) {
+          window.dispatchEvent(
+            new HashChangeEvent("hashchange", {
+              oldURL: previousUrl,
+              newURL: targetUrl.toString(),
+            }),
+          );
+        }
+
+        return true;
+      }
+    } catch {
+      return false;
+    }
+
+    return false;
   };
 
   const fetchKeycloakRequest = async (
@@ -176,9 +257,10 @@ export const createKeycloakAuthMethod = ({
     return response;
   };
 
-  const login = async () => {
+  const login = async (options?: AuthLoginOptions) => {
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
+      setLoginReturnTo(options?.redirectUri);
       await oidcClient.signinRedirect();
       return;
     }
@@ -196,14 +278,14 @@ export const createKeycloakAuthMethod = ({
     if (!loginData) throw new Error("Invalid flow provided for keycloak auth config");
     const tokenResponse = await fetchKeycloakRequest("token", loginData);
     const tokenJson: KeycloakTokenResponse = await tokenResponse.json();
-    accessToken = tokenJson.access_token;
-    refreshToken = tokenJson.refresh_token;
+    storeDirectGrantTokens(tokenJson);
   };
 
   const logout = async () => {
     if (flow === "authorization-code-pkce") {
       accessToken = undefined;
       refreshToken = undefined;
+      accessTokenExpiresAt = undefined;
       pkceCallbackHandled = false;
 
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
@@ -222,6 +304,7 @@ export const createKeycloakAuthMethod = ({
     }
     accessToken = undefined;
     refreshToken = undefined;
+    accessTokenExpiresAt = undefined;
   };
 
   const isAuth = async () => {
@@ -232,7 +315,10 @@ export const createKeycloakAuthMethod = ({
         if (!pkceCallbackHandled && hasPkceCallbackParams()) {
           await oidcClient.signinCallback();
           pkceCallbackHandled = true;
-          clearAuthResponseParams();
+
+          if (!restoreLoginReturnTo()) {
+            clearAuthResponseParams();
+          }
         }
 
         if (!pkceCallbackHandled && hasPkceSignoutCallbackParams()) {
@@ -246,16 +332,18 @@ export const createKeycloakAuthMethod = ({
         if (!user) {
           accessToken = undefined;
           refreshToken = undefined;
+          accessTokenExpiresAt = undefined;
           return false;
         }
 
         if (!user.expired) {
           accessToken = user.access_token;
           refreshToken = user.refresh_token;
+          accessTokenExpiresAt = user.expires_at;
           return true;
         }
 
-        await oidcClient.signinSilent();
+        await refresh();
         return syncTokensFromOidcUser();
       } catch (error) {
         console.error("Failed to process keycloak PKCE auth state", error);
@@ -267,7 +355,7 @@ export const createKeycloakAuthMethod = ({
     return !!accessToken;
   };
 
-  const refresh = async () => {
+  async function performRefresh() {
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
 
@@ -288,14 +376,60 @@ export const createKeycloakAuthMethod = ({
     };
     const refreshResponse = await fetchKeycloakRequest("token", refreshData);
     const tokenJson: KeycloakTokenResponse = await refreshResponse.json();
-    accessToken = tokenJson.access_token;
-    refreshToken = tokenJson.refresh_token;
+    storeDirectGrantTokens(tokenJson);
+  }
+
+  const refresh = async () => {
+    if (!refreshInFlight) {
+      refreshInFlight = performRefresh();
+    }
+
+    const currentRefresh = refreshInFlight;
+    try {
+      await currentRefresh;
+    } finally {
+      if (refreshInFlight === currentRefresh) {
+        refreshInFlight = undefined;
+      }
+    }
+  };
+
+  const getValidToken = async (minValiditySeconds = 60) => {
+    if (flow === "authorization-code-pkce") {
+      const user = await getOidcUser();
+      if (!user?.access_token) {
+        accessToken = undefined;
+        refreshToken = undefined;
+        accessTokenExpiresAt = undefined;
+        return undefined;
+      }
+
+      accessToken = user.access_token;
+      refreshToken = user.refresh_token;
+      accessTokenExpiresAt = user.expires_at;
+
+      if (user.expired || (user.expires_in ?? Infinity) <= minValiditySeconds) {
+        await refresh();
+      }
+
+      return accessToken;
+    }
+
+    if (!accessToken) return undefined;
+
+    const refreshAt = Date.now() / 1000 + minValiditySeconds;
+    if (accessTokenExpiresAt !== undefined && accessTokenExpiresAt <= refreshAt) {
+      await refresh();
+    }
+
+    return accessToken;
   };
 
   const keycloakAuthMethod: AuthMethod = {
     login,
     logout,
     isAuth,
+    getValidToken,
     refresh,
     refreshInterval,
     get token() {

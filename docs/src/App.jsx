@@ -4,7 +4,6 @@ import { useConnect } from "redux-bundler-hook";
 import links from "./nav-links";
 import { FaGithub } from "react-icons/fa";
 import "@usace-watermanagement/groundwork-water/dist/style.css";
-import DevWarning from "./components/DevWarning";
 const version = import.meta.env.PKG_VERSION;
 
 import externalLinks from "./external-links";
@@ -64,7 +63,6 @@ function App() {
         youtubeUrl="#"
         flickrUrl="#"
       >
-        <DevWarning />
         <Breadcrumbs className="px-5">
           {hash
             .split("/")
@@ -73,7 +71,10 @@ function App() {
               <BreadcrumbItem key={path} href={path} text={path} />
             ))}
         </Breadcrumbs>
-        <div className="p-4">
+        <div
+          className="min-w-0 max-w-full overflow-x-hidden p-4"
+          style={{ contain: "inline-size" }}
+        >
           <Route />
         </div>
       </SiteWrapper>

@@ -27,6 +27,11 @@ function PlotsDocs() {
             CMWSPlot - A generic plot for displaying CWMS data
           </Link>
         </li>
+        <li>
+          <Link href={`${BASE_URL}#/docs/plots/basin-pie`}>
+            BasinPie - An interactive basin storage graphic
+          </Link>
+        </li>
       </ul>
       <br />
       ``

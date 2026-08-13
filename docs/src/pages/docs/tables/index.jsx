@@ -36,7 +36,6 @@ function Tables() {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: `SHB.Stage-Ocean (ft ${datum})`,
       precision: 2,
-      offset: null,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
@@ -46,7 +45,6 @@ function Tables() {
         </>
       ),
       precision: 2,
-      offset: null,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
@@ -83,34 +81,24 @@ function Tables() {
           snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
-          tableOptions={{
-            overflow: true,
-            stickyHeader: true,
-            overflowHeight: "h-[45vh]",
-            bleed: true,
-            dense: true,
-            className: "gw-mt-4",
-            grid: true,
-            striped: true,
-          }}
+          tableOptions={{ maxHeight: "45vh", className: "gw-mt-4" }}
         />
         <Divider text="Header Line Breaks" className="mt-8" />
         <Text className="mb-2">
           The header for the table can be set to an HTML tag or component with line
           breaks.
-          <Code enableCopy={false} className="p-2" language="jsx">
-            {`// For example:
+        </Text>
+        <Code enableCopy={false} className="p-2 mb-2" language="jsx">
+          {`// For example:
 const datum = "NGVD29";
 const tableTimeseriesParams = [
     {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: <>SHB.Stage-Ocean <br /> (ft {datum})</>,
       precision: 2,
-      offset: offsetValue,
     }
 ]`}
-          </Code>
-        </Text>
+        </Code>
         <Badge color="blue" className="mb-2">
           Note: Using "\n" will NOT create a line break in the header.
         </Badge>
@@ -129,8 +117,6 @@ default export function Example() {
 
   // Explicitly define a default datum
   const [datum, setDatum] = useState("NGVD29");
-  const [offsetValue, setOffsetValue] = useState();
-
   const cdaParams = {
     begin: dateRange.start.format("YYYY-MM-DDTHH:mm:ssZZ"),
     end: dateRange.end.format("YYYY-MM-DDTHH:mm:ssZZ"),
@@ -143,13 +129,11 @@ default export function Example() {
       tsid: "SHB.Stage-OCEAN.Inst.30Minutes.0.DCP-rev",
       header: \`SHB.Stage-Ocean (ft ${datum})\`,
       precision: 2,
-      offset: offsetValue,
     },
     {
       tsid: "SHB.Stage-Pred.Inst.0.0.DCP-rev",
       header: \`SHB.Stage-Pred (ft ${datum})\`,
       precision: 2,
-      offset: offsetValue,
     },
     {
       tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
@@ -170,16 +154,7 @@ default export function Example() {
           snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
-          tableOptions={{
-            overflow: true,
-            stickyHeader: true,
-            overflowHeight: "h-[65vh]",
-            bleed: true,
-            dense: true,
-            className: "gw-mt-4",
-            grid: true,
-            striped: true,
-          }}
+          tableOptions={{ maxHeight: "65vh", className: "gw-mt-4" }}
         />
     );
 } 

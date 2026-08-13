@@ -4,6 +4,7 @@ import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
 import PlotsDocs from "../pages/docs/plots";
 import CWMSPlotDocs from "../pages/docs/plots/cwms-plot";
+import BasinPieDocs from "../pages/docs/plots/basin-pie";
 import Tables from "../pages/docs/tables";
 import Maps from "../pages/docs/maps";
 import Docs from "../pages/docs/";
@@ -50,6 +51,7 @@ import { docsConfig } from "../config/docs.config";
 import GetPrecisionPage from "../pages/docs/utilities/get-precision";
 import DamProfileDocs from "../pages/docs/graphics/dam-profile";
 import GraphicsDocs from "../pages/docs/graphics";
+import DataStatus from "../pages/docs/summary/data-status";
 
 export default createRouteBundle(
   {
@@ -81,8 +83,10 @@ export default createRouteBundle(
     "/docs/plots/cwms-plot": CWMSPlotDocs,
     "/docs/graphics": GraphicsDocs,
     "/docs/graphics/dam-profile": DamProfileDocs,
+    "/docs/plots/basin-pie": BasinPieDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/summary/data-status": DataStatus,
     "/docs/forms": FormsDocs,
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,

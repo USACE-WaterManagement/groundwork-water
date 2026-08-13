@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media (max-width: 767px) {
+  header .gw-min-h-12 .gw-flex.gw-justify-between.gw-items-center {
+    max-width: 100vw;
+    min-width: 0;
+    position: relative;
+  }
+
+  header .gw-min-h-12 span.gw-flex-row-reverse.gw-w-full {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  header .gw-min-h-12 button[type="button"] {
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+    z-index: 30;
+  }
+}
