@@ -58,8 +58,8 @@ function DamProfileDocs() {
           info={{
             damBottom: 820,
             damTop: 913,
-            gradientBottom: 901,
-            gradientTop: 888,
+            gradientBottom: 888,
+            gradientTop: 901,
             inflow: 0,
             infoText: "Alum Creek Lake",
             latestTime: "2026-05-22T13:45:00Z",
