@@ -1,12 +1,12 @@
 const chartProps = [
   {
-    name: "dambottom",
+    name: "damBottom",
     type: "number",
     default: "undefined",
     desc: "The level at which the bottom of the dam will be drawn. Usually Elev.Streambed or Stage.Streambed",
   },
   {
-    name: "damtop",
+    name: "damTop",
     type: "number",
     default: "undefined",
     desc: "The level at which the top of the dam will be drawn. Usually Elev.Top of Dam or Stage.Top of Dam",

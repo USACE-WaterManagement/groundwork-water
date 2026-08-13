@@ -15,7 +15,8 @@ function DamProfileDocs() {
           values of a project.
         </Text>
         <Text className="mt-2">
-          The graphic intakes an object of values and renders the chart.
+          The graphic intakes an object of values and renders the chart. Chart can be
+          customized to draw/omit specific sections by providing specific props.
         </Text>
       </UsaceBox>
       <Divider text="Example" className="mt-8" />
@@ -24,17 +25,17 @@ function DamProfileDocs() {
           info={{
             damBottom: 820,
             damTop: 913,
-            gradientBottom: 901,
-            gradientTop: 888,
+            gradientBottom: 888,
+            gradientTop: 901,
             inflow: 0,
             infoText: "Alum Creek Lake",
             latestTime: "2026-05-22T13:45:00Z",
             levels: [
-              { name: "Streambed", value: 820 },
               { name: "Top of Dam", value: 913 },
               { name: "Top of Flood", value: 901 },
               { name: "Top of Inactive", value: 835 },
               { name: "Guide Curve", value: 900 },
+              { name: "Streambed", value: 820 },
             ],
             outflow: 519.58,
             pool: 888.81,
