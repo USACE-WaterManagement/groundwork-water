@@ -15,13 +15,13 @@ const chartProps = [
     name: "gradientBottom",
     type: "number",
     default: "undefined",
-    desc: "The level at which the bottom of the dam gradient will be drawn. Usually Elev.Top of Flood or Elev.Top of Flood Control",
+    desc: "The level at which the bottom of the dam gradient will be drawn. Usually Elev.Bottom of Flood or Elev.Bottom of Flood Control or Elev.Top of Conservation",
   },
   {
     name: "gradientTop",
     type: "number",
     default: "undefined",
-    desc: "The level at which the top of the dam gradient will be drawn. Usually Elev.Bottom of Flood or Elev.Bottom of Flood Control or Elev.Top of Conservation",
+    desc: "The level at which the top of the dam gradient will be drawn. Usually Elev.Top of Flood or Elev.Top of Flood Control",
   },
   {
     name: "inflow",
