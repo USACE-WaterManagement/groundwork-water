@@ -1,0 +1,50 @@
+							<link rel="stylesheet" href="css/sidebar.css"/>
+							<div id="leftPane" class="col-md-3 backend-cp-fixed" style="width: 22em;">
+								<div class="box-usace">
+									<h2 class="box-header-striped">
+										<span class="title">Apps</span>
+										<span class="rss"></span>
+									</h2>
+									<div id="ContentPane" class="box-content">
+										<div id="dnn_ctr2497_ModuleContent" class="DNNModuleContent ModAccordionMenuC">
+											<div id="dnn_ctr2497_View_AccordionContainer" class="AccordionContainer">
+												<div class="ac-jump-menu-wrapper ac-hide ac-show-mobile-only">
+													<div class="ac-jump-menu-success alert alert-success">
+														<i class="fas fa-spinner fa-spin"></i>Redirecting...
+													</div>
+													<select class="ac-jump-menu" id="mobilejumpmenu">
+														<option data-new-window="False" value="">Select...</option>
+														<option data-new-window="False" value="/reports">My Reports</option>
+                                                        <option data-new-window="False" value="/gages">My Gages</option>
+													</select>
+												</div>
+												<ul class="acAccordionMenu acResponsive ac-hide ac-hide-mobile-only ">
+													<li class="usaceAccordionMenuListItem">
+														<div class="usaceAccordionRootNode">
+															<div class="lvl0 listItem">
+																<a href="#" target="_blank" tabindex="0">
+																	Item1</a>
+															</div>
+														</div>
+													</li>
+													<li class="usaceAccordionMenuListItem">
+														<div class="usaceAccordionRootNode">
+															<div class="lvl0 listItem">
+																<a href="#" target="_blank" tabindex="0">
+																	Item2</a>
+															</div>
+														</div>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<script defer>
+								const mobilejumpmenu=document.getElementById("mobilejumpmenu");
+								mobilejumpmenu.addEventListener("change", function(){
+									let url=this.value
+									window.location=url
+								});
+							</script>
