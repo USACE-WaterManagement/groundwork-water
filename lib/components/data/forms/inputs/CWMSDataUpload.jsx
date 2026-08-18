@@ -1,320 +1,457 @@
 import React, { useContext, useEffect, useId, useMemo, useRef, useState } from "react";
-import { Field, Label, Button } from "@usace/groundwork";
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Field,
+  Label,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  UsaceBox,
+  gwMerge,
+} from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
+import CWMSPlot from "../../plots/CWMSPlot";
+import useCwmsDataUpload from "../../hooks/useCwmsDataUpload";
+import {
+  createCwmsDataUploadTemplate,
+  parseCwmsDataUploadRows,
+  readCwmsDataUploadFile,
+} from "../helpers/dataUpload";
 
-const bytesToBase64 = async (file) => {
-  const buffer = await file.arrayBuffer();
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000;
+const FILTER_OPTIONS = [
+  { value: "all", label: "All data points" },
+  { value: "existing", label: "Existing data points only" },
+  { value: "new", label: "New data points only" },
+];
 
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-
-  return window.btoa(binary);
-};
-
-const readFileValue = async (file, readAs) => {
-  if (readAs === "text") {
-    return file.text();
-  }
-
-  return bytesToBase64(file);
-};
+function toInitialModel(initialData, options) {
+  if (!initialData) return null;
+  if (Array.isArray(initialData)) return parseCwmsDataUploadRows(initialData, options);
+  if (Array.isArray(initialData.rows)) return initialData;
+  return null;
+}
 
 function CWMSDataUpload({
-  blobId,
-  officeId,
-  description,
-  mediaTypeId,
-  failIfExists = false,
-  label,
-  helperText,
-  accept,
-  className = "",
-  dropzoneClassName = "",
-  maxFileSizeBytes,
-  readAs = "base64",
-  required = false,
+  name = "cwmsDataUpload",
+  label = "CWMS tabular data upload",
+  helperText = "Upload an .xlsx workbook using the CWMS tabular data template.",
+  cdaUrl,
+  office,
+  unit = "ft",
+  timezone = "America/Chicago",
+  storeRule = "REPLACE_ALL",
+  overrideProtection = true,
+  maxRows = 200000,
+  maxIntradayYears = 10,
+  maxPreviewRows = 250,
+  defaultFilter = "all",
+  required = true,
   disabled = false,
-  readonly = false,
-  invalid = false,
+  showPlot = true,
+  showDeleteButton = true,
+  loadExistingData = true,
+  initialData,
+  className = "",
   onChange,
-  name,
-  placeholder = "Drag and drop a file here, or choose one from your device.",
+  onDeleteSuccess,
+  onDeleteError,
 }) {
-  const { registerInput } = useContext(FormContext);
+  const formContext = useContext(FormContext);
+  const registerInput = formContext?.registerInput;
   const inputId = useId();
   const fileInputRef = useRef(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [encodedValue, setEncodedValue] = useState("");
-  const [isInvalid, setIsInvalid] = useState(invalid || false);
-  const [validationMessage, setValidationMessage] = useState("");
+  const options = useMemo(
+    () => ({ office, timezone, maxRows, maxIntradayYears }),
+    [maxIntradayYears, maxRows, office, timezone],
+  );
+  const [model, setModel] = useState(() => {
+    try {
+      return toInitialModel(initialData, options);
+    } catch {
+      return null;
+    }
+  });
+  const [fileName, setFileName] = useState("");
+  const [filter, setFilter] = useState(defaultFilter);
   const [isReading, setIsReading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [issues, setIssues] = useState([]);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const resolvedLabel = label || name || blobId || "Upload file";
+  const {
+    classifiedRows,
+    filteredRows,
+    existingData,
+    isLoadingExisting,
+    existingError,
+    refreshExisting,
+    deleteRows,
+    isDeleting,
+    deleteError,
+  } = useCwmsDataUpload({
+    model,
+    filter,
+    cdaUrl,
+    unit,
+    loadExistingData,
+    onDeleteSuccess,
+    onDeleteError,
+  });
 
-  const clearInvalidState = () => {
+  const reset = () => {
+    setModel(null);
+    setFileName("");
+    setFilter(defaultFilter);
+    setIssues([]);
     setIsInvalid(false);
     setValidationMessage("");
+    setConfirmDelete(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    onChange?.(null);
   };
 
-  const setFileState = async (file) => {
-    if (!file) {
-      setSelectedFile(null);
-      setEncodedValue("");
-      clearInvalidState();
-      if (onChange) {
-        onChange(null);
-      }
-      return;
-    }
+  const validate = () => {
+    if (issues.length) return issues[0];
+    if (required && !model?.rows?.length) return `${label} is required.`;
+    if (model && !filteredRows.length) return "The selected filter contains no rows.";
+    return null;
+  };
 
-    if (file.size === 0) {
-      setSelectedFile(file);
-      setEncodedValue("");
-      setIsInvalid(true);
-      setValidationMessage(`${resolvedLabel} cannot be empty`);
-      if (onChange) {
-        onChange(file);
-      }
-      return;
-    }
+  useEffect(() => {
+    if (!registerInput || disabled) return undefined;
+    return registerInput({
+      kind: "timeseries-batch",
+      name,
+      label,
+      required,
+      getValues: () => [model?.rows?.length ? String(model.rows.length) : ""],
+      getSubmissionData: () => ({
+        kind: "timeseries-batch",
+        name,
+        rows: filteredRows,
+        unit,
+        storeRule,
+        overrideProtection,
+        cdaUrl,
+      }),
+      validate,
+      reset,
+      setInvalid: setIsInvalid,
+      setValidationMessage,
+    });
+  }, [
+    cdaUrl,
+    disabled,
+    filteredRows,
+    issues,
+    label,
+    model,
+    name,
+    overrideProtection,
+    registerInput,
+    required,
+    storeRule,
+    unit,
+  ]);
 
-    if (maxFileSizeBytes && file.size > maxFileSizeBytes) {
-      setSelectedFile(file);
-      setEncodedValue("");
-      setIsInvalid(true);
-      setValidationMessage(
-        `${resolvedLabel} must be ${maxFileSizeBytes.toLocaleString()} bytes or smaller`,
-      );
-      if (onChange) {
-        onChange(file);
-      }
-      return;
-    }
-
+  const loadFile = async (file) => {
+    if (!file || disabled) return;
     setIsReading(true);
-
+    setIssues([]);
+    setValidationMessage("");
+    setIsInvalid(false);
+    setConfirmDelete(false);
     try {
-      const value = await readFileValue(file, readAs);
-      setSelectedFile(file);
-      setEncodedValue(value);
-      clearInvalidState();
-      if (onChange) {
-        onChange(file);
-      }
+      const nextModel = await readCwmsDataUploadFile(file, options);
+      setModel(nextModel);
+      setFileName(file.name);
+      onChange?.(nextModel);
     } catch (error) {
-      setSelectedFile(file);
-      setEncodedValue("");
+      const nextIssues = error?.issues || [
+        error?.message || "Unable to read workbook.",
+      ];
+      setModel(null);
+      setFileName(file.name);
+      setIssues(nextIssues);
       setIsInvalid(true);
-      setValidationMessage(
-        error?.message || `Unable to read ${file.name} for ${resolvedLabel}`,
-      );
+      setValidationMessage(nextIssues[0]);
+      onChange?.(null);
     } finally {
       setIsReading(false);
     }
   };
 
-  const resetInput = () => {
-    setSelectedFile(null);
-    setEncodedValue("");
-    clearInvalidState();
-    setIsReading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+  const downloadTemplate = async () => {
+    const buffer = await createCwmsDataUploadTemplate({ office });
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "cwms-data-upload-template.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
-  const validateSelection = () => {
-    if (!blobId) {
-      return `${resolvedLabel} requires a blobId`;
+  const handleDelete = async () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
     }
-
-    if (required && !selectedFile) {
-      return `${resolvedLabel} is required`;
-    }
-
-    if (!selectedFile) {
-      return null;
-    }
-
-    if (selectedFile.size === 0) {
-      return `${resolvedLabel} cannot be empty`;
-    }
-
-    if (maxFileSizeBytes && selectedFile.size > maxFileSizeBytes) {
-      return `${resolvedLabel} must be ${maxFileSizeBytes.toLocaleString()} bytes or smaller`;
-    }
-
-    if (!encodedValue) {
-      return `Select a valid file before submitting ${resolvedLabel}`;
-    }
-
-    return null;
+    await deleteRows(filteredRows);
+    setConfirmDelete(false);
   };
 
-  useEffect(() => {
-    if (!registerInput) return;
-
-    const inputRef = {
-      kind: "blob",
-      name,
-      blobId,
-      officeId,
-      description,
-      mediaTypeId,
-      failIfExists,
-      required,
-      label: resolvedLabel,
-      getValues: () => [selectedFile?.name || ""],
-      getSubmissionData: ({ timestamp }) => ({
-        kind: "blob",
-        blobId,
-        officeId,
-        description,
-        mediaTypeId: mediaTypeId || selectedFile?.type || undefined,
-        failIfExists,
-        fileName: selectedFile?.name,
-        fileSize: selectedFile?.size,
-        timestamp,
-        value: encodedValue,
-        values: [selectedFile?.name || ""],
-      }),
-      validate: validateSelection,
-      reset: resetInput,
-      setInvalid: setIsInvalid,
-      setValidationMessage,
-    };
-
-    return registerInput(inputRef);
-  }, [
-    blobId,
-    description,
-    encodedValue,
-    failIfExists,
-    mediaTypeId,
-    name,
-    officeId,
-    registerInput,
-    required,
-    resolvedLabel,
-    selectedFile,
-  ]);
-
-  const dropzoneClasses = useMemo(() => {
-    const stateClasses =
-      disabled || readonly
-        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500"
-        : isDragging
-          ? "border-blue-600 bg-blue-50 text-slate-900"
-          : isInvalid
-            ? "border-red-500 bg-red-50 text-slate-900"
-            : "border-slate-300 bg-white text-slate-900 hover:border-slate-400";
-
-    return [
-      "flex min-h-36 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors",
-      stateClasses,
-      className,
-      dropzoneClassName,
-    ]
-      .filter(Boolean)
-      .join(" ");
-  }, [className, disabled, dropzoneClassName, isDragging, isInvalid, readonly]);
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-    if (!disabled && !readonly) {
-      setIsDragging(true);
-    }
-  };
-
-  const handleDragLeave = (event) => {
-    event.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = async (event) => {
-    event.preventDefault();
-    setIsDragging(false);
-
-    if (disabled || readonly) return;
-
-    const file = event.dataTransfer?.files?.[0];
-    await setFileState(file);
-  };
-
-  const handleBrowseClick = () => {
-    if (!disabled && !readonly) {
-      fileInputRef.current?.click();
-    }
-  };
-
-  const handleInputChange = async (event) => {
-    const file = event.target.files?.[0];
-    await setFileState(file);
-  };
+  const previewRows = filteredRows.slice(0, maxPreviewRows);
+  const uploadPlotRows = filteredRows.filter((row) => row.value !== null);
+  const existingCount = classifiedRows.filter(
+    (row) => row.status === "existing",
+  ).length;
+  const newCount = classifiedRows.length - existingCount;
+  const plotData =
+    existingData ||
+    (model
+      ? { name: model.tsid, officeId: model.office, units: unit, values: [] }
+      : null);
 
   return (
-    <Field className="flex flex-col gap-2">
-      <Label htmlFor={inputId}>{resolvedLabel}</Label>
-      <input
-        ref={fileInputRef}
-        id={inputId}
-        name={name}
-        type="file"
-        className="hidden"
-        accept={accept}
-        disabled={disabled || readonly}
-        onChange={handleInputChange}
-      />
-      <div
-        className={dropzoneClasses}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        aria-invalid={isInvalid}
-      >
-        <div className="space-y-2">
-          <p className="text-sm font-medium">
-            {isReading ? "Reading file..." : placeholder}
-          </p>
-          {selectedFile ? (
-            <div className="text-sm">
-              <div>{selectedFile.name}</div>
-              <div className="text-slate-500">
-                {selectedFile.size.toLocaleString()} bytes
-              </div>
-            </div>
-          ) : (
-            <p className="text-xs text-slate-500">
-              {accept ? `Accepted file types: ${accept}` : "Any file type accepted"}
-            </p>
+    <div className={gwMerge("gww-flex gww-min-w-0 gww-flex-col gww-gap-4", className)}>
+      <Field>
+        <Label htmlFor={inputId}>{label}</Label>
+        <input
+          ref={fileInputRef}
+          id={inputId}
+          name={name}
+          type="file"
+          className="gww-sr-only"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          disabled={disabled}
+          onChange={(event) => loadFile(event.target.files?.[0])}
+        />
+        <div
+          className={gwMerge(
+            "gww-flex gww-min-h-36 gww-flex-col gww-items-center gww-justify-center gww-gap-3 gww-rounded-lg gww-border-2 gww-border-dashed gww-p-6 gww-text-center gww-transition-colors",
+            disabled
+              ? "gww-cursor-not-allowed gww-border-slate-200 gww-bg-slate-100 gww-text-slate-500"
+              : isInvalid
+                ? "gww-border-red-400 gww-bg-red-50"
+                : isDragging
+                  ? "gww-border-blue-600 gww-bg-blue-50"
+                  : "gww-border-slate-300 gww-bg-white hover:gww-border-slate-400",
           )}
-          {maxFileSizeBytes ? (
-            <p className="text-xs text-slate-500">
-              Max file size: {maxFileSizeBytes.toLocaleString()} bytes
-            </p>
-          ) : null}
-        </div>
-        <div className="mt-4 flex gap-3">
-          <Button type="button" color="secondary" onClick={handleBrowseClick}>
-            Choose File
-          </Button>
-          {selectedFile ? (
-            <Button type="button" color="secondary" onClick={resetInput}>
-              Clear
+          onDragOver={(event) => {
+            event.preventDefault();
+            if (!disabled) setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setIsDragging(false);
+            loadFile(event.dataTransfer?.files?.[0]);
+          }}
+          aria-invalid={isInvalid}
+        >
+          <div>
+            <div className="gww-font-medium gww-text-slate-900">
+              {isReading
+                ? "Reading workbook..."
+                : fileName || "Drag an .xlsx workbook here"}
+            </div>
+            <div className="gww-mt-1 gww-text-sm gww-text-slate-600">{helperText}</div>
+          </div>
+          <div className="gww-flex gww-flex-wrap gww-justify-center gww-gap-2">
+            <Button
+              type="button"
+              color="secondary"
+              disabled={disabled || isReading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Choose workbook
             </Button>
-          ) : null}
+            <Button type="button" color="secondary" onClick={downloadTemplate}>
+              Download template
+            </Button>
+            {model ? (
+              <Button type="button" color="secondary" onClick={reset}>
+                Clear
+              </Button>
+            ) : null}
+          </div>
         </div>
-      </div>
-      {helperText ? <div className="text-xs text-slate-500">{helperText}</div> : null}
-      {validationMessage ? (
-        <div className="text-sm text-red-600">{validationMessage}</div>
+      </Field>
+
+      {issues.length ? (
+        <div
+          className="gww-rounded gww-border gww-border-red-200 gww-bg-red-50 gww-p-4 gww-text-sm gww-text-red-900"
+          role="alert"
+        >
+          <div className="gww-font-semibold">Workbook validation failed</div>
+          <ul className="gww-mt-2 gww-list-disc gww-space-y-1 gww-pl-5">
+            {issues.map((issue) => (
+              <li key={issue}>{issue}</li>
+            ))}
+          </ul>
+        </div>
       ) : null}
-    </Field>
+      {validationMessage && !issues.length ? (
+        <div className="gww-text-sm gww-text-red-700" role="alert">
+          {validationMessage}
+        </div>
+      ) : null}
+
+      {model ? (
+        <>
+          <UsaceBox title="Upload summary">
+            <div className="gww-flex gww-flex-wrap gww-items-center gww-gap-2">
+              <Badge color="blue">{model.office}</Badge>
+              <span className="gww-break-all gww-font-mono gww-text-sm">
+                {model.tsid}
+              </span>
+              <Badge color="gray">{classifiedRows.length.toLocaleString()} rows</Badge>
+              <Badge color="green">{newCount.toLocaleString()} new</Badge>
+              <Badge color="yellow">{existingCount.toLocaleString()} existing</Badge>
+            </div>
+            <div className="gww-mt-2 gww-text-sm gww-text-slate-600">
+              {model.begin} through {model.end} · {unit} · {timezone}
+            </div>
+          </UsaceBox>
+
+          <div className="gww-flex gww-flex-wrap gww-items-end gww-gap-3">
+            <Field className="gww-min-w-64">
+              <Label htmlFor={`${inputId}-filter`}>Rows used by form actions</Label>
+              <Dropdown
+                id={`${inputId}-filter`}
+                value={filter}
+                onChange={(event) => {
+                  setFilter(event.target.value);
+                  setConfirmDelete(false);
+                }}
+                options={FILTER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              />
+            </Field>
+            <Button
+              type="button"
+              color="secondary"
+              disabled={isLoadingExisting}
+              onClick={() => refreshExisting()}
+            >
+              {isLoadingExisting ? "Refreshing..." : "Refresh existing data"}
+            </Button>
+            {showDeleteButton ? (
+              <Button
+                type="button"
+                color={confirmDelete ? "red" : "secondary"}
+                disabled={!filteredRows.length || isDeleting}
+                onClick={handleDelete}
+              >
+                {isDeleting
+                  ? "Deleting..."
+                  : confirmDelete
+                    ? `Confirm delete ${filteredRows.length.toLocaleString()} rows`
+                    : "Delete selected range"}
+              </Button>
+            ) : null}
+            {confirmDelete ? (
+              <Button
+                type="button"
+                color="secondary"
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+
+          {existingError || deleteError ? (
+            <div
+              className="gww-rounded gww-border gww-border-red-200 gww-bg-red-50 gww-p-3 gww-text-sm gww-text-red-900"
+              role="alert"
+            >
+              {(existingError || deleteError)?.message || "The CDA request failed."}
+            </div>
+          ) : null}
+
+          {showPlot && uploadPlotRows.length ? (
+            <CWMSPlot
+              office={model.office}
+              cdaUrl={cdaUrl}
+              unit={unit}
+              timeSeries={{
+                id: model.tsid,
+                traceOptions: { name: "Existing data", mode: "markers" },
+              }}
+              inputTSValues={[plotData]}
+              staticTraces={[
+                {
+                  x: uploadPlotRows.map((row) => new Date(row.epoch)),
+                  y: uploadPlotRows.map((row) => row.value),
+                  text: uploadPlotRows.map((row) => row.textValue),
+                  name: "Workbook data",
+                  mode: "markers",
+                  type: "scatter",
+                },
+              ]}
+              layoutOptions={{
+                height: 420,
+                title: { text: "Workbook and existing time-series values" },
+              }}
+            />
+          ) : null}
+
+          <div className="gww-min-w-0 gww-overflow-x-auto">
+            <Table dense overflow stickyHeader overflowHeight="gww-max-h-[32rem]">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Office</TableCell>
+                  <TableCell>TSID</TableCell>
+                  <TableCell>Date time ({timezone})</TableCell>
+                  <TableCell>Value</TableCell>
+                  <TableCell>Quality</TableCell>
+                  <TableCell>Text value</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {previewRows.map((row) => (
+                  <TableRow key={`${row.tsid}-${row.epoch}`}>
+                    <TableCell>
+                      <Badge color={row.status === "existing" ? "yellow" : "green"}>
+                        {row.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{row.office}</TableCell>
+                    <TableCell>{row.tsid}</TableCell>
+                    <TableCell>{row.dateTime}</TableCell>
+                    <TableCell>{row.value ?? ""}</TableCell>
+                    <TableCell>{row.qualityCode}</TableCell>
+                    <TableCell>{row.textValue}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {filteredRows.length > maxPreviewRows ? (
+              <div className="gww-mt-2 gww-text-sm gww-text-slate-600">
+                Showing the first {maxPreviewRows.toLocaleString()} of{" "}
+                {filteredRows.length.toLocaleString()} selected rows.
+              </div>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 }
 
