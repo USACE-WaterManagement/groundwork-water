@@ -164,6 +164,11 @@ export default [
         text: "CWMS Plot",
         href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
+      {
+        id: "basin-pie",
+        text: "Basin Pie",
+        href: `${BASE_URL}#/docs/plots/basin-pie`,
+      },
     ],
   },
   {
@@ -237,6 +242,18 @@ export default [
     id: "maps",
     text: "Maps",
     href: `${BASE_URL}#/docs/maps`,
+  },
+  {
+    id: "summary",
+    text: "Summary",
+    href: `${BASE_URL}#/docs/summary`,
+    children: [
+      {
+        id: "data-status",
+        text: "Data Status",
+        href: `${BASE_URL}#/docs/summary/data-status`,
+      },
+    ],
   },
   {
     id: "utilities",

@@ -1,0 +1,88 @@
+version: 2
+
+updates:
+  # Batch routine library updates while keeping major and production security
+  # updates isolated for closer review.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 3
+    versioning-strategy: "increase-if-necessary"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    ignore:
+      # 0.5.x requires ESLint 9 and flat config. Keep compatible 0.4.x
+      # patches flowing until the repository completes that migration.
+      - dependency-name: "eslint-plugin-react-refresh"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    groups:
+      library-minor-and-patch:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      library-development-security:
+        applies-to: "security-updates"
+        dependency-type: "development"
+        patterns:
+          - "*"
+
+  # The documentation app is not published, so its routine and security
+  # updates can each be reviewed as a single batch.
+  - package-ecosystem: "npm"
+    directory: "/docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 2
+    versioning-strategy: "increase-if-necessary"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    ignore:
+      - dependency-name: "eslint-plugin-react-refresh"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    groups:
+      docs-minor-and-patch:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      docs-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+
+  # Release, compatibility, and documentation publishing all depend on GitHub
+  # Actions. Check these less frequently and keep major upgrades isolated.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
+    groups:
+      actions-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

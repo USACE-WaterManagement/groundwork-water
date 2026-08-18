@@ -23,10 +23,7 @@ const getInteractiveTestRedirectUri = () => {
 
   const url = new URL(window.location.href);
   url.search = "";
-
-  if (!url.hash || url.hash === "#") {
-    url.hash = "#/docs/forms/interactive-test";
-  }
+  url.hash = "";
 
   return url.toString();
 };
@@ -116,7 +113,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
         setShowAuthModal(true);
       } else {
         // Use the auth provider's login method for other auth types
-        auth.login();
+        auth.login({ redirectUri: window.location.href });
       }
       setTestMode(true);
     } else {

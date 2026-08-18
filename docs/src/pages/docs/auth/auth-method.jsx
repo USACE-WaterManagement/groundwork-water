@@ -25,6 +25,12 @@ const componentProps = [
     desc: "A function that returns the authentication status of the user.",
   },
   {
+    name: "getValidToken",
+    type: "(minValiditySeconds?: number) => Promise<string | undefined>",
+    default: "undefined",
+    desc: "Optional - Returns a usable access token, refreshing it first when it is expired or nearing expiration.",
+  },
+  {
     name: "refresh",
     type: "() => Promise<void>",
     default: "undefined",
