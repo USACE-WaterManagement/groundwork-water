@@ -15,6 +15,40 @@ import { cdaTSHookParams } from "../../../props-declarations/data-hooks";
 import { Badge, Text, UsaceBox } from "@usace/groundwork";
 import CdaParamsTable from "../../components/cda-params-table.jsx";
 
+const preloadedTimeseriesParams = [
+  {
+    tsid: "DEMO.Stage.Inst.1Hour.0.Observed",
+    header: "Stage (ft)",
+    precision: 2,
+  },
+  {
+    tsid: "DEMO.Flow.Inst.1Hour.0.Observed",
+    header: "Flow (cfs)",
+    precision: 0,
+  },
+];
+
+const preloadedTimeSeries = [
+  {
+    name: "DEMO.Stage.Inst.1Hour.0.Observed",
+    units: "ft",
+    values: [
+      [Date.parse("2026-08-18T08:00:00-05:00"), 12.34, 0],
+      [Date.parse("2026-08-18T09:00:00-05:00"), 12.41, 0],
+      [Date.parse("2026-08-18T10:00:00-05:00"), 12.47, 0],
+    ],
+  },
+  {
+    name: "DEMO.Flow.Inst.1Hour.0.Observed",
+    units: "cfs",
+    values: [
+      [Date.parse("2026-08-18T08:00:00-05:00"), 842, 0],
+      [Date.parse("2026-08-18T09:00:00-05:00"), 875, 0],
+      [Date.parse("2026-08-18T10:00:00-05:00"), 901, 0],
+    ],
+  },
+];
+
 function Tables() {
   const LOOKBACK_HOURS = 24;
   const tsid = "KEYS.Elev.Inst.1Hour.0.Ccp-Rev";
@@ -47,7 +81,7 @@ function Tables() {
       precision: 2,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
+      tsid: "SHB.Temp-Air.Inst.30Minutes.0.DCP-rev",
       header: "SHB.Temp-Air (F)",
       precision: 0,
     },
@@ -77,12 +111,74 @@ function Tables() {
           end={cdaParams.end}
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
-          interval="5"
+          interval={5}
           snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}
           tableOptions={{ maxHeight: "45vh", className: "gw-mt-4" }}
         />
+        <Divider text="Use Pre-Fetched Data" className="mt-8" />
+        <Text>
+          To render data you already have, pass CDA-compatible time-series responses to
+          <code className="font-bold"> inputTSValues</code>. Each
+          <code className="font-bold"> timeseriesParams[].tsid</code> must match a
+          supplied series <code className="font-bold">name</code>. The value tuples
+          begin with a Unix timestamp in milliseconds and a value; quality codes and
+          other CDA metadata may follow.
+        </Text>
+        <Text className="mt-2">
+          When <code className="font-bold">inputTSValues</code> is supplied, the table
+          does not make CDA requests, so <code className="font-bold">office</code>,
+          <code className="font-bold"> begin</code>, and
+          <code className="font-bold"> end</code> are not required.
+        </Text>
+        <CWMSTable
+          timeseriesParams={preloadedTimeseriesParams}
+          inputTSValues={preloadedTimeSeries}
+          dateFormat="MMM D, YYYY h:mm A"
+          tableOptions={{ maxHeight: "24rem", className: "gw-mt-4" }}
+        />
+        <Code className="mt-4" language="jsx">
+          {`const timeseriesParams = [
+  {
+    tsid: "DEMO.Stage.Inst.1Hour.0.Observed",
+    header: "Stage (ft)",
+    precision: 2,
+  },
+  {
+    tsid: "DEMO.Flow.Inst.1Hour.0.Observed",
+    header: "Flow (cfs)",
+    precision: 0,
+  },
+];
+
+const inputTSValues = [
+  {
+    name: "DEMO.Stage.Inst.1Hour.0.Observed",
+    units: "ft",
+    values: [
+      [Date.parse("2026-08-18T08:00:00-05:00"), 12.34, 0],
+      [Date.parse("2026-08-18T09:00:00-05:00"), 12.41, 0],
+      [Date.parse("2026-08-18T10:00:00-05:00"), 12.47, 0],
+    ],
+  },
+  {
+    name: "DEMO.Flow.Inst.1Hour.0.Observed",
+    units: "cfs",
+    values: [
+      [Date.parse("2026-08-18T08:00:00-05:00"), 842, 0],
+      [Date.parse("2026-08-18T09:00:00-05:00"), 875, 0],
+      [Date.parse("2026-08-18T10:00:00-05:00"), 901, 0],
+    ],
+  },
+];
+
+<CWMSTable
+  timeseriesParams={timeseriesParams}
+  inputTSValues={inputTSValues}
+  dateFormat="MMM D, YYYY h:mm A"
+/>`}
+        </Code>
         <Divider text="Header Line Breaks" className="mt-8" />
         <Text className="mb-2">
           The header for the table can be set to an HTML tag or component with line
@@ -100,7 +196,7 @@ const tableTimeseriesParams = [
 ]`}
         </Code>
         <Badge color="blue" className="mb-2">
-          Note: Using "\n" will NOT create a line break in the header.
+          Note: Using &quot;\n&quot; will NOT create a line break in the header.
         </Badge>
         <Divider text="Code Example:" className="mt-8" />
         <div className="mt-8">
@@ -136,7 +232,7 @@ default export function Example() {
       precision: 2,
     },
     {
-      tsid: "SHB.Temp-Air.Inst.0.0.DCP-rev",
+      tsid: "SHB.Temp-Air.Inst.30Minutes.0.DCP-rev",
       header: "SHB.Temp-Air (F)",
       precision: 0,
     },
@@ -150,7 +246,7 @@ default export function Example() {
           end={cdaParams.end}
           office={cdaParams.office}
           timeseriesParams={tableTimeseriesParams}
-          interval="5"
+          interval={5}
           snapTopOfInterval={true}
           missingString="---"
           sortAscending={false}

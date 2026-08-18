@@ -35,6 +35,60 @@ function TableMessage({ children, tone = "info" }) {
   );
 }
 
+/**
+ * A CWMS time-series value tuple. The first two entries are the Unix timestamp in
+ * milliseconds and the value. CDA responses may include quality codes and other
+ * metadata in later entries.
+ *
+ * @typedef {[number, number | string | null, ...unknown[]]} CWMSTableValue
+ */
+
+/**
+ * @typedef {Object} CWMSTableSeries
+ * @property {string} name Fully qualified time-series ID.
+ * @property {string} [units] Units returned for the series.
+ * @property {CWMSTableValue[]} values Time-series value tuples.
+ */
+
+/**
+ * @typedef {Object} CWMSTableTimeseriesParam
+ * @property {string} tsid Fully qualified time-series ID matching a series name.
+ * @property {import("react").ReactNode} [header] Column heading.
+ * @property {number} [precision] Number of decimal places to display.
+ * @property {number} [rounding] Alias for precision.
+ */
+
+/**
+ * @typedef {Record<string, unknown> & {
+ *   className?: string,
+ *   maxHeight?: string,
+ *   overflowHeight?: string
+ * }} CWMSTableOptions
+ */
+
+/**
+ * @typedef {Object} CWMSTableProps
+ * @property {CWMSTableTimeseriesParam[]} timeseriesParams Series and columns to show.
+ * @property {string} [office] Owning office used when fetching from CDA.
+ * @property {string} [unit="EN"] Unit or unit system used when fetching from CDA.
+ * @property {string} [datum] Elevation datum used when fetching from CDA.
+ * @property {string} [begin] Beginning of the requested time range.
+ * @property {string} [end] End of the requested time range.
+ * @property {string} [timezone] Time zone for begin and end.
+ * @property {CWMSTableSeries[]} [inputTSValues] Pre-fetched CWMS time-series responses.
+ * @property {boolean} [trim=true] Whether CDA should trim leading and trailing missing values.
+ * @property {number | string} [pageSize] Maximum number of values requested from CDA.
+ * @property {number | string} [interval=1] Display interval in minutes.
+ * @property {boolean} [snapTopOfInterval=true] Whether interval filtering is clock-aligned.
+ * @property {boolean} [sortAscending=true] Whether rows are sorted oldest first.
+ * @property {string} [missingString=""] Text shown for missing values.
+ * @property {string} [dateFormat="ddd MMM DD HH:mm"] Day.js display format.
+ * @property {string} [cdaUrl] CDA base URL override.
+ * @property {string} [dateTimeTableColumnHeader="Date & Time (Local)"] Date column heading.
+ * @property {CWMSTableOptions} [tableOptions] Virtualized table container options.
+ */
+
+/** @param {CWMSTableProps} props */
 export default function CWMSTable({
   timeseriesParams,
   office,
