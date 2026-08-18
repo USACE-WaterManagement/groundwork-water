@@ -203,7 +203,7 @@ const SearchInput = <T,>({
     setInternalErrorMessage("");
 
     fetch(
-      `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}`,
+      `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}.*`,
       {
         method: "GET",
         headers: { Accept: "application/json" },
