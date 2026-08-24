@@ -63,7 +63,7 @@ const chartProps = [
     name: "infoText",
     type: "string",
     default: "undefined",
-    desc: "The name of project",
+    desc: "The name of the project.",
   },
   {
     name: "latestTime",
@@ -82,6 +82,18 @@ const chartProps = [
     type: "array",
     default: "undefined",
     desc: "Array of outflow types to be drawn on below the Outflow Icon.",
+  },
+  {
+    name: "elevation",
+    type: "string",
+    default: "undefined",
+    desc: "The elevation of the project.",
+  },
+  {
+    name: "drainage",
+    type: "string",
+    default: "undefined",
+    desc: "The size of the drainage basin of the project.",
   },
 ];
 

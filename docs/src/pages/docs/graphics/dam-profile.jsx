@@ -30,6 +30,8 @@ function DamProfileDocs() {
             inflow: 0,
             infoText: "Alum Creek Lake",
             latestTime: "2026-05-22T13:45:00Z",
+            elevation: "550m",
+            drainage: "114872m2",
             levels: [
               { name: "Top of Dam", value: 913 },
               { name: "Top of Flood", value: 901 },
@@ -62,6 +64,8 @@ function DamProfileDocs() {
             gradientTop: 901,
             inflow: 0,
             infoText: "Alum Creek Lake",
+            elevation: "550m",
+            drainage: "114872m2",
             latestTime: "2026-05-22T13:45:00Z",
             levels:[
               {name: "Streambed", value: 820},
