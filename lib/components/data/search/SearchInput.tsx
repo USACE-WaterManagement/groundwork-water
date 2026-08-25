@@ -31,6 +31,7 @@ type SearchInputProps<T> = {
   onSelect?: (item: T) => void;
   config?: T[];
   keysToSearch?: T[];
+  cdaCriteria?: object;
   getResultKey?: (item: T, index: number) => string | number;
   getResultLabel?: (item: T) => string;
   getResultDescription?: (item: T) => string | undefined;
@@ -134,6 +135,7 @@ const SearchInput = <T,>({
   onSelect,
   config,
   keysToSearch,
+  cdaCriteria,
   getResultKey,
   getResultLabel = defaultGetResultLabel,
   getResultDescription = defaultGetResultDescription,
@@ -241,7 +243,11 @@ const SearchInput = <T,>({
         const entries = Array.isArray(data?.entries)
           ? (data.entries as Array<{ name?: string }>)
           : [];
-        setInternalResults(entries.filter((item) => !item.name?.includes("-")) as T[]);
+        //Filter the catalog data based on user defined criteria
+        const filteredData = entries.filter((entry) =>
+          Object.keys(cdaCriteria).every((key) => cdaCriteria[key](entry[key])),
+        );
+        setInternalResults(filteredData as T[]);
       })
       .catch((fetchError: Error & { name?: string }) => {
         if (fetchError.name === "AbortError") return;
@@ -255,7 +261,15 @@ const SearchInput = <T,>({
       });
 
     return () => controller.abort();
-  }, [cdaUrl, debouncedQuery, minQueryLength, config, keysToSearch, office]);
+  }, [
+    cdaUrl,
+    debouncedQuery,
+    minQueryLength,
+    config,
+    keysToSearch,
+    cdaCriteria,
+    office,
+  ]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.

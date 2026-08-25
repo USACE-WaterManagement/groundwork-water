@@ -139,6 +139,12 @@ const propsList = [
     desc: "List the keys to search for the keyword in the object passed to config",
   },
   {
+    name: "cdaCriteria",
+    type: "object",
+    required: false,
+    desc: "List the criteria needed to filter the CDA Catalog results",
+  },
+  {
     name: "onSelect",
     type: "(item: T) => void",
     required: false,
@@ -251,6 +257,10 @@ const LiveExampleCDA = () => {
           office={office}
           cdaUrl={CDA_URL}
           query={query}
+          cdaCriteria={{
+            name: (val) => !val?.includes("-"),
+            "public-name": (val) => val?.includes("Dam"),
+          }}
           onQueryChange={setQuery}
           minQueryLength={3}
           onSelect={(item) => {
@@ -415,6 +425,10 @@ export default function DistrictHeaderSearch() {
           office={office}
           cdaUrl={CDA_URL}
           query={query}
+          cdaCriteria={{
+            name: (val) => !val?.includes("-"),
+            "public-name": (val) => val?.includes("Dam"),
+          }}
           onQueryChange={setQuery}
           minQueryLength={3}
           onSelect={(item) => {
