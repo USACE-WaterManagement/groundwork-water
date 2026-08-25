@@ -30,6 +30,7 @@ type SearchInputProps<T> = {
   onSearch?: (query: string) => void;
   onSelect?: (item: T) => void;
   config?: T[];
+  keysToSearch?: T[];
   getResultKey?: (item: T, index: number) => string | number;
   getResultLabel?: (item: T) => string;
   getResultDescription?: (item: T) => string | undefined;
@@ -132,6 +133,7 @@ const SearchInput = <T,>({
   onSearch,
   onSelect,
   config,
+  keysToSearch,
   getResultKey,
   getResultLabel = defaultGetResultLabel,
   getResultDescription = defaultGetResultDescription,
@@ -202,23 +204,23 @@ const SearchInput = <T,>({
     setInternalIsLoading(true);
     setInternalErrorMessage("");
 
+    //Check if the component was passed a config JSON object. If so, execute this code block and return.
     if (Object.keys(config ?? {}).length > 0) {
-      // Filter the JSON data based on the input keyword
-      const filteredData = config?.filter((item) => {
-        const keyword = debouncedQuery.toLowerCase();
+      //set the keyword
+      const keyword = debouncedQuery.toLowerCase();
 
-        // Check multiple JSON properties for the keyword
-        return (
-          item["name"].toLowerCase().includes(keyword) ||
-          item["public-name"].toLowerCase().includes(keyword) ||
-          item["long-name"].toLowerCase().includes(keyword) ||
-          item["nearest-city"].toLowerCase().includes(keyword)
-        );
-      });
+      //filter the object by key using the keysToSearch array.
+      const filteredData = config?.filter((item) =>
+        keysToSearch?.some((key) =>
+          //Next, search the values contained in those keys for the keyword
+          item[key]?.toLowerCase().includes(keyword.toLowerCase()),
+        ),
+      );
       setInternalResults(filteredData as T[]);
       setInternalIsLoading(false);
       return;
     }
+    //If the component was not passed a config JSON Object. Fetch data from CDA.
     fetch(
       `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}.*`,
       {
@@ -253,7 +255,7 @@ const SearchInput = <T,>({
       });
 
     return () => controller.abort();
-  }, [cdaUrl, debouncedQuery, minQueryLength, config, office]);
+  }, [cdaUrl, debouncedQuery, minQueryLength, config, keysToSearch, office]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.

@@ -133,6 +133,12 @@ const propsList = [
     desc: "Optional config/JSON object to define what end users can search. When omitted, uses built-in CDA results.",
   },
   {
+    name: "keysToSearch",
+    type: "T[]",
+    required: false,
+    desc: "List the keys to search for the keyword in the object passed to config",
+  },
+  {
     name: "onSelect",
     type: "(item: T) => void",
     required: false,
@@ -292,10 +298,12 @@ const LiveExampleConfig = () => {
   return (
     <div className="flex flex-col gap-6">
       <Card className="w-full max-w-[720px]">
-        <H3>Default CDA Search</H3>
+        <H3>Config Search</H3>
         <p className="mb-3 text-sm">
-          This example uses the built-in CDA search path. Pick an office with data, then
-          search for a location like <Code>KEYS</Code>.
+          This example uses the config search path. Pick an office with data, then
+          search for a keyword across any of the keys in your config. Example usage uses
+          the standard location API format and allows users to search for keywords under
+          name, public-name, long-name, and nearest-city.
         </p>
         <div className="mb-4">
           <OfficeDropdown
@@ -314,6 +322,7 @@ const LiveExampleConfig = () => {
           query={query}
           onQueryChange={setQuery}
           config={config}
+          keysToSearch={["name", "public-name", "nearest-city", "long-name"]}
           minQueryLength={3}
           onSelect={(item) => {
             setSelected(item);
@@ -545,6 +554,7 @@ export default function DistrictHeaderSearch() {
           query={query}
           onQueryChange={setQuery}
           config={config}
+          keysToSearch={["name", "public-name", "nearest-city", "long-name"]}
           minQueryLength={3}
           onSelect={(item) => {
             setSelected(item);
