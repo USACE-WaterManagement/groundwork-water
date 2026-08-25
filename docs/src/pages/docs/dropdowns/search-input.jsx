@@ -9,6 +9,86 @@ import { OfficeDropdown, SearchInput } from "@usace-watermanagement/groundwork-w
 
 const CDA_URL = "https://cwms-data.usace.army.mil/cwms-data";
 
+const config = [
+  {
+    office: "SWT",
+    name: "KEYS",
+    "nearest-city": "Sand Springs, OK",
+    "public-name": "Keystone Lake",
+    "long-name": "NULL",
+    description: "NULL",
+    kind: "PROJECT",
+    type: "Reservoir",
+    "time-zone": "US/Central",
+    latitude: 36.151666666667,
+    longitude: -96.251666666667,
+    "published-latitude": 36.151666666667,
+    "published-longitude": -96.251666666667,
+    "horizontal-datum": "NAD83",
+    elevation: 615.2296587926509,
+    unit: "ft",
+    "vertical-datum": "NGVD29",
+    nation: "United States",
+    state: "OK",
+    county: "Tulsa",
+    "bounding-office": "SWT",
+    "map-label": "Keystone Lake",
+    active: true,
+    aliases: [],
+  },
+  {
+    office: "MVP",
+    name: "Baldhill_Dam",
+    "nearest-city": "Valley City",
+    "public-name": "Baldhill Dam at Lake Ashtabula",
+    "long-name": "Baldhill Dam at Lake Ashtabula near Valley City, ND",
+    description: "USACE Owned, USGS Maintained",
+    kind: "PROJECT",
+    type: "Dam",
+    "time-zone": "US/Central",
+    latitude: 47.0361833,
+    longitude: -98.0814667,
+    "horizontal-datum": "NAD83",
+    elevation: 1199.9999999999998,
+    unit: "ft",
+    "vertical-datum": "NGVD29",
+    nation: "United States",
+    state: "ND",
+    county: "Barnes",
+    "bounding-office": "MVP",
+    "map-label": "Baldhill Dam",
+    active: true,
+    aliases: [],
+  },
+  {
+    office: "MVP",
+    name: "LockDam_02",
+    "nearest-city": "Hastings",
+    "public-name": "Lock and Dam 2",
+    "long-name":
+      "Lock and Dam 02 at Mississippi River 9 foot ChannelNavigation Project",
+    description: "USACE Owned and Maintained, Brookfield Power operates hydropower",
+    kind: "PROJECT",
+    type: "Dam",
+    "time-zone": "US/Central",
+    latitude: 44.7621,
+    longitude: -92.8712833,
+    "published-latitude": 0.0,
+    "published-longitude": 0.0,
+    "horizontal-datum": "NAD83",
+    elevation: 599.9999999999999,
+    unit: "ft",
+    "vertical-datum": "LOCAL",
+    nation: "United States",
+    state: "MN",
+    county: "Dakota",
+    "bounding-office": "MVP",
+    "map-label": "Lock and Dam 02",
+    active: true,
+    aliases: [],
+  },
+];
+
 const propsList = [
   {
     name: "query",
@@ -166,6 +246,7 @@ const LiveExample = () => {
           cdaUrl={CDA_URL}
           query={query}
           onQueryChange={setQuery}
+          results={config}
           minQueryLength={3}
           onSelect={(item) => {
             setSelected(item);
@@ -247,6 +328,7 @@ export default function DistrictHeaderSearch() {
         office={office}
         query={query}
         onQueryChange={setQuery}
+        results={config}
         minQueryLength={3}
         getResultKey={(item) => \`\${item.office}-\${item.name}\`}
         getResultLabel={(item) => item.name}

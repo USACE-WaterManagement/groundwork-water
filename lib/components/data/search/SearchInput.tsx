@@ -165,7 +165,7 @@ const SearchInput = <T,>({
   const normalizedQuery = currentQuery.trim();
   const debouncedQuery = useDebounce(normalizedQuery, debounceMs);
   const canSearch = debouncedQuery.length >= minQueryLength;
-  const effectiveResults = results ?? internalResults;
+  const effectiveResults = internalResults;
   const effectiveIsLoading = isLoading || internalIsLoading;
   const effectiveErrorMessage = errorMessage ?? internalErrorMessage;
   const showPanel = isOpen && !disabled;
@@ -202,6 +202,27 @@ const SearchInput = <T,>({
     setInternalIsLoading(true);
     setInternalErrorMessage("");
 
+    console.log(Object.keys(results ?? {}).length > 0);
+
+    if (Object.keys(results ?? {}).length > 0) {
+      // Filter the JSON data based on the input keyword
+      const filteredData = results?.filter((item) => {
+        const keyword = debouncedQuery.toLowerCase();
+        console.log(debouncedQuery);
+
+        // Check multiple JSON properties for the keyword
+        return (
+          item["name"].toLowerCase().includes(keyword) ||
+          item["public-name"].toLowerCase().includes(keyword) ||
+          item["long-name"].toLowerCase().includes(keyword) ||
+          item["nearest-city"].toLowerCase().includes(keyword)
+        );
+      });
+      console.log(filteredData);
+      setInternalResults(filteredData as T[]);
+      setInternalIsLoading(false);
+      return;
+    }
     fetch(
       `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}.*`,
       {
@@ -236,7 +257,7 @@ const SearchInput = <T,>({
       });
 
     return () => controller.abort();
-  }, [cdaUrl, debouncedQuery, minQueryLength, office]);
+  }, [cdaUrl, debouncedQuery, minQueryLength, results, office]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.
