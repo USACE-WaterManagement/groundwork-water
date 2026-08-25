@@ -14,6 +14,7 @@ import CWMSPlot from "./components/data/plots/CWMSPlot";
 import BasinPie from "./components/data/plots/BasinPie";
 import RadialFillChart from "./components/data/plots/RadialFillChart";
 import CdaLatestValueCard from "./components/data/cards/CdaLatestValueCard";
+import DamProfile from "./components/data/plots/dam-profile/chart";
 import DataStatus from "./components/data/summary/DataStatus";
 
 // Import input components
@@ -148,5 +149,6 @@ export {
   updateToast,
   formatSubmissionMessage,
   showDetailedError,
+  DamProfile,
 };
 // export { helperFunction };
