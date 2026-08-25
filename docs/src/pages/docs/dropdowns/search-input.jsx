@@ -127,10 +127,10 @@ const propsList = [
     desc: "Debounced callback fired after debounceMs. If provided, it overrides the built-in CDA search.",
   },
   {
-    name: "results",
+    name: "config",
     type: "T[]",
     required: false,
-    desc: "Optional externally managed results. When omitted, built-in CDA results can be used.",
+    desc: "Optional config/JSON object to define what end users can search. When omitted, uses built-in CDA results.",
   },
   {
     name: "onSelect",
@@ -212,7 +212,7 @@ const propsList = [
   },
 ];
 
-const LiveExample = () => {
+const LiveExampleCDA = () => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
   const [office, setOffice] = useState("SWT");
@@ -246,7 +246,74 @@ const LiveExample = () => {
           cdaUrl={CDA_URL}
           query={query}
           onQueryChange={setQuery}
-          results={config}
+          minQueryLength={3}
+          onSelect={(item) => {
+            setSelected(item);
+          }}
+          getResultKey={(item) => `${item.office}-${item.name}`}
+          getResultLabel={(item) => item.name}
+          getResultDescription={(item) =>
+            `Office: ${item.office} | State: ${item.state ?? "n/a"}`
+          }
+          renderResult={(item) => (
+            <div className="flex w-full items-center justify-between gap-3">
+              <div>
+                <div className="font-medium text-slate-900">{item.name}</div>
+                <div className="mt-1 text-sm text-slate-600">
+                  Office: {item.office} | State: {item.state ?? "n/a"}
+                </div>
+              </div>
+              <Badge color={item.kind === "PROJECT" ? "blue" : "gray"}>
+                {item.kind?.toLowerCase() ?? "location"}
+              </Badge>
+            </div>
+          )}
+        />
+
+        <div className="mt-4">
+          <Code>selected:</Code>{" "}
+          <Badge color={selected ? "green" : "gray"}>{selectedLabel}</Badge>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const LiveExampleConfig = () => {
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [office, setOffice] = useState("SWT");
+
+  const selectedLabel = useMemo(() => {
+    if (!selected) return "none";
+    return `${selected.name} (${selected.office})`;
+  }, [selected]);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <Card className="w-full max-w-[720px]">
+        <H3>Default CDA Search</H3>
+        <p className="mb-3 text-sm">
+          This example uses the built-in CDA search path. Pick an office with data, then
+          search for a location like <Code>KEYS</Code>.
+        </p>
+        <div className="mb-4">
+          <OfficeDropdown
+            hasData
+            value={office}
+            onChange={(event) => {
+              setOffice(event.target.value);
+              setSelected(null);
+            }}
+          />
+        </div>
+        <SearchInput
+          label={`Search config locations`}
+          office={office}
+          cdaUrl={CDA_URL}
+          query={query}
+          onQueryChange={setQuery}
+          config={config}
           minQueryLength={3}
           onSelect={(item) => {
             setSelected(item);
@@ -300,46 +367,207 @@ export default function SearchInputDocs() {
         <Text className="mt-2">
           By default, the component can query CDA <Code>catalog/LOCATIONS</Code> for a
           selected office. If a district needs different behavior, passing{" "}
-          <Code>onSearch</Code> overrides that default search.
+          <Code>onSearch</Code> overrides that default search. Lastly, districts can
+          provide a config, either hard coded or returned from a custom query by passing
+          the object to <Code>config</Code>.
         </Text>
       </div>
 
-      <Divider text="Live Example" className="mt-8" />
-      <LiveExample />
+      <Divider text="Live Example with CDA" className="mt-8" />
+      <LiveExampleCDA />
 
-      <Divider text="Example Usage" className="mt-8" />
+      <Divider text="Example Usage with CDA" className="mt-8" />
       <CodeBlock language="jsx">
         {`import { OfficeDropdown, SearchInput } from "@usace-watermanagement/groundwork-water";
 import { useState } from "react";
 
 export default function DistrictHeaderSearch() {
   const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [office, setOffice] = useState("SWT");
+
+    const selectedLabel = useMemo(() => {
+    if (!selected) return "none";
+    return \`\${selected.name} (\${selected.office})\`;
+  }, [selected]);
+
+  return (
+    <>
+           <OfficeDropdown
+            hasData
+            value={office}
+            onChange={(event) => {
+              setOffice(event.target.value);
+              setSelected(null);
+            }}
+          />
+        <SearchInput
+          label={\`Search \${office} locations\`}
+          office={office}
+          cdaUrl={CDA_URL}
+          query={query}
+          onQueryChange={setQuery}
+          minQueryLength={3}
+          onSelect={(item) => {
+            setSelected(item);
+          }}
+          getResultKey={(item) => \`\${item.office}-\${item.name}\`}
+          getResultLabel={(item) => item.name}
+          getResultDescription={(item) =>
+            \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`
+          }
+          renderResult={(item) => (
+            <div className="flex w-full items-center justify-between gap-3">
+              <div>
+                <div className="font-medium text-slate-900">{item.name}</div>
+                <div className="mt-1 text-sm text-slate-600">
+                  Office: {item.office} | State: {item.state ?? "n/a"}
+                </div>
+              </div>
+              <Badge color={item.kind === "PROJECT" ? "blue" : "gray"}>
+                {item.kind?.toLowerCase() ?? "location"}
+              </Badge>
+            </div>
+          )}
+        />
+    </>
+  );
+}`}
+      </CodeBlock>
+
+      <Divider text="Live Example with Config" className="mt-8" />
+      <LiveExampleConfig />
+
+      <Divider text="Example Usage with Config" className="mt-8" />
+      <CodeBlock language="jsx">
+        {`import { OfficeDropdown, SearchInput } from "@usace-watermanagement/groundwork-water";
+import { useState } from "react";
+
+const config = [
+  {
+    office: "SWT",
+    name: "KEYS",
+    "nearest-city": "Sand Springs, OK",
+    "public-name": "Keystone Lake",
+    "long-name": "NULL",
+    description: "NULL",
+    kind: "PROJECT",
+    type: "Reservoir",
+    "time-zone": "US/Central",
+    latitude: 36.151666666667,
+    longitude: -96.251666666667,
+    "published-latitude": 36.151666666667,
+    "published-longitude": -96.251666666667,
+    "horizontal-datum": "NAD83",
+    elevation: 615.2296587926509,
+    unit: "ft",
+    "vertical-datum": "NGVD29",
+    nation: "United States",
+    state: "OK",
+    county: "Tulsa",
+    "bounding-office": "SWT",
+    "map-label": "Keystone Lake",
+    active: true,
+    aliases: [],
+  },
+  {
+    office: "MVP",
+    name: "Baldhill_Dam",
+    "nearest-city": "Valley City",
+    "public-name": "Baldhill Dam at Lake Ashtabula",
+    "long-name": "Baldhill Dam at Lake Ashtabula near Valley City, ND",
+    description: "USACE Owned, USGS Maintained",
+    kind: "PROJECT",
+    type: "Dam",
+    "time-zone": "US/Central",
+    latitude: 47.0361833,
+    longitude: -98.0814667,
+    "horizontal-datum": "NAD83",
+    elevation: 1199.9999999999998,
+    unit: "ft",
+    "vertical-datum": "NGVD29",
+    nation: "United States",
+    state: "ND",
+    county: "Barnes",
+    "bounding-office": "MVP",
+    "map-label": "Baldhill Dam",
+    active: true,
+    aliases: [],
+  },
+  {
+    office: "MVP",
+    name: "LockDam_02",
+    "nearest-city": "Hastings",
+    "public-name": "Lock and Dam 2",
+    "long-name":
+      "Lock and Dam 02 at Mississippi River 9 foot ChannelNavigation Project",
+    description: "USACE Owned and Maintained, Brookfield Power operates hydropower",
+    kind: "PROJECT",
+    type: "Dam",
+    "time-zone": "US/Central",
+    latitude: 44.7621,
+    longitude: -92.8712833,
+    "published-latitude": 0.0,
+    "published-longitude": 0.0,
+    "horizontal-datum": "NAD83",
+    elevation: 599.9999999999999,
+    unit: "ft",
+    "vertical-datum": "LOCAL",
+    nation: "United States",
+    state: "MN",
+    county: "Dakota",
+    "bounding-office": "MVP",
+    "map-label": "Lock and Dam 02",
+    active: true,
+    aliases: [],
+  },
+];
+
+export default function DistrictHeaderSearch() {
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
   const [office, setOffice] = useState("SWT");
 
   return (
     <>
-      <OfficeDropdown
-        hasData
-        value={office}
-        onChange={(event) => setOffice(event.target.value)}
-      />
-      <SearchInput
-        label="Search locations"
-        office={office}
-        query={query}
-        onQueryChange={setQuery}
-        results={config}
-        minQueryLength={3}
-        getResultKey={(item) => \`\${item.office}-\${item.name}\`}
-        getResultLabel={(item) => item.name}
-        getResultDescription={(item) => \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`}
-        onSelect={(item) => {
-          // NOTE: You should use your district's routing solution here. This is just an example of how to access item properties.
-          window.location.assign(item.kind === "PROJECT"
-            ? \`/project/\${item.name}\`
-            : \`/gage/\${item.name}\`);
-        }}
-      />
+          <OfficeDropdown
+            hasData
+            value={office}
+            onChange={(event) => {
+              setOffice(event.target.value);
+              setSelected(null);
+            }}
+          />
+        <SearchInput
+          label={\`Search config locations\`}
+          office={office}
+          cdaUrl={CDA_URL}
+          query={query}
+          onQueryChange={setQuery}
+          config={config}
+          minQueryLength={3}
+          onSelect={(item) => {
+            setSelected(item);
+          }}
+          getResultKey={(item) => \`\${item.office}-\${item.name}\`}
+          getResultLabel={(item) => item.name}
+          getResultDescription={(item) =>
+            \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`
+          }
+          renderResult={(item) => (
+            <div className="flex w-full items-center justify-between gap-3">
+              <div>
+                <div className="font-medium text-slate-900">{item.name}</div>
+                <div className="mt-1 text-sm text-slate-600">
+                  Office: {item.office} | State: {item.state ?? "n/a"}
+                </div>
+              </div>
+              <Badge color={item.kind === "PROJECT" ? "blue" : "gray"}>
+                {item.kind?.toLowerCase() ?? "location"}
+              </Badge>
+            </div>
+          )}
+        />
     </>
   );
 }`}

@@ -29,7 +29,7 @@ type SearchInputProps<T> = {
   onQueryChange?: (query: string) => void;
   onSearch?: (query: string) => void;
   onSelect?: (item: T) => void;
-  results?: T[];
+  config?: T[];
   getResultKey?: (item: T, index: number) => string | number;
   getResultLabel?: (item: T) => string;
   getResultDescription?: (item: T) => string | undefined;
@@ -131,7 +131,7 @@ const SearchInput = <T,>({
   onQueryChange,
   onSearch,
   onSelect,
-  results,
+  config,
   getResultKey,
   getResultLabel = defaultGetResultLabel,
   getResultDescription = defaultGetResultDescription,
@@ -202,13 +202,10 @@ const SearchInput = <T,>({
     setInternalIsLoading(true);
     setInternalErrorMessage("");
 
-    console.log(Object.keys(results ?? {}).length > 0);
-
-    if (Object.keys(results ?? {}).length > 0) {
+    if (Object.keys(config ?? {}).length > 0) {
       // Filter the JSON data based on the input keyword
-      const filteredData = results?.filter((item) => {
+      const filteredData = config?.filter((item) => {
         const keyword = debouncedQuery.toLowerCase();
-        console.log(debouncedQuery);
 
         // Check multiple JSON properties for the keyword
         return (
@@ -218,7 +215,6 @@ const SearchInput = <T,>({
           item["nearest-city"].toLowerCase().includes(keyword)
         );
       });
-      console.log(filteredData);
       setInternalResults(filteredData as T[]);
       setInternalIsLoading(false);
       return;
@@ -257,7 +253,7 @@ const SearchInput = <T,>({
       });
 
     return () => controller.abort();
-  }, [cdaUrl, debouncedQuery, minQueryLength, results, office]);
+  }, [cdaUrl, debouncedQuery, minQueryLength, config, office]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.
