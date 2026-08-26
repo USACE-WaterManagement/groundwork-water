@@ -54,6 +54,9 @@ import useCdaMultiTimeSeries from "./components/data/hooks/useCdaMultiTimeSeries
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import {
+  CWMS_USER_ROLE_PRESETS,
+  matchCwmsUserRolePreset,
+  resolveCwmsUserRolePreset,
   useCdaRoles,
   useCdaUsers,
   useUpdateCdaUserRoles,
@@ -107,6 +110,9 @@ export {
   CdaUrlProvider,
   DataStatus,
   OfficeDropdown,
+  CWMS_USER_ROLE_PRESETS,
+  matchCwmsUserRolePreset,
+  resolveCwmsUserRolePreset,
   useCdaBlob,
   useCdaBlobs,
   useCdaCatalog,

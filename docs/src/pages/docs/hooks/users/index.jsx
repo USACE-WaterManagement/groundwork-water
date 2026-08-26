@@ -53,6 +53,15 @@ export default function UserHooksDocs() {
           </Code>
         </section>
       </div>
+
+      <H2 className="mt-8">CWMS role presets</H2>
+      <Text>
+        <Code>CWMS_USER_ROLE_PRESETS</Code> provides the same read-only, read/write, and
+        user-administrator configurations exposed by cwms-cli. Use
+        <Code> resolveCwmsUserRolePreset()</Code> with the live CDA role catalog so
+        unavailable roles can be shown before applying a preset, and use
+        <Code> matchCwmsUserRolePreset()</Code> to recognize an exact configuration.
+      </Text>
     </DocsPage>
   );
 }
