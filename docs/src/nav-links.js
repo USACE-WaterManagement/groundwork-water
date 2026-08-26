@@ -74,6 +74,11 @@ export default [
     href: `${BASE_URL}#/docs/hooks`,
     children: [
       {
+        id: "users",
+        text: "Users",
+        href: `${BASE_URL}#/docs/hooks/users`,
+      },
+      {
         id: "blobs",
         text: "CDA Blobs",
         href: `${BASE_URL}#`,

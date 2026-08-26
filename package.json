@@ -44,6 +44,10 @@
       "types": "./types/lib/components/data/hooks/*.d.ts",
       "import": "./dist/es/components/data/hooks/*.js"
     },
+    "./hooks/users/*": {
+      "types": "./types/lib/components/data/hooks/users/*.d.ts",
+      "import": "./dist/es/components/data/hooks/users/*.js"
+    },
     "./maps/*": {
       "types": "./types/lib/components/data/maps/*.d.ts",
       "import": "./dist/es/components/data/maps/*.js"

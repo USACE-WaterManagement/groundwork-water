@@ -53,6 +53,11 @@ import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaMultiTimeSeries from "./components/data/hooks/useCdaMultiTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
+import {
+  useCdaRoles,
+  useCdaUsers,
+  useUpdateCdaUserRoles,
+} from "./components/data/hooks/users";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 import useDataStatusFile from "./components/data/hooks/useDataStatusFile";
@@ -112,6 +117,9 @@ export {
   useCdaMultiTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
+  useCdaRoles,
+  useCdaUsers,
+  useUpdateCdaUserRoles,
   useDataStatusFile,
   fetchCdaLevelTimeSeries,
   fetchCdaLevelValues,

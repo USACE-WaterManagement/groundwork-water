@@ -1,15 +1,18 @@
 import { Dropdown, Skeleton, Badge } from "@usace/groundwork";
 
 import useCdaOffices from "../hooks/useCdaOffices";
-import { useMemo } from "react";
+import { ChangeEvent, useMemo } from "react";
 
 interface OfficeDropdownProps {
+  cdaUrl?: string;
   hasData?: boolean;
   typeFilters?: string[];
+  includeOffices?: string[];
   excludeOffices?: string[];
   includeBlank?: boolean;
   initOverrides?: Record<string, unknown>;
   queryOptions?: Record<string, unknown>;
+  value?: string;
   onChange?: (value: string) => void;
 }
 
@@ -26,16 +29,21 @@ interface OfficeDropdownProps {
  * - onChange: callback function when the selected office changes
  */
 const OfficeDropdown = ({
+  cdaUrl,
   hasData,
   typeFilters,
+  includeOffices,
   excludeOffices,
   includeBlank,
   initOverrides,
   queryOptions,
+  value,
+  onChange,
   ...props
 }: OfficeDropdownProps) => {
   const cdaOffices = useCdaOffices({
     cdaParams: { hasData },
+    cdaUrl,
     initOverrides,
     queryOptions,
   });
@@ -51,10 +59,17 @@ const OfficeDropdown = ({
         ? normalizedFilters.includes(office.type.toLowerCase())
         : false;
     });
+    const includedOffices = includeOffices?.map((office) => office.toLowerCase());
+    const included = includedOffices
+      ? filteredOffices.filter(
+          (office) =>
+            office.name && includedOffices.includes(office.name.toLowerCase()),
+        )
+      : filteredOffices;
     // Offices to exclude by name, i.e. optionally popped out of final results
     if (excludeOffices) {
       const normalizedExcludes = excludeOffices.map((excl) => excl.toLowerCase());
-      return filteredOffices.filter((office) => {
+      return included.filter((office) => {
         return office.name && !normalizedExcludes.includes(office.name.toLowerCase());
       });
     }
@@ -66,11 +81,11 @@ const OfficeDropdown = ({
         type: undefined,
       });
     }
-    return filteredOffices;
-  }, [typeFilters, cdaOffices.data, excludeOffices, includeBlank]);
+    return included;
+  }, [typeFilters, cdaOffices.data, includeOffices, excludeOffices, includeBlank]);
 
   const noData = !cdaOffices.isPending && !cdaOffices.data;
-  if (!props?.onChange) {
+  if (!onChange) {
     console.warn(
       "OfficeDropdown is missing onChange prop. You must set this property on <OfficeDropdown /> for something to happen when it changes.",
     );
@@ -89,9 +104,13 @@ const OfficeDropdown = ({
       ) : (
         <Dropdown
           className={"gww-w-5/6 gww-m-auto"}
-          defaultValue={filteredOffices[0]?.name}
+          value={value}
+          defaultValue={value === undefined ? filteredOffices[0]?.name : undefined}
           title="Select an office"
           aria-label="Select an office"
+          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+            onChange?.(event.target.value)
+          }
           options={filteredOffices.map((office) => (
             <option
               key={JSON.stringify(office)}

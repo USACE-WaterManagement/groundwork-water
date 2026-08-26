@@ -35,6 +35,7 @@ import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
 import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
 import useDebounce from "../pages/docs/utilities/use-debounce";
+import UserHooksDocs from "../pages/docs/hooks/users";
 
 import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
@@ -67,6 +68,7 @@ export default createRouteBundle(
     "/docs/auth/use-auth": UseAuthDocs,
     "/docs/dropdowns/offices": OfficesDropdownDocs,
     "/docs/hooks": DataHooks,
+    "/docs/hooks/users": UserHooksDocs,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,
