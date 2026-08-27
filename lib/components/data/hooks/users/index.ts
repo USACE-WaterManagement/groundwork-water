@@ -2,7 +2,11 @@ export { useCdaRoles } from "./useCdaRoles";
 export type { UseCdaRolesParams } from "./useCdaRoles";
 export { useCdaUsers, fetchAllCdaUsers } from "./useCdaUsers";
 export type { CdaUser, CdaUsersResult, UseCdaUsersParams } from "./useCdaUsers";
-export { useUpdateCdaUserRoles } from "./useUpdateCdaUserRoles";
+export { diffCdaUserRoles, useUpdateCdaUserRoles } from "./useUpdateCdaUserRoles";
+export type {
+  UpdateCdaUserRolesInput,
+  UseUpdateCdaUserRolesParams,
+} from "./useUpdateCdaUserRoles";
 export {
   CWMS_USER_ROLE_PRESETS,
   matchCwmsUserRolePreset,

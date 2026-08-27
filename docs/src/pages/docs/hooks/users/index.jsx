@@ -41,7 +41,8 @@ export default function UserHooksDocs() {
           <H3>useUpdateCdaUserRoles</H3>
           <Text>
             Compares the previous and selected roles, sends only the additions and
-            removals, and refreshes the office user query after a successful update.
+            removals, protects the required <Code>All Users</Code> role from direct
+            deletion, and refreshes the office user query after a successful update.
           </Text>
           <Code className="mt-2 block whitespace-pre-wrap p-3">
             {`await updateRoles.mutateAsync({
