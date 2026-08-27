@@ -7,6 +7,7 @@ export const cdaRequest = async <T>(
   path: string,
   { token, ...options }: CdaRequestOptions = {},
 ): Promise<T> => {
+  // TODO: Replace this direct fetch with the cwmsjs users method once it is available.
   const response = await fetch(`${cdaUrl.replace(/\/$/, "")}${path}`, {
     credentials: token ? undefined : "include",
     ...options,
