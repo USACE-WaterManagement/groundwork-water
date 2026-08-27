@@ -219,6 +219,11 @@ export default [
         href: `${BASE_URL}#/docs/forms/cwms-file-upload`,
       },
       {
+        id: "cwms-data-upload",
+        text: "CWMS Data Upload",
+        href: `${BASE_URL}#/docs/forms/cwms-data-upload`,
+      },
+      {
         id: "cwms-input-table",
         text: "CWMS Input Table",
         href: `${BASE_URL}#/docs/forms/cwms-input-table`,

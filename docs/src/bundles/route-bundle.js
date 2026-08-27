@@ -40,6 +40,7 @@ import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
 import CWMSFileUploadDocs from "../pages/docs/forms/cwms-file-upload";
+import CWMSDataUploadDocs from "../pages/docs/forms/cwms-data-upload";
 import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
 import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
 import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
@@ -91,6 +92,7 @@ export default createRouteBundle(
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,
     "/docs/forms/cwms-file-upload": CWMSFileUploadDocs,
+    "/docs/forms/cwms-data-upload": CWMSDataUploadDocs,
     "/docs/forms/cwms-textarea": CWMSTextareaDocs,
     "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
     "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
