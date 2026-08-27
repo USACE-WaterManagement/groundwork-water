@@ -13,3 +13,4 @@ export {
   resolveCwmsUserRolePreset,
 } from "./rolePresets";
 export type { CwmsUserRolePresetId, ResolvedCwmsUserRolePreset } from "./rolePresets";
+export { CWMS_USER_ROLE_DESCRIPTIONS } from "./roleDescriptions";
