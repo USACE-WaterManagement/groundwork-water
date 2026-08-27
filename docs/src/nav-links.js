@@ -172,6 +172,18 @@ export default [
     ],
   },
   {
+    id: "graphics",
+    text: "Graphics",
+    href: `${BASE_URL}#/docs/graphics`,
+    children: [
+      {
+        id: "dam-profile",
+        text: "Dam Profile",
+        href: `${BASE_URL}#/docs/graphics/dam-profile`,
+      },
+    ],
+  },
+  {
     id: "forms",
     text: "Forms",
     href: `${BASE_URL}#/docs/forms`,
@@ -205,6 +217,11 @@ export default [
         id: "cwms-file-upload",
         text: "CWMS File Upload",
         href: `${BASE_URL}#/docs/forms/cwms-file-upload`,
+      },
+      {
+        id: "cwms-data-upload",
+        text: "CWMS Data Upload",
+        href: `${BASE_URL}#/docs/forms/cwms-data-upload`,
       },
       {
         id: "cwms-input-table",

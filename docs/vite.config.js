@@ -11,7 +11,17 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     base: base,
     resolve: {
-      dedupe: ["react", "react-dom", "@tanstack/react-query"],
+      // The development alias loads library source from the parent package. Dedupe
+      // shared React peers back to the docs app so linked/file installs do not create
+      // a second hooks runtime.
+      dedupe: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "@tanstack/react-query",
+        "@usace/groundwork",
+        "react-toastify",
+      ],
       alias: isDevelopment
         ? [
             // During development, alias to the source files for easier debugging

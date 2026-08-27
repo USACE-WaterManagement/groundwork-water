@@ -109,8 +109,10 @@
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.6",
     "cwmsjs": "^2.3.0-2024.12.10",
+    "d3": "^7.9.0",
     "dayjs": "^1.11.11",
     "deepmerge": "^4.3.1",
+    "exceljs": "^4.4.0",
     "oidc-client-ts": "^3.5.0",
     "ol": "^10.0.0",
     "plotly.js-basic-dist": "^2.33.0",

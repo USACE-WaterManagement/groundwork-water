@@ -286,7 +286,9 @@ export function CWMSForm({
     }
 
     // Submit using TanStack Query mutation
-    const submitInputs = formData.filter((input) => input.tsid || input.blobId);
+    const submitInputs = formData.filter(
+      (input) => input.tsid || input.blobId || input.kind === "timeseries-batch",
+    );
 
     if (submitInputs.length > 0) {
       mutation.mutate(submitInputs);
