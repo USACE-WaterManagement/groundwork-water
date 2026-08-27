@@ -1,7 +1,7 @@
 import React, { createContext, useRef, useState, useMemo } from "react";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
 import { Input, Field, Label, Button } from "@usace/groundwork";
 import { useAuth } from "../utilities/auth/useAuth";
 import { snapDayjs } from "./helpers/timeSnapping";
@@ -286,7 +286,9 @@ export function CWMSForm({
     }
 
     // Submit using TanStack Query mutation
-    const submitInputs = formData.filter((input) => input.tsid || input.blobId);
+    const submitInputs = formData.filter(
+      (input) => input.tsid || input.blobId || input.kind === "timeseries-batch",
+    );
 
     if (submitInputs.length > 0) {
       mutation.mutate(submitInputs);

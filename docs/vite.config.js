@@ -11,9 +11,20 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     base: base,
     resolve: {
+      // The development alias loads library source from the parent package. Dedupe
+      // shared React peers back to the docs app so linked/file installs do not create
+      // a second hooks runtime.
+      dedupe: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "@tanstack/react-query",
+        "@usace/groundwork",
+        "react-toastify",
+      ],
       alias: isDevelopment
         ? [
-             // During development, alias to the source files for easier debugging
+            // During development, alias to the source files for easier debugging
             // Do not have to npm link if you do this: https://vitejs.dev/config/shared-options.html#resolve-alias
             {
               find: "@usace-watermanagement/groundwork-water/dist/style.css",

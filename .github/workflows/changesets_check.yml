@@ -13,19 +13,68 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - run: git fetch origin main:main
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
 
+      - name: Determine whether a changeset is required
+        id: changeset
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [[ "$HEAD_REF" == "changeset-release/main" ]]; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping validation for the Changesets release pull request."
+            exit 0
+          fi
+
+          mapfile -t release_files < <(
+            git diff --name-only main...HEAD -- . \
+              ":(exclude)package-lock.json" \
+              ":(exclude)docs/**"
+          )
+
+          if [[ ${#release_files[@]} -eq 0 ]]; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping validation for a lockfile/docs-only pull request."
+            exit 0
+          fi
+
+          if [[ ${#release_files[@]} -eq 1 && "${release_files[0]}" == "package.json" ]]; then
+            git show main:package.json > "$RUNNER_TEMP/main-package.json"
+            if node <<'NODE'; then
+          const fs = require("node:fs");
+
+          const base = JSON.parse(
+            fs.readFileSync(`${process.env.RUNNER_TEMP}/main-package.json`, "utf8"),
+          );
+          const head = JSON.parse(fs.readFileSync("package.json", "utf8"));
+
+          delete base.devDependencies;
+          delete head.devDependencies;
+
+          process.exit(JSON.stringify(base) === JSON.stringify(head) ? 0 : 1);
+          NODE
+              echo "required=false" >> "$GITHUB_OUTPUT"
+              echo "Skipping validation for a devDependency-only pull request."
+              exit 0
+            fi
+          fi
+
+          echo "required=true" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
+        if: steps.changeset.outputs.required == 'true'
         run: npm install --no-save @changesets/cli
 
       - name: Check for required changeset
+        if: steps.changeset.outputs.required == 'true'
         run: npm run check-changeset

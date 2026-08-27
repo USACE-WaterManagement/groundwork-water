@@ -164,6 +164,23 @@ export default [
         text: "CWMS Plot",
         href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
+      {
+        id: "basin-pie",
+        text: "Basin Pie",
+        href: `${BASE_URL}#/docs/plots/basin-pie`,
+      },
+    ],
+  },
+  {
+    id: "graphics",
+    text: "Graphics",
+    href: `${BASE_URL}#/docs/graphics`,
+    children: [
+      {
+        id: "dam-profile",
+        text: "Dam Profile",
+        href: `${BASE_URL}#/docs/graphics/dam-profile`,
+      },
     ],
   },
   {
@@ -202,6 +219,11 @@ export default [
         href: `${BASE_URL}#/docs/forms/cwms-file-upload`,
       },
       {
+        id: "cwms-data-upload",
+        text: "CWMS Data Upload",
+        href: `${BASE_URL}#/docs/forms/cwms-data-upload`,
+      },
+      {
         id: "cwms-input-table",
         text: "CWMS Input Table",
         href: `${BASE_URL}#/docs/forms/cwms-input-table`,
@@ -237,6 +259,18 @@ export default [
     id: "maps",
     text: "Maps",
     href: `${BASE_URL}#/docs/maps`,
+  },
+  {
+    id: "summary",
+    text: "Summary",
+    href: `${BASE_URL}#/docs/summary`,
+    children: [
+      {
+        id: "data-status",
+        text: "Data Status",
+        href: `${BASE_URL}#/docs/summary/data-status`,
+      },
+    ],
   },
   {
     id: "utilities",

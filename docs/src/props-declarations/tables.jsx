@@ -174,14 +174,25 @@ const cwmsTableParams = [
     required: false,
     desc: (
       <>
-        An object containing additional options for the table. See the component API for{" "}
-        <Code>{"<Table />"}</Code> on the Groundwork docs for details:{" "}
-        <a
-          href="https://usace.github.io/groundwork/#/docs/display/table"
-          className="underline"
-        >
-          Table Options
-        </a>
+        Options for the virtualized table container. Supported properties are{" "}
+        <Code>className</Code>, <Code>maxHeight</Code> (for example,{" "}
+        <Code>&quot;45vh&quot;</Code>), and the legacy <Code>overflowHeight</Code>{" "}
+        arbitrary-height class format (for example, <Code>&quot;h-[45vh]&quot;</Code>).
+      </>
+    ),
+  },
+  {
+    name: "inputTSValues",
+    type: "CWMSTableSeries[]",
+    required: false,
+    desc: (
+      <>
+        Previously fetched CWMS time-series responses shaped as{" "}
+        <Code>{`{ name, units?, values: [[timestamp, value, qualityCode?, ...], ...] }`}</Code>
+        . Each series <Code>name</Code> must match a{" "}
+        <Code>timeseriesParams[].tsid</Code>. When supplied, the table makes no CDA
+        requests and does not require <Code>office</Code>, <Code>begin</Code>, or{" "}
+        <Code>end</Code>.
       </>
     ),
   },
@@ -211,11 +222,6 @@ const timeseriesParams = [
     name: "precision",
     type: "number",
     desc: "The number of decimal places to round the values to.",
-  },
-  {
-    name: "offset",
-    type: "number",
-    desc: "An offset to apply to the values in the table.",
   },
 ];
 

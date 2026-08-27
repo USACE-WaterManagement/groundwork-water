@@ -88,6 +88,8 @@ export const createKeycloakAuthMethod = ({
 }: KeycloakAuthConfig) => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
+  let accessTokenExpiresAt: number | undefined;
+  let refreshInFlight: Promise<void> | undefined;
   let pkceCallbackHandled = false;
   const loginReturnToStorageKey = getLoginReturnToStorageKey(realm, client);
   const normalizedHost = normalizeKeycloakHost(host);
@@ -111,7 +113,14 @@ export const createKeycloakAuthMethod = ({
     const user = await oidcClient.getUser();
     accessToken = user?.access_token;
     refreshToken = user?.refresh_token;
+    accessTokenExpiresAt = user?.expires_at;
     return !!user?.access_token;
+  };
+
+  const storeDirectGrantTokens = (tokenResponse: KeycloakTokenResponse) => {
+    accessToken = tokenResponse.access_token;
+    refreshToken = tokenResponse.refresh_token;
+    accessTokenExpiresAt = Date.now() / 1000 + tokenResponse.expires_in;
   };
 
   const getOidcUser = async () => {
@@ -155,6 +164,7 @@ export const createKeycloakAuthMethod = ({
   const clearPkceState = async () => {
     accessToken = undefined;
     refreshToken = undefined;
+    accessTokenExpiresAt = undefined;
     pkceCallbackHandled = false;
 
     if (!oidcClient) return;
@@ -268,14 +278,14 @@ export const createKeycloakAuthMethod = ({
     if (!loginData) throw new Error("Invalid flow provided for keycloak auth config");
     const tokenResponse = await fetchKeycloakRequest("token", loginData);
     const tokenJson: KeycloakTokenResponse = await tokenResponse.json();
-    accessToken = tokenJson.access_token;
-    refreshToken = tokenJson.refresh_token;
+    storeDirectGrantTokens(tokenJson);
   };
 
   const logout = async () => {
     if (flow === "authorization-code-pkce") {
       accessToken = undefined;
       refreshToken = undefined;
+      accessTokenExpiresAt = undefined;
       pkceCallbackHandled = false;
 
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
@@ -294,6 +304,7 @@ export const createKeycloakAuthMethod = ({
     }
     accessToken = undefined;
     refreshToken = undefined;
+    accessTokenExpiresAt = undefined;
   };
 
   const isAuth = async () => {
@@ -321,16 +332,18 @@ export const createKeycloakAuthMethod = ({
         if (!user) {
           accessToken = undefined;
           refreshToken = undefined;
+          accessTokenExpiresAt = undefined;
           return false;
         }
 
         if (!user.expired) {
           accessToken = user.access_token;
           refreshToken = user.refresh_token;
+          accessTokenExpiresAt = user.expires_at;
           return true;
         }
 
-        await oidcClient.signinSilent();
+        await refresh();
         return syncTokensFromOidcUser();
       } catch (error) {
         console.error("Failed to process keycloak PKCE auth state", error);
@@ -342,7 +355,7 @@ export const createKeycloakAuthMethod = ({
     return !!accessToken;
   };
 
-  const refresh = async () => {
+  async function performRefresh() {
     if (flow === "authorization-code-pkce") {
       if (!oidcClient) throw new Error("Invalid PKCE auth client configuration");
 
@@ -363,14 +376,60 @@ export const createKeycloakAuthMethod = ({
     };
     const refreshResponse = await fetchKeycloakRequest("token", refreshData);
     const tokenJson: KeycloakTokenResponse = await refreshResponse.json();
-    accessToken = tokenJson.access_token;
-    refreshToken = tokenJson.refresh_token;
+    storeDirectGrantTokens(tokenJson);
+  }
+
+  const refresh = async () => {
+    if (!refreshInFlight) {
+      refreshInFlight = performRefresh();
+    }
+
+    const currentRefresh = refreshInFlight;
+    try {
+      await currentRefresh;
+    } finally {
+      if (refreshInFlight === currentRefresh) {
+        refreshInFlight = undefined;
+      }
+    }
+  };
+
+  const getValidToken = async (minValiditySeconds = 60) => {
+    if (flow === "authorization-code-pkce") {
+      const user = await getOidcUser();
+      if (!user?.access_token) {
+        accessToken = undefined;
+        refreshToken = undefined;
+        accessTokenExpiresAt = undefined;
+        return undefined;
+      }
+
+      accessToken = user.access_token;
+      refreshToken = user.refresh_token;
+      accessTokenExpiresAt = user.expires_at;
+
+      if (user.expired || (user.expires_in ?? Infinity) <= minValiditySeconds) {
+        await refresh();
+      }
+
+      return accessToken;
+    }
+
+    if (!accessToken) return undefined;
+
+    const refreshAt = Date.now() / 1000 + minValiditySeconds;
+    if (accessTokenExpiresAt !== undefined && accessTokenExpiresAt <= refreshAt) {
+      await refresh();
+    }
+
+    return accessToken;
   };
 
   const keycloakAuthMethod: AuthMethod = {
     login,
     logout,
     isAuth,
+    getValidToken,
     refresh,
     refreshInterval,
     get token() {

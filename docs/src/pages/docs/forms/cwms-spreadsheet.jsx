@@ -126,6 +126,18 @@ const componentProps = [
     default: "false",
     desc: "When true, rows and columns are visually swapped. Column definitions become visual rows and data rows become visual columns. Keyboard navigation, selection, copy/paste all follow the transposed layout.",
   },
+  {
+    name: "showCopyAllDataButton",
+    type: "boolean",
+    default: "true",
+    desc: "Whether to show the Copy All Data button.",
+  },
+  {
+    name: "showSelectAllButton",
+    type: "boolean",
+    default: "true",
+    desc: "Whether to show the Select All button.",
+  },
 ];
 
 function CWMSSpreadsheetDocs() {
@@ -546,6 +558,56 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   ]}
   rows={5}
   transpose={true}
+  defaultData={[
+    ["650.2", "1250", "72.5"],
+    ["650.3", "1275", "72.3"],
+    ["650.3", "1265", "72.4"],
+    ["650.4", "1280", "72.6"],
+    ["", "", ""],
+  ]}
+/>`}
+      </CodeBlock>
+
+      <Divider text="Button Visibility" className="mt-8" />
+      <Text className="mb-4">
+        Set <Code>showCopyAllDataButton={"{false}"}</Code> or{" "}
+        <Code>showSelectAllButton={"{false}"}</Code> to hide either spreadsheet toolbar
+        button. Both buttons are shown by default.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT">
+          <CWMSSpreadsheet
+            columns={[
+              { key: "stage", label: "Stage (ft)", type: "number" },
+              { key: "flow", label: "Flow (cfs)", type: "number" },
+              { key: "temp", label: "Temp (°F)", type: "number" },
+            ]}
+            rows={5}
+            showCopyAllDataButton={false}
+            showSelectAllButton={false}
+            defaultData={[
+              ["650.2", "1250", "72.5"],
+              ["650.3", "1275", "72.3"],
+              ["650.3", "1265", "72.4"],
+              ["650.4", "1280", "72.6"],
+              ["", "", ""],
+            ]}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Hide either toolbar button as needed
+<CWMSSpreadsheet
+  columns={[
+    { key: "stage", label: "Stage (ft)", type: "number" },
+    { key: "flow", label: "Flow (cfs)", type: "number" },
+    { key: "temp", label: "Temp (°F)", type: "number" },
+  ]}
+  rows={5}
+  showCopyAllDataButton={false}
+  showSelectAllButton={false}
   defaultData={[
     ["650.2", "1250", "72.5"],
     ["650.3", "1275", "72.3"],

@@ -4,6 +4,7 @@ import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
 import PlotsDocs from "../pages/docs/plots";
 import CWMSPlotDocs from "../pages/docs/plots/cwms-plot";
+import BasinPieDocs from "../pages/docs/plots/basin-pie";
 import Tables from "../pages/docs/tables";
 import Maps from "../pages/docs/maps";
 import Docs from "../pages/docs/";
@@ -39,6 +40,7 @@ import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
 import CWMSFileUploadDocs from "../pages/docs/forms/cwms-file-upload";
+import CWMSDataUploadDocs from "../pages/docs/forms/cwms-data-upload";
 import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
 import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
 import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
@@ -48,6 +50,9 @@ import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
 import GetPrecisionPage from "../pages/docs/utilities/get-precision";
+import DamProfileDocs from "../pages/docs/graphics/dam-profile";
+import GraphicsDocs from "../pages/docs/graphics";
+import DataStatus from "../pages/docs/summary/data-status";
 
 export default createRouteBundle(
   {
@@ -77,12 +82,17 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-blobs": useCdaBlobs,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
+    "/docs/graphics": GraphicsDocs,
+    "/docs/graphics/dam-profile": DamProfileDocs,
+    "/docs/plots/basin-pie": BasinPieDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
+    "/docs/summary/data-status": DataStatus,
     "/docs/forms": FormsDocs,
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,
     "/docs/forms/cwms-file-upload": CWMSFileUploadDocs,
+    "/docs/forms/cwms-data-upload": CWMSDataUploadDocs,
     "/docs/forms/cwms-textarea": CWMSTextareaDocs,
     "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
     "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
