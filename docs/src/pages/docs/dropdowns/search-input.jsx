@@ -124,7 +124,13 @@ const propsList = [
     name: "onSearch",
     type: "(query: string) => void",
     required: false,
-    desc: "Debounced callback fired after debounceMs. If provided, it overrides the built-in CDA search.",
+    desc: "Debounced callback fired after debounceMs. If provided, it overrides the built-in search; pass its matches through results.",
+  },
+  {
+    name: "results",
+    type: "T[]",
+    required: false,
+    desc: "Externally managed results, typically supplied with onSearch for an asynchronous custom data source.",
   },
   {
     name: "config",
@@ -134,15 +140,15 @@ const propsList = [
   },
   {
     name: "keysToSearch",
-    type: "T[]",
+    type: "(keyof T)[]",
     required: false,
-    desc: "List the keys to search for the keyword in the object passed to config",
+    desc: "Keys to search in each config item. Defaults to every top-level key in the first item.",
   },
   {
     name: "cdaCriteria",
-    type: "object",
+    type: "{ [K in keyof T]?: (value: T[K], item: T) => boolean }",
     required: false,
-    desc: "List the criteria needed to filter the CDA Catalog results",
+    desc: "Optional predicates used to filter CDA catalog results by field.",
   },
   {
     name: "onSelect",
@@ -298,7 +304,6 @@ const LiveExampleCDA = () => {
 const LiveExampleConfig = () => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
-  const [office, setOffice] = useState("SWT");
 
   const selectedLabel = useMemo(() => {
     if (!selected) return "none";
@@ -310,25 +315,11 @@ const LiveExampleConfig = () => {
       <Card className="w-full max-w-[720px]">
         <H3>Config Search</H3>
         <p className="mb-3 text-sm">
-          This example uses the config search path. Pick an office with data, then
-          search for a keyword across any of the keys in your config. Example usage uses
-          the standard location API format and allows users to search for keywords under
-          name, public-name, long-name, and nearest-city.
+          This example searches local config data without an office or CDA request. Try
+          a keyword from name, public-name, long-name, or nearest-city.
         </p>
-        <div className="mb-4">
-          <OfficeDropdown
-            hasData
-            value={office}
-            onChange={(event) => {
-              setOffice(event.target.value);
-              setSelected(null);
-            }}
-          />
-        </div>
         <SearchInput
           label={`Search config locations`}
-          office={office}
-          cdaUrl={CDA_URL}
           query={query}
           onQueryChange={setQuery}
           config={config}
@@ -386,9 +377,8 @@ export default function SearchInputDocs() {
         <Text className="mt-2">
           By default, the component can query CDA <Code>catalog/LOCATIONS</Code> for a
           selected office. If a district needs different behavior, passing{" "}
-          <Code>onSearch</Code> overrides that default search. Lastly, districts can
-          provide a config, either hard coded or returned from a custom query by passing
-          the object to <Code>config</Code>.
+          <Code>onSearch</Code> with <Code>results</Code> overrides that default search.
+          Districts can also search a local array by passing it to <Code>config</Code>.
         </Text>
       </div>
 
@@ -463,7 +453,7 @@ export default function DistrictHeaderSearch() {
 
       <Divider text="Example Usage with Config" className="mt-8" />
       <CodeBlock language="jsx">
-        {`import { OfficeDropdown, SearchInput } from "@usace-watermanagement/groundwork-water";
+        {`import { SearchInput } from "@usace-watermanagement/groundwork-water";
 import { useState } from "react";
 
 const config = [
@@ -549,50 +539,35 @@ const config = [
 export default function DistrictHeaderSearch() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
-  const [office, setOffice] = useState("SWT");
 
   return (
-    <>
-          <OfficeDropdown
-            hasData
-            value={office}
-            onChange={(event) => {
-              setOffice(event.target.value);
-              setSelected(null);
-            }}
-          />
-        <SearchInput
-          label={\`Search config locations\`}
-          office={office}
-          cdaUrl={CDA_URL}
-          query={query}
-          onQueryChange={setQuery}
-          config={config}
-          keysToSearch={["name", "public-name", "nearest-city", "long-name"]}
-          minQueryLength={3}
-          onSelect={(item) => {
-            setSelected(item);
-          }}
-          getResultKey={(item) => \`\${item.office}-\${item.name}\`}
-          getResultLabel={(item) => item.name}
-          getResultDescription={(item) =>
-            \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`
-          }
-          renderResult={(item) => (
-            <div className="flex w-full items-center justify-between gap-3">
-              <div>
-                <div className="font-medium text-slate-900">{item.name}</div>
-                <div className="mt-1 text-sm text-slate-600">
-                  Office: {item.office} | State: {item.state ?? "n/a"}
-                </div>
-              </div>
-              <Badge color={item.kind === "PROJECT" ? "blue" : "gray"}>
-                {item.kind?.toLowerCase() ?? "location"}
-              </Badge>
+    <SearchInput
+      label="Search config locations"
+      query={query}
+      onQueryChange={setQuery}
+      config={config}
+      keysToSearch={["name", "public-name", "nearest-city", "long-name"]}
+      minQueryLength={3}
+      onSelect={setSelected}
+      getResultKey={(item) => \`\${item.office}-\${item.name}\`}
+      getResultLabel={(item) => item.name}
+      getResultDescription={(item) =>
+        \`Office: \${item.office} | State: \${item.state ?? "n/a"}\`
+      }
+      renderResult={(item) => (
+        <div className="flex w-full items-center justify-between gap-3">
+          <div>
+            <div className="font-medium text-slate-900">{item.name}</div>
+            <div className="mt-1 text-sm text-slate-600">
+              Office: {item.office} | State: {item.state ?? "n/a"}
             </div>
-          )}
-        />
-    </>
+          </div>
+          <Badge color={item.kind === "PROJECT" ? "blue" : "gray"}>
+            {item.kind?.toLowerCase() ?? "location"}
+          </Badge>
+        </div>
+      )}
+    />
   );
 }`}
       </CodeBlock>
@@ -608,6 +583,10 @@ export default function DistrictHeaderSearch() {
         <li>
           If <Code>office</Code> is provided and <Code>onSearch</Code> is not, the
           component uses the built-in CDA location search.
+        </li>
+        <li>
+          Passing <Code>config</Code> searches that local array and does not require an
+          office or make a CDA request.
         </li>
         <li>
           The default renderer recognizes common fields such as <Code>name</Code>,{" "}

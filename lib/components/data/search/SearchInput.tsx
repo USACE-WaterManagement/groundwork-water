@@ -21,6 +21,11 @@ type SearchInputRenderState = {
   query: string;
 };
 
+type SearchResultRecord = Record<string, unknown>;
+type SearchCriteria<T> = {
+  [K in keyof T]?: (value: T[K], item: T) => boolean;
+};
+
 type SearchInputProps<T> = {
   query?: string;
   defaultQuery?: string;
@@ -29,9 +34,10 @@ type SearchInputProps<T> = {
   onQueryChange?: (query: string) => void;
   onSearch?: (query: string) => void;
   onSelect?: (item: T) => void;
+  results?: T[];
   config?: T[];
-  keysToSearch?: T[];
-  cdaCriteria?: object;
+  keysToSearch?: (keyof T)[];
+  cdaCriteria?: SearchCriteria<T>;
   getResultKey?: (item: T, index: number) => string | number;
   getResultLabel?: (item: T) => string;
   getResultDescription?: (item: T) => string | undefined;
@@ -51,9 +57,15 @@ type SearchInputProps<T> = {
   autoFocus?: boolean;
 };
 
-type SearchResultRecord = Record<string, unknown>;
-
 const getStringValue = (value: unknown) => (typeof value === "string" ? value : "");
+
+const getSearchableValue = (value: unknown) => {
+  if (typeof value === "string") return value.toLowerCase();
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value).toLowerCase();
+  }
+  return "";
+};
 
 const defaultGetResultLabel = <T,>(item: T) => {
   const record = item as SearchResultRecord;
@@ -133,6 +145,7 @@ const SearchInput = <T,>({
   onQueryChange,
   onSearch,
   onSelect,
+  results,
   config,
   keysToSearch,
   cdaCriteria,
@@ -169,7 +182,7 @@ const SearchInput = <T,>({
   const normalizedQuery = currentQuery.trim();
   const debouncedQuery = useDebounce(normalizedQuery, debounceMs);
   const canSearch = debouncedQuery.length >= minQueryLength;
-  const effectiveResults = internalResults;
+  const effectiveResults = results ?? internalResults;
   const effectiveIsLoading = isLoading || internalIsLoading;
   const effectiveErrorMessage = errorMessage ?? internalErrorMessage;
   const showPanel = isOpen && !disabled;
@@ -194,35 +207,39 @@ const SearchInput = <T,>({
 
     searchAbortRef.current?.abort();
 
-    if (!office || debouncedQuery.length < minQueryLength) {
+    if (debouncedQuery.length < minQueryLength) {
       setInternalResults([]);
       setInternalIsLoading(false);
       setInternalErrorMessage("");
       return;
     }
 
-    const controller = new AbortController();
-    searchAbortRef.current = controller;
-    setInternalIsLoading(true);
     setInternalErrorMessage("");
 
-    //Check if the component was passed a config JSON object. If so, execute this code block and return.
-    if (Object.keys(config ?? {}).length > 0) {
-      //set the keyword
+    if (config !== undefined) {
       const keyword = debouncedQuery.toLowerCase();
-
-      //filter the object by key using the keysToSearch array.
-      const filteredData = config?.filter((item) =>
-        keysToSearch?.some((key) =>
-          //Next, search the values contained in those keys for the keyword
-          item[key]?.toLowerCase().includes(keyword.toLowerCase()),
-        ),
+      const searchableKeys =
+        keysToSearch && keysToSearch.length > 0
+          ? keysToSearch
+          : (Object.keys((config[0] ?? {}) as object) as (keyof T)[]);
+      const filteredData = config.filter((item) =>
+        searchableKeys.some((key) => getSearchableValue(item[key]).includes(keyword)),
       );
-      setInternalResults(filteredData as T[]);
+      setInternalResults(filteredData);
       setInternalIsLoading(false);
       return;
     }
-    //If the component was not passed a config JSON Object. Fetch data from CDA.
+
+    if (!office) {
+      setInternalResults([]);
+      setInternalIsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
+    setInternalIsLoading(true);
+
     fetch(
       `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}.*`,
       {
@@ -240,14 +257,15 @@ const SearchInput = <T,>({
         return response.json();
       })
       .then((data) => {
-        const entries = Array.isArray(data?.entries)
-          ? (data.entries as Array<{ name?: string }>)
-          : [];
-        //Filter the catalog data based on user defined criteria
+        const entries = Array.isArray(data?.entries) ? (data.entries as T[]) : [];
+        const criteria = Object.entries(cdaCriteria ?? {}) as [
+          keyof T,
+          (value: T[keyof T], item: T) => boolean,
+        ][];
         const filteredData = entries.filter((entry) =>
-          Object.keys(cdaCriteria).every((key) => cdaCriteria[key](entry[key])),
+          criteria.every(([key, criterion]) => criterion(entry[key], entry)),
         );
-        setInternalResults(filteredData as T[]);
+        setInternalResults(filteredData);
       })
       .catch((fetchError: Error & { name?: string }) => {
         if (fetchError.name === "AbortError") return;
