@@ -1,6 +1,6 @@
 {
   "name": "@usace-watermanagement/groundwork-water",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "license": "MIT",
   "author": "Various",
   "description": "A library of react components for use with USACE Water Management Webpages",
