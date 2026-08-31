@@ -1,5 +1,4 @@
 import { CWMSTable, TSTable } from "@usace-watermanagement/groundwork-water";
-// import TSTable from "../../../../../lib/components/data/tables/TSTable";
 
 import { Code } from "../../components/code";
 import Divider from "../../components/divider";

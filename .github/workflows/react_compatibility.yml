@@ -8,6 +8,7 @@ on:
 
 jobs:
   library-build:
+    if: github.head_ref != 'changeset-release/main'
     name: Library check and build with React ${{ matrix.react }}
     runs-on: ubuntu-latest
     strategy:
@@ -37,6 +38,7 @@ jobs:
         run: npm run build-lib
 
   docs-build:
+    if: github.head_ref != 'changeset-release/main'
     name: Docs build with React ${{ matrix.react }}
     runs-on: ubuntu-latest
     strategy:
@@ -55,6 +57,14 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             docs/package-lock.json
+
+      - name: Check docs use the packaged library
+        shell: bash
+        run: |
+          if git grep -n -E 'from .*(\.\./)+lib' -- docs/src; then
+            echo "::error::Docs must import Groundwork Water from @usace-watermanagement/groundwork-water, not directly from lib."
+            exit 1
+          fi
 
       - name: Install library dependencies
         run: npm ci

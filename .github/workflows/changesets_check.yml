@@ -10,6 +10,7 @@ on:
 
 jobs:
   check:
+    if: github.head_ref != 'changeset-release/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,15 +28,7 @@ jobs:
       - name: Determine whether a changeset is required
         id: changeset
         shell: bash
-        env:
-          HEAD_REF: ${{ github.head_ref }}
         run: |
-          if [[ "$HEAD_REF" == "changeset-release/main" ]]; then
-            echo "required=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping validation for the Changesets release pull request."
-            exit 0
-          fi
-
           mapfile -t release_files < <(
             git diff --name-only main...HEAD -- . \
               ":(exclude)package-lock.json" \
