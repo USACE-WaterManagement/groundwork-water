@@ -21,6 +21,11 @@ type SearchInputRenderState = {
   query: string;
 };
 
+type SearchResultRecord = Record<string, unknown>;
+type SearchCriteria<T> = {
+  [K in keyof T]?: (value: T[K], item: T) => boolean;
+};
+
 type SearchInputProps<T> = {
   query?: string;
   defaultQuery?: string;
@@ -30,6 +35,9 @@ type SearchInputProps<T> = {
   onSearch?: (query: string) => void;
   onSelect?: (item: T) => void;
   results?: T[];
+  config?: T[];
+  keysToSearch?: (keyof T)[];
+  cdaCriteria?: SearchCriteria<T>;
   getResultKey?: (item: T, index: number) => string | number;
   getResultLabel?: (item: T) => string;
   getResultDescription?: (item: T) => string | undefined;
@@ -49,9 +57,15 @@ type SearchInputProps<T> = {
   autoFocus?: boolean;
 };
 
-type SearchResultRecord = Record<string, unknown>;
-
 const getStringValue = (value: unknown) => (typeof value === "string" ? value : "");
+
+const getSearchableValue = (value: unknown) => {
+  if (typeof value === "string") return value.toLowerCase();
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value).toLowerCase();
+  }
+  return "";
+};
 
 const defaultGetResultLabel = <T,>(item: T) => {
   const record = item as SearchResultRecord;
@@ -132,6 +146,9 @@ const SearchInput = <T,>({
   onSearch,
   onSelect,
   results,
+  config,
+  keysToSearch,
+  cdaCriteria,
   getResultKey,
   getResultLabel = defaultGetResultLabel,
   getResultDescription = defaultGetResultDescription,
@@ -190,20 +207,41 @@ const SearchInput = <T,>({
 
     searchAbortRef.current?.abort();
 
-    if (!office || debouncedQuery.length < minQueryLength) {
+    if (debouncedQuery.length < minQueryLength) {
       setInternalResults([]);
       setInternalIsLoading(false);
       setInternalErrorMessage("");
       return;
     }
 
+    setInternalErrorMessage("");
+
+    if (config !== undefined) {
+      const keyword = debouncedQuery.toLowerCase();
+      const searchableKeys =
+        keysToSearch && keysToSearch.length > 0
+          ? keysToSearch
+          : (Object.keys((config[0] ?? {}) as object) as (keyof T)[]);
+      const filteredData = config.filter((item) =>
+        searchableKeys.some((key) => getSearchableValue(item[key]).includes(keyword)),
+      );
+      setInternalResults(filteredData);
+      setInternalIsLoading(false);
+      return;
+    }
+
+    if (!office) {
+      setInternalResults([]);
+      setInternalIsLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     searchAbortRef.current = controller;
     setInternalIsLoading(true);
-    setInternalErrorMessage("");
 
     fetch(
-      `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}`,
+      `${cdaUrl}/catalog/LOCATIONS?office=${office}&like=${encodeURIComponent(debouncedQuery)}.*`,
       {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -219,10 +257,15 @@ const SearchInput = <T,>({
         return response.json();
       })
       .then((data) => {
-        const entries = Array.isArray(data?.entries)
-          ? (data.entries as Array<{ name?: string }>)
-          : [];
-        setInternalResults(entries.filter((item) => !item.name?.includes("-")) as T[]);
+        const entries = Array.isArray(data?.entries) ? (data.entries as T[]) : [];
+        const criteria = Object.entries(cdaCriteria ?? {}) as [
+          keyof T,
+          (value: T[keyof T], item: T) => boolean,
+        ][];
+        const filteredData = entries.filter((entry) =>
+          criteria.every(([key, criterion]) => criterion(entry[key], entry)),
+        );
+        setInternalResults(filteredData);
       })
       .catch((fetchError: Error & { name?: string }) => {
         if (fetchError.name === "AbortError") return;
@@ -236,7 +279,15 @@ const SearchInput = <T,>({
       });
 
     return () => controller.abort();
-  }, [cdaUrl, debouncedQuery, minQueryLength, office]);
+  }, [
+    cdaUrl,
+    debouncedQuery,
+    minQueryLength,
+    config,
+    keysToSearch,
+    cdaCriteria,
+    office,
+  ]);
 
   useEffect(() => {
     // Close the popover when focus leaves the component via pointer interaction.
