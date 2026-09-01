@@ -15,6 +15,7 @@ jobs:
       pull-requests: write
     outputs:
       published: ${{ steps.changesets.outputs.published }}
+      published_version: ${{ steps.published_version.outputs.version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -35,51 +36,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  update-docs:
-    name: Update Docs
-    runs-on: ubuntu-latest
-    needs: release
-    if: needs.release.outputs.published == 'true'
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./docs
-
-      - name: Install latest groundwork-water
-        run: npm install @usace-watermanagement/groundwork-water@latest
-        working-directory: ./docs
-
-      - name: Build docs
+      - name: Read published Groundwork Water version
+        id: published_version
+        if: steps.changesets.outputs.published == 'true'
+        shell: bash
         env:
-          VITE_HOMEPAGE: "https://usace-watermanagement.github.io/groundwork-water"
-        run: npx vite build
-        working-directory: ./docs
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
 
-      - name: Upload production-ready docs
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./docs/dist
+          const packages = JSON.parse(process.env.PUBLISHED_PACKAGES);
+          const publishedPackage = packages.find(
+            ({ name }) => name === "@usace-watermanagement/groundwork-water",
+          );
+
+          if (!publishedPackage) {
+            throw new Error(
+              "Changesets reported a publish without a Groundwork Water package version.",
+            );
+          }
+
+          fs.appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `version=${publishedPackage.version}\n`,
+          );
+          NODE
 
   deploy-docs:
-    name: Deploy Docs to GH Pages
-    runs-on: ubuntu-latest
-    needs: [release, update-docs]
+    name: Deploy published docs
+    needs: release
     if: needs.release.outputs.published == 'true'
+    uses: ./.github/workflows/deploy_docs.yml
+    with:
+      package_version: ${{ needs.release.outputs.published_version }}
     permissions:
+      contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
