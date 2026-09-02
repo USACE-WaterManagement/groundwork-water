@@ -221,6 +221,8 @@ When a PR with a changesets file is merged to the main branch, changesets will a
 
 The changesets-managed **Version Packages** PR is a release PR, not a prerelease. The library changes have already been tested in their original PRs, so the PR validation workflows skip this generated branch. Merging it publishes the package and then builds and deploys the documentation with the newly published package. A failure in that post-merge documentation build is a real release problem and should be fixed rather than ignored or skipped.
 
+The release workflow passes the exact version published by Changesets to the reusable **Deploy to GH Pages** workflow. Maintainers can also run that workflow manually with an exact package version, or with `latest` to recover the current release without publishing the package again.
+
 You need only worry about running the command `changesets` when you are ready to version your changes. Then commit the files the changesets command creates.
 
 We prefer you to run this command and commit prior to making the PR.
