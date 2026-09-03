@@ -673,7 +673,75 @@ function CWMSFormDocs() {
           <Code>perColumnRequired</Code> - For CWMSInputTable, set required per column
         </li>
       </ul>
+      <Divider text="Min, Max, and Custom Input Validation" className="mt-8" />
+      <Text className="mb-4">
+        <Code>CWMSInput</Code> supports the same validation attributes you would use on
+        a normal HTML input. Use <Code>min</Code>, <Code>max</Code>, and{" "}
+        <Code>step</Code> for simple number limits, or use <Code>onInput</Code> with{" "}
+        <Code>setCustomValidity</Code> when you need custom validation logic.
+      </Text>
 
+      <CodeBlock language="jsx">
+        {`<CWMSForm
+          office="SWT"
+          cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+        >
+          <CWMSInput
+            name="stage"
+            tsid="LOCATION.Stage.Inst.15Minutes.0.USGS"
+            label="Stage Reading"
+            placeholder="Enter stage between 0 and 100 ft"
+            type="number"
+            required={true}
+            min={0}
+            max={100}
+            step={0.01}
+          />
+
+          <CWMSInput
+            name="gate-opening"
+            tsid="LOCATION.GateOpening.Inst.15Minutes.0.MANUAL"
+            label="Gate Opening"
+            placeholder="Enter gate opening in whole feet"
+            type="number"
+            required={true}
+            min={0}
+            max={25}
+            onInput={(event) => {
+              const value = event.currentTarget.value;
+
+              if (!value) {
+                event.currentTarget.setCustomValidity("");
+                return;
+              }
+
+              const isWholeFoot = Number.isInteger(Number(value));
+
+              event.currentTarget.setCustomValidity(
+                isWholeFoot ? "" : "Gate opening must be entered in whole feet.",
+              );
+            }}
+          />
+        </CWMSForm>`}
+      </CodeBlock>
+
+      <Text className="mb-4 mt-4">
+        <strong>Validation Options:</strong>
+      </Text>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        <li>
+          Use <Code>required</Code> when a value must be entered before submission.
+        </li>
+        <li>
+          Use <Code>min</Code>, <Code>max</Code>, and <Code>step</Code> for numeric
+          ranges and increments.
+        </li>
+        <li>
+          Use <Code>onInput</Code> and <Code>setCustomValidity</Code> for custom rules
+          such as whole-number checks, operational limits, or other input-specific
+          algorithms.
+        </li>
+      </ul>
       <Divider text="Custom Submit Handler" className="mt-8" />
       <Text className="mb-4">
         You can provide a custom submit handler to process form data before or instead
