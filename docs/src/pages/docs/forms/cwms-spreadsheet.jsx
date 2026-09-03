@@ -121,6 +121,18 @@ const componentProps = [
     desc: "Opt-in strategy for auto-loading the nearest time series values into cells. When omitted, no values are fetched. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
   },
   {
+    name: "lookback",
+    type: "number",
+    default: "form lookback (1 day)",
+    desc: "How many days before each target time to search for a value. Overrides the form-level setting for this component; a column can override it again. Raise it for series that report less often than daily.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "form lookahead (1 day)",
+    desc: "How many days after each target time to search. Only applies to the 'next' and 'nearest' strategies.",
+  },
+  {
     name: "showValueTimestamp",
     type: "boolean",
     default: "false",
@@ -733,6 +745,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             type: "number",
             default: "global precision",
             desc: "Number of decimal places for values in this column. Overrides global precision prop.",
+          },
+          {
+            name: "lookback",
+            type: "number",
+            default: "component or form lookback",
+            desc: "How many days before each target time to search for this column's series when loading nearest values. Set it on the one slow-reporting series instead of widening the window for every column. Lookback applies to a whole column, not to individual rows, because every row of a column shares one fetch window.",
           },
           {
             name: "required",

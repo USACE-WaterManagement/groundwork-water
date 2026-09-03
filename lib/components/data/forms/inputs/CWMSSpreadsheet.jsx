@@ -23,6 +23,8 @@ function CWMSSpreadsheet({
   order = 1,
   AllowMissingData = true,
   loadNearest,
+  lookback,
+  lookahead,
   readonly = false,
   units = "EN",
   onChange,
@@ -93,6 +95,8 @@ function CWMSSpreadsheet({
     timeoffsets,
     strategy: loadNearest || "prev",
     defaultUnits: units,
+    lookback,
+    lookahead,
     enabled: !!loadNearest && tsidColumns.length > 0 && timeoffsets.length > 0,
   });
 

@@ -38,18 +38,28 @@ function selectAt(series, targetMs) {
   return selectNearestValue(series?.values, targetMs, "prev")?.value;
 }
 
-function Harness({ children, office = "SWD", onStore = () => {} }) {
-  const getTimestampForInput = useCallback((offset = 0) => {
-    // Mirrors CWMSForm: offsets >= 60 are seconds.
-    const ms = Math.abs(offset) >= 60 ? offset * 1000 : offset * 60 * 1000;
-    return new Date(BASE_MS + ms).toISOString();
-  }, []);
+function Harness({
+  children,
+  office = "SWD",
+  onStore = () => {},
+  baseMs = BASE_MS,
+  lookback,
+  lookahead,
+}) {
+  const getTimestampForInput = useCallback(
+    (offset = 0) => {
+      // Mirrors CWMSForm: offsets >= 60 are seconds.
+      const ms = Math.abs(offset) >= 60 ? offset * 1000 : offset * 60 * 1000;
+      return new Date(baseMs + ms).toISOString();
+    },
+    [baseMs],
+  );
 
   const nearestValues = useNearestValueStore({
     office,
     cdaUrl: "http://cda.test",
     getTimestampForInput,
-    baseTimestamp: "2025-01-15T12:00",
+    baseTimestamp: new Date(baseMs).toISOString(),
   });
 
   onStore(nearestValues);
@@ -61,7 +71,9 @@ function Harness({ children, office = "SWD", onStore = () => {} }) {
         getTimestampForInput,
         office,
         cdaUrl: "http://cda.test",
-        baseTimestamp: "2025-01-15T12:00",
+        baseTimestamp: new Date(baseMs).toISOString(),
+        lookback,
+        lookahead,
         nearestValues,
       }}
     >
@@ -70,8 +82,21 @@ function Harness({ children, office = "SWD", onStore = () => {} }) {
   );
 }
 
-function Consumer({ columns, timeoffsets, strategy, onResult = () => {} }) {
-  const result = useNearestValues({ columns, timeoffsets, strategy });
+function Consumer({
+  columns,
+  timeoffsets,
+  strategy,
+  lookback,
+  lookahead,
+  onResult = () => {},
+}) {
+  const result = useNearestValues({
+    columns,
+    timeoffsets,
+    strategy,
+    lookback,
+    lookahead,
+  });
   onResult(result);
   return null;
 }
@@ -499,5 +524,263 @@ describe("recent-value fallback", () => {
     );
 
     expect(latest.error).toBe(error);
+  });
+});
+
+describe("lookback window", () => {
+  const DAYS = (n) => n * DAY_MS;
+  // A gage that only reports weekly: its last value is 5 days before the form's
+  // calendar time, so a one-day window finds nothing.
+  const LAST_MS = BASE_MS - DAYS(5);
+
+  function mockWindowedSeries() {
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => {
+        const beginMs = Date.parse(param.begin);
+        const endMs = Date.parse(param.end);
+        const inWindow = LAST_MS >= beginMs && LAST_MS <= endMs;
+        return {
+          isPending: false,
+          data: { values: inWindow ? [[LAST_MS, 42.5, 0]] : [] },
+          error: null,
+        };
+      });
+    });
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    lastParams = [];
+    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
+    mockWindowedSeries();
+  });
+
+  function windowSpan() {
+    return Date.parse(lastParams[0].end) - Date.parse(lastParams[0].begin);
+  }
+
+  it("defaults to a one-day lookback", () => {
+    render(
+      <Harness>
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+
+    expect(windowSpan()).toBe(DAY_MS);
+  });
+
+  it("widens the window from the form-level setting", () => {
+    let latest;
+    render(
+      <Harness lookback={7}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(windowSpan()).toBe(DAYS(7));
+    // The five-day-old value is now inside the window, with no fallback needed.
+    expect(latest.values[`${FLOW}_0`]).toBe(42.5);
+    expect(useCdaRecentValues).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: false }),
+    );
+  });
+
+  it("lets a component override the form-level setting", () => {
+    render(
+      <Harness lookback={7}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          lookback={30}
+        />
+      </Harness>,
+    );
+
+    expect(windowSpan()).toBe(DAYS(30));
+  });
+
+  it("lets a column override everything above it", () => {
+    render(
+      <Harness lookback={7}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN", lookback: 14 }]}
+          timeoffsets={[0]}
+          lookback={2}
+        />
+      </Harness>,
+    );
+
+    expect(windowSpan()).toBe(DAYS(14));
+  });
+
+  it("keeps each series on its own window", () => {
+    render(
+      <Harness>
+        <Consumer
+          columns={[
+            { tsid: FLOW, units: "EN", lookback: 10 },
+            { tsid: ELEV, units: "EN" },
+          ]}
+          timeoffsets={[0]}
+        />
+      </Harness>,
+    );
+
+    const spans = Object.fromEntries(
+      lastParams.map((p) => [p.name, Date.parse(p.end) - Date.parse(p.begin)]),
+    );
+    expect(spans[FLOW]).toBe(DAYS(10));
+    expect(spans[ELEV]).toBe(DAY_MS);
+  });
+
+  it("covers the wider window when two components disagree about one series", () => {
+    render(
+      <Harness>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN", lookback: 3 }]}
+          timeoffsets={[0]}
+        />
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN", lookback: 12 }]}
+          timeoffsets={[0]}
+        />
+      </Harness>,
+    );
+
+    // Still one request - the shared window just has to satisfy both.
+    expect(lastParams).toHaveLength(1);
+    expect(windowSpan()).toBe(DAYS(12));
+  });
+
+  it("extends the lookahead for a next lookup", () => {
+    render(
+      <Harness lookahead={4}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          strategy="next"
+        />
+      </Harness>,
+    );
+
+    expect(Date.parse(lastParams[0].end) - BASE_MS).toBe(DAYS(4));
+  });
+});
+
+describe("following the form calendar", () => {
+  const DAYS = (n) => n * DAY_MS;
+  // Only value in the series, five days before the default calendar time.
+  const LAST_MS = BASE_MS - DAYS(5);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    lastParams = [];
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => {
+        const beginMs = Date.parse(param.begin);
+        const endMs = Date.parse(param.end);
+        const inWindow = LAST_MS >= beginMs && LAST_MS <= endMs;
+        return {
+          isPending: false,
+          data: { values: inWindow ? [[LAST_MS, 42.5, 0]] : [] },
+          error: null,
+        };
+      });
+    });
+    useCdaRecentValues.mockReturnValue({
+      data: { [FLOW]: { tsid: FLOW, dateTimeMs: LAST_MS } },
+      isPending: false,
+      error: null,
+    });
+  });
+
+  it("reaches back to a series that ended before the window", () => {
+    let latest;
+    render(
+      <Harness>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(lastParams[0].end).toBe(new Date(LAST_MS).toISOString());
+    expect(latest.values[`${FLOW}_0`]).toBe(42.5);
+  });
+
+  // Regression: a pin used to be keyed by series alone and survived forever, so
+  // once the fallback fired the fetch stopped following the calendar and every
+  // later date change was served from a frozen window.
+  it("re-aims the window when the operator shifts the calendar", () => {
+    const { rerender } = render(
+      <Harness>
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+    expect(lastParams[0].end).toBe(new Date(LAST_MS).toISOString());
+
+    const shifted = BASE_MS - DAYS(10);
+    rerender(
+      <Harness baseMs={shifted}>
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+
+    expect(lastParams[0].end).toBe(new Date(shifted).toISOString());
+    expect(Date.parse(lastParams[0].begin)).toBe(shifted - DAY_MS);
+  });
+
+  // The last value is *after* a shifted-back target, so it is not a "prev"
+  // answer for it. Pinning to it would show the operator a value from the
+  // wrong side of the date they picked.
+  it("does not reach forward to a value newer than the target", () => {
+    const shifted = BASE_MS - DAYS(10);
+    let latest;
+    render(
+      <Harness baseMs={shifted}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(lastParams[0].end).toBe(new Date(shifted).toISOString());
+    // No previous value exists within lookback, which is the honest answer.
+    expect(latest.values[`${FLOW}_0`]).toBeNull();
+  });
+
+  // ...and widening the lookback is what actually reaches it.
+  it("finds the value once lookback covers the gap", () => {
+    const shifted = BASE_MS - DAYS(3);
+    let latest;
+    render(
+      <Harness baseMs={shifted} lookback={7}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(latest.values[`${FLOW}_0`]).toBe(42.5);
   });
 });

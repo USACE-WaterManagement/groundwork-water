@@ -67,6 +67,18 @@ const componentProps = [
     desc: "Opt-in strategy for auto-loading the nearest time series value. When omitted, no value is fetched. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
   },
   {
+    name: "lookback",
+    type: "number",
+    default: "form lookback (1 day)",
+    desc: "How many days before each target time to search for a value. Overrides the form-level setting for this input. Raise it for a series that reports less often than daily - a gage whose last reading is three days old is invisible to the default one-day window.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "form lookahead (1 day)",
+    desc: "How many days after each target time to search. Only applies to the 'next' and 'nearest' strategies.",
+  },
+  {
     name: "showValueTimestamp",
     type: "boolean",
     default: "false",

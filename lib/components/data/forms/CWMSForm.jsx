@@ -47,6 +47,8 @@ export function CWMSForm({
   calendarUseGmtOffset = false, // When true, snap/store uses fixed GMT+offset even if calendarTimezone is set for display
   onCalendarChange, // Optional callback fired when the calendar timestamp changes. Receives the snapped Date object.
   onLoadError, // Optional callback fired when loading nearest values fails. Receives the error.
+  lookback = 1, // How many days before the form's calendar time to search for a nearest value. Raise it for sites that report less often than daily.
+  lookahead = 1, // How many days after the form's calendar time to search, for the "next" and "nearest" strategies.
   toastAutoClose = 5000, // Set to false to disable auto-close for all toasts, or number for milliseconds
   className = "",
   style,
@@ -395,6 +397,8 @@ export function CWMSForm({
           containerId,
           office,
           cdaUrl,
+          lookback,
+          lookahead,
           nearestValues,
         }}
       >

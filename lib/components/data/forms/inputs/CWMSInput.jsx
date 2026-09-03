@@ -11,6 +11,8 @@ function CWMSInput({
   order,
   AllowMissingData,
   loadNearest,
+  lookback,
+  lookahead,
   units,
   timeOffset,
   label,
@@ -55,6 +57,8 @@ function CWMSInput({
     timeoffsets: timeoffsetsArr,
     strategy: loadNearest || "prev",
     defaultUnits: units || "EN",
+    lookback,
+    lookahead,
     enabled: !!tsid && !!loadNearest,
   });
 

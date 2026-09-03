@@ -29,6 +29,8 @@ function CWMSInputTable({
   order = 1,
   AllowMissingData = true,
   loadNearest,
+  lookback,
+  lookahead,
   readonly = false,
   units = "EN",
   onChange,
@@ -90,6 +92,8 @@ function CWMSInputTable({
     timeoffsets,
     strategy: loadNearest || "prev",
     defaultUnits: units,
+    lookback,
+    lookahead,
     enabled: loadingColumns.length > 0 && timeoffsets.length > 0,
   });
 
