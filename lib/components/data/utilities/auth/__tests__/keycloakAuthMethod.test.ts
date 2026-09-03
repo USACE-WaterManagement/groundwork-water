@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createKeycloakAuthMethod } from "../keycloakAuthMethod";
+import { createKeycloakOidcClient } from "../keycloakOidcClient";
 
 const mockOidcClient = {
   getUser: vi.fn(),
@@ -39,6 +40,17 @@ describe("createKeycloakAuthMethod", () => {
       expires_at: Date.now() / 1000 + 300,
       expires_in: 300,
     });
+  });
+
+  it("targets the CWBI production Keycloak host by default", () => {
+    createKeycloakAuthMethod({
+      realm: "cwbi",
+      client: "cwms",
+    });
+
+    expect(createKeycloakOidcClient).toHaveBeenCalledWith(
+      expect.objectContaining({ host: "https://identity.cwbi.mil/auth" }),
+    );
   });
 
   it("stores the requested return URL and keeps the configured callback URI for PKCE login", async () => {
