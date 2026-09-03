@@ -4,10 +4,10 @@ import { FormContext } from "../../FormContext";
 import { useNearestValueStore, useNearestValues } from "../useNearestValueStore";
 import { selectNearestValue } from "../useLoadNearestValues";
 import useCdaMultiTimeSeries from "../../../hooks/useCdaMultiTimeSeries";
-import useCdaCatalog from "../../../hooks/useCdaCatalog";
+import useCdaRecentValues from "../../../hooks/useCdaRecentValues";
 
 vi.mock("../../../hooks/useCdaMultiTimeSeries", () => ({ default: vi.fn(() => []) }));
-vi.mock("../../../hooks/useCdaCatalog", () => ({ default: vi.fn() }));
+vi.mock("../../../hooks/useCdaRecentValues", () => ({ default: vi.fn() }));
 
 const FLOW = "LWG.Flow-In.Ave.1Hour.1Hour.CBT-REV";
 const ELEV = "LWG.Elev.Inst.1Hour.0.CBT-REV";
@@ -38,7 +38,7 @@ function selectAt(series, targetMs) {
   return selectNearestValue(series?.values, targetMs, "prev")?.value;
 }
 
-function Harness({ children, office = "SWD" }) {
+function Harness({ children, office = "SWD", onStore = () => {} }) {
   const getTimestampForInput = useCallback((offset = 0) => {
     // Mirrors CWMSForm: offsets >= 60 are seconds.
     const ms = Math.abs(offset) >= 60 ? offset * 1000 : offset * 60 * 1000;
@@ -51,6 +51,8 @@ function Harness({ children, office = "SWD" }) {
     getTimestampForInput,
     baseTimestamp: "2025-01-15T12:00",
   });
+
+  onStore(nearestValues);
 
   return (
     <FormContext.Provider
@@ -78,7 +80,7 @@ describe("useNearestValueStore", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     lastParams = [];
-    useCdaCatalog.mockReturnValue({ data: undefined, isPending: false, error: null });
+    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
     useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
       lastParams = cdaParams;
       return cdaParams.map((param) => ({
@@ -353,5 +355,149 @@ describe("useNearestValueStore", () => {
     );
     // Refcounted: the identical need is still registered once.
     expect(lastParams.map((p) => p.name)).toEqual([FLOW]);
+  });
+});
+
+describe("recent-value fallback", () => {
+  const OLD_MS = BASE_MS - 5 * DAY_MS;
+  const OLD_ISO = new Date(OLD_MS).toISOString();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    lastParams = [];
+    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
+  });
+
+  // The default window is a day wide; a series whose last value is older than
+  // that comes back empty and has to be found by its last-value timestamp.
+  function mockEmptyUntilPinned() {
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => ({
+        isPending: false,
+        data: param.end === OLD_ISO ? { values: [[OLD_MS, 42.5, 0]] } : { values: [] },
+        error: null,
+      }));
+    });
+  }
+
+  it("looks up only the series whose window came back empty", () => {
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => ({
+        isPending: false,
+        data: param.name === FLOW ? { values: [] } : SERIES[param.name],
+        error: null,
+      }));
+    });
+
+    render(
+      <Harness>
+        <Consumer
+          columns={[
+            { tsid: FLOW, units: "EN" },
+            { tsid: ELEV, units: "EN" },
+          ]}
+          timeoffsets={[0]}
+        />
+      </Harness>,
+    );
+
+    expect(useCdaRecentValues).toHaveBeenCalledWith(
+      expect.objectContaining({ tsIds: [FLOW], enabled: true }),
+    );
+  });
+
+  it("asks by TSID list rather than by pattern", () => {
+    mockEmptyUntilPinned();
+
+    render(
+      <Harness>
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+
+    const { tsIds } = useCdaRecentValues.mock.calls.at(-1)[0];
+    expect(tsIds).toEqual([FLOW]);
+    // Regression guard for ORA-12733: nothing here may be a regular expression.
+    tsIds.forEach((tsid) => expect(tsid).not.toMatch(/[\^$|()\\]/));
+  });
+
+  it("re-fetches pinned to the last value and resolves it", () => {
+    mockEmptyUntilPinned();
+    useCdaRecentValues.mockReturnValue({
+      data: { [FLOW]: { tsid: FLOW, dateTimeMs: OLD_MS } },
+      isPending: false,
+      error: null,
+    });
+
+    let latest;
+    render(
+      <Harness>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(lastParams[0].end).toBe(OLD_ISO);
+    expect(latest.values[`${FLOW}_0`]).toBe(42.5);
+  });
+
+  it("skips the lookup entirely when every window returned data", () => {
+    render(
+      <Harness>
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+
+    expect(useCdaRecentValues).toHaveBeenCalledWith(
+      expect.objectContaining({ tsIds: [], enabled: false }),
+    );
+  });
+
+  // The consumer-level flag deliberately reports only on *its* series, and an
+  // empty first response counts as resolved, so the store is what to assert on.
+  it("keeps the store pending while the lookup is in flight", () => {
+    mockEmptyUntilPinned();
+    useCdaRecentValues.mockReturnValue({ data: {}, isPending: true, error: null });
+
+    let store;
+    render(
+      <Harness
+        onStore={(value) => {
+          store = value;
+        }}
+      >
+        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
+      </Harness>,
+    );
+
+    expect(store.isPending).toBe(true);
+  });
+
+  it("surfaces a lookup failure", () => {
+    mockEmptyUntilPinned();
+    const error = new Error("Unauthorized");
+    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error });
+
+    let latest;
+    render(
+      <Harness>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(latest.error).toBe(error);
   });
 });
