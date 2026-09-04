@@ -1,5 +1,13 @@
 # @usace-watermanagement/groundwork-water
 
+## 4.1.1
+
+### Patch Changes
+
+- 26e13d4: Default Keycloak authentication to the CWBI production host while retaining the host
+  override for development, test, and custom environments. Clarify the production and
+  test hosts throughout the authentication documentation.
+
 ## 4.1.0
 
 ### Minor Changes
