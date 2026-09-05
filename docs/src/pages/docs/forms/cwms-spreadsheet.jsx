@@ -46,7 +46,7 @@ const componentProps = [
     name: "timeoffsets",
     type: "array",
     default: "[]",
-    desc: "Array of time offsets in seconds from the base time. Each offset corresponds to a row. When provided, automatically enables showTimestamps.",
+    desc: "Row definitions, one per row. Each entry is either a time offset in seconds from the base time, or an object { offset, id, label, loadNearest, disabled, readonly } overriding those settings for that row. The two forms can be mixed. When provided, automatically enables showTimestamps.",
   },
   {
     name: "precision",
@@ -103,10 +103,40 @@ const componentProps = [
     desc: "Whether to allow missing data in submissions.",
   },
   {
+    name: "highlightChanged",
+    type: "boolean",
+    default: "true",
+    desc: "When values have been loaded, dims cells still showing the loaded value and emboldens ones the operator has changed. Has no effect on cells nothing was loaded for.",
+  },
+  {
+    name: "cellClassName",
+    type: "function",
+    default: "undefined",
+    desc: "Called per cell with its status - { value, loadedValue, defaultValue, baseline, loaded, changed, prefilled, key, tsid, offset, column, row } - and whatever it returns is applied as a class on the cell.",
+  },
+  {
     name: "loadNearest",
     type: "string",
-    default: "prev",
-    desc: "Load nearest value strategy (prev, next, nearest).",
+    default: "undefined (feature off)",
+    desc: "Opt-in strategy for auto-loading the nearest time series values into cells. When omitted, no values are fetched. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
+  },
+  {
+    name: "lookback",
+    type: "number",
+    default: "form lookback (1 day)",
+    desc: "How many days before each target time to search for a value. Overrides the form-level setting for this component; a column can override it again. Raise it for series that report less often than daily.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "form lookahead (1 day)",
+    desc: "How many days after each target time to search. Only applies to the 'next' and 'nearest' strategies.",
+  },
+  {
+    name: "showValueTimestamp",
+    type: "boolean",
+    default: "false",
+    desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on each cell. The tooltip is removed when the user edits the cell.",
   },
   {
     name: "className",
@@ -402,6 +432,61 @@ function CWMSSpreadsheetDocs() {
         <li>Each row's data is submitted with its corresponding time offset</li>
       </ul>
 
+      <Divider text="Load Nearest Values" className="mt-8" />
+      <Text className="mb-4">
+        This is an opt-in feature. When the <Code className="p-1">loadNearest</Code>{" "}
+        prop is set (and columns have a <Code className="p-1">tsid</Code> and the parent{" "}
+        <Code className="p-1">CWMSForm</Code> provides an{" "}
+        <Code className="p-1">office</Code>), the spreadsheet fetches the nearest time
+        series values and pre-populates cells. With{" "}
+        <Code className="p-1">loadNearest</Code> omitted, no values are fetched. The
+        prop value selects the strategy:
+      </Text>
+      <ul className="list-disc ml-6 mb-4">
+        <li>
+          <Code className="p-1">prev</Code> — last value at or before each target time
+        </li>
+        <li>
+          <Code className="p-1">next</Code> — first value at or after each target time
+        </li>
+        <li>
+          <Code className="p-1">nearest</Code> — closest value by absolute time
+          difference
+        </li>
+      </ul>
+      <Text className="mb-4">
+        Cells show a Loading placeholder while data is being fetched. Once a user edits
+        a cell, the loaded value will not overwrite their input. Changing the calendar
+        date resets the loaded values.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Auto-populate cells with the most recent time series values
+<CWMSForm office="SWT" cdaUrl="https://cwms-data.usace.army.mil/cwms-data" showCalendar={true}>
+  <CWMSSpreadsheet
+    columns={[
+      {
+        label: "Stage (ft)",
+        type: "number",
+        tsid: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev",
+        units: "ft",
+        precision: 2
+      },
+      {
+        label: "Flow (cfs)",
+        type: "number",
+        tsid: "KEYS.Flow.Inst.1Hour.0.Ccp-Rev",
+        units: "cfs",
+        precision: 0
+      }
+    ]}
+    timeoffsets={[0, 3600, 7200, 10800]}
+    rows={4}
+    loadNearest="prev"
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
       <Divider text="With Form Integration" className="mt-8" />
       <Text className="mb-4">
         When used within a CWMSForm, CWMSSpreadsheet can submit tabular data to CWMS.
@@ -660,6 +745,12 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             type: "number",
             default: "global precision",
             desc: "Number of decimal places for values in this column. Overrides global precision prop.",
+          },
+          {
+            name: "lookback",
+            type: "number",
+            default: "component or form lookback",
+            desc: "How many days before each target time to search for this column's series when loading nearest values. Set it on the one slow-reporting series instead of widening the window for every column. Lookback applies to a whole column, not to individual rows, because every row of a column shares one fetch window.",
           },
           {
             name: "required",

@@ -1,5 +1,16 @@
 import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { FormContext } from "../CWMSForm";
+import { useNearestValues } from "../hooks/useNearestValueStore";
+import {
+  cellKeyFor,
+  getCellStatus,
+  normalizeRows,
+} from "../hooks/useLoadNearestValues";
+
+// Matches CWMSInputTable: dim a value that was loaded for the operator, embolden
+// one they changed. Inline style because the Groundwork input owns its classes.
+const PREFILLED_STYLE = { opacity: 0.7 };
+const CHANGED_STYLE = { fontWeight: 600 };
 
 function CWMSSpreadsheet({
   style,
@@ -11,7 +22,9 @@ function CWMSSpreadsheet({
   offset = 0,
   order = 1,
   AllowMissingData = true,
-  loadNearest = "prev",
+  loadNearest,
+  lookback,
+  lookahead,
   readonly = false,
   units = "EN",
   onChange,
@@ -24,10 +37,17 @@ function CWMSSpreadsheet({
   timeoffsets = [],
   required = false,
   cellOverrides = {},
+  showValueTimestamp = false,
   transpose = false,
+  highlightChanged = true,
+  cellClassName,
 }) {
   const { registerInput, baseTimestamp, getTimestampForInput } =
     useContext(FormContext);
+  // timeoffsets accepts plain numbers or row objects carrying their own
+  // overrides. Named rowSpecs because `rows` is the row-count prop.
+  const rowSpecs = useMemo(() => normalizeRows(timeoffsets), [timeoffsets]);
+
   // Determine if we should show timestamps and prepare columns
   const shouldShowTimestamps = showTimestamps || timeoffsets.length > 0;
   const effectiveColumns = useMemo(
@@ -57,10 +77,130 @@ function CWMSSpreadsheet({
   const [dragEnd, setDragEnd] = useState(null);
   const tableRef = useRef(null);
   const cleanupFunctions = useRef([]);
+  const userEdited = useRef(new Set());
+  const loadedValuesRef = useRef({});
 
   // Unique ID prefix for this spreadsheet instance so multiple spreadsheets
   // on the same page don't collide when using document.getElementById
   const instanceId = useMemo(() => `ss-${Math.random().toString(36).slice(2, 8)}`, []);
+
+  const tsidColumns = useMemo(() => columns.filter((c) => c.tsid), [columns]);
+
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useNearestValues({
+    columns: tsidColumns,
+    timeoffsets,
+    strategy: loadNearest || "prev",
+    defaultUnits: units,
+    lookback,
+    lookahead,
+    enabled: !!loadNearest && tsidColumns.length > 0 && timeoffsets.length > 0,
+  });
+
+  const getValueTimestampTitle = (dRow, dCol) => {
+    if (!showValueTimestamp || !loadedTimestamps) return undefined;
+    const cellKey = `${dRow}_${dCol}`;
+    if (userEdited.current.has(cellKey)) return undefined;
+    const colIdx = shouldShowTimestamps ? dCol - 1 : dCol;
+    const col = columns[colIdx];
+    if (!col?.tsid || rowSpecs[dRow] === undefined) return undefined;
+    const ts = loadedTimestamps[cellKeyFor(col, rowSpecs[dRow])];
+    if (!ts) return undefined;
+    return `Value from: ${new Date(ts).toLocaleString("sv-SE").replace("T", " ")}`;
+  };
+
+  useEffect(() => {
+    if (loadedValues) loadedValuesRef.current = loadedValues;
+  }, [loadedValues]);
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+    setSpreadsheetData((prev) => {
+      const next = prev.map((row) => [...row]);
+      let changed = false;
+      columns.forEach((column, colIdx) => {
+        if (!column.tsid) return;
+        const dataColIndex = shouldShowTimestamps ? colIdx + 1 : colIdx;
+        const p = column.precision ?? precision;
+        rowSpecs.forEach((rowSpec, rowIdx) => {
+          const nearestKey = cellKeyFor(column, rowSpec);
+          const cellKey = `${rowIdx}_${dataColIndex}`;
+          const val = loadedValues[nearestKey];
+          const hasDefault = defaultData[rowIdx]?.[colIdx] !== undefined;
+          // Round the way the table does, so the same series reads the same in
+          // both components and change detection compares like with like.
+          const display = val == null ? null : parseFloat(val.toFixed(p)).toString();
+          if (
+            !userEdited.current.has(cellKey) &&
+            !hasDefault &&
+            display != null &&
+            next[rowIdx]?.[dataColIndex] !== display
+          ) {
+            if (!next[rowIdx]) {
+              next[rowIdx] = Array(effectiveColumns.length).fill("");
+            }
+            next[rowIdx][dataColIndex] = display;
+            changed = true;
+          }
+        });
+      });
+      return changed ? next : prev;
+    });
+  }, [
+    loadedValues,
+    isLoadingNearest,
+    columns,
+    rowSpecs,
+    precision,
+    defaultData,
+    shouldShowTimestamps,
+    effectiveColumns.length,
+  ]);
+
+  useEffect(() => {
+    userEdited.current.clear();
+  }, [baseTimestamp]);
+
+  /**
+   * Status of one cell relative to the value it started with, plus how to show
+   * it. Mirrors CWMSInputTable: `cellClassName` receives the status and its
+   * result lands on the cell, while the built-in treatment is an inline style
+   * because the Groundwork input owns its own classes.
+   */
+  const cellPresentation = (dRow, dCol) => {
+    const colIdx = shouldShowTimestamps ? dCol - 1 : dCol;
+    const column = columns[colIdx];
+    const rowSpec = rowSpecs[dRow];
+    if (!column?.tsid || !rowSpec) return { inputStyle: undefined, cellClass: "" };
+
+    const cellOverride = cellOverrides[`${dRow}_${dCol}`] || {};
+    const status = {
+      ...getCellStatus({
+        value: spreadsheetData[dRow]?.[dCol],
+        loadedRaw: loadedValues?.[cellKeyFor(column, rowSpec)],
+        precision: cellOverride.precision ?? column.precision ?? precision,
+        defaultValue: defaultData[dRow]?.[colIdx],
+      }),
+      key: `${dRow}_${dCol}`,
+      tsid: column.tsid,
+      offset: rowSpec.offset,
+      column,
+      row: rowSpec,
+    };
+
+    let statusStyle;
+    if (highlightChanged && status.loaded) {
+      statusStyle = status.changed ? CHANGED_STYLE : PREFILLED_STYLE;
+    }
+
+    return {
+      statusStyle,
+      cellClass: cellClassName ? cellClassName(status) || "" : "",
+    };
+  };
 
   useEffect(() => {
     if (!registerInput) return;
@@ -91,7 +231,8 @@ function CWMSSpreadsheet({
         const cellTsid = cellOverride.tsid || column.tsid || `cell_${key}`;
 
         // Get cell-specific timeOffset (if timeoffsets array is provided for rows)
-        const cellTimeOffset = cellOverride.offset ?? timeoffsets[rowIndex] ?? offset;
+        const cellTimeOffset =
+          cellOverride.offset ?? rowSpecs[rowIndex]?.offset ?? offset;
 
         const cellRef = {
           name: key,
@@ -113,6 +254,13 @@ function CWMSSpreadsheet({
             return [spreadsheetData[rowIndex]?.[colIndex] || ""];
           },
           reset: () => {
+            userEdited.current.delete(key);
+            const nearestKey = cellKeyFor(
+              { ...column, tsid: cellTsid },
+              rowSpecs[rowIndex] ?? { offset: cellTimeOffset },
+            );
+            const nearestRaw = loadedValuesRef.current[nearestKey];
+
             setSpreadsheetData((prev) => {
               const updated = [...prev];
               if (!updated[rowIndex]) {
@@ -120,12 +268,21 @@ function CWMSSpreadsheet({
               } else {
                 updated[rowIndex] = [...updated[rowIndex]];
               }
-              if (shouldShowTimestamps) {
-                updated[rowIndex][colIndex] =
-                  colIndex === 0 ? "" : defaultData[rowIndex]?.[dataColIndex] || "";
+
+              // Mirror the populate effect: a caller-supplied default takes
+              // precedence over the fetched nearest value.
+              const defaultVal = defaultData[rowIndex]?.[dataColIndex];
+              const cellPrecision =
+                cellOverride.precision ?? column.precision ?? precision;
+              let resetVal;
+              if (defaultVal) {
+                resetVal = defaultVal;
+              } else if (nearestRaw != null) {
+                resetVal = parseFloat(nearestRaw.toFixed(cellPrecision)).toString();
               } else {
-                updated[rowIndex][colIndex] = defaultData[rowIndex]?.[colIndex] || "";
+                resetVal = "";
               }
+              updated[rowIndex][colIndex] = resetVal;
               return updated;
             });
             setInvalidCells((prev) => ({
@@ -168,7 +325,7 @@ function CWMSSpreadsheet({
     required,
     cellOverrides,
     shouldShowTimestamps,
-    timeoffsets,
+    rowSpecs,
     baseTimestamp,
     disable,
   ]);
@@ -230,6 +387,7 @@ function CWMSSpreadsheet({
     }
 
     const key = `${rowIndex}_${colIndex}`;
+    userEdited.current.add(key);
     const updatedData = [...spreadsheetData];
     updatedData[rowIndex] = [...updatedData[rowIndex]];
     updatedData[rowIndex][colIndex] = value;
@@ -326,8 +484,8 @@ function CWMSSpreadsheet({
         const { row: dRow, col: dCol } = visualToData(vRow, vCol);
         // For time column, calculate the actual time
         if (shouldShowTimestamps && dCol === 0) {
-          if (getTimestampForInput && timeoffsets[dRow] !== undefined) {
-            const timestamp = getTimestampForInput(timeoffsets[dRow]);
+          if (getTimestampForInput && rowSpecs[dRow] !== undefined) {
+            const timestamp = getTimestampForInput(rowSpecs[dRow].offset);
             const cellTime = new Date(timestamp);
             rowData.push(
               cellTime.toLocaleTimeString("en-US", {
@@ -786,13 +944,20 @@ function CWMSSpreadsheet({
                         const cellRequired =
                           cellOverride.required ?? column.required ?? required;
                         const cellType = cellOverride.type ?? column.type ?? "text";
-                        const cellPlaceholder =
+                        const defaultPlaceholder =
                           cellOverride.placeholder ?? column.placeholder ?? "";
+                        const cellLoading = isLoadingNearest && !row[dCol];
+                        const { statusStyle, cellClass } = cellPresentation(dRow, dCol);
+                        const cellPlaceholder = cellLoading
+                          ? "Loading..."
+                          : defaultPlaceholder;
 
                         let displayValue = row[dCol];
                         if (shouldShowTimestamps && dCol === 0) {
-                          if (getTimestampForInput && timeoffsets[dRow] !== undefined) {
-                            const timestamp = getTimestampForInput(timeoffsets[dRow]);
+                          if (getTimestampForInput && rowSpecs[dRow] !== undefined) {
+                            const timestamp = getTimestampForInput(
+                              rowSpecs[dRow].offset,
+                            );
                             const cellTime = new Date(timestamp);
                             displayValue = cellTime.toLocaleTimeString("en-US", {
                               hour: "2-digit",
@@ -807,6 +972,7 @@ function CWMSSpreadsheet({
                         return (
                           <td
                             key={rowIndex}
+                            className={cellClass}
                             style={{
                               ...cellStyle,
                               backgroundColor: isSelected
@@ -839,11 +1005,14 @@ function CWMSSpreadsheet({
                               readOnly={
                                 cellReadonly || (shouldShowTimestamps && dCol === 0)
                               }
+                              title={getValueTimestampTitle(dRow, dCol)}
                               style={{
                                 ...inputStyle,
+                                ...statusStyle,
                                 cursor: "cell",
                                 pointerEvents: "auto",
                                 color: isCellInvalid ? "red" : undefined,
+                                opacity: cellLoading ? 0.6 : statusStyle?.opacity,
                               }}
                               placeholder={cellPlaceholder}
                               required={cellRequired}
@@ -889,16 +1058,23 @@ function CWMSSpreadsheet({
                       const cellRequired =
                         cellOverride.required ?? column.required ?? required;
                       const cellType = cellOverride.type ?? column.type ?? "text";
-                      const cellPlaceholder =
+                      const defaultPlaceholder =
                         cellOverride.placeholder ?? column.placeholder ?? "";
+                      const cellLoading = isLoadingNearest && !cellValue;
+                      const { statusStyle, cellClass } = cellPresentation(
+                        rowIndex,
+                        colIndex,
+                      );
+                      const cellPlaceholder = cellLoading
+                        ? "Loading..."
+                        : defaultPlaceholder;
 
                       let displayValue = cellValue;
                       if (shouldShowTimestamps && colIndex === 0) {
-                        if (
-                          getTimestampForInput &&
-                          timeoffsets[rowIndex] !== undefined
-                        ) {
-                          const timestamp = getTimestampForInput(timeoffsets[rowIndex]);
+                        if (getTimestampForInput && rowSpecs[rowIndex] !== undefined) {
+                          const timestamp = getTimestampForInput(
+                            rowSpecs[rowIndex].offset,
+                          );
                           const cellTime = new Date(timestamp);
                           displayValue = cellTime.toLocaleTimeString("en-US", {
                             hour: "2-digit",
@@ -913,6 +1089,7 @@ function CWMSSpreadsheet({
                       return (
                         <td
                           key={colIndex}
+                          className={cellClass}
                           style={{
                             ...cellStyle,
                             backgroundColor: isSelected
@@ -947,11 +1124,14 @@ function CWMSSpreadsheet({
                             readOnly={
                               cellReadonly || (shouldShowTimestamps && colIndex === 0)
                             }
+                            title={getValueTimestampTitle(rowIndex, colIndex)}
                             style={{
                               ...inputStyle,
+                              ...statusStyle,
                               cursor: "cell",
                               pointerEvents: "auto",
                               color: isCellInvalid ? "red" : undefined,
+                              opacity: cellLoading ? 0.6 : statusStyle?.opacity,
                             }}
                             placeholder={cellPlaceholder}
                             required={cellRequired}

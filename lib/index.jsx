@@ -35,6 +35,14 @@ import {
   useFormValidation,
   useSubmissionFormatter,
 } from "./components/data/forms/hooks/useCwmsFormSubmit";
+import useLoadNearestValues, {
+  selectNearestValue,
+  useNearestSeriesData,
+} from "./components/data/forms/hooks/useLoadNearestValues";
+import {
+  useNearestValues,
+  useNearestValueStore,
+} from "./components/data/forms/hooks/useNearestValueStore";
 import {
   showSuccessToast,
   showErrorToast,
@@ -53,6 +61,7 @@ import useCdaLocationCatalog from "./components/data/hooks/useCdaLocationCatalog
 import useCdaLevels from "./components/data/hooks/useCdaLevels";
 import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaMultiTimeSeries from "./components/data/hooks/useCdaMultiTimeSeries";
+import useCdaRecentValues from "./components/data/hooks/useCdaRecentValues";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
@@ -130,6 +139,7 @@ export {
   useCdaLevels,
   useCdaTimeSeries,
   useCdaMultiTimeSeries,
+  useCdaRecentValues,
   useCdaTimeSeriesGroup,
   useCdaOffices,
   useDataStatusFile,
@@ -172,6 +182,11 @@ export {
   useCwmsFormSubmit,
   useFormValidation,
   useSubmissionFormatter,
+  useLoadNearestValues,
+  useNearestSeriesData,
+  useNearestValues,
+  useNearestValueStore,
+  selectNearestValue,
   // Toast utilities
   showSuccessToast,
   showErrorToast,

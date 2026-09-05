@@ -131,6 +131,11 @@ export default [
         href: "/docs/hooks/use-cda-multi-time-series",
       },
       {
+        id: "use-cda-recent-values",
+        text: "CDA Recent Values",
+        href: `${BASE_URL}#/docs/hooks/use-cda-recent-values`,
+      },
+      {
         id: "use-cda-time-series-group",
         text: "CDA Time Series Group",
         href: `${BASE_URL}#/docs/hooks/use-cda-time-series-group`,

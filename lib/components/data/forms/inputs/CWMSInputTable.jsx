@@ -1,6 +1,22 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
+import { useNearestValues } from "../hooks/useNearestValueStore";
+import {
+  cellKeyFor,
+  getCellStatus,
+  normalizeRows,
+  resolveCellSetting,
+} from "../hooks/useLoadNearestValues";
+
+// Distinguishes a value the operator entered from one that was loaded for them.
+// Applied as inline style rather than a class: the Groundwork Input puts
+// className on its wrapping control element while the inner input carries its
+// own text colour, so a class here would never win. Weight carries the signal
+// as well as dimming, so it survives greyscale and colour-vision deficiency,
+// and neither cue assumes a light or dark theme.
+const PREFILLED_STYLE = { opacity: 0.7 };
+const CHANGED_STYLE = { fontWeight: 600 };
 
 function CWMSInputTable({
   className,
@@ -12,15 +28,21 @@ function CWMSInputTable({
   precision = 2,
   order = 1,
   AllowMissingData = true,
-  loadNearest = "prev",
+  loadNearest,
+  lookback,
+  lookahead,
   readonly = false,
   units = "EN",
   onChange,
   showTimestamps = true,
+  showValueTimestamp = false,
   required = false,
   transpose = false,
+  highlightChanged = true,
+  cellClassName,
 }) {
-  const { registerInput, getTimestampForInput } = useContext(FormContext);
+  const { registerInput, getTimestampForInput, baseTimestamp } =
+    useContext(FormContext);
 
   // Initialize matrixData from column defaultValues
   const getInitialMatrixData = () => {
@@ -28,17 +50,96 @@ function CWMSInputTable({
     columns.forEach((column) => {
       if (column.defaultValues) {
         Object.entries(column.defaultValues).forEach(([offset, value]) => {
-          const key = `${column.tsid}_${offset}`;
-          data[key] = value;
+          data[cellKeyFor(column, offset)] = value;
         });
       }
     });
     return data;
   };
 
+  // timeoffsets accepts plain numbers or row objects that carry their own
+  // overrides, the same ones a column can set.
+  const rows = useMemo(() => normalizeRows(timeoffsets), [timeoffsets]);
+
+  const cellLoadsNearest = (column, row) =>
+    !!resolveCellSetting(column, row, "loadNearest", loadNearest);
+  const cellIsDisabled = (column, row) =>
+    !!(
+      resolveCellSetting(column, row, "disabled", undefined) ??
+      resolveCellSetting(column, row, "disable", disable)
+    );
+
+  // Only the opted-in columns are handed to the store, so a column left out
+  // stays empty for entry even when a sibling pulls the same series.
+  const loadingColumns = useMemo(
+    () => columns.filter((column) => rows.some((row) => cellLoadsNearest(column, row))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [columns, rows, loadNearest],
+  );
+
   const [matrixData, setMatrixData] = useState(getInitialMatrixData);
   const [invalidCells, setInvalidCells] = useState({});
   const cleanupFunctions = useRef([]);
+  const userEdited = useRef(new Set());
+  const loadedValuesRef = useRef({});
+
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useNearestValues({
+    columns: loadingColumns,
+    timeoffsets,
+    strategy: loadNearest || "prev",
+    defaultUnits: units,
+    lookback,
+    lookahead,
+    enabled: loadingColumns.length > 0 && timeoffsets.length > 0,
+  });
+
+  useEffect(() => {
+    if (loadedValues) loadedValuesRef.current = loadedValues;
+  }, [loadedValues]);
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+
+    setMatrixData((prev) => {
+      const next = { ...prev };
+      let changed = false;
+
+      // Walk the opted-in cells rather than the loaded map, so a cell that did
+      // not ask to load is left alone even when another cell pulls the same
+      // time series.
+      loadingColumns.forEach((column) => {
+        const columnDefaults = column.defaultValues ?? {};
+        const p = column.precision ?? precision;
+
+        rows.forEach((row) => {
+          if (!cellLoadsNearest(column, row)) return;
+          const key = cellKeyFor(column, row);
+          const value = loadedValues[key];
+          if (value == null) return;
+          // A caller-supplied default takes precedence over a fetched value.
+          if (columnDefaults[row.offset] !== undefined) return;
+          if (userEdited.current.has(key)) return;
+
+          const rounded = parseFloat(value.toFixed(p)).toString();
+          if (next[key] !== rounded) {
+            next[key] = rounded;
+            changed = true;
+          }
+        });
+      });
+
+      return changed ? next : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedValues, isLoadingNearest, loadingColumns, rows, precision, loadNearest]);
+
+  useEffect(() => {
+    userEdited.current.clear();
+  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -57,12 +158,16 @@ function CWMSInputTable({
         units: columnUnits,
         precision: columnPrecision,
         required: columnRequired,
-        readonly: columnReadonly,
         defaultValues: columnDefaultValues = {},
       } = column;
 
-      timeoffsets.forEach((offset) => {
-        const key = `${tsid}_${offset}`;
+      rows.forEach((row) => {
+        const offset = row.offset;
+        // A disabled cell is display-only: skip it so it never submits, and so
+        // a reference column cannot collide with the entry column beside it.
+        if (cellIsDisabled(column, row)) return;
+
+        const key = cellKeyFor(column, row);
 
         const cellRef = {
           name: key,
@@ -72,16 +177,26 @@ function CWMSInputTable({
           order: order,
           AllowMissingData: AllowMissingData,
           loadNearest: loadNearest,
-          readonly: columnReadonly ?? readonly,
+          readonly: resolveCellSetting(column, row, "readonly", readonly),
           units: columnUnits ?? units,
           timeOffset: offset,
           required: columnRequired ?? required,
           label: column.label || `${tsid} at ${offset}s`,
           getValues: () => [matrixData[key] || ""],
           reset: () => {
+            userEdited.current.delete(key);
+            // Mirror the populate effect: a caller-supplied default takes
+            // precedence over the fetched nearest value.
+            const hasDefault = columnDefaultValues[offset] !== undefined;
+            const nearestRaw = loadedValuesRef.current[key];
+            let resetVal = hasDefault ? columnDefaultValues[offset] : "";
+            if (!hasDefault && nearestRaw != null) {
+              const p = columnPrecision ?? precision;
+              resetVal = parseFloat(nearestRaw.toFixed(p)).toString();
+            }
             setMatrixData((prev) => ({
               ...prev,
-              [key]: columnDefaultValues[offset] || "",
+              [key]: resetVal,
             }));
             setInvalidCells((prev) => ({
               ...prev,
@@ -108,10 +223,12 @@ function CWMSInputTable({
       cleanupFunctions.current.forEach((cleanup) => cleanup());
       cleanupFunctions.current = [];
     };
+    // cellIsDisabled is derived from columns/rows/disable, all listed here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     registerInput,
     columns,
-    timeoffsets,
+    rows,
     matrixData,
     precision,
     order,
@@ -123,8 +240,14 @@ function CWMSInputTable({
     disable,
   ]);
 
-  const handleInputChange = (tsid, offset, value) => {
-    const key = `${tsid}_${offset}`;
+  const handleInputChange = (column, row, value) => {
+    // Belt and braces: a disabled or read-only cell is not user editable, so
+    // never record an edit for one even if a change event reaches us.
+    if (cellIsDisabled(column, row)) return;
+    if (resolveCellSetting(column, row, "readonly", readonly)) return;
+
+    const key = cellKeyFor(column, row);
+    userEdited.current.add(key);
     const updatedData = {
       ...matrixData,
       [key]: value,
@@ -142,6 +265,47 @@ function CWMSInputTable({
     if (onChange) {
       onChange(updatedData);
     }
+  };
+
+  /**
+   * Status of one cell relative to the value loaded for it, plus how to present
+   * it. `cellClassName` receives the same status so callers can react to
+   * changed / unchanged however they like; what it returns is applied to the
+   * cell, which is ours to style, rather than to the input the Groundwork
+   * component owns.
+   */
+  const cellPresentation = (column, row) => {
+    const key = cellKeyFor(column, row);
+    const status = {
+      ...getCellStatus({
+        value: matrixData[key],
+        loadedRaw: loadedValues?.[key],
+        precision: column.precision ?? precision,
+        defaultValue: column.defaultValues?.[row.offset],
+      }),
+      key,
+      tsid: column.tsid,
+      offset: row.offset,
+      column,
+      row,
+    };
+
+    let inputStyle;
+    if (highlightChanged && status.loaded) {
+      inputStyle = status.changed ? CHANGED_STYLE : PREFILLED_STYLE;
+    }
+
+    return {
+      status,
+      inputStyle,
+      cellClass: cellClassName ? cellClassName(status) || "" : "",
+    };
+  };
+
+  const formatValueTimestamp = (tsMs) => {
+    if (!tsMs) return null;
+    const date = new Date(tsMs);
+    return date.toLocaleString("sv-SE").replace("T", " ");
   };
 
   const formatTimestamp = (offset) => {
@@ -165,17 +329,17 @@ function CWMSInputTable({
         <thead>
           <tr>
             <th className="p-2 text-left border-b-2 border-gray-300">Parameter</th>
-            {timeoffsets.map((offset, index) => (
+            {rows.map((row, index) => (
               <th key={index} className="p-2 text-left border-b-2 border-gray-300">
                 {showTimestamps ? (
                   <Input
                     type="text"
-                    value={formatTimestamp(offset)}
+                    value={formatTimestamp(row.offset)}
                     readOnly
                     className="w-full bg-gray-50 border border-gray-300 p-1"
                   />
                 ) : (
-                  `Offset ${offset}s`
+                  row.label || `Offset ${row.offset}s`
                 )}
               </th>
             ))}
@@ -183,29 +347,49 @@ function CWMSInputTable({
         </thead>
         <tbody>
           {columns.map((column, colIndex) => {
-            const columnReadonly = column.readonly ?? readonly;
             const columnRequired = column.required ?? required;
 
             return (
               <tr key={colIndex}>
-                <td className="p-2 font-medium">{column.label || column.tsid}</td>
-                {timeoffsets.map((offset, offsetIndex) => {
-                  const key = `${column.tsid}_${offset}`;
+                <td className="p-2 font-medium">
+                  {column.label || column.tsid}
+                  {column.displayUnits && (
+                    <span className="ml-1 text-sm text-gray-500">
+                      ({column.displayUnits})
+                    </span>
+                  )}
+                </td>
+                {rows.map((row, offsetIndex) => {
+                  const key = cellKeyFor(column, row);
+                  const { inputStyle, cellClass } = cellPresentation(column, row);
+                  const columnDisabled = cellIsDisabled(column, row);
+                  const columnReadonly = resolveCellSetting(
+                    column,
+                    row,
+                    "readonly",
+                    readonly,
+                  );
+                  const cellLoading = isLoadingNearest && !matrixData[key];
+                  const valueTs =
+                    showValueTimestamp && !userEdited.current.has(key)
+                      ? formatValueTimestamp(loadedTimestamps?.[key])
+                      : null;
                   return (
-                    <td key={offsetIndex} className="p-2">
+                    <td key={offsetIndex} className={`p-2 ${cellClass}`.trim()}>
                       <Input
                         name={key}
                         type="number"
+                        step={column.step}
                         value={matrixData[key] || ""}
-                        onChange={(e) =>
-                          handleInputChange(column.tsid, offset, e.target.value)
-                        }
-                        disabled={disable}
+                        onChange={(e) => handleInputChange(column, row, e.target.value)}
+                        disabled={columnDisabled}
                         readOnly={columnReadonly}
                         invalid={invalidCells[key] || invalid ? "true" : undefined}
-                        placeholder="Enter value"
-                        className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
+                        placeholder={cellLoading ? "Loading..." : "Enter value"}
+                        className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+                        style={inputStyle}
                         required={columnRequired}
+                        title={valueTs ? `Value from: ${valueTs}` : undefined}
                       />
                     </td>
                   );
@@ -229,13 +413,18 @@ function CWMSInputTable({
           {columns.map((column, index) => (
             <th key={index} className="p-2 text-left border-b-2 border-gray-300">
               {column.label || column.tsid}
+              {column.displayUnits && (
+                <span className="ml-1 text-sm text-gray-500 font-normal">
+                  ({column.displayUnits})
+                </span>
+              )}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {timeoffsets.map((offset, rowIndex) => {
-          const formattedTime = formatTimestamp(offset);
+        {rows.map((row, rowIndex) => {
+          const formattedTime = formatTimestamp(row.offset);
 
           return (
             <tr key={rowIndex}>
@@ -250,25 +439,38 @@ function CWMSInputTable({
                 </td>
               )}
               {columns.map((column, colIndex) => {
-                const key = `${column.tsid}_${offset}`;
-                const columnReadonly = column.readonly ?? readonly;
+                const key = cellKeyFor(column, row);
+                const { inputStyle, cellClass } = cellPresentation(column, row);
+                const columnReadonly = resolveCellSetting(
+                  column,
+                  row,
+                  "readonly",
+                  readonly,
+                );
                 const columnRequired = column.required ?? required;
+                const columnDisabled = cellIsDisabled(column, row);
+                const cellLoading = isLoadingNearest && !matrixData[key];
+                const valueTs =
+                  showValueTimestamp && !userEdited.current.has(key)
+                    ? formatValueTimestamp(loadedTimestamps?.[key])
+                    : null;
 
                 return (
-                  <td key={colIndex} className="p-2">
+                  <td key={colIndex} className={`p-2 ${cellClass}`.trim()}>
                     <Input
                       name={key}
                       type="number"
+                      step={column.step}
                       value={matrixData[key] || ""}
-                      onChange={(e) =>
-                        handleInputChange(column.tsid, offset, e.target.value)
-                      }
-                      disabled={disable}
+                      onChange={(e) => handleInputChange(column, row, e.target.value)}
+                      disabled={columnDisabled}
                       readOnly={columnReadonly}
                       invalid={invalidCells[key] || invalid ? "true" : undefined}
-                      placeholder="Enter value"
-                      className={`w-full ${invalidCells[key] ? "border-red-500" : ""}`}
+                      placeholder={cellLoading ? "Loading..." : "Enter value"}
+                      className={`w-full ${invalidCells[key] ? "border-red-500" : ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+                      style={inputStyle}
                       required={columnRequired}
+                      title={valueTs ? `Value from: ${valueTs}` : undefined}
                     />
                   </td>
                 );

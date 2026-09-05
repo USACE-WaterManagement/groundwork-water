@@ -127,6 +127,24 @@ const componentProps = [
     desc: "Callback fired when the calendar timestamp changes. Receives the snapped Date object.",
   },
   {
+    name: "onLoadError",
+    type: "function",
+    default: "undefined",
+    desc: "Callback fired when loading nearest values fails or times out. Receives the error. Without it a failed load is indistinguishable from no data existing - the fields simply stay empty.",
+  },
+  {
+    name: "lookback",
+    type: "number",
+    default: "1",
+    desc: "How many days before the form's calendar time to search when loading nearest values. Raise it for sites that report less often than daily - a gage whose last reading is three days old is invisible to the default one-day window. Individual inputs and columns can override it.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "1",
+    desc: "How many days after the form's calendar time to search. Only applies to the 'next' and 'nearest' strategies; a 'prev' lookup never requests future data.",
+  },
+  {
     name: "toastAutoClose",
     type: "number|boolean",
     default: "5000",
@@ -523,6 +541,110 @@ function CWMSFormDocs() {
   />
 </CWMSForm>`}
       </CodeBlock>
+
+      <Divider text="Shared Nearest-Value Loading" className="mt-8" />
+      <Text className="mb-4">
+        When inputs opt into <Code>loadNearest</Code>, the fetching is handled by the
+        form, not by each input. Every input registers the series and time offsets it
+        needs, and CWMSForm issues one request per distinct time series and unit -
+        however many inputs asked for it. Two tables that both reference the same TSID
+        share a single request rather than each issuing their own.
+      </Text>
+      <Text className="mb-4">
+        The shared fetch window covers the union of every registered time offset, and is
+        trimmed to what the registered strategies need: if every input uses{" "}
+        <Code>prev</Code>, no future data is requested. Each input still resolves its
+        own <Code>prev</Code> / <Code>next</Code> / <Code>nearest</Code> strategy
+        against the shared result, so inputs with different strategies do not cost extra
+        requests.
+      </Text>
+      <Text className="mb-4">
+        This requires an <Code>office</Code> on the form. Outside a CWMSForm, or when
+        you want to fetch independently, the standalone{" "}
+        <Code>useLoadNearestValues</Code> hook does the same resolution for a single
+        caller.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">How far back to look</div>
+      <Text className="mb-4">
+        By default the form searches one day either side of its calendar time. That
+        suits anything reporting hourly, but a site that reports weekly - or a gate that
+        has not moved in days - has nothing inside a one-day window, and the field stays
+        empty. Set <Code>lookback</Code> to the number of days the slowest series at
+        your site can go between readings.
+      </Text>
+      <CodeBlock language="jsx">
+        {`{/* Search a week back for every input on this form */}
+<CWMSForm office="SWT" lookback={7}>
+  <CWMSInputTable columns={columns} timeoffsets={[0]} loadNearest="prev" />
+</CWMSForm>`}
+      </CodeBlock>
+      <Text className="my-4">
+        The setting cascades: the form sets the default, an individual input or table
+        can override it, and a single column can override that again. Lookback belongs
+        to a series rather than a cell, so it is a column-level setting - every row of a
+        column shares one fetch window. When two components ask for the same series over
+        different windows they still share one request, taken over the wider of the two.
+      </Text>
+      <CodeBlock language="jsx">
+        {`<CWMSForm office="SWT" lookback={2}>
+  <CWMSInputTable
+    loadNearest="prev"
+    timeoffsets={[0]}
+    columns={[
+      { tsid: "PROJ.Elev.Inst.15Minutes.0.Ccp-Rev", label: "Pool" },
+      // This gage only reports weekly.
+      { tsid: "PROJ.Precip.Total.~1Day.1Day.Ccp-Rev", label: "Precip", lookback: 10 },
+    ]}
+  />
+</CWMSForm>`}
+      </CodeBlock>
+      <Text className="my-4">
+        If a series has no data anywhere in the window, the form makes one more attempt:
+        it asks CDA for that series&apos; most recent value and, when the series ended
+        before the window began, re-reads around it. That covers &quot;this gate has not
+        moved in months&quot; without making every form pay for a wide window. It
+        deliberately will not reach <i>forward</i> to a value newer than the time you
+        picked - a reading from after the operator&apos;s date is not a previous value.
+        Reaching across a gap in the middle of a series is what <Code>lookback</Code> is
+        for.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">When loading fails</div>
+      <Text className="mb-4">
+        A failed or timed-out fetch leaves the fields empty, which looks exactly like a
+        series having no data - an operator could reasonably read a blank cell as real.
+        Pass <Code>onLoadError</Code> to be told when that happens and surface it
+        however suits your app.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSForm
+  office="SWT"
+  onLoadError={(error) => {
+    console.error("Could not load previous values", error);
+    showBanner("Previous values are unavailable - enter readings manually.");
+  }}
+>
+  {/* ... */}
+</CWMSForm>`}
+      </CodeBlock>
+
+      <div className="font-bold text-lg pt-4">After a submit</div>
+      <Text className="mb-4">
+        Submitting invalidates the queries for the time series that were written, so the
+        form re-reads them. CDA caches time series responses for several minutes, which
+        means that read can come back with the value as it was <em>before</em> the
+        submission - the operator would watch their entry revert to the old number.
+      </Text>
+      <Text className="mb-4">
+        To avoid that, the form keeps the values it just wrote and shows them in place
+        of the cached response, until CDA reports the same value back and the local copy
+        is dropped. This needs no configuration. Be aware that what you see immediately
+        after submitting is what the form sent, not a confirmed read-back - the
+        displayed value only reflects a genuine server read once CDA&apos;s cache has
+        expired.
+      </Text>
 
       <Divider text="Controlling Form Reset Behavior" className="mt-8" />
       <Text className="mb-4">

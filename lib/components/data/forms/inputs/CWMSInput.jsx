@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { Input } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
+import { useNearestValues } from "../hooks/useNearestValueStore";
 
 function CWMSInput({
   // CWMS-specific props
@@ -10,6 +11,8 @@ function CWMSInput({
   order,
   AllowMissingData,
   loadNearest,
+  lookback,
+  lookahead,
   units,
   timeOffset,
   label,
@@ -22,6 +25,9 @@ function CWMSInput({
   required,
   placeholder,
 
+  // Display options
+  showValueTimestamp,
+
   // Legacy prop names
   disable,
   readonly,
@@ -29,9 +35,50 @@ function CWMSInput({
   // All other props to pass through
   ...inputProps
 }) {
-  const { registerInput } = useContext(FormContext);
+  const { registerInput, baseTimestamp } = useContext(FormContext);
   const [inputValue, setInputValue] = useState(defaultValue || value || "");
   const [isInvalid, setIsInvalid] = useState(invalid || false);
+  const userEdited = useRef(false);
+
+  const columnsArr = useMemo(
+    () => (tsid ? [{ tsid, units: units || "EN" }] : []),
+    [tsid, units],
+  );
+  const timeoffsetsArr = useMemo(() => [timeOffset || 0], [timeOffset]);
+
+  // Declares the need; the form-level store does the fetching and shares it
+  // with any other input asking for the same series.
+  const {
+    values: loadedValues,
+    timestamps: loadedTimestamps,
+    isPending: isLoadingNearest,
+  } = useNearestValues({
+    columns: columnsArr,
+    timeoffsets: timeoffsetsArr,
+    strategy: loadNearest || "prev",
+    defaultUnits: units || "EN",
+    lookback,
+    lookahead,
+    enabled: !!tsid && !!loadNearest,
+  });
+
+  useEffect(() => {
+    if (isLoadingNearest || !loadedValues) return;
+    const key = `${tsid}_${timeOffset || 0}`;
+    const val = loadedValues[key];
+    if (
+      !userEdited.current &&
+      !(defaultValue || value) &&
+      val != null &&
+      inputValue !== String(val)
+    ) {
+      setInputValue(String(val));
+    }
+  }, [loadedValues, isLoadingNearest, tsid, timeOffset, inputValue]);
+
+  useEffect(() => {
+    userEdited.current = false;
+  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -53,7 +100,10 @@ function CWMSInput({
       required: required || false,
       label: label || placeholder || inputProps.name,
       getValues: () => [inputValue],
-      reset: () => setInputValue(defaultValue || ""),
+      reset: () => {
+        userEdited.current = false;
+        setInputValue(defaultValue || "");
+      },
       setInvalid: setIsInvalid,
     };
 
@@ -82,6 +132,7 @@ function CWMSInput({
 
   const handleChange = (e) => {
     const newValue = e.target.value;
+    userEdited.current = true;
     setInputValue(newValue);
     // Clear invalid state when user starts typing
     if (isInvalid && newValue) {
@@ -92,6 +143,13 @@ function CWMSInput({
     }
   };
 
+  const cellLoading = isLoadingNearest && !inputValue;
+  const tsKey = `${tsid}_${timeOffset || 0}`;
+  const valueTs =
+    showValueTimestamp && !userEdited.current && loadedTimestamps?.[tsKey]
+      ? new Date(loadedTimestamps[tsKey]).toLocaleString("sv-SE").replace("T", " ")
+      : null;
+
   return (
     <Input
       {...inputProps}
@@ -101,6 +159,9 @@ function CWMSInput({
       value={inputValue}
       onChange={handleChange}
       required={required}
+      placeholder={cellLoading ? "Loading..." : placeholder}
+      className={`${inputProps.className || ""} ${cellLoading ? "animate-pulse opacity-60" : ""}`}
+      title={valueTs ? `Value from: ${valueTs}` : undefined}
     />
   );
 }
