@@ -44,10 +44,42 @@ describe("CWMSInput nearest value loading", () => {
     expect(screen.getByDisplayValue("42.5")).toBeTruthy();
   });
 
-  it("shows Loading... placeholder while pending", () => {
+  it("clears the previous value while a new date is loading", () => {
+    mockHook({ values: { [`${TSID}_0`]: 42.5 } });
+    const { rerender, registerInput, context } = renderInput({
+      loadNearest: "prev",
+    });
+
     mockHook({ isPending: true });
-    renderInput();
+    rerender(
+      <FormContext.Provider value={{ ...context, baseTimestamp: "2025-01-15T13:00" }}>
+        <CWMSInput
+          name="flow-in"
+          label="Flow In"
+          tsid={TSID}
+          timeOffset={0}
+          loadNearest="prev"
+        />
+      </FormContext.Provider>,
+    );
+
     expect(screen.getByPlaceholderText("Loading...")).toBeTruthy();
+    expect(screen.queryByDisplayValue("42.5")).toBeNull();
+    expect(registerInput.mock.calls.at(-1)[0].getValues()).toEqual([""]);
+
+    mockHook();
+    rerender(
+      <FormContext.Provider value={{ ...context, baseTimestamp: "2025-01-15T13:00" }}>
+        <CWMSInput
+          name="flow-in"
+          label="Flow In"
+          tsid={TSID}
+          timeOffset={0}
+          loadNearest="prev"
+        />
+      </FormContext.Provider>,
+    );
+    expect(screen.queryByDisplayValue("42.5")).toBeNull();
   });
 
   it("does not overwrite user-edited value", () => {

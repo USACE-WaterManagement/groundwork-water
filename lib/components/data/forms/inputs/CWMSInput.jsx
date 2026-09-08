@@ -63,6 +63,15 @@ function CWMSInput({
   });
 
   useEffect(() => {
+    userEdited.current = false;
+    if (tsid && loadNearest) {
+      setInputValue(defaultValue || value || "");
+    }
+    // Reset only when the form moves to a different target time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseTimestamp]);
+
+  useEffect(() => {
     if (isLoadingNearest || !loadedValues) return;
     const key = `${tsid}_${timeOffset || 0}`;
     const val = loadedValues[key];
@@ -75,10 +84,6 @@ function CWMSInput({
       setInputValue(String(val));
     }
   }, [loadedValues, isLoadingNearest, tsid, timeOffset, inputValue]);
-
-  useEffect(() => {
-    userEdited.current = false;
-  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;

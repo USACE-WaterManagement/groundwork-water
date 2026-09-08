@@ -98,6 +98,24 @@ function CWMSInputTable({
   });
 
   useEffect(() => {
+    userEdited.current.clear();
+    loadedValuesRef.current = {};
+    setMatrixData((prev) => {
+      const next = { ...prev };
+      loadingColumns.forEach((column) => {
+        const defaults = column.defaultValues ?? {};
+        rows.forEach((row) => {
+          if (!cellLoadsNearest(column, row)) return;
+          next[cellKeyFor(column, row)] = defaults[row.offset] ?? "";
+        });
+      });
+      return next;
+    });
+    // Reset only when the form moves to a different target time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseTimestamp]);
+
+  useEffect(() => {
     if (loadedValues) loadedValuesRef.current = loadedValues;
   }, [loadedValues]);
 
@@ -136,10 +154,6 @@ function CWMSInputTable({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedValues, isLoadingNearest, loadingColumns, rows, precision, loadNearest]);
-
-  useEffect(() => {
-    userEdited.current.clear();
-  }, [baseTimestamp]);
 
   useEffect(() => {
     if (!registerInput) return;
@@ -369,7 +383,10 @@ function CWMSInputTable({
                     "readonly",
                     readonly,
                   );
-                  const cellLoading = isLoadingNearest && !matrixData[key];
+                  const cellLoading =
+                    isLoadingNearest &&
+                    cellLoadsNearest(column, row) &&
+                    !matrixData[key];
                   const valueTs =
                     showValueTimestamp && !userEdited.current.has(key)
                       ? formatValueTimestamp(loadedTimestamps?.[key])
@@ -449,7 +466,8 @@ function CWMSInputTable({
                 );
                 const columnRequired = column.required ?? required;
                 const columnDisabled = cellIsDisabled(column, row);
-                const cellLoading = isLoadingNearest && !matrixData[key];
+                const cellLoading =
+                  isLoadingNearest && cellLoadsNearest(column, row) && !matrixData[key];
                 const valueTs =
                   showValueTimestamp && !userEdited.current.has(key)
                     ? formatValueTimestamp(loadedTimestamps?.[key])

@@ -178,12 +178,33 @@ describe("CWMSSpreadsheet nearest value loading", () => {
     expect(screen.getByDisplayValue("735.4")).toBeTruthy();
   });
 
-  it("shows Loading... placeholder while pending", () => {
-    mockHook({ isPending: true });
-    renderSpreadsheet();
+  it("clears previous values while a new date is loading", () => {
+    mockHook({
+      values: {
+        [`${COLUMNS[0].tsid}_0`]: 100.5,
+        [`${COLUMNS[0].tsid}_60`]: 105.2,
+        [`${COLUMNS[1].tsid}_0`]: 735.1,
+        [`${COLUMNS[1].tsid}_60`]: 735.4,
+      },
+    });
+    const { rerender, context } = renderSpreadsheet({ loadNearest: "prev" });
 
-    const loadingInputs = screen.getAllByPlaceholderText("Loading...");
-    expect(loadingInputs.length).toBeGreaterThan(0);
+    mockHook({ isPending: true });
+    rerender(
+      <FormContext.Provider value={{ ...context, baseTimestamp: "2025-01-16T12:00" }}>
+        <CWMSSpreadsheet
+          columns={COLUMNS}
+          rows={2}
+          timeoffsets={TIMEOFFSETS}
+          showRowNumbers={false}
+          showColumnHeaders={false}
+          loadNearest="prev"
+        />
+      </FormContext.Provider>,
+    );
+
+    expect(screen.getAllByPlaceholderText("Loading...")).toHaveLength(4);
+    expect(screen.queryByDisplayValue("100.5")).toBeNull();
   });
 
   it("does not overwrite user-edited cell", () => {

@@ -99,12 +99,30 @@ describe("CWMSInputTable nearest value loading", () => {
     expect(screen.getByDisplayValue("735.123")).toBeTruthy();
   });
 
-  it("shows Loading... placeholder while pending", () => {
-    mockHook({ isPending: true });
-    renderTable();
+  it("clears previous values while a new date is loading", () => {
+    mockHook({
+      values: {
+        [`${COLUMNS[0].tsid}_0`]: 100.5,
+        [`${COLUMNS[0].tsid}_3600`]: 105.2,
+        [`${COLUMNS[1].tsid}_0`]: 735.1,
+        [`${COLUMNS[1].tsid}_3600`]: 735.4,
+      },
+    });
+    const { rerender, context } = renderTable();
 
-    const loadingInputs = screen.getAllByPlaceholderText("Loading...");
-    expect(loadingInputs.length).toBeGreaterThan(0);
+    mockHook({ isPending: true });
+    rerender(
+      <FormContext.Provider value={{ ...context, baseTimestamp: "2025-01-16T12:00" }}>
+        <CWMSInputTable
+          columns={COLUMNS}
+          timeoffsets={TIMEOFFSETS}
+          loadNearest="prev"
+        />
+      </FormContext.Provider>,
+    );
+
+    expect(screen.getAllByPlaceholderText("Loading...")).toHaveLength(4);
+    expect(screen.queryByDisplayValue("100.5")).toBeNull();
   });
 
   it("does not overwrite user-edited cell", () => {
@@ -329,6 +347,32 @@ describe("CWMSInputTable nearest value loading", () => {
       // even though it points at the same time series.
       expect(screen.getByDisplayValue("100.5")).toBeTruthy();
       expect(screen.queryAllByDisplayValue("100.5")).toHaveLength(1);
+    });
+
+    it("shows loading only in the opted-in column after a date change", () => {
+      mockHook({ values: { previous_0: 100.5 } });
+      const { rerender, context } = renderTable({
+        columns: REFERENCE_PAIR,
+        timeoffsets: [0],
+        loadNearest: undefined,
+      });
+      fireEvent.change(screen.getAllByRole("spinbutton")[1], {
+        target: { value: "42" },
+      });
+
+      mockHook({ isPending: true });
+      rerender(
+        <FormContext.Provider value={{ ...context, baseTimestamp: "2025-01-16T12:00" }}>
+          <CWMSInputTable
+            columns={REFERENCE_PAIR}
+            timeoffsets={[0]}
+            loadNearest={undefined}
+          />
+        </FormContext.Provider>,
+      );
+
+      expect(screen.getAllByPlaceholderText("Loading...")).toHaveLength(1);
+      expect(screen.getByDisplayValue("42")).toBeTruthy();
     });
 
     it("keeps two columns on one series from sharing cell state", () => {

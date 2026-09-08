@@ -113,6 +113,29 @@ function CWMSSpreadsheet({
   };
 
   useEffect(() => {
+    userEdited.current.clear();
+    loadedValuesRef.current = {};
+    if (!loadNearest) return;
+
+    setSpreadsheetData((prev) => {
+      const next = prev.map((row) => [...row]);
+      columns.forEach((column, colIdx) => {
+        if (!column.tsid) return;
+        const dataColIndex = shouldShowTimestamps ? colIdx + 1 : colIdx;
+        rowSpecs.forEach((_, rowIdx) => {
+          if (!next[rowIdx]) {
+            next[rowIdx] = Array(effectiveColumns.length).fill("");
+          }
+          next[rowIdx][dataColIndex] = defaultData[rowIdx]?.[colIdx] ?? "";
+        });
+      });
+      return next;
+    });
+    // Reset only when the form moves to a different target time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseTimestamp]);
+
+  useEffect(() => {
     if (loadedValues) loadedValuesRef.current = loadedValues;
   }, [loadedValues]);
 
@@ -159,10 +182,6 @@ function CWMSSpreadsheet({
     shouldShowTimestamps,
     effectiveColumns.length,
   ]);
-
-  useEffect(() => {
-    userEdited.current.clear();
-  }, [baseTimestamp]);
 
   /**
    * Status of one cell relative to the value it started with, plus how to show
@@ -946,7 +965,8 @@ function CWMSSpreadsheet({
                         const cellType = cellOverride.type ?? column.type ?? "text";
                         const defaultPlaceholder =
                           cellOverride.placeholder ?? column.placeholder ?? "";
-                        const cellLoading = isLoadingNearest && !row[dCol];
+                        const cellLoading =
+                          isLoadingNearest && !!column.tsid && !row[dCol];
                         const { statusStyle, cellClass } = cellPresentation(dRow, dCol);
                         const cellPlaceholder = cellLoading
                           ? "Loading..."
@@ -1060,7 +1080,8 @@ function CWMSSpreadsheet({
                       const cellType = cellOverride.type ?? column.type ?? "text";
                       const defaultPlaceholder =
                         cellOverride.placeholder ?? column.placeholder ?? "";
-                      const cellLoading = isLoadingNearest && !cellValue;
+                      const cellLoading =
+                        isLoadingNearest && !!column.tsid && !cellValue;
                       const { statusStyle, cellClass } = cellPresentation(
                         rowIndex,
                         colIndex,
