@@ -55,6 +55,36 @@ const componentProps = [
     desc: "Time offset in seconds for data timestamps.",
   },
   {
+    name: "timeOffset",
+    type: "number",
+    default: "0",
+    desc: "Time offset in seconds from the form's base time. Used with loadNearest to determine which timestamp to fetch data for.",
+  },
+  {
+    name: "loadNearest",
+    type: "string",
+    default: "undefined (feature off)",
+    desc: "Opt-in strategy for auto-loading the nearest time series value. When omitted, no value is fetched. 'prev' loads the last value at or before the target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires a tsid and an office on the parent CWMSForm.",
+  },
+  {
+    name: "lookback",
+    type: "number",
+    default: "form lookback (1 day)",
+    desc: "How many days before each target time to search for a value. Overrides the form-level setting for this input. Raise it for a series that reports less often than daily - a gage whose last reading is three days old is invisible to the default one-day window.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "form lookahead (1 day)",
+    desc: "How many days after each target time to search. Only applies to the 'next' and 'nearest' strategies.",
+  },
+  {
+    name: "showValueTimestamp",
+    type: "boolean",
+    default: "false",
+    desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on the input. The tooltip is removed when the user edits the value.",
+  },
+  {
     name: "units",
     type: "string",
     default: "EN",
@@ -182,6 +212,53 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
     placeholder="Enter flow value"
     precision={0}
     units="cfs"
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="Load Nearest Value" className="mt-8" />
+      <Text className="mb-4">
+        This is an opt-in feature. When the <Code className="p-1">loadNearest</Code>{" "}
+        prop is set (and a <Code className="p-1">tsid</Code> is provided and the parent{" "}
+        <Code className="p-1">CWMSForm</Code> has an <Code className="p-1">office</Code>
+        ), CWMSInput fetches the nearest time series value and pre-populates the input.
+        With <Code className="p-1">loadNearest</Code> omitted, no value is fetched. The
+        prop value selects the strategy:
+      </Text>
+      <ul className="list-disc ml-6 mb-4">
+        <li>
+          <Code className="p-1">prev</Code> — last value at or before the target time
+        </li>
+        <li>
+          <Code className="p-1">next</Code> — first value at or after the target time
+        </li>
+        <li>
+          <Code className="p-1">nearest</Code> — closest value by absolute time
+          difference
+        </li>
+      </ul>
+      <Text className="mb-4">
+        The input shows a Loading placeholder while fetching. Once loaded, the value
+        fills in automatically. If the user edits the field, the loaded value will not
+        overwrite their input. Changing the calendar date resets the loaded values.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSForm
+  office="SWT"
+  cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+  showCalendar={true}
+  calendarInterval="hour"
+>
+  <CWMSInput
+    name="stage-input"
+    tsid="KEYS.Elev.Inst.1Hour.0.Ccp-Rev"
+    type="number"
+    placeholder="Enter stage value"
+    precision={2}
+    units="ft"
+    loadNearest="prev"
+    timeOffset={0}
   />
 </CWMSForm>`}
       </CodeBlock>

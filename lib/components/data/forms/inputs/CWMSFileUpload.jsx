@@ -159,6 +159,9 @@ function CWMSFileUpload({
   useEffect(() => {
     if (!registerInput) return;
 
+    // Don't register disabled inputs for submission
+    if (disabled) return;
+
     const inputRef = {
       kind: "blob",
       name,
@@ -193,6 +196,7 @@ function CWMSFileUpload({
   }, [
     blobId,
     description,
+    disabled,
     encodedValue,
     failIfExists,
     mediaTypeId,

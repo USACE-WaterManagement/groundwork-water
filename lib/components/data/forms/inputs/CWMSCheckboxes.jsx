@@ -21,6 +21,9 @@ function CWMSCheckboxes({
 
     if (registerInput) {
       content.forEach((item) => {
+        // Don't register disabled inputs for submission
+        if (item.disabled || item.disable) return;
+
         if (item.tsid) {
           const checkboxRef = {
             name: item.id || item.label,

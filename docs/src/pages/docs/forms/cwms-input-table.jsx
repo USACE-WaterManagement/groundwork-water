@@ -16,7 +16,7 @@ const componentProps = [
     name: "timeoffsets",
     type: "array",
     default: "[]",
-    desc: "Array of time offsets in seconds for row timestamps.",
+    desc: "Row definitions. Each entry is either a time offset in seconds, or an object { offset, id, label, loadNearest, disabled } to override those settings for that row. The two forms can be mixed.",
   },
   {
     name: "showTimestamps",
@@ -73,10 +73,40 @@ const componentProps = [
     desc: "Whether to allow missing data in submissions.",
   },
   {
+    name: "showValueTimestamp",
+    type: "boolean",
+    default: "false",
+    desc: "When true, shows the source datetime of the loaded nearest value as a tooltip on each input cell. The tooltip is removed when the user edits the cell.",
+  },
+  {
+    name: "highlightChanged",
+    type: "boolean",
+    default: "true",
+    desc: "When values have been loaded, dims cells still showing the loaded value and emboldens ones the operator has changed, so it is obvious at a glance which cells will carry new data. Has no effect on cells nothing was loaded for.",
+  },
+  {
+    name: "cellClassName",
+    type: "function",
+    default: "undefined",
+    desc: "Called per cell with its status - { value, loadedValue, loaded, changed, prefilled, key, tsid, offset, column, row } - and whatever it returns is applied as a class on the table cell. Use it to react to changed or unchanged values with your own styling.",
+  },
+  {
     name: "loadNearest",
     type: "string",
-    default: "prev",
-    desc: "Load nearest value strategy (prev, next, nearest).",
+    default: "undefined (feature off)",
+    desc: "Opt-in strategy for auto-loading the nearest time series values into cells. When omitted, no values are fetched. 'prev' loads the last value at or before each target time, 'next' loads the first value at or after, 'nearest' loads the closest by absolute time difference. Requires columns with tsid, timeoffsets, and an office on the parent CWMSForm.",
+  },
+  {
+    name: "lookback",
+    type: "number",
+    default: "form lookback (1 day)",
+    desc: "How many days before each target time to search for a value. Overrides the form-level setting for this component; a column can override it again. Raise it for series that report less often than daily.",
+  },
+  {
+    name: "lookahead",
+    type: "number",
+    default: "form lookahead (1 day)",
+    desc: "How many days after each target time to search. Only applies to the 'next' and 'nearest' strategies.",
   },
   {
     name: "onChange",
@@ -226,6 +256,271 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
   />
 </CWMSForm>`}
       </CodeBlock>
+
+      <Divider text="Load Nearest Values" className="mt-8" />
+      <Text className="mb-4">
+        This is an opt-in feature. When the <Code className="p-1">loadNearest</Code>{" "}
+        prop is set (and columns have a <Code className="p-1">tsid</Code> and the parent{" "}
+        <Code className="p-1">CWMSForm</Code> provides an{" "}
+        <Code className="p-1">office</Code>), CWMSInputTable fetches the nearest time
+        series values and pre-populates cells. With{" "}
+        <Code className="p-1">loadNearest</Code> omitted, no values are fetched. The
+        prop value selects the strategy:
+      </Text>
+      <ul className="list-disc ml-6 mb-4">
+        <li>
+          <Code className="p-1">prev</Code> — last value at or before each target time
+        </li>
+        <li>
+          <Code className="p-1">next</Code> — first value at or after each target time
+        </li>
+        <li>
+          <Code className="p-1">nearest</Code> — closest value by absolute time
+          difference
+        </li>
+      </ul>
+      <Text className="mb-4">
+        Cells show a Loading placeholder while data is being fetched. Once a user edits
+        a cell, the loaded value will not overwrite their input. Changing the calendar
+        date resets the loaded values.
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`// Auto-populate cells with the most recent time series values
+<CWMSForm
+  office="SWT"
+  cdaUrl="https://cwms-data.usace.army.mil/cwms-data"
+  showCalendar={true}
+  calendarInterval="hour"
+>
+  <CWMSInputTable
+    columns={[
+      { tsid: "KEYS.Elev.Inst.1Hour.0.Ccp-Rev", label: "Elevation (ft)", units: "ft", precision: 2 },
+      { tsid: "KEYS.Flow.Inst.1Hour.0.Ccp-Rev", label: "Flow (cfs)", units: "cfs", precision: 0 }
+    ]}
+    timeoffsets={[0, 3600, 7200]}
+    loadNearest="prev"
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Divider text="Previous Values as a Reference Column" className="mt-8" />
+      <Text className="mb-4">
+        Loading the previous value straight into the entry cells is not always what you
+        want - an operator updating one gate out of thirty may prefer to see the last
+        recorded setting <em>beside</em> an empty field rather than edit on top of it.
+        Both <Code className="p-1">loadNearest</Code> and{" "}
+        <Code className="p-1">disabled</Code> can be set per column, so a single table
+        can hold a read-only reference column next to the editable one.
+      </Text>
+      <Text className="mb-4">
+        Two columns may point at the same time series. Give each an{" "}
+        <Code className="p-1">id</Code> so they keep separate cell state - without one
+        they share a cell and editing the entry column would change the reference column
+        too. A disabled column never registers with the form, so only the entry column
+        submits, and because fetching happens at the form level both columns still cost
+        a single request.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+          <CWMSInputTable
+            columns={[
+              {
+                tsid: "Gate 1",
+                id: "gate1-prev",
+                label: "Gate 1 (last)",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { tsid: "Gate 1", id: "gate1", label: "Gate 1 (new)" },
+              {
+                tsid: "Gate 2",
+                id: "gate2-prev",
+                label: "Gate 2 (last)",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { tsid: "Gate 2", id: "gate2", label: "Gate 2 (new)" },
+            ]}
+            timeoffsets={[0]}
+            showValueTimestamp={true}
+            showTimestamps={false}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// A read-only "last recorded" column beside each entry column.
+// Same tsid on both - the id is what keeps their cell state separate.
+<CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+  <CWMSInputTable
+    columns={[
+      {
+        tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev",
+        id: "gate1-prev",
+        label: "Gate 1 (last)",
+        loadNearest: "prev",   // only this column loads
+        disabled: true,        // display only - never registers, never submits
+      },
+      {
+        tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev",
+        id: "gate1",
+        label: "Gate 1 (new)", // starts empty, this is what submits
+      },
+    ]}
+    timeoffsets={[0]}
+    showValueTimestamp={true}  // hover a cell to see when the value is from
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        A column may also override the table-level strategy - set{" "}
+        <Code className="p-1">loadNearest</Code> on the table for the common case and on
+        an individual column where it should differ. Cells with different strategies
+        still share one request; only the value each one picks out of the result
+        changes.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">Seeing what you changed</div>
+      <Text className="mb-4">
+        Once values are loaded every cell holds a number, so nothing distinguishes the
+        one gate you moved from the twenty-nine you did not. By default the table dims
+        cells still showing the loaded value and emboldens ones you have changed, so the
+        cells about to carry new data stand out. Set{" "}
+        <Code className="p-1">highlightChanged={"{false}"}</Code> to turn that off.
+      </Text>
+      <Text className="mb-4">
+        The status is worked out by comparing the cell against the value it started
+        with, not by remembering that you typed - so typing a value and then putting the
+        original back correctly reads as unchanged. Where a column supplies{" "}
+        <Code className="p-1">defaultValues</Code> that default is the baseline, since a
+        default takes precedence over loading and the operator has not touched the cell
+        just because it differs from what CDA returned.
+      </Text>
+      <Text className="mb-4">
+        For your own treatment, <Code className="p-1">cellClassName</Code> is called per
+        cell with that status and its result is applied to the table cell:
+      </Text>
+
+      <CodeBlock language="jsx">
+        {`<CWMSInputTable
+  columns={GATES}
+  timeoffsets={[0]}
+  loadNearest="prev"
+  cellClassName={({ changed, prefilled, value, loadedValue }) => {
+    if (!changed) return "";
+    // e.g. flag a change larger than a foot
+    return Math.abs(Number(value) - Number(loadedValue)) > 1
+      ? "ring-2 ring-amber-400 rounded"
+      : "bg-emerald-50";
+  }}
+/>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        The status object holds <Code className="p-1">value</Code>,{" "}
+        <Code className="p-1">loadedValue</Code>, <Code className="p-1">loaded</Code>,{" "}
+        <Code className="p-1">changed</Code>, <Code className="p-1">prefilled</Code>,{" "}
+        <Code className="p-1">key</Code>, <Code className="p-1">tsid</Code>,{" "}
+        <Code className="p-1">offset</Code>, and the <Code className="p-1">column</Code>{" "}
+        and <Code className="p-1">row</Code> it came from.{" "}
+        <Code className="p-1">loaded</Code> is false where nothing was fetched, in which
+        case there is no baseline and <Code className="p-1">changed</Code> stays false.
+      </Text>
+
+      <div className="font-bold text-lg pt-4">Rows can override too</div>
+      <Text className="mb-4">
+        Entries in <Code className="p-1">timeoffsets</Code> may be objects instead of
+        plain numbers, carrying the same overrides a column can:{" "}
+        <Code className="p-1">loadNearest</Code>, <Code className="p-1">disabled</Code>,{" "}
+        <Code className="p-1">readonly</Code>, <Code className="p-1">id</Code> and{" "}
+        <Code className="p-1">label</Code>. That gives you the reference pattern along
+        the other axis - useful in a transposed table, or when the same instant needs
+        both a recorded row and an entry row.
+      </Text>
+
+      <Text className="mb-4">
+        Combined with <Code className="p-1">transpose</Code> this gives the layout most
+        gate-entry screens want: one row per parameter, a read-only column showing what
+        was last recorded, and an empty column to type into. Rows become the visual
+        columns when transposed, so the row overrides are what define the two columns
+        below.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+          <CWMSInputTable
+            transpose={true}
+            columns={[
+              { tsid: "Gate 1", label: "Gate 1" },
+              { tsid: "Gate 2", label: "Gate 2" },
+              { tsid: "Gate 3", label: "Gate 3" },
+            ]}
+            timeoffsets={[
+              {
+                offset: 0,
+                id: "last",
+                label: "Last recorded",
+                loadNearest: "prev",
+                disabled: true,
+              },
+              { offset: 0, id: "new", label: "New setting" },
+            ]}
+            showTimestamps={false}
+            showValueTimestamp={true}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Transposed: parameters down the side, "last recorded" and "new" across.
+// The two visual columns come from the two row definitions.
+<CWMSForm office="SWT" showCalendar={true} calendarInterval="hour">
+  <CWMSInputTable
+    transpose={true}
+    columns={[
+      { tsid: "PROJ.Opening-Gate1.Inst.15Minutes.0.Ccp-Rev", label: "Gate 1" },
+      { tsid: "PROJ.Opening-Gate2.Inst.15Minutes.0.Ccp-Rev", label: "Gate 2" },
+      { tsid: "PROJ.Opening-Gate3.Inst.15Minutes.0.Ccp-Rev", label: "Gate 3" },
+    ]}
+    timeoffsets={[
+      { offset: 0, id: "last", label: "Last recorded", loadNearest: "prev", disabled: true },
+      { offset: 0, id: "new", label: "New setting" },
+    ]}
+    showTimestamps={false}
+    showValueTimestamp={true}
+  />
+</CWMSForm>
+
+// Plain numbers still work, and can be mixed with row objects.
+<CWMSInputTable
+  columns={COLUMNS}
+  timeoffsets={[-3600, 0, { offset: 3600, loadNearest: "next" }]}
+/>`}
+      </CodeBlock>
+
+      <Text className="mb-4">
+        The reference row uses <Code className="p-1">disabled</Code> rather than{" "}
+        <Code className="p-1">readonly</Code>. Both rows here sit at the same offset on
+        the same time series, and a read-only row still registers with the form, so the
+        two would share one registration and whichever was declared last would win.
+        Disabling the reference row keeps it out of the submission entirely, so the
+        entry row is unambiguously the one that submits.
+      </Text>
+
+      <Text className="mb-4">
+        Where both a column and a row set the same option, the more specific wins:
+        column over row, row over the table-level prop.
+      </Text>
+
+      <Text className="mb-4">
+        Use <Code className="p-1">loadNearest</Code> on the table as a whole instead
+        when the operator is confirming or nudging existing values rather than entering
+        them fresh - the previous value becomes the starting point, and anything they do
+        not touch is submitted unchanged.
+      </Text>
 
       <Divider text="Without Timestamps" className="mt-8" />
       <Text className="mb-4">
@@ -478,6 +773,30 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             desc: "Time Series ID for this column. This is the only required property.",
           },
           {
+            name: "id",
+            type: "string",
+            default: "tsid value",
+            desc: "Identity for this column's cells. Only needed when two columns reference the same tsid - give each an id so they keep separate values instead of sharing one cell.",
+          },
+          {
+            name: "loadNearest",
+            type: "string",
+            default: "table loadNearest",
+            desc: "Per-column override of the table's loadNearest strategy ('prev', 'next', 'nearest'). Set it on a single column to load only that column, or to use a different strategy from the rest of the table. Columns with different strategies still share one request.",
+          },
+          {
+            name: "lookback",
+            type: "number",
+            default: "component or form lookback",
+            desc: "How many days before each target time to search for this column's series. Set it on the one slow-reporting series instead of widening the window for every column. Lookback applies to a whole column, not to individual rows, because every row of a column shares one fetch window.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            default: "table disable",
+            desc: "Disables just this column. A disabled column does not register with the form, so it displays values but never submits them - which is what lets it sit beside an editable column on the same tsid.",
+          },
+          {
             name: "label",
             type: "string",
             default: "tsid value",
@@ -516,6 +835,71 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         ]}
       />
 
+      <div className="font-bold text-lg pt-6 mt-8">Row Configuration Object</div>
+      <Text className="mb-4">
+        Entries in <Code className="p-1">timeoffsets</Code> may be a plain number, or an
+        object with the following properties. Both forms can be mixed in one array.
+      </Text>
+      <PropsTable
+        propsList={[
+          {
+            name: "offset",
+            type: "number",
+            default: "required",
+            desc: "Time offset in seconds from the form's base time. This is what a plain number entry sets.",
+          },
+          {
+            name: "id",
+            type: "string",
+            default: "offset value",
+            desc: "Identity for this row's cells. Only needed when two rows use the same offset - give each an id so they keep separate values instead of sharing one cell.",
+          },
+          {
+            name: "label",
+            type: "string",
+            default: "undefined",
+            desc: "Heading for the row. Used in transposed layouts, where rows are rendered as columns, and when showTimestamps is false.",
+          },
+          {
+            name: "loadNearest",
+            type: "string",
+            default: "table loadNearest",
+            desc: "Per-row override of the loadNearest strategy ('prev', 'next', 'nearest'). Set it on a single row to load only that row. Rows with different strategies still share one request.",
+          },
+          {
+            name: "disabled",
+            type: "boolean",
+            default: "table disable",
+            desc: "Disables just this row. A disabled row does not register with the form, so it displays values but never submits them, and its cells reject edits.",
+          },
+          {
+            name: "readonly",
+            type: "boolean",
+            default: "table readonly",
+            desc: "Makes just this row read-only. Unlike disabled, a read-only row still registers and still submits - use it for a value the operator should see and send but not change. It is not a substitute for disabled in the reference pattern (see below).",
+          },
+        ]}
+      />
+
+      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded">
+        <Text className="font-semibold mb-2">readonly is not disabled</Text>
+        <Text className="text-sm">
+          Both stop the operator typing, but only <Code className="p-1">disabled</Code>{" "}
+          keeps a cell out of the submission. A <Code className="p-1">readonly</Code>{" "}
+          cell still registers with the form and still submits its value.
+        </Text>
+        <Text className="text-sm mt-2">
+          That is why the reference pattern above uses{" "}
+          <Code className="p-1">disabled</Code>. The form keys its registry by time
+          series and time offset, so a read-only reference cell and the entry cell
+          beside it - same tsid, same offset - would register under the same key and one
+          would silently replace the other. Reach for{" "}
+          <Code className="p-1">readonly</Code> when a value should be sent but not
+          edited, and <Code className="p-1">disabled</Code> when it should only be
+          displayed.
+        </Text>
+      </div>
+
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
         <Text className="text-sm">
@@ -529,6 +913,14 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
           This allows you to set global defaults and selectively override them for
           specific columns.
         </Text>
+        <Text className="text-sm mt-3">
+          For the options a row can also set - <Code className="p-1">loadNearest</Code>{" "}
+          and <Code className="p-1">disabled</Code> - the row sits between the column
+          and the component-wide prop:
+        </Text>
+        <Code className="block mt-2 p-2 bg-white">
+          column.property → row.property → global property
+        </Code>
       </div>
     </DocsPage>
   );
