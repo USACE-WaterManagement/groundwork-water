@@ -4,10 +4,16 @@ import { FormContext } from "../../FormContext";
 import { useNearestValueStore, useNearestValues } from "../useNearestValueStore";
 import { selectNearestValue } from "../useLoadNearestValues";
 import useCdaMultiTimeSeries from "../../../hooks/useCdaMultiTimeSeries";
-import useCdaRecentValues from "../../../hooks/useCdaRecentValues";
+import useCdaTimeSeriesExtents from "../../../hooks/useCdaTimeSeriesExtents";
 
 vi.mock("../../../hooks/useCdaMultiTimeSeries", () => ({ default: vi.fn(() => []) }));
-vi.mock("../../../hooks/useCdaRecentValues", () => ({ default: vi.fn() }));
+vi.mock("../../../hooks/useCdaTimeSeriesExtents", () => ({
+  default: vi.fn(() => ({
+    data: {},
+    isPending: false,
+    error: null,
+  })),
+}));
 
 const FLOW = "LWG.Flow-In.Ave.1Hour.1Hour.CBT-REV";
 const ELEV = "LWG.Elev.Inst.1Hour.0.CBT-REV";
@@ -105,7 +111,11 @@ describe("useNearestValueStore", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     lastParams = [];
-    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: {},
+      isPending: false,
+      error: null,
+    });
     useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
       lastParams = cdaParams;
       return cdaParams.map((param) => ({
@@ -401,18 +411,20 @@ describe("useNearestValueStore", () => {
   });
 });
 
-describe("recent-value fallback", () => {
-  const OLD_MS = BASE_MS - 5 * DAY_MS;
+describe("all-time extent fallback", () => {
+  const OLD_MS = BASE_MS - 60 * DAY_MS;
   const OLD_ISO = new Date(OLD_MS).toISOString();
 
   beforeEach(() => {
     vi.clearAllMocks();
     lastParams = [];
-    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: {},
+      isPending: false,
+      error: null,
+    });
   });
 
-  // The default window is a day wide; a series whose last value is older than
-  // that comes back empty and has to be found by its last-value timestamp.
   function mockEmptyUntilPinned() {
     useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
       lastParams = cdaParams;
@@ -424,7 +436,7 @@ describe("recent-value fallback", () => {
     });
   }
 
-  it("looks up only the series whose window came back empty", () => {
+  it("looks up only series whose target window is empty", () => {
     useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
       lastParams = cdaParams;
       return cdaParams.map((param) => ({
@@ -446,30 +458,15 @@ describe("recent-value fallback", () => {
       </Harness>,
     );
 
-    expect(useCdaRecentValues).toHaveBeenCalledWith(
+    expect(useCdaTimeSeriesExtents).toHaveBeenCalledWith(
       expect.objectContaining({ tsIds: [FLOW], enabled: true }),
     );
   });
 
-  it("asks by TSID list rather than by pattern", () => {
+  it("re-fetches a series that last reported months ago", () => {
     mockEmptyUntilPinned();
-
-    render(
-      <Harness>
-        <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
-      </Harness>,
-    );
-
-    const { tsIds } = useCdaRecentValues.mock.calls.at(-1)[0];
-    expect(tsIds).toEqual([FLOW]);
-    // Regression guard for ORA-12733: nothing here may be a regular expression.
-    tsIds.forEach((tsid) => expect(tsid).not.toMatch(/[\^$|()\\]/));
-  });
-
-  it("re-fetches pinned to the last value and resolves it", () => {
-    mockEmptyUntilPinned();
-    useCdaRecentValues.mockReturnValue({
-      data: { [FLOW]: { tsid: FLOW, dateTimeMs: OLD_MS } },
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: { [FLOW]: OLD_ISO },
       isPending: false,
       error: null,
     });
@@ -491,23 +488,34 @@ describe("recent-value fallback", () => {
     expect(latest.values[`${FLOW}_0`]).toBe(42.5);
   });
 
-  it("skips the lookup entirely when every window returned data", () => {
+  it("skips the extent lookup when every window has data", () => {
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => ({
+        isPending: false,
+        data: SERIES[param.name],
+        error: null,
+      }));
+    });
+
     render(
       <Harness>
         <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
       </Harness>,
     );
 
-    expect(useCdaRecentValues).toHaveBeenCalledWith(
+    expect(useCdaTimeSeriesExtents).toHaveBeenCalledWith(
       expect.objectContaining({ tsIds: [], enabled: false }),
     );
   });
 
-  // The consumer-level flag deliberately reports only on *its* series, and an
-  // empty first response counts as resolved, so the store is what to assert on.
-  it("keeps the store pending while the lookup is in flight", () => {
+  it("keeps the store pending while extent lookup is in flight", () => {
     mockEmptyUntilPinned();
-    useCdaRecentValues.mockReturnValue({ data: {}, isPending: true, error: null });
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: {},
+      isPending: true,
+      error: null,
+    });
 
     let store;
     render(
@@ -523,10 +531,14 @@ describe("recent-value fallback", () => {
     expect(store.isPending).toBe(true);
   });
 
-  it("surfaces a lookup failure", () => {
+  it("surfaces an extent lookup failure", () => {
     mockEmptyUntilPinned();
     const error = new Error("Unauthorized");
-    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error });
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: {},
+      isPending: false,
+      error,
+    });
 
     let latest;
     render(
@@ -570,7 +582,11 @@ describe("lookback window", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     lastParams = [];
-    useCdaRecentValues.mockReturnValue({ data: {}, isPending: false, error: null });
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: {},
+      isPending: false,
+      error: null,
+    });
     mockWindowedSeries();
   });
 
@@ -603,11 +619,8 @@ describe("lookback window", () => {
     );
 
     expect(windowSpan()).toBe(DAYS(7));
-    // The five-day-old value is now inside the window, with no fallback needed.
+    // The five-day-old value is now inside the configured window.
     expect(latest.values[`${FLOW}_0`]).toBe(42.5);
-    expect(useCdaRecentValues).toHaveBeenCalledWith(
-      expect.objectContaining({ enabled: false }),
-    );
   });
 
   it("lets a component override the form-level setting", () => {
@@ -700,6 +713,11 @@ describe("following the form calendar", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     lastParams = [];
+    useCdaTimeSeriesExtents.mockReturnValue({
+      data: { [FLOW]: new Date(LAST_MS).toISOString() },
+      isPending: false,
+      error: null,
+    });
     useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
       lastParams = cdaParams;
       return cdaParams.map((param) => {
@@ -712,11 +730,6 @@ describe("following the form calendar", () => {
           error: null,
         };
       });
-    });
-    useCdaRecentValues.mockReturnValue({
-      data: { [FLOW]: { tsid: FLOW, dateTimeMs: LAST_MS } },
-      isPending: false,
-      error: null,
     });
   });
 
@@ -738,10 +751,7 @@ describe("following the form calendar", () => {
     expect(latest.values[`${FLOW}_0`]).toBe(42.5);
   });
 
-  // Regression: a pin used to be keyed by series alone and survived forever, so
-  // once the fallback fired the fetch stopped following the calendar and every
-  // later date change was served from a frozen window.
-  it("re-aims the window when the operator shifts the calendar", () => {
+  it("moves the window when the operator shifts the calendar", () => {
     const { rerender } = render(
       <Harness>
         <Consumer columns={[{ tsid: FLOW, units: "EN" }]} timeoffsets={[0]} />
@@ -760,9 +770,6 @@ describe("following the form calendar", () => {
     expect(Date.parse(lastParams[0].begin)).toBe(shifted - DAY_MS);
   });
 
-  // The last value is *after* a shifted-back target, so it is not a "prev"
-  // answer for it. Pinning to it would show the operator a value from the
-  // wrong side of the date they picked.
   it("does not reach forward to a value newer than the target", () => {
     const shifted = BASE_MS - DAYS(10);
     let latest;
@@ -800,5 +807,38 @@ describe("following the form calendar", () => {
     );
 
     expect(latest.values[`${FLOW}_0`]).toBe(42.5);
+  });
+
+  it("finds an older value without using the latest extent after the target", () => {
+    const earlierMs = BASE_MS - DAYS(20);
+    const targetMs = BASE_MS - DAYS(10);
+    useCdaMultiTimeSeries.mockImplementation(({ cdaParams }) => {
+      lastParams = cdaParams;
+      return cdaParams.map((param) => {
+        const beginMs = Date.parse(param.begin);
+        const endMs = Date.parse(param.end);
+        const values = [
+          [earlierMs, 12.3, 0],
+          [LAST_MS, 42.5, 0],
+        ].filter(([timestamp]) => timestamp >= beginMs && timestamp <= endMs);
+        return { isPending: false, data: { values }, error: null };
+      });
+    });
+
+    let latest;
+    render(
+      <Harness baseMs={targetMs} lookback={15}>
+        <Consumer
+          columns={[{ tsid: FLOW, units: "EN" }]}
+          timeoffsets={[0]}
+          onResult={(result) => {
+            latest = result;
+          }}
+        />
+      </Harness>,
+    );
+
+    expect(latest.values[`${FLOW}_0`]).toBe(12.3);
+    expect(lastParams[0].end).toBe(new Date(targetMs).toISOString());
   });
 });

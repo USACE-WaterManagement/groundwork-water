@@ -601,13 +601,13 @@ function CWMSFormDocs() {
       </CodeBlock>
       <Text className="my-4">
         If a series has no data anywhere in the window, the form makes one more attempt:
-        it asks CDA for that series&apos; most recent value and, when the series ended
-        before the window began, re-reads around it. That covers &quot;this gate has not
-        moved in months&quot; without making every form pay for a wide window. It
-        deliberately will not reach <i>forward</i> to a value newer than the time you
-        picked - a reading from after the operator&apos;s date is not a previous value.
-        Reaching across a gap in the middle of a series is what <Code>lookback</Code> is
-        for.
+        it asks CDA for that series&apos; all-time latest extent and, when the series
+        ended before the window began, re-reads around it. That covers &quot;this gate
+        has not moved in months&quot; without making every form pay for a wide window.
+        Extent lookups are split into bounded batches so large forms do not exceed the
+        catalog&apos;s pattern limit. The fallback deliberately will not reach forward
+        to a value newer than the time you picked; reaching across a gap in the middle
+        of a series is what <Code>lookback</Code> is for.
       </Text>
 
       <div className="font-bold text-lg pt-4">When loading fails</div>

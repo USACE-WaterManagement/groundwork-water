@@ -160,6 +160,12 @@ function UseCdaRecentValues() {
           don&apos;t care about the history in between.
         </Text>
         <Text className="my-4">
+          This is not an all-time latest-value lookup. CDA limits the endpoint to
+          approximately 14 days before and after the server&apos;s current date. Use a
+          time-series query with an explicit <Code>begin</Code> and <Code>end</Code>{" "}
+          when resolving values around a historical target.
+        </Text>
+        <Text className="my-4">
           Because the endpoint takes an explicit list of TSIDs rather than a search
           pattern, there is no regular expression for the database to compile. That
           matters at scale: asking a{" "}
