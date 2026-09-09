@@ -324,6 +324,23 @@ describe("useNearestValueStore", () => {
       expect(seen.store.seriesByKey[`${FLOW}|EN`].values).toEqual(SERIES[FLOW].values);
     });
 
+    it("drops the seed when the fetched value differs only by roundoff", () => {
+      const seen = renderWithSeeder();
+
+      act(() => {
+        seen.store.seedSubmittedValues([
+          {
+            tsid: FLOW,
+            units: "EN",
+            value: 101.50000000001,
+            timestamp: new Date(BASE_MS).toISOString(),
+          },
+        ]);
+      });
+
+      expect(seen.store.seriesByKey[`${FLOW}|EN`].values).toEqual(SERIES[FLOW].values);
+    });
+
     it("ignores entries without a usable timestamp or value", () => {
       const seen = renderWithSeeder();
 

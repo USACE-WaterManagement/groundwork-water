@@ -22,6 +22,21 @@ dayjs.extend(timezone);
 
 export { FormContext };
 
+const SEEDABLE_STORE_RULES = new Set([
+  "REPLACE ALL",
+  "DELETE INSERT",
+  "REPLACE WITH NON MISSING",
+]);
+
+export function shouldSeedSubmittedValue(storeRule, result) {
+  if (result?.type !== "numeric") return false;
+  const normalizedRule = String(storeRule)
+    .trim()
+    .toUpperCase()
+    .replace(/[_\s]+/g, " ");
+  return SEEDABLE_STORE_RULES.has(normalizedRule);
+}
+
 // Counter to generate unique IDs for each form instance
 let formInstanceCounter = 0;
 
@@ -85,9 +100,12 @@ export function CWMSForm({
       // seeded points keep the operator looking at their own entry until CDA
       // reports it back. Accessed via ref because the store is created further
       // down this component.
-      if (data?.results?.length) {
+      const seedableResults = data?.results?.filter((result) =>
+        shouldSeedSubmittedValue(storeRule, result),
+      );
+      if (seedableResults?.length) {
         nearestValuesRef.current?.seedSubmittedValues(
-          data.results.filter((result) => result.tsid),
+          seedableResults.filter((result) => result.tsid),
         );
       }
 
