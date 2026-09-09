@@ -18,6 +18,30 @@ interface UseCdaTimeSeriesParams {
 
 type BaseReq = Omit<GetTimeSeriesRequest, "name">;
 
+async function getTimeSeriesPages(
+  timeSeriesApi: TimeSeriesApi,
+  request: GetTimeSeriesRequest,
+  signal?: AbortSignal,
+): Promise<TimeSeries> {
+  const firstPage = await timeSeriesApi.getTimeSeries(request, { signal });
+  let currentPage = firstPage;
+  const values = [...(firstPage.values ?? [])];
+  const seenPages = new Set<string>();
+
+  while (currentPage.nextPage) {
+    const page = currentPage.nextPage;
+    if (seenPages.has(page)) {
+      throw new Error(`CDA returned a repeated time-series page token: ${page}`);
+    }
+    seenPages.add(page);
+
+    currentPage = await timeSeriesApi.getTimeSeries({ ...request, page }, { signal });
+    values.push(...(currentPage.values ?? []));
+  }
+
+  return { ...firstPage, values, nextPage: undefined };
+}
+
 function normalizeTsids(name?: string | string[]): string[] {
   if (!name) return [];
   if (Array.isArray(name)) return name.map((s) => s.trim()).filter(Boolean);
@@ -68,7 +92,8 @@ export default function useCdaMultiTimeSeries({
       timeSeriesIds.map(({ baseReq, tsid }) => ({
         ...(queryOptions || {}),
         queryKey: ["cda", "timeseries", JSON.stringify(baseReq), tsid],
-        queryFn: () => timeSeriesApi.getTimeSeries({ ...baseReq, name: tsid }),
+        queryFn: ({ signal }: { signal: AbortSignal }) =>
+          getTimeSeriesPages(timeSeriesApi, { ...baseReq, name: tsid }, signal),
         enabled,
       })),
     [enabled, queryOptions, timeSeriesApi, timeSeriesIds],

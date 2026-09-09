@@ -54,4 +54,97 @@ describe("useCdaMultiTimeSeries", () => {
     expect(requestUrl.searchParams.get("units")).toBe("m");
     expect(requestUrl.searchParams.has("unit")).toBe(false);
   });
+
+  it("follows next-page cursors and returns the combined values", async () => {
+    const fetchMock = vi.fn(async (request) => {
+      const page = new URL(request).searchParams.get("page");
+      const body =
+        page === "cursor-2"
+          ? {
+              name: TSID,
+              units: "m",
+              values: [[3, 30, 0]],
+            }
+          : {
+              name: TSID,
+              units: "m",
+              values: [
+                [1, 10, 0],
+                [2, 20, 0],
+              ],
+              "next-page": "cursor-2",
+            };
+
+      return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    let result;
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={client}>
+        <Probe
+          onResult={(value) => {
+            result = value;
+          }}
+        />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(result[0].isSuccess).toBe(true));
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.has("page")).toBe(false);
+    expect(new URL(fetchMock.mock.calls[1][0]).searchParams.get("page")).toBe(
+      "cursor-2",
+    );
+    expect(result[0].data.values).toEqual([
+      [1, 10, 0],
+      [2, 20, 0],
+      [3, 30, 0],
+    ]);
+    expect(result[0].data.nextPage).toBeUndefined();
+  });
+
+  it("fails instead of looping on a repeated next-page cursor", async () => {
+    const fetchMock = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          name: TSID,
+          units: "m",
+          values: [[1, 10, 0]],
+          "next-page": "repeated-cursor",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    let result;
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={client}>
+        <Probe
+          onResult={(value) => {
+            result = value;
+          }}
+        />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(result[0].isError).toBe(true));
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(result[0].error.message).toContain("repeated time-series page token");
+  });
 });
