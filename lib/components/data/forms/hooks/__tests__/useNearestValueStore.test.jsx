@@ -203,8 +203,8 @@ describe("useNearestValueStore", () => {
     );
 
     expect(lastParams).toHaveLength(2);
-    expect(lastParams.map((p) => p.unit).sort()).toEqual(["EN", "SI"]);
-    lastParams.forEach((param) => expect(param).not.toHaveProperty("units"));
+    expect(lastParams.map((p) => p.units).sort()).toEqual(["EN", "SI"]);
+    lastParams.forEach((param) => expect(param).not.toHaveProperty("unit"));
   });
 
   it("resolves each consumer's own strategy from the shared fetch", () => {
