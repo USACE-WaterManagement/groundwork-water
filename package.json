@@ -107,7 +107,7 @@
     "cwms"
   ],
   "dependencies": {
-    "cwmsjs": "^2.3.0-2024.12.10",
+    "cwmsjs": "^2.4.0-2026.3.16",
     "dayjs": "^1.11.11",
     "deepmerge": "^4.3.1",
     "oidc-client-ts": "^3.5.0",

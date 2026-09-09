@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useCdaCatalog from "./useCdaCatalog";
 import useCdaTimeSeries from "./useCdaTimeSeries";
 import { getLatestEntry } from "../helpers/cda";
-import { TimeSeriesCatalogEntry } from "cwmsjs";
+import { CatalogableEndpoint, TimeSeriesCatalogEntry } from "cwmsjs";
 
 interface useCdaLatestValueParams {
   tsId: string;
@@ -19,7 +19,7 @@ const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }: useCdaLatestValuePara
     cdaParams: {
       name: tsId,
       office,
-      ...(unit && { unit }),
+      ...(unit && { units: unit }),
       ...(begin && { begin }),
       ...(end && { end }),
     },
@@ -32,7 +32,7 @@ const useCdaLatestValue = ({ tsId, office, unit, cdaUrl }: useCdaLatestValuePara
   const enableCatalog = !ts.isPending && ts.data?.values?.length === 0;
 
   const catalog = useCdaCatalog({
-    cdaParams: { dataset: "TIMESERIES", office, like: tsId },
+    cdaParams: { dataset: CatalogableEndpoint.Timeseries, office, like: tsId },
     cdaUrl: cdaUrl,
     queryOptions: {
       enabled: enableCatalog,
