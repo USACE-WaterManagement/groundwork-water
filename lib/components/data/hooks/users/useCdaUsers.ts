@@ -22,7 +22,7 @@ export interface CdaUsersResult {
 }
 
 export interface UseCdaUsersParams {
-  office: string;
+  office?: string;
   cdaUrl: string;
   token?: string;
   usernameLike?: string;
@@ -46,10 +46,10 @@ export const fetchAllCdaUsers = async ({
 
   do {
     const parameters = new URLSearchParams({
-      office,
       "include-roles": "true",
       "page-size": String(pageSize),
     });
+    if (office) parameters.set("office", office);
     if (usernameLike) parameters.set("username-like", usernameLike);
     if (nextPage) parameters.set("page", nextPage);
 
@@ -75,7 +75,7 @@ export const useCdaUsers = ({
   useQuery({
     queryKey: ["cda", "users", cdaUrl, office, usernameLike, pageSize, token],
     queryFn: () => fetchAllCdaUsers({ office, cdaUrl, token, usernameLike, pageSize }),
-    enabled: Boolean(office && cdaUrl) && queryOptions?.enabled !== false,
+    enabled: Boolean(cdaUrl) && queryOptions?.enabled !== false,
     ...queryOptions,
   });
 
