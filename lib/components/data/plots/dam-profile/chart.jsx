@@ -1,5 +1,4 @@
 import { createRef, useEffect } from "react";
-import { useConnect } from "redux-bundler-hook";
 import DamProfileChart from "./dam-profile-chart/dam-profile-chart";
 
 function DamProfile({ info }) {

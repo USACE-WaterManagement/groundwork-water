@@ -55,6 +55,16 @@ import useCdaTimeSeries from "./components/data/hooks/useCdaTimeSeries";
 import useCdaMultiTimeSeries from "./components/data/hooks/useCdaMultiTimeSeries";
 import useCdaTimeSeriesGroup from "./components/data/hooks/useCdaTimeSeriesGroup";
 import useCdaOffices from "./components/data/hooks/useCdaOffices";
+import {
+  CWMS_USER_ROLE_DESCRIPTIONS,
+  CWMS_USER_ROLE_PRESETS,
+  diffCdaUserRoles,
+  matchCwmsUserRolePreset,
+  resolveCwmsUserRolePreset,
+  useCdaRoles,
+  useCdaUsers,
+  useUpdateCdaUserRoles,
+} from "./components/data/hooks/users";
 import useNwpsGauge from "./components/data/hooks/useNwpsGauge";
 import useNwpsGaugeData from "./components/data/hooks/useNwpsGaugeData";
 import useDataStatusFile from "./components/data/hooks/useDataStatusFile";
@@ -120,6 +130,11 @@ export {
   CdaUrlProvider,
   DataStatus,
   OfficeDropdown,
+  CWMS_USER_ROLE_DESCRIPTIONS,
+  CWMS_USER_ROLE_PRESETS,
+  diffCdaUserRoles,
+  matchCwmsUserRolePreset,
+  resolveCwmsUserRolePreset,
   SearchInput,
   useCdaBlob,
   useCdaBlobs,
@@ -132,6 +147,9 @@ export {
   useCdaMultiTimeSeries,
   useCdaTimeSeriesGroup,
   useCdaOffices,
+  useCdaRoles,
+  useCdaUsers,
+  useUpdateCdaUserRoles,
   useDataStatusFile,
   useCwmsDataUpload,
   fetchCdaLevelTimeSeries,

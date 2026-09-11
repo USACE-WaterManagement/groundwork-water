@@ -91,7 +91,7 @@ _Note: You must have nodejs installed and in your path!_
    `npx changeset add --empty`
 
 We use semantic versioning, or semver. Read more here: https://semver.org/  
- In short:
+In short:
 
 - `major` if it **breaks** something.
 - `minor` if it's a functionality that does _not_ break anything.
@@ -139,7 +139,7 @@ To help keep your code formatted while you make changes you might consider in vs
     2. `git rebase origin/main`
   - [ GUI ] In VSCode:  
     This can also be done in VSCode using the `Version Control` menu:  
-     ![rebase from main](_images/rebase-main.png)
+    ![rebase from main](_images/rebase-main.png)
 
 ## Workflow Recommendations
 
