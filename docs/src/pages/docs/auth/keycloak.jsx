@@ -11,8 +11,8 @@ const componentProps = [
   {
     name: "host",
     type: "string",
-    default: "undefined",
-    desc: "The Keycloak base URL for your environment. Include '/auth' when your realm endpoints are served under that path.",
+    default: '"https://identity.cwbi.mil/auth"',
+    desc: "The Keycloak base URL for your environment. Defaults to CWBI production; specify https://identity-test.cwbi.mil/auth for CWBI development and test applications.",
   },
   {
     name: "realm",
@@ -92,15 +92,41 @@ function KeycloakDocs() {
           using a Keycloak instance.
         </Text>
         <Text className="mt-4">
-          The function must be passed a configuration object identifying the host URL,
-          realm, client, authentication flow, and optionally a custom refresh interval
-          for refresh token requests. The recommended flow is Auth Code + PKCE.
+          The function must be passed a configuration object identifying the realm and
+          client. It targets CWBI production by default. Pass a host to use another
+          environment. The recommended flow is Auth Code + PKCE.
         </Text>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr>
+                <th className="border p-2">Environment</th>
+                <th className="border p-2">Keycloak host</th>
+                <th className="border p-2">Configuration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border p-2 font-semibold">Production (default)</td>
+                <td className="border p-2">
+                  <Code>https://identity.cwbi.mil/auth</Code>
+                </td>
+                <td className="border p-2">Omit host or set it explicitly</td>
+              </tr>
+              <tr>
+                <td className="border p-2 font-semibold">Development and test</td>
+                <td className="border p-2">
+                  <Code>https://identity-test.cwbi.mil/auth</Code>
+                </td>
+                <td className="border p-2">Set host explicitly</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <Text className="mt-4">
-          Use the exact Keycloak base path that serves your realm endpoints. For the
-          CWBI test environment used by <Code>cwms-cli</Code>, that is
-          <Code> https://identity-test.cwbi.mil/auth</Code> rather than the stripped
-          root URL.
+          Keep the <Code>/auth</Code> base path shown above. The production and test
+          identity services are separate; match the Keycloak host to the environment
+          where your application is registered.
         </Text>
         <Text className="mt-4">
           This authentication method uses refresh tokens and will automatically manage
@@ -133,16 +159,21 @@ function KeycloakDocs() {
         {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
 import { useAuth } from "@usace-watermanagement/groundwork-water";
 
-// Set authHost from environment variables
-
 const authMethod = createKeycloakAuthMethod({
-  host: "https://identity-test.cwbi.mil/auth",
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",
   redirectUri: window.location.origin,
   postLogoutRedirectUri: window.location.origin,
   providerHint: "federation-eams",
+});
+
+// Development/test applications must override the production default:
+const testAuthMethod = createKeycloakAuthMethod({
+  host: "https://identity-test.cwbi.mil/auth",
+  realm: "cwbi",
+  client: "cwms",
+  flow: "authorization-code-pkce",
 });
 
 function LoginButton() {

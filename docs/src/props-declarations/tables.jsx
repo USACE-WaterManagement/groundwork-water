@@ -183,9 +183,18 @@ const cwmsTableParams = [
   },
   {
     name: "inputTSValues",
-    type: "array",
+    type: "CWMSTableSeries[]",
     required: false,
-    desc: "Previously fetched CWMS time-series responses. When supplied, the table renders these values without making CDA requests and does not require an office.",
+    desc: (
+      <>
+        Previously fetched CWMS time-series responses shaped as{" "}
+        <Code>{`{ name, units?, values: [[timestamp, value, qualityCode?, ...], ...] }`}</Code>
+        . Each series <Code>name</Code> must match a{" "}
+        <Code>timeseriesParams[].tsid</Code>. When supplied, the table makes no CDA
+        requests and does not require <Code>office</Code>, <Code>begin</Code>, or{" "}
+        <Code>end</Code>.
+      </>
+    ),
   },
   {
     name: "dateTimeTableColumnHeader",

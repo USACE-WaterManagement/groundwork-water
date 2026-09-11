@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Code, Divider, Text, UsaceBox } from "@usace/groundwork";
-import { BasinPie, RadialFillChart } from "../../../../../lib";
+import { BasinPie, RadialFillChart } from "@usace-watermanagement/groundwork-water";
 import { Code as CodeBlock } from "../../components/code.jsx";
 import DocsPage from "../_docs-wrapper";
 

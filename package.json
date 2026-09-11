@@ -1,6 +1,6 @@
 {
   "name": "@usace-watermanagement/groundwork-water",
-  "version": "4.0.0",
+  "version": "4.1.1",
   "license": "MIT",
   "author": "Various",
   "description": "A library of react components for use with USACE Water Management Webpages",
@@ -116,11 +116,13 @@
     "d3": "^7.9.0",
     "dayjs": "^1.11.11",
     "deepmerge": "^4.3.1",
+    "exceljs": "^4.4.0",
     "oidc-client-ts": "^3.5.0",
     "ol": "^10.0.0",
     "plotly.js-basic-dist": "^2.33.0",
     "react-icons": "^5.3.0",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "redux-bundler-hook": "^1.0.3"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",

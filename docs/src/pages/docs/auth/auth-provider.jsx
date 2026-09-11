@@ -71,7 +71,8 @@ function AuthProviderDocs() {
 } from "@usace-watermanagement/groundwork-water";
 
 const authMethod = createKeycloakAuthMethod({
-  host: "https://identity-test.cwbi.mil/auth",
+  // Defaults to production. For development/test, set:
+  // host: "https://identity-test.cwbi.mil/auth",
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",

@@ -18,6 +18,7 @@ import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import KeycloakDocs from "../pages/docs/auth/keycloak";
 import UseAuthDocs from "../pages/docs/auth/use-auth";
 import OfficesDropdownDocs from "../pages/docs/dropdowns/offices";
+import SearchInputDocs from "../pages/docs/dropdowns/search-input";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -41,6 +42,7 @@ import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
 import CWMSFileUploadDocs from "../pages/docs/forms/cwms-file-upload";
+import CWMSDataUploadDocs from "../pages/docs/forms/cwms-data-upload";
 import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
 import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
 import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
@@ -67,6 +69,7 @@ export default createRouteBundle(
     "/docs/auth/keycloak": KeycloakDocs,
     "/docs/auth/use-auth": UseAuthDocs,
     "/docs/dropdowns/offices": OfficesDropdownDocs,
+    "/docs/dropdowns/search-input": SearchInputDocs,
     "/docs/hooks": DataHooks,
     "/docs/hooks/users": UserHooksDocs,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
@@ -93,6 +96,7 @@ export default createRouteBundle(
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,
     "/docs/forms/cwms-file-upload": CWMSFileUploadDocs,
+    "/docs/forms/cwms-data-upload": CWMSDataUploadDocs,
     "/docs/forms/cwms-textarea": CWMSTextareaDocs,
     "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
     "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,

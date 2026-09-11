@@ -1,5 +1,26 @@
 # @usace-watermanagement/groundwork-water
 
+## 4.1.1
+
+### Patch Changes
+
+- 26e13d4: Default Keycloak authentication to the CWBI production host while retaining the host
+  override for development, test, and custom environments. Clarify the production and
+  test hosts throughout the authentication documentation.
+
+## 4.1.0
+
+### Minor Changes
+
+- 467d003: Add a paginated CDA location catalog hook and helpers for converting catalog entries to GeoJSON point features.
+- 77a35dc: Added A2W Dam Profile Chart to component library
+- 914dd52: Add a React and Groundwork-based CWMS tabular data upload form with workbook validation, existing-data comparison, batch submission, deletion, and generated templates.
+- ec19d44: Add a reusable `SearchInput` component and docs for district-configured search bars.
+
+### Patch Changes
+
+- f56fabe: Document pre-fetched CWMSTable data and publish accurate optional prop types.
+
 ## 4.0.0
 
 ### Major Changes

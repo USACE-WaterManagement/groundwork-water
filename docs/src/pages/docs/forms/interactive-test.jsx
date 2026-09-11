@@ -33,9 +33,9 @@ const getDefaultInteractiveConfig = () => {
 
   return {
     authMethod: "keycloak",
-    testCdaUrl: "https://water.dev.cwbi.us/cwms-data",
+    testCdaUrl: "https://cwms-data.usace.army.mil/cwms-data",
     keycloakConfig: {
-      host: "https://identity-test.cwbi.us/auth",
+      host: "https://identity.cwbi.mil/auth",
       realm: "cwbi",
       client: "cwms",
       flow: "authorization-code-pkce",
@@ -59,9 +59,11 @@ const normalizeInteractiveKeycloakConfig = (keycloakConfig, defaultConfig) => {
 
   if (
     normalizedHost === "https://identityc-test.cwbi.us" ||
-    normalizedHost === "https://identity-test.cwbi.us"
+    normalizedHost === "https://identityc-test.cwbi.us/auth" ||
+    normalizedHost === "https://identity-test.cwbi.us" ||
+    normalizedHost === "https://identity-test.cwbi.us/auth"
   ) {
-    normalized.host = "https://identity-test.cwbi.us/auth";
+    normalized.host = "https://identity-test.cwbi.mil/auth";
   }
 
   if (normalized.realm === "cwms") {
@@ -888,7 +890,9 @@ function InteractiveFormTest() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">CDA URL</label>
+            <label className="block text-sm font-medium mb-1">
+              Target CDA URL (production by default)
+            </label>
             <Input
               value={testCdaUrl}
               onChange={(e) => setTestCdaUrl(e.target.value)}
@@ -963,12 +967,16 @@ function InteractiveFormTest() {
             />
 
             <div className="rounded border border-blue-200 bg-blue-50 p-3">
-              <Text className="text-sm font-semibold">PKCE Callback Route</Text>
+              <Text className="text-sm font-semibold">
+                Environment and PKCE callback
+              </Text>
               <Text className="mt-1 text-sm">
-                Use the exact Keycloak base path your environment exposes. For the
-                working CWBI test setup, that is
-                <Code className="mx-1">https://identity-test.cwbi.us/auth</Code>
-                with realm <Code className="mx-1">cwbi</Code>.
+                This form defaults to production: Keycloak
+                <Code className="mx-1">https://identity.cwbi.mil/auth</Code> and the
+                production CDA URL above. For a development or test application, set the
+                Keycloak URL to
+                <Code className="mx-1">https://identity-test.cwbi.mil/auth</Code> and
+                replace the target CDA URL with its development or test URL.
               </Text>
               <Text className="mt-1 text-sm">
                 Register this URL in Keycloak for both the login callback and
