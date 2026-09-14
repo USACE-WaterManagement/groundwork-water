@@ -1,4 +1,12 @@
-import React, { useContext, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Field, Label, Button } from "@usace/groundwork";
 import { FormContext } from "../CWMSForm";
 
@@ -24,6 +32,7 @@ const readFileValue = async (file, readAs) => {
 };
 
 function CWMSFileUpload({
+  mode = "blob",
   blobId,
   officeId,
   description,
@@ -44,9 +53,10 @@ function CWMSFileUpload({
   name,
   placeholder = "Drag and drop a file here, or choose one from your device.",
 }) {
-  const { registerInput } = useContext(FormContext);
+  const { registerInput } = useContext(FormContext) || {};
   const inputId = useId();
   const fileInputRef = useRef(null);
+  const selectionVersion = useRef(0);
   const [selectedFile, setSelectedFile] = useState(null);
   const [encodedValue, setEncodedValue] = useState("");
   const [isInvalid, setIsInvalid] = useState(invalid || false);
@@ -56,12 +66,14 @@ function CWMSFileUpload({
 
   const resolvedLabel = label || name || blobId || "Upload file";
 
-  const clearInvalidState = () => {
+  const clearInvalidState = useCallback(() => {
     setIsInvalid(false);
     setValidationMessage("");
-  };
+  }, []);
 
   const setFileState = async (file) => {
+    const version = ++selectionVersion.current;
+    setIsReading(false);
     if (!file) {
       setSelectedFile(null);
       setEncodedValue("");
@@ -78,7 +90,7 @@ function CWMSFileUpload({
       setIsInvalid(true);
       setValidationMessage(`${resolvedLabel} cannot be empty`);
       if (onChange) {
-        onChange(file);
+        onChange(mode === "file" ? null : file);
       }
       return;
     }
@@ -91,8 +103,27 @@ function CWMSFileUpload({
         `${resolvedLabel} must be ${maxFileSizeBytes.toLocaleString()} bytes or smaller`,
       );
       if (onChange) {
-        onChange(file);
+        onChange(mode === "file" ? null : file);
       }
+      return;
+    }
+
+    if (mode === "file") {
+      const allowed =
+        !accept ||
+        accept.split(",").some((entry) => {
+          const type = entry.trim().toLowerCase();
+          return type.startsWith(".")
+            ? file.name.toLowerCase().endsWith(type)
+            : type.endsWith("/*")
+              ? file.type.toLowerCase().startsWith(type.slice(0, -1))
+              : file.type.toLowerCase() === type;
+        });
+      setSelectedFile(file);
+      setEncodedValue("");
+      setIsInvalid(!allowed);
+      setValidationMessage(allowed ? "" : `Choose a file matching ${accept}`);
+      onChange?.(allowed ? file : null);
       return;
     }
 
@@ -100,6 +131,7 @@ function CWMSFileUpload({
 
     try {
       const value = await readFileValue(file, readAs);
+      if (version !== selectionVersion.current) return;
       setSelectedFile(file);
       setEncodedValue(value);
       clearInvalidState();
@@ -107,6 +139,7 @@ function CWMSFileUpload({
         onChange(file);
       }
     } catch (error) {
+      if (version !== selectionVersion.current) return;
       setSelectedFile(file);
       setEncodedValue("");
       setIsInvalid(true);
@@ -114,21 +147,23 @@ function CWMSFileUpload({
         error?.message || `Unable to read ${file.name} for ${resolvedLabel}`,
       );
     } finally {
-      setIsReading(false);
+      if (version === selectionVersion.current) setIsReading(false);
     }
   };
 
-  const resetInput = () => {
+  const resetInput = useCallback(() => {
+    ++selectionVersion.current;
     setSelectedFile(null);
     setEncodedValue("");
     clearInvalidState();
     setIsReading(false);
+    onChange?.(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  };
+  }, [clearInvalidState, onChange]);
 
-  const validateSelection = () => {
+  const validateSelection = useCallback(() => {
     if (!blobId) {
       return `${resolvedLabel} requires a blobId`;
     }
@@ -154,10 +189,10 @@ function CWMSFileUpload({
     }
 
     return null;
-  };
+  }, [blobId, required, selectedFile, maxFileSizeBytes, encodedValue, resolvedLabel]);
 
   useEffect(() => {
-    if (!registerInput) return;
+    if (mode === "file" || !registerInput) return;
 
     const inputRef = {
       kind: "blob",
@@ -191,6 +226,7 @@ function CWMSFileUpload({
 
     return registerInput(inputRef);
   }, [
+    mode,
     blobId,
     description,
     encodedValue,
@@ -202,6 +238,8 @@ function CWMSFileUpload({
     required,
     resolvedLabel,
     selectedFile,
+    resetInput,
+    validateSelection,
   ]);
 
   const dropzoneClasses = useMemo(() => {
@@ -300,11 +338,21 @@ function CWMSFileUpload({
           ) : null}
         </div>
         <div className="mt-4 flex gap-3">
-          <Button type="button" color="secondary" onClick={handleBrowseClick}>
+          <Button
+            type="button"
+            color="secondary"
+            disabled={disabled || readonly}
+            onClick={handleBrowseClick}
+          >
             Choose File
           </Button>
           {selectedFile ? (
-            <Button type="button" color="secondary" onClick={resetInput}>
+            <Button
+              type="button"
+              color="secondary"
+              disabled={disabled || readonly}
+              onClick={resetInput}
+            >
               Clear
             </Button>
           ) : null}
@@ -312,7 +360,9 @@ function CWMSFileUpload({
       </div>
       {helperText ? <div className="text-xs text-slate-500">{helperText}</div> : null}
       {validationMessage ? (
-        <div className="text-sm text-red-600">{validationMessage}</div>
+        <div role="alert" className="text-sm text-red-600">
+          {validationMessage}
+        </div>
       ) : null}
     </Field>
   );
