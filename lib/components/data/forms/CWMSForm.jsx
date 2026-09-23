@@ -28,6 +28,7 @@ export function CWMSForm({
   cdaUrl,
   children,
   onSubmit,
+  submissionMode = "cwms", // "custom" delegates persistence exclusively to onSubmit
   onReset,
   onSuccess,
   onError,
@@ -51,6 +52,8 @@ export function CWMSForm({
 }) {
   const inputsRef = useRef([]);
   const registeredIds = useRef(new Set());
+  const customPendingRef = useRef(false);
+  const [customPending, setCustomPending] = useState(false);
 
   // Generate a unique container ID for this form instance
   const containerId = useMemo(() => {
@@ -233,6 +236,7 @@ export function CWMSForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (customPendingRef.current || mutation.isPending) return;
 
     // Validate required fields using the validation hook
     const validation = validateInputs(inputsRef.current);
@@ -269,6 +273,7 @@ export function CWMSForm({
       }
 
       return {
+        name: input.name,
         tsid: input.tsid,
         values: input.getValues(),
         units: input.units,
@@ -280,7 +285,27 @@ export function CWMSForm({
       };
     });
 
-    // Call custom onSubmit if provided (runs alongside CWMS submission)
+    if (submissionMode === "custom") {
+      customPendingRef.current = true;
+      setCustomPending(true);
+      try {
+        if (!onSubmit) {
+          throw new Error("Custom submission requires an onSubmit handler");
+        }
+        const result = await onSubmit(formData, e);
+        if (resetOnSubmit) handleReset();
+        onSuccess?.(result);
+      } catch (error) {
+        showDetailedError(error, { autoClose: toastAutoClose, containerId });
+        onError?.(error);
+      } finally {
+        customPendingRef.current = false;
+        setCustomPending(false);
+      }
+      return;
+    }
+
+    // Default mode preserves the existing callback plus CWMS submission behavior.
     if (onSubmit) {
       onSubmit(formData, e);
     }
@@ -372,12 +397,16 @@ export function CWMSForm({
                 onClick={handleReset}
                 type="button"
                 color="secondary"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || customPending}
               >
                 {resetText}
               </Button>
-              <Button type="submit" color="primary" disabled={mutation.isPending}>
-                {mutation.isPending ? "Submitting..." : submitText}
+              <Button
+                type="submit"
+                color="primary"
+                disabled={mutation.isPending || customPending}
+              >
+                {mutation.isPending || customPending ? "Submitting..." : submitText}
               </Button>
             </div>
           )}

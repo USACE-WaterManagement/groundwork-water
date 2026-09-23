@@ -40,7 +40,13 @@ const componentProps = [
     name: "onSubmit",
     type: "function",
     default: "undefined",
-    desc: "Custom submit handler. Receives (formData, event). If not provided, submits to CWMS.",
+    desc: "Receives (formData, event). In default cwms mode this callback runs alongside CWMS submission. In custom mode it owns persistence and is awaited; rejection calls onError and retains field values. Named inputs include name in formData.",
+  },
+  {
+    name: "submissionMode",
+    type: '"cwms" | "custom"',
+    default: '"cwms"',
+    desc: "Use custom with an onSubmit handler for application-owned persistence without CWMS writes. Required-field validation still runs. While pending, duplicate submissions and built-in buttons are blocked. Success honors resetOnSubmit and calls onSuccess with the handler result. The application owns success messaging.",
   },
   {
     name: "onReset",
