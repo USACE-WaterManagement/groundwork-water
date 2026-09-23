@@ -30,6 +30,11 @@ import CWMSSpreadsheet from "./components/data/forms/inputs/CWMSSpreadsheet";
 
 // Import form components
 import { CWMSForm } from "./components/data/forms/CWMSForm";
+export { CWMSTextRecordForm } from "./components/data/forms/CWMSTextRecordForm";
+export {
+  appendCwmsTextRecord,
+  readCwmsTextRecords,
+} from "./components/data/forms/helpers/textRecords";
 import {
   useCwmsFormSubmit,
   useFormValidation,
