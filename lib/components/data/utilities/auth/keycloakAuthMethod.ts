@@ -27,6 +27,8 @@ interface KeycloakOptions {
 type KeycloakRequest = KeycloakOptions & Record<string, string>;
 type KeycloakFlow = "authorization-code-pkce" | "direct-grant";
 
+const DEFAULT_KEYCLOAK_HOST = "https://identity.cwbi.mil/auth";
+
 const AUTH_RESPONSE_PARAMS = [
   "code",
   "state",
@@ -41,7 +43,7 @@ const getLoginReturnToStorageKey = (realm: string, client: string) =>
   `groundwork-water:keycloak:return-to:${realm}:${client}`;
 
 interface KeycloakAuthConfig {
-  host: string;
+  host?: string;
   realm: string;
   client: string;
   flow?: KeycloakFlow;
@@ -57,11 +59,12 @@ interface KeycloakAuthConfig {
 /**
  * Generates a Keycloak authentation method from the provided configuration.
  *
- * The host should point to the actual Keycloak base path for the target realm, e.g.
- * 'https://localhost:8080/auth' when realm endpoints are served under '/auth'.
+ * The host defaults to the CWBI production Keycloak base path. Set it explicitly to
+ * target another environment, such as 'https://identity-test.cwbi.mil/auth' for CWBI
+ * development and test applications.
  *
  * @param {object} config - An object containing configuration details.
- * @param {string} config.host - The base URL of the Keycloak auth provider.
+ * @param {string} [config.host=https://identity.cwbi.mil/auth] - The Keycloak base URL.
  * @param {string} config.realm - The Keycloak realm to use for authentication.
  * @param {string} config.client - The Keycloak client to use for authentication.
  * @param {string} config.flow - The Keycloak flow type to use for authentication.
@@ -74,7 +77,7 @@ interface KeycloakAuthConfig {
  * @param {number} config.refreshInterval - Time between each token refresh, in seconds.
  */
 export const createKeycloakAuthMethod = ({
-  host,
+  host = DEFAULT_KEYCLOAK_HOST,
   realm,
   client,
   flow = "authorization-code-pkce",

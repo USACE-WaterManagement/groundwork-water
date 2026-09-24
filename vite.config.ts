@@ -68,6 +68,7 @@ export default defineConfig(({ mode }) => {
               globals: {
                 react: "React",
                 "react-dom": "ReactDOM",
+                "@tanstack/react-virtual": "ReactVirtual",
                 "@tanstack/react-query": "ReactQuery",
                 ol: "ol",
                 "plotly.js-basic-dist": "Plotly",

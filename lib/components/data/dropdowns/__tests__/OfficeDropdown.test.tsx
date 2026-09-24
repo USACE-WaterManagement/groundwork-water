@@ -41,4 +41,26 @@ describe("OfficeDropdown", () => {
 
     expect(screen.getByText(/Error loading office dropdown: network/i)).toBeTruthy();
   });
+
+  it("limits options and reports the selected office value", () => {
+    const onChange = vi.fn();
+    mockedUseCdaOffices.mockReturnValue({
+      data: [
+        { name: "SWT", longName: "Tulsa", type: "District" },
+        { name: "SPK", longName: "Sacramento", type: "District" },
+      ],
+      isLoading: false,
+      isPending: false,
+      isError: false,
+    } as ReturnType<typeof useCdaOffices>);
+
+    render(<OfficeDropdown includeOffices={["swt"]} value="SWT" onChange={onChange} />);
+
+    const dropdown = screen.getByLabelText("Select an office");
+    expect(screen.getByText("Tulsa")).toBeTruthy();
+    expect(screen.queryByText("Sacramento")).toBeNull();
+
+    dropdown.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(onChange).toHaveBeenCalledWith("SWT");
+  });
 });

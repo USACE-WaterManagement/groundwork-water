@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { LevelsApi, GetLevelsWithLevelIdTimeSeriesRequest, TimeSeries } from "cwmsjs";
 import { useCdaConfig } from "../helpers/cda";
+import { fetchCdaLevelTimeSeries } from "../helpers/levels";
 
 interface UseCdaLevelsParams {
   cdaParams: GetLevelsWithLevelIdTimeSeriesRequest;
@@ -14,7 +15,7 @@ const useCdaLevels = ({ cdaParams, cdaUrl, queryOptions }: UseCdaLevelsParams) =
 
   return useQuery({
     queryKey: ["cda", "levels", ...Object.values(cdaParams)],
-    queryFn: async () => levelsApi.getLevelsWithLevelIdTimeSeries(cdaParams),
+    queryFn: async () => fetchCdaLevelTimeSeries({ cdaParams, levelsApi }),
     ...queryOptions,
   });
 };

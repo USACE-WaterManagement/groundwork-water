@@ -71,7 +71,10 @@ function App() {
               <BreadcrumbItem key={path} href={path} text={path} />
             ))}
         </Breadcrumbs>
-        <div className="p-4">
+        <div
+          className="min-w-0 max-w-full overflow-x-hidden p-4"
+          style={{ contain: "inline-size" }}
+        >
           <Route />
         </div>
       </SiteWrapper>

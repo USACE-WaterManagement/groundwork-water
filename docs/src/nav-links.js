@@ -62,6 +62,11 @@ export default [
     href: `${BASE_URL}#/docs/dropdowns`,
     children: [
       {
+        id: "search-input",
+        text: "Search Input",
+        href: `${BASE_URL}#/docs/dropdowns/search-input`,
+      },
+      {
         id: "offices",
         text: "Offices",
         href: `${BASE_URL}#/docs/dropdowns/offices`,
@@ -73,6 +78,11 @@ export default [
     text: "Data Hooks",
     href: `${BASE_URL}#/docs/hooks`,
     children: [
+      {
+        id: "users",
+        text: "Users",
+        href: `${BASE_URL}#/docs/hooks/users`,
+      },
       {
         id: "blobs",
         text: "CDA Blobs",
@@ -169,6 +179,23 @@ export default [
         text: "CWMS Plot",
         href: `${BASE_URL}#/docs/plots/cwms-plot`,
       },
+      {
+        id: "basin-pie",
+        text: "Basin Pie",
+        href: `${BASE_URL}#/docs/plots/basin-pie`,
+      },
+    ],
+  },
+  {
+    id: "graphics",
+    text: "Graphics",
+    href: `${BASE_URL}#/docs/graphics`,
+    children: [
+      {
+        id: "dam-profile",
+        text: "Dam Profile",
+        href: `${BASE_URL}#/docs/graphics/dam-profile`,
+      },
     ],
   },
   {
@@ -205,6 +232,11 @@ export default [
         id: "cwms-file-upload",
         text: "CWMS File Upload",
         href: `${BASE_URL}#/docs/forms/cwms-file-upload`,
+      },
+      {
+        id: "cwms-data-upload",
+        text: "CWMS Data Upload",
+        href: `${BASE_URL}#/docs/forms/cwms-data-upload`,
       },
       {
         id: "cwms-input-table",

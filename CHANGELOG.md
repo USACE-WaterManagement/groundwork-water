@@ -1,5 +1,48 @@
 # @usace-watermanagement/groundwork-water
 
+## 4.2.0
+
+### Minor Changes
+
+- ec76b89: Add reusable hooks for listing office users and roles and updating user role assignments. Add the cwms-cli-compatible read-only, read/write, and user-administrator role presets with helpers for resolving them against the CDA role catalog. Export CWMS role descriptions sourced from the database schema as a temporary fallback until CDA returns them. Extend `OfficeDropdown` with CDA URL and office allow-list support for authorized administration views. Remove an unused documentation-state import that prevented the packaged library from loading in Vite consumers.
+- ec76b89: Allow CDA user searches across offices by omitting the optional office filter.
+
+## 4.1.1
+
+### Patch Changes
+
+- 26e13d4: Default Keycloak authentication to the CWBI production host while retaining the host
+  override for development, test, and custom environments. Clarify the production and
+  test hosts throughout the authentication documentation.
+
+## 4.1.0
+
+### Minor Changes
+
+- 467d003: Add a paginated CDA location catalog hook and helpers for converting catalog entries to GeoJSON point features.
+- 77a35dc: Added A2W Dam Profile Chart to component library
+- 914dd52: Add a React and Groundwork-based CWMS tabular data upload form with workbook validation, existing-data comparison, batch submission, deletion, and generated templates.
+- ec19d44: Add a reusable `SearchInput` component and docs for district-configured search bars.
+
+### Patch Changes
+
+- f56fabe: Document pre-fetched CWMSTable data and publish accurate optional prop types.
+
+## 4.0.0
+
+### Major Changes
+
+- d24a410: Modernize CWMSTable with virtualized responsive rendering by default.
+- fdc215b: Improve package output for downstream tree shaking by publishing preserved ESM modules, adding subpath exports, moving styles to an explicit CSS entry, and lazy-loading Plotly and OpenLayers from the components that need them.
+
+### Minor Changes
+
+- cc9e1c2: Add a secure interactive radial fill chart, a CWMS basin storage adapter, and exact
+  level time-series fetching helpers for dynamic request lists.
+- cebda1b: Add CDA parity improvements to CWMSPlot, including preloaded time-series values and memoized CDA clients.
+- e452b73: Add Data Status Summary component
+- 37d2607: Add `getValidToken(minValiditySeconds)` to authentication methods so API clients can retrieve a usable Keycloak access token immediately before sending a request. The Keycloak implementation refreshes expired or soon-to-expire PKCE and direct-grant tokens and coalesces concurrent refresh attempts into one request.
+
 ## 3.11.0
 
 ### Minor Changes

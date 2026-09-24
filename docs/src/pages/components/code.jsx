@@ -10,19 +10,27 @@ export function Code({
   ...props
 }) {
   const codeClassName = clsx(
-    "whitespace-pre rounded border border-zinc-950/10 bg-zinc-950/[2.5%] px-4 py-1 text-sm font-medium text-zinc-950 sm:text-[0.8125rem] dark:border-white/20 dark:bg-white/5 dark:text-white",
+    "max-w-full overflow-x-auto whitespace-pre rounded border border-zinc-950/10 bg-zinc-950/[2.5%] px-4 py-1 text-sm font-medium text-zinc-950 sm:text-[0.8125rem] dark:border-white/20 dark:bg-white/5 dark:text-white",
     className,
   );
 
   return (
-    <div className={`relative mt-3 mb-3 ${inline ? "inline-block" : "block"}`}>
-      <div className={`relative ${inline ? "inline-flex" : "flex"} items-start`}>
+    <div
+      className={`relative mt-3 mb-3 min-w-0 max-w-full ${
+        inline ? "inline-block" : "block"
+      }`}
+    >
+      <div
+        className={`relative min-w-0 max-w-full ${
+          inline ? "inline-flex" : "flex"
+        } items-start`}
+      >
         {language && (
           <div className="relative top-3 right-0 bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded-tr rounded-bl">
             {language.toUpperCase()}
           </div>
         )}
-        <div className="mr-2 mt-1 flex-shrink-0 overflow-y-auto max-h-[70vh]">
+        <div className="mr-2 mt-1 min-w-0 flex-1 overflow-auto max-h-[70vh]">
           {language ? (
             <SyntaxHighlighter
               language={language}

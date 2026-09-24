@@ -120,11 +120,15 @@ function AuthenticationDocs() {
         application, e.g. App.jsx/tsx, using the provided constructor functions.
       </Text>
       <Text className="mt-2 font-semibold">Keycloak (PKCE - recommended):</Text>
+      <Text className="mt-2">
+        This configuration uses the default CWBI production host. Development and test
+        applications must set <Code>host</Code> to
+        <Code> https://identity-test.cwbi.mil/auth</Code>.
+      </Text>
       <CodeBlock language="jsx">
         {`import { createKeycloakAuthMethod } from "@usace-watermanagement/groundwork-water";
 
 const authMethod = createKeycloakAuthMethod({
-  host: "https://identity-test.cwbi.mil/auth",
   realm: "cwbi",
   client: "cwms",
   flow: "authorization-code-pkce",

@@ -60,6 +60,15 @@ function FormsDocs() {
         </li>
         <li>
           <Link
+            href={`${BASE_URL}#/docs/forms/cwms-data-upload`}
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            CWMSDataUpload
+          </Link>{" "}
+          - Validated Excel upload, CDA comparison, plotting, and batch submission
+        </li>
+        <li>
+          <Link
             href={`${BASE_URL}#/docs/forms/cwms-textarea`}
             className="text-blue-600 hover:underline font-semibold"
           >

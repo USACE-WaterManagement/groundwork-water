@@ -4,6 +4,7 @@ import CdaLatestValueCardDocs from "../pages/docs/cards/cda-latest-value-card";
 import NotFound from "../pages/NotFound";
 import PlotsDocs from "../pages/docs/plots";
 import CWMSPlotDocs from "../pages/docs/plots/cwms-plot";
+import BasinPieDocs from "../pages/docs/plots/basin-pie";
 import Tables from "../pages/docs/tables";
 import Maps from "../pages/docs/maps";
 import Docs from "../pages/docs/";
@@ -17,6 +18,7 @@ import CwmsLoginDocs from "../pages/docs/auth/cwms-login";
 import KeycloakDocs from "../pages/docs/auth/keycloak";
 import UseAuthDocs from "../pages/docs/auth/use-auth";
 import OfficesDropdownDocs from "../pages/docs/dropdowns/offices";
+import SearchInputDocs from "../pages/docs/dropdowns/search-input";
 import UseCdaCatalog from "../pages/docs/hooks/use-cda-catalog";
 import UseCdaLatestValue from "../pages/docs/hooks/use-cda-latest-value";
 import UseCdaLocation from "../pages/docs/hooks/use-cda-location";
@@ -35,11 +37,13 @@ import UseCdaOffices from "../pages/docs/hooks/use-cda-offices";
 import UseCdaBlob from "../pages/docs/hooks/use-cda-blob";
 import useCdaBlobs from "../pages/docs/hooks/use-cda-blobs";
 import useDebounce from "../pages/docs/utilities/use-debounce";
+import UserHooksDocs from "../pages/docs/hooks/users";
 
 import FormsDocs from "../pages/docs/forms";
 import CWMSFormDocs from "../pages/docs/forms/cwms-form";
 import CWMSInputDocs from "../pages/docs/forms/cwms-input";
 import CWMSFileUploadDocs from "../pages/docs/forms/cwms-file-upload";
+import CWMSDataUploadDocs from "../pages/docs/forms/cwms-data-upload";
 import CWMSTextareaDocs from "../pages/docs/forms/cwms-textarea";
 import CWMSCheckboxesDocs from "../pages/docs/forms/cwms-checkboxes";
 import CWMSRadioGroupDocs from "../pages/docs/forms/cwms-radio-group";
@@ -49,6 +53,8 @@ import CWMSSpreadsheetDocs from "../pages/docs/forms/cwms-spreadsheet";
 import InteractiveFormTest from "../pages/docs/forms/interactive-test";
 import { docsConfig } from "../config/docs.config";
 import GetPrecisionPage from "../pages/docs/utilities/get-precision";
+import DamProfileDocs from "../pages/docs/graphics/dam-profile";
+import GraphicsDocs from "../pages/docs/graphics";
 import DataStatus from "../pages/docs/summary/data-status";
 
 export default createRouteBundle(
@@ -64,7 +70,9 @@ export default createRouteBundle(
     "/docs/auth/keycloak": KeycloakDocs,
     "/docs/auth/use-auth": UseAuthDocs,
     "/docs/dropdowns/offices": OfficesDropdownDocs,
+    "/docs/dropdowns/search-input": SearchInputDocs,
     "/docs/hooks": DataHooks,
+    "/docs/hooks/users": UserHooksDocs,
     "/docs/hooks/use-cda-catalog": UseCdaCatalog,
     "/docs/hooks/use-cda-latest-value": UseCdaLatestValue,
     "/docs/hooks/use-cda-location": UseCdaLocation,
@@ -80,6 +88,9 @@ export default createRouteBundle(
     "/docs/hooks/use-cda-blobs": useCdaBlobs,
     "/docs/plots": PlotsDocs,
     "/docs/plots/cwms-plot": CWMSPlotDocs,
+    "/docs/graphics": GraphicsDocs,
+    "/docs/graphics/dam-profile": DamProfileDocs,
+    "/docs/plots/basin-pie": BasinPieDocs,
     "/docs/maps": Maps,
     "/docs/tables": Tables,
     "/docs/summary/data-status": DataStatus,
@@ -87,6 +98,7 @@ export default createRouteBundle(
     "/docs/forms/cwms-form": CWMSFormDocs,
     "/docs/forms/cwms-input": CWMSInputDocs,
     "/docs/forms/cwms-file-upload": CWMSFileUploadDocs,
+    "/docs/forms/cwms-data-upload": CWMSDataUploadDocs,
     "/docs/forms/cwms-textarea": CWMSTextareaDocs,
     "/docs/forms/cwms-checkboxes": CWMSCheckboxesDocs,
     "/docs/forms/cwms-radio-group": CWMSRadioGroupDocs,
