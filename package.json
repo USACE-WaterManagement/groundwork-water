@@ -112,7 +112,7 @@
   ],
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.6",
-    "cwmsjs": "^2.3.0-2024.12.10",
+    "cwmsjs": "^2.4.0-2026.3.16",
     "d3": "^7.9.0",
     "dayjs": "^1.11.11",
     "deepmerge": "^4.3.1",

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery, UseQueryOptions, QueryKey } from "@tanstack/react-query";
-import { GetOfficesRequest, Office, OfficesApi, InitOverrideFunction } from "cwmsjs";
+import { GetOfficesRequest, Office, OfficesApi } from "cwmsjs";
 import { useCdaConfig } from "../helpers/cda";
 
 interface UseCdaOfficesParams {
@@ -10,7 +10,7 @@ interface UseCdaOfficesParams {
     UseQueryOptions<Office[], Error, Office[], QueryKey>,
     "queryKey" | "queryFn"
   >;
-  initOverrides?: RequestInit | InitOverrideFunction;
+  initOverrides?: RequestInit;
 }
 
 const useCdaOffices = ({
