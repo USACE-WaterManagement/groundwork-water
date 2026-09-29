@@ -42,7 +42,20 @@ jobs:
       - name: Install requested Groundwork Water version
         env:
           PACKAGE_VERSION: ${{ inputs.package_version }}
-        run: npm install --no-save "@usace-watermanagement/groundwork-water@$PACKAGE_VERSION"
+        run: |
+          for attempt in {1..6}; do
+            if npm install --no-save "@usace-watermanagement/groundwork-water@$PACKAGE_VERSION"; then
+              exit 0
+            fi
+
+            if [[ "$attempt" -lt 6 ]]; then
+              echo "Package $PACKAGE_VERSION is not available yet. Retrying in 15 seconds..."
+              sleep 15
+            fi
+          done
+
+          echo "Unable to install @usace-watermanagement/groundwork-water@$PACKAGE_VERSION after 6 attempts."
+          exit 1
         working-directory: ./docs
 
       - name: Verify installed Groundwork Water version
