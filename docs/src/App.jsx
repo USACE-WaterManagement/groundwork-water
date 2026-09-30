@@ -4,7 +4,6 @@ import { useConnect } from "redux-bundler-hook";
 import links from "./nav-links";
 import { FaGithub } from "react-icons/fa";
 import "@usace-watermanagement/groundwork-water/dist/style.css";
-import "@usace/groundwork/groundwork.css";
 const version = import.meta.env.PKG_VERSION;
 
 import externalLinks from "./external-links";

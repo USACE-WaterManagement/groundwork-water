@@ -65,7 +65,7 @@ export default function Docs() {
           {`import { CWMSPlot } from "@usace-watermanagement/groundwork-water"`}
         </Code>
         <Code className="gw-block gw-p-1 gw-px-2" language="jsx">
-          {`import "@usace-watermanagement/groundwork-water/dist/style.css";`}
+          {`import "@usace-watermanagement/groundwork-water/style.css";`}
         </Code>
         <Text>
           Make sure to import style.css from Groundwork-Water into your top-level
@@ -73,7 +73,20 @@ export default function Docs() {
         </Text>
         <br />
         <Text>
-          Note: The Groundwork-Water styles include all of the base Groundwork styles.
+          This single import loads Groundwork Water styles and the styles from your
+          installed Groundwork version. A separate Groundwork stylesheet import is not
+          needed. Groundwork styles alone do not include Groundwork Water styles.
+        </Text>
+        <Text>
+          The existing /dist/style.css import also works. Import your application
+          overrides afterward. Use a bundler such as Vite to resolve the stylesheet
+          imports, and keep Groundwork within Groundwork Water's supported peer
+          dependency range.
+        </Text>
+        <Text>
+          This requires Groundwork 4.3.2 or newer within version 4. Applications using
+          Groundwork 3 must upgrade first, or remain on Groundwork Water 4.x. Direct
+          browser or CDN stylesheet links require a bundled CSS file.
         </Text>
       </UsaceBox>
     </DocsPage>
