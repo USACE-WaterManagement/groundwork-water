@@ -34,16 +34,13 @@ jobs:
         id: package
         shell: bash
         run: |
-          package_path=$(npm pack --pack-destination "$RUNNER_TEMP" --json | node -e '
-            let input = "";
-            process.stdin.on("data", (chunk) => { input += chunk; });
-            process.stdin.on("end", () => {
-              const [{ filename }] = JSON.parse(input);
-              console.log(`${process.env.RUNNER_TEMP}/${filename}`);
-            });
-          ')
+          package_file=$(npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP" 2>&1 | tail -n 1)
+          if [[ "$package_file" != *.tgz ]]; then
+            echo "Unable to identify the packed library artifact: $package_file"
+            exit 1
+          fi
           package_version=$(node -p "require('./package.json').version")
-          echo "path=$package_path" >> "$GITHUB_OUTPUT"
+          echo "path=$RUNNER_TEMP/$package_file" >> "$GITHUB_OUTPUT"
           echo "version=$package_version" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
