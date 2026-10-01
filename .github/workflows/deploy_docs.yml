@@ -2,18 +2,7 @@ name: Deploy to GH Pages
 
 on:
   workflow_call:
-    inputs:
-      package_version:
-        description: Exact Groundwork Water package version to deploy
-        required: true
-        type: string
   workflow_dispatch:
-    inputs:
-      package_version:
-        description: Exact package version to deploy, or latest
-        required: false
-        default: latest
-        type: string
 
 concurrency:
   group: github-pages
@@ -35,40 +24,49 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install library dependencies
+        run: npm ci
+
+      - name: Build library
+        run: npm run build
+
+      - name: Pack library
+        id: package
+        shell: bash
+        run: |
+          package_path=$(npm pack --pack-destination "$RUNNER_TEMP" --json | node -e '
+            let input = "";
+            process.stdin.on("data", (chunk) => { input += chunk; });
+            process.stdin.on("end", () => {
+              const [{ filename }] = JSON.parse(input);
+              console.log(`${process.env.RUNNER_TEMP}/${filename}`);
+            });
+          ')
+          package_version=$(node -p "require('./package.json').version")
+          echo "path=$package_path" >> "$GITHUB_OUTPUT"
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
         run: npm ci
         working-directory: ./docs
 
-      - name: Install requested Groundwork Water version
+      - name: Install locally built Groundwork Water package
         env:
-          PACKAGE_VERSION: ${{ inputs.package_version }}
-        run: |
-          for attempt in {1..3}; do
-            if npm install --no-save "@usace-watermanagement/groundwork-water@$PACKAGE_VERSION"; then
-              exit 0
-            fi
-
-            if [[ "$attempt" -lt 3 ]]; then
-              echo "Package $PACKAGE_VERSION is not available yet. Retrying in 60 seconds..."
-              sleep 60
-            fi
-          done
-
-          echo "Unable to install @usace-watermanagement/groundwork-water@$PACKAGE_VERSION after 3 attempts."
-          exit 1
+          PACKAGE_TARBALL: ${{ steps.package.outputs.path }}
+        run: npm install --no-save --package-lock=false "$PACKAGE_TARBALL"
         working-directory: ./docs
 
       - name: Verify installed Groundwork Water version
         shell: bash
         env:
-          EXPECTED_VERSION: ${{ inputs.package_version }}
+          LIBRARY_VERSION: ${{ steps.package.outputs.version }}
         working-directory: ./docs
         run: |
           installed_version=$(node -p \
             "require('./node_modules/@usace-watermanagement/groundwork-water/package.json').version")
 
-          if [[ "$EXPECTED_VERSION" != "latest" && "$installed_version" != "$EXPECTED_VERSION" ]]; then
-            echo "::error::Expected Groundwork Water $EXPECTED_VERSION, but installed $installed_version."
+          if [[ "$installed_version" != "$LIBRARY_VERSION" ]]; then
+            echo "::error::Built Groundwork Water $LIBRARY_VERSION, but installed $installed_version."
             exit 1
           fi
 
