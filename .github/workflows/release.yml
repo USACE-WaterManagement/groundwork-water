@@ -15,15 +15,31 @@ jobs:
       pull-requests: write
     outputs:
       published: ${{ steps.changesets.outputs.published }}
+      docs_changed: ${{ steps.docs_changes.outputs.changed }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org/"
+
+      - name: Detect docs changes
+        id: docs_changes
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          if git diff --quiet "$BEFORE_SHA" "$CURRENT_SHA" -- docs/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - run: npm ci
 
@@ -38,7 +54,7 @@ jobs:
   deploy-docs:
     name: Deploy published docs
     needs: release
-    if: needs.release.outputs.published == 'true'
+    if: needs.release.outputs.published == 'true' || needs.release.outputs.docs_changed == 'true'
     uses: ./.github/workflows/deploy_docs.yml
     permissions:
       contents: read
