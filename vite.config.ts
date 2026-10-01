@@ -83,7 +83,24 @@ export default defineConfig(({ mode }) => {
   } else if (mode === "css") {
     console.log("Building library CSS");
     return {
-      plugins: [react(), tailwindcss(), removeCssEntrypointPlugin("style-entry.js")],
+      plugins: [
+        react(),
+        tailwindcss(),
+        removeCssEntrypointPlugin("style-entry.js"),
+        {
+          name: "consumer-stylesheet-entry",
+          generateBundle() {
+            // Resolve the peer's CSS in the consuming app, not at library build time.
+            this.emitFile({
+              type: "asset",
+              fileName: "style.css",
+              source:
+                '@import "@usace/groundwork/dist/style.css";\n' +
+                '@import "./groundwork-water.css";\n',
+            });
+          },
+        },
+      ],
       publicDir: false,
       build: {
         emptyOutDir: false,
@@ -95,7 +112,12 @@ export default defineConfig(({ mode }) => {
         },
         rollupOptions: {
           output: {
-            assetFileNames: libraryAssetFileNames,
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name?.endsWith(".css")) {
+                return "groundwork-water.css";
+              }
+              return "assets/[name][extname]";
+            },
           },
         },
       },
