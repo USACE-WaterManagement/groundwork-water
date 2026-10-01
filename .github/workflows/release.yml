@@ -15,7 +15,6 @@ jobs:
       pull-requests: write
     outputs:
       published: ${{ steps.changesets.outputs.published }}
-      published_version: ${{ steps.published_version.outputs.version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -36,40 +35,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Read published Groundwork Water version
-        id: published_version
-        if: steps.changesets.outputs.published == 'true'
-        shell: bash
-        env:
-          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
-        run: |
-          node <<'NODE'
-          const fs = require("node:fs");
-
-          const packages = JSON.parse(process.env.PUBLISHED_PACKAGES);
-          const publishedPackage = packages.find(
-            ({ name }) => name === "@usace-watermanagement/groundwork-water",
-          );
-
-          if (!publishedPackage) {
-            throw new Error(
-              "Changesets reported a publish without a Groundwork Water package version.",
-            );
-          }
-
-          fs.appendFileSync(
-            process.env.GITHUB_OUTPUT,
-            `version=${publishedPackage.version}\n`,
-          );
-          NODE
-
   deploy-docs:
     name: Deploy published docs
     needs: release
     if: needs.release.outputs.published == 'true'
     uses: ./.github/workflows/deploy_docs.yml
-    with:
-      package_version: ${{ needs.release.outputs.published_version }}
     permissions:
       contents: read
       pages: write
