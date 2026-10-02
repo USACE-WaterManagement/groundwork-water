@@ -125,7 +125,7 @@
     "redux-bundler-hook": "^1.0.3"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
+    "@changesets/cli": "^3.0.3",
     "@testing-library/react": "^16.3.0",
     "@types/ol": "^7.0.0",
     "@types/react": "^18.3.3",
