@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 5.0.1
+
+### Patch Changes
+
+- 770cbdf: security updates
+
 ## 5.0.0
 
 ### Major Changes
