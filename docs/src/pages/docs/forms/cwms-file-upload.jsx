@@ -7,6 +7,12 @@ import { CWMSFileUpload, CWMSForm } from "@usace-watermanagement/groundwork-wate
 
 const componentProps = [
   {
+    name: "mode",
+    type: '"blob" | "file"',
+    default: '"blob"',
+    desc: 'Use "file" for standalone selection. It emits a File without reading or encoding its contents and does not register with CWMSForm. The application handles submission.',
+  },
+  {
     name: "blobId",
     type: "string",
     default: "required for CWMS submission",
@@ -88,7 +94,7 @@ const componentProps = [
     name: "onChange",
     type: "function",
     default: "undefined",
-    desc: "Called with the selected File object or null when cleared.",
+    desc: 'Called with the selected File object or null when cleared. In mode="file", invalid selections also emit null.',
   },
 ];
 
@@ -108,6 +114,26 @@ function CWMSFileUploadDocs() {
           JSON, CSV, or TXT files.
         </Text>
       </div>
+
+      <Divider text="Standalone file selection" className="mt-8" />
+      <Text>
+        Use file mode with your own form submission. The component does not upload or
+        persist the document. Validate content and size again on your server.
+      </Text>
+      <CodeBlock language="jsx">{`const [file, setFile] = useState(null);
+
+<CWMSFileUpload
+  mode="file"
+  label="PDF document"
+  accept=".pdf,application/pdf"
+  maxFileSizeBytes={10 * 1024 * 1024}
+  onChange={setFile}
+/>
+
+// When your form is submitted:
+const body = new FormData();
+body.append("file", file);
+await fetch(uploadUrl, { method: "POST", body });`}</CodeBlock>
 
       <Divider text="Basic Usage" className="mt-8" />
       <CWMSForm office="SWT" onSubmit={(data) => console.log("Upload payload", data)}>
