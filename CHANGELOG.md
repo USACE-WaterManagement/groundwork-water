@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 5.1.0
+
+### Minor Changes
+
+- e1f45de: security updates
+
 ## 5.0.1
 
 ### Patch Changes
