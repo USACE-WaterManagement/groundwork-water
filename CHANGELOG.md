@@ -1,5 +1,11 @@
 # @usace-watermanagement/groundwork-water
 
+## 5.1.1
+
+### Patch Changes
+
+- 63a8525: test package versions after deploy published docs failure in temp file
+
 ## 5.1.0
 
 ### Minor Changes
