@@ -50,7 +50,7 @@ jobs:
       - name: Install locally built Groundwork Water package
         env:
           PACKAGE_TARBALL: ${{ steps.package.outputs.path }}
-        run: npm install --no-save --package-lock=false "$PACKAGE_TARBALL"
+        run: npm install --no-save --package-lock=false --legacy-peer-deps "$PACKAGE_TARBALL"
         working-directory: ./docs
 
       - name: Verify installed Groundwork Water version
