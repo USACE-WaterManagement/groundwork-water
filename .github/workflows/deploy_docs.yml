@@ -53,43 +53,43 @@ jobs:
         run: npm install --no-save --package-lock=false --legacy-peer-deps "$PACKAGE_TARBALL"
         working-directory: ./docs
 
-      #- name: Verify installed Groundwork Water version
-      #  shell: bash
-      #  env:
-      #    LIBRARY_VERSION: ${{ steps.package.outputs.version }}
-      #  working-directory: ./docs
-      #  run: |
-      #    installed_version=$(node -p \
-      #      "require('./node_modules/@usace-watermanagement/groundwork-water/package.json').version")
+      - name: Verify installed Groundwork Water version
+        shell: bash
+        env:
+          LIBRARY_VERSION: ${{ steps.package.outputs.version }}
+        working-directory: ./docs
+        run: |
+          installed_version=$(node -p \
+            "require('./node_modules/@usace-watermanagement/groundwork-water/package.json').version")
 
-      #    if [[ "$installed_version" != "$LIBRARY_VERSION" ]]; then
-      #      echo "::error::Built Groundwork Water $LIBRARY_VERSION, but installed $installed_version."
-      #      exit 1
-      #    fi
+          if [[ "$installed_version" != "$LIBRARY_VERSION" ]]; then
+            echo "::error::Built Groundwork Water $LIBRARY_VERSION, but installed $installed_version."
+            exit 1
+          fi
 
-      #    echo "Deploying Groundwork Water $installed_version" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploying Groundwork Water $installed_version" >> "$GITHUB_STEP_SUMMARY"
 
-      #- name: Build project
-      #  env:
-      #    VITE_HOMEPAGE: "https://usace-watermanagement.github.io/groundwork-water"
-      #  run: npx vite build
-      #  working-directory: ./docs
+      - name: Build project
+        env:
+          VITE_HOMEPAGE: "https://usace-watermanagement.github.io/groundwork-water"
+        run: npx vite build
+        working-directory: ./docs
 
-      #- name: Upload production-ready build files
-      #  uses: actions/upload-pages-artifact@v5
-      #  with:
-      #    path: ./docs/dist
+      - name: Upload production-ready build files
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./docs/dist
 
-  #deploy:
-  #  needs: build
-  #  permissions:
-  #    pages: write
-  #    id-token: write
-  #  environment:
-  #    name: github-pages
-  #    url: ${{ steps.deployment.outputs.page_url }}
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - name: Deploy to GitHub Pages
-  #      id: deployment
-  #      uses: actions/deploy-pages@v5
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
