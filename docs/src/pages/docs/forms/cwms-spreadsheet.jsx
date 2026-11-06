@@ -10,7 +10,7 @@ const componentProps = [
     name: "columns",
     type: "array",
     default: "[]",
-    desc: "Array of column configuration objects. Each object can have: label, type, tsid, units, precision, required, readonly, placeholder. When showTimestamps is true, a time column is automatically added as the first column.",
+    desc: "Array of column configuration objects. Each object can have: label, type, tsid, units, precision, required, disabled, readOnly, readonly, placeholder. When showTimestamps is true, a time column is automatically added as the first column.",
   },
   {
     name: "rows",
@@ -67,22 +67,34 @@ const componentProps = [
     desc: "Global default for required status. Can be overridden per column or per cell.",
   },
   {
+    name: "disabled",
+    type: "boolean",
+    default: "false",
+    desc: "Disable data cells by default, excluding them from CWMS form registration. Columns and individual cells can explicitly set disabled: false to remain editable. Timestamp cells are always disabled.",
+  },
+  {
+    name: "readOnly",
+    type: "boolean",
+    default: "false",
+    desc: "Make data cells read-only by default. Read-only cells remain available for selection, copying, and CWMS form registration. Columns and cells can override with readOnly: false.",
+  },
+  {
     name: "readonly",
     type: "boolean",
     default: "false",
-    desc: "Global default for read-only status. Can be overridden per column or per cell.",
+    desc: "Legacy alias for readOnly. Prefer readOnly for new code; columns and cells can override it.",
   },
   {
     name: "cellOverrides",
     type: "object",
     default: "{}",
-    desc: "Object with per-cell overrides keyed by 'rowIndex_colIndex' (e.g., {'0_1': {required: true, readonly: true}}).",
+    desc: "Object with per-cell overrides keyed by zero-based data coordinates 'rowIndex_colIndex' (e.g., {'1_1': {disabled: false}}). Coordinates do not change with transpose; the auto-generated timestamp column is index 0.",
   },
   {
     name: "disable",
     type: "boolean",
     default: "false",
-    desc: "Whether all cells are disabled.",
+    desc: "Legacy alias for disabled. Prefer disabled for new code; a column or cell can override the global setting.",
   },
   {
     name: "onChange",
@@ -605,6 +617,82 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 />`}
       </CodeBlock>
 
+      <Divider text="Disabled and Read-Only Cell Overrides" className="mt-8" />
+      <Text className="mb-4">
+        Set <Code className="p-1">disabled</Code> or{" "}
+        <Code className="p-1">readOnly</Code> on the spreadsheet, then override
+        individual columns or cells. This example disables the entire spreadsheet except
+        for the second elevation cell. Try editing the second value; the first elevation
+        and both timestamp cells stay disabled.
+      </Text>
+
+      <div className="overflow-x-auto">
+        <CWMSForm office="SWT" showCalendar={true}>
+          <CWMSSpreadsheet
+            rows={2}
+            disabled={true}
+            transpose={false}
+            columns={[
+              {
+                key: "elevation",
+                label: "Headwater Elevation (ft)",
+                type: "number",
+                precision: 2,
+              },
+            ]}
+            timeoffsets={[
+              { offset: 0 },
+              { offset: 0, id: "new", label: "New setting" },
+            ]}
+            defaultData={[["650.10"], ["650.25"]]}
+            cellOverrides={{
+              "1_1": { disabled: false },
+            }}
+          />
+        </CWMSForm>
+      </div>
+
+      <CodeBlock language="jsx">
+        {`// Disable the sheet but leave the second elevation cell editable.
+<CWMSForm office="SWT" showCalendar={true}>
+  <CWMSSpreadsheet
+    rows={2}
+    disabled={true}
+    transpose={false}
+    columns={[
+      {
+        key: "elevation",
+        label: "Headwater Elevation (ft)",
+        type: "number",
+        precision: 2,
+      },
+    ]}
+    timeoffsets={[
+      { offset: 0 },
+      { offset: 0, id: "new", label: "New setting" },
+    ]}
+    defaultData={[["650.10"], ["650.25"]]}
+    cellOverrides={{
+      "1_1": { disabled: false },
+    }}
+  />
+</CWMSForm>`}
+      </CodeBlock>
+
+      <Text className="mt-4 mb-2">
+        Permission precedence is <strong>cell → column → spreadsheet</strong>. An
+        explicit <Code className="p-1">false</Code> at a more specific level overrides a{" "}
+        <Code className="p-1">true</Code> default. Disabled cells are omitted from CWMS
+        form registration; read-only cells remain registered. Timestamp cells are always
+        disabled.
+      </Text>
+      <Text className="mb-4">
+        Cell keys use zero-based <strong>underlying data coordinates</strong>, not their
+        displayed position. With a timestamp column, elevation is column index 1, so{" "}
+        <Code className="p-1">"1_1"</Code> identifies the second elevation cell. The
+        same key works when <Code className="p-1">transpose={"{true}"}</Code>.
+      </Text>
+
       <Divider text="Transposed Layout" className="mt-8" />
       <Text className="mb-4">
         Set <Code>transpose={"{true}"}</Code> to swap rows and columns. Column
@@ -759,10 +847,22 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             desc: "Whether all cells in this column are required. Overrides global required prop.",
           },
           {
+            name: "disabled",
+            type: "boolean",
+            default: "global disabled",
+            desc: "Disable this column by default. Individual cells can override with disabled: false.",
+          },
+          {
+            name: "readOnly",
+            type: "boolean",
+            default: "global readOnly",
+            desc: "Make this column read-only by default. Individual cells can override with readOnly: false.",
+          },
+          {
             name: "readonly",
             type: "boolean",
             default: "global readonly",
-            desc: "Whether all cells in this column are read-only. Overrides global readonly prop.",
+            desc: "Legacy spelling of readOnly for this column.",
           },
           {
             name: "placeholder",
@@ -807,10 +907,22 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
             desc: "Override the required status for this specific cell.",
           },
           {
+            name: "disabled",
+            type: "boolean",
+            default: "column/global disabled",
+            desc: "Disable or re-enable this specific cell. An explicit false overrides a disabled column or spreadsheet.",
+          },
+          {
+            name: "readOnly",
+            type: "boolean",
+            default: "column/global readOnly",
+            desc: "Make this cell read-only, or restore editing with readOnly: false.",
+          },
+          {
             name: "readonly",
             type: "boolean",
             default: "column/global readonly",
-            desc: "Override the readonly status for this specific cell.",
+            desc: "Legacy spelling of readOnly for this cell.",
           },
           {
             name: "type",
@@ -852,8 +964,8 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
         <Text className="text-sm">
-          For properties like units, precision, required, and readonly, the component
-          uses this fallback order:
+          For properties like units, precision, required, disabled, and readOnly, the
+          component uses this fallback order:
         </Text>
         <Code className="block mt-2 p-2 bg-white">
           cellOverride → column → global → default value

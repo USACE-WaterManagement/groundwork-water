@@ -1,4 +1,11 @@
-import React, { useEffect, useState, useContext, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { FormContext } from "../CWMSForm";
 import { useNearestValues } from "../hooks/useNearestValueStore";
 import {
@@ -11,12 +18,18 @@ import {
 // one they changed. Inline style because the Groundwork input owns its classes.
 const PREFILLED_STYLE = { opacity: 0.7 };
 const CHANGED_STYLE = { fontWeight: 600 };
+const EMPTY_ARRAY = [];
+const EMPTY_OBJECT = {};
+const DISABLED_CELL_COLOR = "#f3f4f6";
+const READ_ONLY_CELL_COLOR = "#f8fafc";
 
 function CWMSSpreadsheet({
   style,
   disable,
+  disabled,
+  readOnly,
   invalid,
-  columns = [],
+  columns = EMPTY_ARRAY,
   rows = 10,
   precision = 2,
   offset = 0,
@@ -28,15 +41,15 @@ function CWMSSpreadsheet({
   readonly = false,
   units = "EN",
   onChange,
-  defaultData = [],
+  defaultData = EMPTY_ARRAY,
   showRowNumbers = true,
   showColumnHeaders = true,
   showTimestamps = false,
   showCopyAllDataButton = true,
   showSelectAllButton = true,
-  timeoffsets = [],
+  timeoffsets = EMPTY_ARRAY,
   required = false,
-  cellOverrides = {},
+  cellOverrides = EMPTY_OBJECT,
   showValueTimestamp = false,
   transpose = false,
   highlightChanged = true,
@@ -56,6 +69,44 @@ function CWMSSpreadsheet({
         ? [{ key: "time", label: "Time", type: "text", readOnly: true }, ...columns]
         : columns,
     [shouldShowTimestamps, columns],
+  );
+
+  // Resolve permissions from cell, column, and spreadsheet settings.
+  // Keep legacy "disable" and "readonly" props supported.
+  const getCellPermissions = useCallback(
+    (rowIndex, colIndex) => {
+      const key = `${rowIndex}_${colIndex}`;
+      const column = effectiveColumns[colIndex] || {};
+      const cellOverride = cellOverrides[key] || {};
+
+      const isTimestamp = shouldShowTimestamps && colIndex === 0;
+
+      const cellDisabled =
+        cellOverride.disabled ?? column.disabled ?? disabled ?? disable ?? false;
+
+      const cellReadOnly =
+        cellOverride.readOnly ??
+        cellOverride.readonly ??
+        column.readOnly ??
+        column.readonly ??
+        readOnly ??
+        readonly ??
+        false;
+
+      return {
+        disabled: isTimestamp || cellDisabled,
+        readOnly: isTimestamp || cellReadOnly,
+      };
+    },
+    [
+      effectiveColumns,
+      cellOverrides,
+      shouldShowTimestamps,
+      disabled,
+      disable,
+      readOnly,
+      readonly,
+    ],
   );
 
   const [spreadsheetData, setSpreadsheetData] = useState(() => {
@@ -78,6 +129,7 @@ function CWMSSpreadsheet({
   const tableRef = useRef(null);
   const cleanupFunctions = useRef([]);
   const userEdited = useRef(new Set());
+  const [editedCells, setEditedCells] = useState(() => new Set());
   const loadedValuesRef = useRef({});
 
   // Unique ID prefix for this spreadsheet instance so multiple spreadsheets
@@ -103,7 +155,7 @@ function CWMSSpreadsheet({
   const getValueTimestampTitle = (dRow, dCol) => {
     if (!showValueTimestamp || !loadedTimestamps) return undefined;
     const cellKey = `${dRow}_${dCol}`;
-    if (userEdited.current.has(cellKey)) return undefined;
+    if (editedCells.has(cellKey)) return undefined;
     const colIdx = shouldShowTimestamps ? dCol - 1 : dCol;
     const col = columns[colIdx];
     if (!col?.tsid || rowSpecs[dRow] === undefined) return undefined;
@@ -115,6 +167,7 @@ function CWMSSpreadsheet({
   useEffect(() => {
     userEdited.current.clear();
     loadedValuesRef.current = {};
+    setEditedCells(new Set());
     if (!loadNearest) return;
 
     setSpreadsheetData((prev) => {
@@ -224,9 +277,6 @@ function CWMSSpreadsheet({
   useEffect(() => {
     if (!registerInput) return;
 
-    // Don't register disabled inputs for submission
-    if (disable) return;
-
     cleanupFunctions.current.forEach((cleanup) => cleanup());
     cleanupFunctions.current = [];
 
@@ -237,6 +287,16 @@ function CWMSSpreadsheet({
 
         // Skip time column for registration
         if (shouldShowTimestamps && colIndex === 0) {
+          continue;
+        }
+
+        // Skip disabled cells, but allow individually enabled cells.
+        const { disabled: cellDisabled, readOnly: cellReadonly } = getCellPermissions(
+          rowIndex,
+          colIndex,
+        );
+
+        if (cellDisabled) {
           continue;
         }
 
@@ -262,7 +322,7 @@ function CWMSSpreadsheet({
           order: order,
           AllowMissingData: AllowMissingData,
           loadNearest: loadNearest,
-          readonly: cellOverride.readonly ?? column.readonly ?? readonly,
+          readonly: cellReadonly,
           units: cellOverride.units ?? column.units ?? units,
           required: cellOverride.required ?? column.required ?? required,
           label:
@@ -274,6 +334,11 @@ function CWMSSpreadsheet({
           },
           reset: () => {
             userEdited.current.delete(key);
+            setEditedCells((prev) => {
+              const next = new Set(prev);
+              next.delete(key);
+              return next;
+            });
             const nearestKey = cellKeyFor(
               { ...column, tsid: cellTsid },
               rowSpecs[rowIndex] ?? { offset: cellTimeOffset },
@@ -347,6 +412,7 @@ function CWMSSpreadsheet({
     rowSpecs,
     baseTimestamp,
     disable,
+    getCellPermissions,
   ]);
 
   // When transposed, visual rows = data cols and visual cols = data rows.
@@ -400,13 +466,16 @@ function CWMSSpreadsheet({
   };
 
   const handleCellChange = (rowIndex, colIndex, value) => {
-    // Don't allow editing time column
-    if (shouldShowTimestamps && colIndex === 0) {
-      return;
-    }
+    // Protect disabled and read-only cells (including the timestamp column).
+    const { disabled: cellDisabled, readOnly: cellReadonly } = getCellPermissions(
+      rowIndex,
+      colIndex,
+    );
+    if (cellDisabled || cellReadonly) return;
 
     const key = `${rowIndex}_${colIndex}`;
     userEdited.current.add(key);
+    setEditedCells((prev) => new Set(prev).add(key));
     const updatedData = [...spreadsheetData];
     updatedData[rowIndex] = [...updatedData[rowIndex]];
     updatedData[rowIndex][colIndex] = value;
@@ -563,50 +632,55 @@ function CWMSSpreadsheet({
     e.preventDefault();
     e.stopPropagation();
 
+    // A paste must begin on an editable cell.
+    const start = visualToData(startVisualRow, startVisualCol);
+    const startPermissions = getCellPermissions(start.row, start.col);
+    if (startPermissions.disabled || startPermissions.readOnly) return;
+
     const pasteData = (e.clipboardData || window.clipboardData).getData("text");
     if (!pasteData) return;
 
-    // Split by line breaks first (handles both \r\n and \n)
     const pasteRows = pasteData.split(/\r?\n/);
     const updatedData = [...spreadsheetData];
+    const editedKeys = new Set();
 
     pasteRows.forEach((row, rowOffset) => {
-      // Skip empty rows
       if (!row.trim()) return;
 
-      // Split by tabs for columns
       const cells = row.split("\t");
-
       cells.forEach((cell, colOffset) => {
         const vRow = startVisualRow + rowOffset;
         const vCol = startVisualCol + colOffset;
-
-        // Check visual bounds
         if (vRow >= visualRows || vCol >= visualCols) return;
 
-        // Convert visual to data coordinates
         const { row: targetRow, col: targetCol } = visualToData(vRow, vCol);
+        if (
+          targetRow < 0 ||
+          targetRow >= spreadsheetData.length ||
+          targetCol < 0 ||
+          targetCol >= effectiveColumns.length
+        )
+          return;
 
-        // Check data bounds and skip time column
-        if (targetRow < spreadsheetData.length && targetCol < effectiveColumns.length) {
-          if (shouldShowTimestamps && targetCol === 0) {
-            return;
-          }
+        const { disabled, readOnly } = getCellPermissions(targetRow, targetCol);
+        if (disabled || readOnly) return;
 
-          if (!updatedData[targetRow]) {
-            updatedData[targetRow] = Array(effectiveColumns.length).fill("");
-          } else {
-            updatedData[targetRow] = [...updatedData[targetRow]];
-          }
-          updatedData[targetRow][targetCol] = cell.trim();
-        }
+        const value = cell.trim();
+        if (updatedData[targetRow]?.[targetCol] === value) return;
+
+        updatedData[targetRow] = [...updatedData[targetRow]];
+        updatedData[targetRow][targetCol] = value;
+        editedKeys.add(`${targetRow}_${targetCol}`);
       });
     });
 
+    if (editedKeys.size === 0) return;
+
+    // Prevent the nearest-value loader from overwriting pasted values.
+    editedKeys.forEach((key) => userEdited.current.add(key));
+    setEditedCells((prev) => new Set([...prev, ...editedKeys]));
     setSpreadsheetData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
+    if (onChange) onChange(updatedData);
   };
 
   // Mouse handlers receive visual coordinates
@@ -648,8 +722,6 @@ function CWMSSpreadsheet({
   // The handlers receive visual row/col and convert to data coords only when
   // reading/writing spreadsheetData.
   const handleKeyDown = (e, visualRow, visualCol) => {
-    if (readonly || disable) return;
-
     // Handle copy
     if ((e.ctrlKey || e.metaKey) && e.key === "c") {
       e.preventDefault();
@@ -767,20 +839,30 @@ function CWMSSpreadsheet({
         setDragEnd(null);
         break;
       case "Delete": {
+        e.preventDefault();
         const range = getSelectionRange();
         if (range) {
           const updatedData = [...spreadsheetData];
+          const editedKeys = new Set();
+
           for (let vRow = range.startRow; vRow <= range.endRow; vRow++) {
             for (let vCol = range.startCol; vCol <= range.endCol; vCol++) {
               const { row: dRow, col: dCol } = visualToData(vRow, vCol);
-              if (!updatedData[dRow]) continue;
+              const { disabled, readOnly } = getCellPermissions(dRow, dCol);
+              if (disabled || readOnly || !updatedData[dRow]) continue;
+              if (updatedData[dRow][dCol] === "") continue;
+
               updatedData[dRow] = [...updatedData[dRow]];
               updatedData[dRow][dCol] = "";
+              editedKeys.add(`${dRow}_${dCol}`);
             }
           }
-          setSpreadsheetData(updatedData);
-          if (onChange) {
-            onChange(updatedData);
+
+          if (editedKeys.size > 0) {
+            editedKeys.forEach((key) => userEdited.current.add(key));
+            setEditedCells((prev) => new Set([...prev, ...editedKeys]));
+            setSpreadsheetData(updatedData);
+            if (onChange) onChange(updatedData);
           }
         } else {
           const { row: dRow, col: dCol } = visualToData(visualRow, visualCol);
@@ -958,8 +1040,8 @@ function CWMSSpreadsheet({
                         const isCellActive = isActiveCell(vRow, vCol);
                         const isCellInvalid = invalidCells[key] || invalid;
 
-                        const cellReadonly =
-                          cellOverride.readonly ?? column.readonly ?? readonly;
+                        const { disabled: cellDisabled, readOnly: cellReadonly } =
+                          getCellPermissions(dRow, dCol);
                         const cellRequired =
                           cellOverride.required ?? column.required ?? required;
                         const cellType = cellOverride.type ?? column.type ?? "text";
@@ -999,7 +1081,11 @@ function CWMSSpreadsheet({
                                 ? isCellActive
                                   ? "#b3d7ff"
                                   : "#cce5ff"
-                                : "#ffffff",
+                                : cellDisabled
+                                  ? DISABLED_CELL_COLOR
+                                  : cellReadonly
+                                    ? READ_ONLY_CELL_COLOR
+                                    : "#ffffff",
                               boxShadow: isCellActive
                                 ? "inset 0 0 0 2px #1a73e8"
                                 : "none",
@@ -1021,18 +1107,28 @@ function CWMSSpreadsheet({
                               }
                               onKeyDown={(e) => handleKeyDown(e, vRow, vCol)}
                               onPaste={(e) => handlePaste(e, vRow, vCol)}
-                              disabled={disable || (shouldShowTimestamps && dCol === 0)}
-                              readOnly={
-                                cellReadonly || (shouldShowTimestamps && dCol === 0)
-                              }
+                              disabled={cellDisabled}
+                              readOnly={cellReadonly}
                               title={getValueTimestampTitle(dRow, dCol)}
                               style={{
                                 ...inputStyle,
                                 ...statusStyle,
-                                cursor: "cell",
+                                cursor: cellDisabled
+                                  ? "not-allowed"
+                                  : cellReadonly
+                                    ? "default"
+                                    : "text",
                                 pointerEvents: "auto",
-                                color: isCellInvalid ? "red" : undefined,
-                                opacity: cellLoading ? 0.6 : statusStyle?.opacity,
+                                color: isCellInvalid
+                                  ? "red"
+                                  : cellDisabled
+                                    ? "#6b7280"
+                                    : undefined,
+                                opacity: cellDisabled
+                                  ? 0.65
+                                  : cellLoading
+                                    ? 0.6
+                                    : statusStyle?.opacity,
                               }}
                               placeholder={cellPlaceholder}
                               required={cellRequired}
@@ -1073,8 +1169,8 @@ function CWMSSpreadsheet({
                       const isCellActive = isActiveCell(rowIndex, colIndex);
                       const isCellInvalid = invalidCells[key] || invalid;
 
-                      const cellReadonly =
-                        cellOverride.readonly ?? column.readonly ?? readonly;
+                      const { disabled: cellDisabled, readOnly: cellReadonly } =
+                        getCellPermissions(rowIndex, colIndex);
                       const cellRequired =
                         cellOverride.required ?? column.required ?? required;
                       const cellType = cellOverride.type ?? column.type ?? "text";
@@ -1117,7 +1213,11 @@ function CWMSSpreadsheet({
                               ? isCellActive
                                 ? "#b3d7ff"
                                 : "#cce5ff"
-                              : "#ffffff",
+                              : cellDisabled
+                                ? DISABLED_CELL_COLOR
+                                : cellReadonly
+                                  ? READ_ONLY_CELL_COLOR
+                                  : "#ffffff",
                             boxShadow: isCellActive
                               ? "inset 0 0 0 2px #1a73e8"
                               : "none",
@@ -1139,20 +1239,28 @@ function CWMSSpreadsheet({
                             }
                             onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
                             onPaste={(e) => handlePaste(e, rowIndex, colIndex)}
-                            disabled={
-                              disable || (shouldShowTimestamps && colIndex === 0)
-                            }
-                            readOnly={
-                              cellReadonly || (shouldShowTimestamps && colIndex === 0)
-                            }
+                            disabled={cellDisabled}
+                            readOnly={cellReadonly}
                             title={getValueTimestampTitle(rowIndex, colIndex)}
                             style={{
                               ...inputStyle,
                               ...statusStyle,
-                              cursor: "cell",
+                              cursor: cellDisabled
+                                ? "not-allowed"
+                                : cellReadonly
+                                  ? "default"
+                                  : "text",
                               pointerEvents: "auto",
-                              color: isCellInvalid ? "red" : undefined,
-                              opacity: cellLoading ? 0.6 : statusStyle?.opacity,
+                              color: isCellInvalid
+                                ? "red"
+                                : cellDisabled
+                                  ? "#6b7280"
+                                  : undefined,
+                              opacity: cellDisabled
+                                ? 0.65
+                                : cellLoading
+                                  ? 0.6
+                                  : statusStyle?.opacity,
                             }}
                             placeholder={cellPlaceholder}
                             required={cellRequired}
