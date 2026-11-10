@@ -60,7 +60,7 @@ jobs:
         working-directory: ./docs
         run: |
           installed_version=$(node -p \
-            "require('./node_modules/@usace-watermanagement/groundwork-water/package.json').version")#
+            "require('./node_modules/@usace-watermanagement/groundwork-water/package.json').version")
 
           if [[ "$installed_version" != "$LIBRARY_VERSION" ]]; then
             echo "::error::Built Groundwork Water $LIBRARY_VERSION, but installed $installed_version."
