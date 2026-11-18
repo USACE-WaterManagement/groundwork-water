@@ -1113,7 +1113,7 @@ function DataEntryForm() {
         how:
       </Text>
 
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded mb-4">
+      <div className="p-3 bg-blue-50 border border-blue-200 rounded-sm mb-4">
         <Text className="text-sm">
           <strong>Authentication Options:</strong> CWMS form submissions require
           authentication. You can use:

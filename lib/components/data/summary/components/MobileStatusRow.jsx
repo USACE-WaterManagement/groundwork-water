@@ -93,40 +93,40 @@ export default function MobileStatusRow({
   const hasFlaggedValues = flaggedValues.length > 0;
 
   return (
-    <div className="gww-min-w-0 gww-max-w-full gww-overflow-hidden gww-rounded-2xl gww-border gww-border-slate-200 gww-bg-white gww-p-3 gww-shadow-sm">
+    <div className="gww:min-w-0 gww:max-w-full gww:overflow-hidden gww:rounded-2xl gww:border gww:border-slate-200 gww:bg-white gww:p-3 gww:shadow-sm">
       {tsPending ? (
-        <Skeleton className="gww-h-28 gww-w-full" />
+        <Skeleton className="gww:h-28 gww:w-full" />
       ) : (
-        <div className="gww-flex gww-flex-col gww-gap-3">
-          <div className="gww-flex gww-min-w-0 gww-flex-col gww-gap-2">
-            <div title={label.title} className="gww-min-w-0">
+        <div className="gww:flex gww:flex-col gww:gap-3">
+          <div className="gww:flex gww:min-w-0 gww:flex-col gww:gap-2">
+            <div title={label.title} className="gww:min-w-0">
               {linkPath ? (
                 <TextLink href={`${linkPath}/${label.primary}`}>
-                  <div className="gww-flex gww-flex-col gww-gap-0.5">
-                    <span className="gww-text-base gww-font-semibold gww-leading-tight">
+                  <div className="gww:flex gww:flex-col gww:gap-0.5">
+                    <span className="gww:text-base gww:font-semibold gww:leading-tight">
                       {label.primary}
                     </span>
-                    <span className="gww-text-sm gww-leading-tight gww-text-slate-600">
+                    <span className="gww:text-sm gww:leading-tight gww:text-slate-600">
                       {label.secondary}
                     </span>
                   </div>
                 </TextLink>
               ) : (
-                <div className="gww-flex gww-flex-col gww-gap-0.5">
-                  <span className="gww-text-base gww-font-semibold gww-leading-tight">
+                <div className="gww:flex gww:flex-col gww:gap-0.5">
+                  <span className="gww:text-base gww:font-semibold gww:leading-tight">
                     {label.primary}
                   </span>
-                  <span className="gww-text-sm gww-leading-tight gww-text-slate-600">
+                  <span className="gww:text-sm gww:leading-tight gww:text-slate-600">
                     {label.secondary}
                   </span>
                 </div>
               )}
             </div>
-            <div className="gww-min-w-0">
-              <div className="gww-text-[0.68rem] gww-font-semibold gww-uppercase gww-tracking-[0.14em] gww-text-slate-500">
+            <div className="gww:min-w-0">
+              <div className="gww:text-[0.68rem] gww:font-semibold gww:uppercase gww:tracking-[0.14em] gww:text-slate-500">
                 Latest
               </div>
-              <div className="gww-break-words gww-text-sm gww-font-medium gww-leading-tight gww-text-slate-800">
+              <div className="gww:wrap-break-word gww:text-sm gww:font-medium gww:leading-tight gww:text-slate-800">
                 {latestPoint?.[0] ? formatDateWithZone(latestPoint[0]) : "Missing"}
               </div>
             </div>
@@ -134,42 +134,42 @@ export default function MobileStatusRow({
 
           {values.length > 0 ? (
             <>
-              <div className="gww-flex gww-items-center gww-justify-between gww-gap-3">
+              <div className="gww:flex gww:items-center gww:justify-between gww:gap-3">
                 {latestMeta ? (
                   <span
-                    className={`gww-inline-flex gww-items-center gww-rounded-full gww-px-2.5 gww-py-1 gww-text-xs gww-font-semibold ${latestMeta.pillClassName}`}
+                    className={`gww:inline-flex gww:items-center gww:rounded-full gww:px-2.5 gww:py-1 gww:text-xs gww:font-semibold ${latestMeta.pillClassName}`}
                   >
                     {latestMeta.shortLabel}
                   </span>
                 ) : (
-                  <span className="gww-text-xs gww-font-semibold gww-text-slate-500">
+                  <span className="gww:text-xs gww:font-semibold gww:text-slate-500">
                     No status
                   </span>
                 )}
-                <div className="gww-text-sm gww-font-semibold gww-text-slate-900">
+                <div className="gww:text-sm gww:font-semibold gww:text-slate-900">
                   {latestPoint
                     ? formatValue(latestPoint[1], tsData?.units, precision)
                     : "Missing"}
                 </div>
               </div>
 
-              <div className="gww-rounded-xl gww-border gww-border-slate-200 gww-bg-slate-50 gww-px-2.5 gww-py-2">
-                <div className="gww-flex gww-items-start gww-gap-3">
-                  <div className="gww-flex gww-min-w-0 gww-flex-wrap gww-items-center gww-gap-2">
+              <div className="gww:rounded-xl gww:border gww:border-slate-200 gww:bg-slate-50 gww:px-2.5 gww:py-2">
+                <div className="gww:flex gww:items-start gww:gap-3">
+                  <div className="gww:flex gww:min-w-0 gww:flex-wrap gww:items-center gww:gap-2">
                     {qualityRuns.map((run, runIndex) => {
                       const meta = getQualityMeta(run.quality);
                       return (
                         <div
                           key={`mobile-strip-${tsid}-${runIndex}`}
-                          className="gww-inline-flex gww-items-center gww-gap-1"
+                          className="gww:inline-flex gww:items-center gww:gap-1"
                           title={`${meta.shortLabel} x${run.count}`}
                         >
                           <span
-                            className={`gww-block gww-h-3.5 gww-w-3.5 gww-shrink-0 gww-rounded-full ${meta.segmentClassName}`}
+                            className={`gww:block gww:h-3.5 gww:w-3.5 gww:shrink-0 gww:rounded-full ${meta.segmentClassName}`}
                             aria-hidden="true"
                           />
                           {run.count > 1 ? (
-                            <span className="gww-text-[0.7rem] gww-font-medium gww-text-slate-500">
+                            <span className="gww:text-[0.7rem] gww:font-medium gww:text-slate-500">
                               {run.count}
                             </span>
                           ) : null}
@@ -178,18 +178,18 @@ export default function MobileStatusRow({
                     })}
                   </div>
                 </div>
-                <div className="gww-mt-2 gww-flex gww-flex-wrap gww-gap-x-2 gww-gap-y-1">
+                <div className="gww:mt-2 gww:flex gww:flex-wrap gww:gap-x-2 gww:gap-y-1">
                   {summaryItems.map((item) => (
                     <span
                       key={`${tsid}-${item.label}`}
-                      className="gww-inline-flex gww-min-w-0 gww-items-center gww-gap-1 gww-rounded-md gww-bg-white gww-px-1.5 gww-py-0.5 gww-text-[0.7rem] gww-leading-4 gww-text-slate-600"
+                      className="gww:inline-flex gww:min-w-0 gww:items-center gww:gap-1 gww:rounded-md gww:bg-white gww:px-1.5 gww:py-0.5 gww:text-[0.7rem] gww:leading-4 gww:text-slate-600"
                     >
-                      <span className="gww-font-medium">{item.label}</span>
+                      <span className="gww:font-medium">{item.label}</span>
                       <span>{item.value}</span>
                     </span>
                   ))}
                 </div>
-                <div className="gww-mt-1 gww-break-words gww-text-[0.72rem] gww-leading-5 gww-text-slate-500">
+                <div className="gww:mt-1 gww:wrap-break-word gww:text-[0.72rem] gww:leading-5 gww:text-slate-500">
                   {formatMobileDate(values[0][0])} to{" "}
                   {formatMobileDate(values[values.length - 1][0])}
                 </div>
@@ -198,7 +198,7 @@ export default function MobileStatusRow({
               {hasFlaggedValues ? (
                 <button
                   type="button"
-                  className="gww-inline-flex gww-items-center gww-justify-center gww-self-start gww-rounded-lg gww-border gww-border-slate-300 gww-bg-white gww-px-3 gww-py-1.5 gww-text-sm gww-font-medium gww-text-slate-700"
+                  className="gww:inline-flex gww:items-center gww:justify-center gww:self-start gww:rounded-lg gww:border gww:border-slate-300 gww:bg-white gww:px-3 gww:py-1.5 gww:text-sm gww:font-medium gww:text-slate-700"
                   onClick={() => setExpanded((current) => !current)}
                 >
                   {expanded ? "Hide readings" : "Show readings"}
@@ -206,26 +206,26 @@ export default function MobileStatusRow({
               ) : null}
 
               {expanded && hasFlaggedValues ? (
-                <div className="gww-overflow-hidden gww-rounded-xl gww-border gww-border-slate-200">
+                <div className="gww:overflow-hidden gww:rounded-xl gww:border gww:border-slate-200">
                   {hasFlaggedValues ? (
-                    <div className="gww-max-h-56 gww-overflow-y-auto">
+                    <div className="gww:max-h-56 gww:overflow-y-auto">
                       {flaggedValues.map((value, valueIndex) => {
                         const meta = getQualityMeta(getQualityStr(value));
                         return (
                           <div
                             key={`mobile-reading-${tsid}-${valueIndex}`}
-                            className="gww-border-t gww-border-slate-200 gww-bg-white gww-px-3 gww-py-2"
+                            className="gww:border-t gww:border-slate-200 gww:bg-white gww:px-3 gww:py-2"
                           >
-                            <div className="gww-text-[0.74rem] gww-leading-5 gww-text-slate-700">
+                            <div className="gww:text-[0.74rem] gww:leading-5 gww:text-slate-700">
                               {formatMobileDate(value[0])}
                             </div>
-                            <div className="gww-mt-1 gww-flex gww-items-center gww-justify-between gww-gap-2">
-                              <div className="gww-min-w-0 gww-text-sm gww-font-semibold gww-text-slate-900">
+                            <div className="gww:mt-1 gww:flex gww:items-center gww:justify-between gww:gap-2">
+                              <div className="gww:min-w-0 gww:text-sm gww:font-semibold gww:text-slate-900">
                                 {formatValue(value[1], tsData?.units, precision)}
                               </div>
                               <Badge
                                 color="blue"
-                                className={`gww-border-0 ${meta.pillClassName}`}
+                                className={`gww:border-0 ${meta.pillClassName}`}
                               >
                                 {meta.shortLabel}
                               </Badge>
@@ -239,7 +239,7 @@ export default function MobileStatusRow({
               ) : null}
             </>
           ) : (
-            <div className="gww-text-sm gww-text-slate-500">
+            <div className="gww:text-sm gww:text-slate-500">
               No recent values in lookback window
             </div>
           )}

@@ -961,7 +961,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
 />`}
       </CodeBlock>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-sm">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
         <Text className="text-sm">
           For properties like units, precision, required, disabled, and readOnly, the

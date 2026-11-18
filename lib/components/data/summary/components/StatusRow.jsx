@@ -106,8 +106,8 @@ export default function StatusRow({
 
   if (!office) {
     return (
-      <TableRow className="gww-overflow-visible">
-        <TableCell className="gww-overflow-visible">
+      <TableRow className="gww:overflow-visible">
+        <TableCell className="gww:overflow-visible">
           <Badge color="red">Error</Badge>
         </TableCell>
         <TableCell colSpan={2}>No office provided</TableCell>
@@ -119,8 +119,8 @@ export default function StatusRow({
     const statusCode = tsData?.response?.status;
     if (mobile) {
       return (
-        <div className="gww-rounded-xl gww-border gww-border-amber-200 gww-bg-amber-50 gww-p-3">
-          <div className="gww-mb-1">
+        <div className="gww:rounded-xl gww:border gww:border-amber-200 gww:bg-amber-50 gww:p-3">
+          <div className="gww:mb-1">
             <Badge color={statusCode >= 500 ? "red" : "yellow"}>
               Error {statusCode}
             </Badge>
@@ -133,8 +133,8 @@ export default function StatusRow({
     }
 
     return (
-      <TableRow className="gww-overflow-visible">
-        <TableCell className="gww-overflow-visible">
+      <TableRow className="gww:overflow-visible">
+        <TableCell className="gww:overflow-visible">
           <Badge color={statusCode >= 500 ? "red" : "yellow"}>Error {statusCode}</Badge>
         </TableCell>
         <TableCell colSpan={2}>

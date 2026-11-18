@@ -40,42 +40,42 @@ const QUALITY_META = {
     label: "Passed Screening / Validated",
     shortLabel: "Okay",
     badgeClassName:
-      "gww-border gww-border-emerald-200 gww-bg-emerald-50 gww-text-emerald-900",
-    segmentClassName: "gww-bg-emerald-300",
+      "gww:border gww:border-emerald-200 gww:bg-emerald-50 gww:text-emerald-900",
+    segmentClassName: "gww:bg-emerald-300",
     pillClassName:
-      "gww-bg-emerald-100 gww-text-emerald-900 gww-ring-1 gww-ring-emerald-200",
+      "gww:bg-emerald-100 gww:text-emerald-900 gww:ring-1 gww:ring-emerald-200",
   },
   MISSING: {
     label: "Missing",
     shortLabel: "Missing",
     badgeClassName:
-      "gww-border gww-border-slate-300 gww-bg-slate-100 gww-text-slate-800",
-    segmentClassName: "gww-bg-slate-500",
-    pillClassName: "gww-bg-slate-200 gww-text-slate-900 gww-ring-1 gww-ring-slate-300",
+      "gww:border gww:border-slate-300 gww:bg-slate-100 gww:text-slate-800",
+    segmentClassName: "gww:bg-slate-500",
+    pillClassName: "gww:bg-slate-200 gww:text-slate-900 gww:ring-1 gww:ring-slate-300",
   },
   QUESTIONABLE: {
     label: "Questionable",
     shortLabel: "Questionable",
     badgeClassName:
-      "gww-border gww-border-amber-200 gww-bg-amber-50 gww-text-amber-950",
-    segmentClassName: "gww-bg-amber-300",
-    pillClassName: "gww-bg-amber-100 gww-text-amber-950 gww-ring-1 gww-ring-amber-200",
+      "gww:border gww:border-amber-200 gww:bg-amber-50 gww:text-amber-950",
+    segmentClassName: "gww:bg-amber-300",
+    pillClassName: "gww:bg-amber-100 gww:text-amber-950 gww:ring-1 gww:ring-amber-200",
   },
   REJECTED: {
     label: "Rejected",
     shortLabel: "Rejected",
-    badgeClassName: "gww-border gww-border-rose-200 gww-bg-rose-50 gww-text-rose-900",
-    segmentClassName: "gww-bg-rose-400",
-    pillClassName: "gww-bg-rose-100 gww-text-rose-900 gww-ring-1 gww-ring-rose-200",
+    badgeClassName: "gww:border gww:border-rose-200 gww:bg-rose-50 gww:text-rose-900",
+    segmentClassName: "gww:bg-rose-400",
+    pillClassName: "gww:bg-rose-100 gww:text-rose-900 gww:ring-1 gww:ring-rose-200",
   },
   UNKNOWN: {
     label: "Unknown / Undefined",
     shortLabel: "Unknown",
     badgeClassName:
-      "gww-border gww-border-fuchsia-200 gww-bg-fuchsia-50 gww-text-fuchsia-900",
-    segmentClassName: "gww-bg-fuchsia-300",
+      "gww:border gww:border-fuchsia-200 gww:bg-fuchsia-50 gww:text-fuchsia-900",
+    segmentClassName: "gww:bg-fuchsia-300",
     pillClassName:
-      "gww-bg-fuchsia-100 gww-text-fuchsia-900 gww-ring-1 gww-ring-fuchsia-200",
+      "gww:bg-fuchsia-100 gww:text-fuchsia-900 gww:ring-1 gww:ring-fuchsia-200",
   },
 } as const;
 

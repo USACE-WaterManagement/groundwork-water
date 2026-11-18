@@ -413,7 +413,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
     if (!changed) return "";
     // e.g. flag a change larger than a foot
     return Math.abs(Number(value) - Number(loadedValue)) > 1
-      ? "ring-2 ring-amber-400 rounded"
+      ? "ring-2 ring-amber-400 rounded-sm"
       : "bg-emerald-50";
   }}
 />`}
@@ -881,7 +881,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         ]}
       />
 
-      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded">
+      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-sm">
         <Text className="font-semibold mb-2">readonly is not disabled</Text>
         <Text className="text-sm">
           Both stop the operator typing, but only <Code className="p-1">disabled</Code>{" "}
@@ -900,7 +900,7 @@ import { CWMSForm } from "@usace-watermanagement/groundwork-water";
         </Text>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-sm">
         <Text className="font-semibold mb-2">Property Fallback Chain:</Text>
         <Text className="text-sm">
           For properties like units, precision, required, and readonly, the component

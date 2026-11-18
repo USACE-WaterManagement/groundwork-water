@@ -15,8 +15,8 @@ const requestedUrl = (call) => new URL(fetchMock.mock.calls[call][0]);
 const requestedHeaders = (call) => fetchMock.mock.calls[call][1].headers;
 
 // Tailwind emits this one because it is written here, inside the package.
-const DEFAULT_HEIGHT_CLASS = "gww-max-h-[65vh]";
-const scrollBox = (container) => container.querySelector(".gww-overflow-auto");
+const DEFAULT_HEIGHT_CLASS = "gww:max-h-[65vh]";
+const scrollBox = (container) => container.querySelector(".gww:overflow-auto");
 
 // Note for anyone adding row-content assertions: @tanstack/react-virtual measures the
 // scroll element with offsetWidth/offsetHeight, which jsdom reports as 0, so no rows
@@ -189,10 +189,10 @@ describe("CWMSTable tableOptions", () => {
     await loaded();
 
     expect(scrollBox(container).classList.contains(DEFAULT_HEIGHT_CLASS)).toBe(true);
-    expect(scrollBox(container).className).toContain("gww-w-full");
-    expect(scrollBox(container).className).toContain("gww-max-w-full");
-    expect(container.firstChild.className).toContain("gww-min-w-0");
-    expect(container.firstChild.className).toContain("gww-max-w-full");
+    expect(scrollBox(container).className).toContain("gww:w-full");
+    expect(scrollBox(container).className).toContain("gww:max-w-full");
+    expect(container.firstChild.className).toContain("gww:min-w-0");
+    expect(container.firstChild.className).toContain("gww:max-w-full");
     expect(scrollBox(container).style.maxHeight).toBe("");
   });
 

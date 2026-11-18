@@ -10,7 +10,7 @@ export function Code({
   ...props
 }) {
   const codeClassName = clsx(
-    "max-w-full overflow-x-auto whitespace-pre rounded border border-zinc-950/10 bg-zinc-950/[2.5%] px-4 py-1 text-sm font-medium text-zinc-950 sm:text-[0.8125rem] dark:border-white/20 dark:bg-white/5 dark:text-white",
+    "max-w-full overflow-x-auto whitespace-pre rounded-sm border border-zinc-950/10 bg-zinc-950/2.5 px-4 py-1 text-sm font-medium text-zinc-950 sm:text-[0.8125rem] dark:border-white/20 dark:bg-white/5 dark:text-white",
     className,
   );
 
@@ -47,7 +47,7 @@ export function Code({
           )}
         </div>
         {enableCopy && (
-          <div className="flex-grow">
+          <div className="grow">
             <CopyButton text={String(props.children)} />
           </div>
         )}

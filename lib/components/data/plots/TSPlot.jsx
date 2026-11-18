@@ -118,7 +118,7 @@ const TSPlot = ({
   return (
     <div
       ref={plotContainerRef}
-      className="gww-h-full gww-w-full"
+      className="gww:h-full gww:w-full"
       style={{ width: "100%", height: plotHeight }}
       {...props}
     ></div>

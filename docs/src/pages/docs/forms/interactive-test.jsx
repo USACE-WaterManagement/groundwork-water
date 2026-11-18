@@ -226,7 +226,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
               </div>
 
               {authError && (
-                <div className="p-2 bg-red-50 border border-red-200 rounded">
+                <div className="p-2 bg-red-50 border border-red-200 rounded-sm">
                   <Text className="text-sm text-red-600">{authError}</Text>
                 </div>
               )}
@@ -335,7 +335,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
         </div>
 
         {testMode && (
-          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded">
+          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-sm">
             <Text className="text-sm">
               <strong>Test Mode Active:</strong> Form will attempt to submit data to{" "}
               {testCdaUrl}
@@ -499,7 +499,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
       )}
 
       {!testMode && (
-        <div className="p-4 bg-gray-100 rounded">
+        <div className="p-4 bg-gray-100 rounded-sm">
           <Text className="text-center text-gray-600">
             Enable Test Mode above to see and use the interactive testing form
           </Text>
@@ -663,7 +663,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
             ]}
           />
 
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-sm">
             <Text className="text-sm font-semibold">
               Tips for using the spreadsheet:
             </Text>
@@ -682,7 +682,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           </div>
         </CWMSForm>
       ) : (
-        <div className="p-4 bg-gray-100 rounded">
+        <div className="p-4 bg-gray-100 rounded-sm">
           <Text className="text-center text-gray-600">
             Enable Test Mode above to see and use the spreadsheet data entry form
           </Text>
@@ -719,7 +719,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
 
       <Divider text="Common Test Scenarios" className="mt-8" />
       <div className="space-y-4">
-        <div className="p-3 bg-gray-50 rounded">
+        <div className="p-3 bg-gray-50 rounded-sm">
           <Text className="font-semibold">1. Basic Data Entry</Text>
           <Text className="text-sm mt-1">
             Test single value submissions with CWMSInput for stage, flow, or temperature
@@ -727,7 +727,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           </Text>
         </div>
 
-        <div className="p-3 bg-gray-50 rounded">
+        <div className="p-3 bg-gray-50 rounded-sm">
           <Text className="font-semibold">2. Bulk Data Import</Text>
           <Text className="text-sm mt-1">
             Use CWMSInputTable or CWMSSpreadsheet to test batch data entry with
@@ -735,7 +735,7 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           </Text>
         </div>
 
-        <div className="p-3 bg-gray-50 rounded">
+        <div className="p-3 bg-gray-50 rounded-sm">
           <Text className="font-semibold">3. Time-Offset Data</Text>
           <Text className="text-sm mt-1">
             Test submissions with different timestamps using the timeOffset property on
@@ -743,14 +743,14 @@ function InteractiveTestContent({ authMethod, testCdaUrl, setTestCdaUrl }) {
           </Text>
         </div>
 
-        <div className="p-3 bg-gray-50 rounded">
+        <div className="p-3 bg-gray-50 rounded-sm">
           <Text className="font-semibold">4. Validation Testing</Text>
           <Text className="text-sm mt-1">
             Verify required field validation by attempting to submit incomplete forms.
           </Text>
         </div>
 
-        <div className="p-3 bg-gray-50 rounded">
+        <div className="p-3 bg-gray-50 rounded-sm">
           <Text className="font-semibold">5. Unit Conversion</Text>
           <Text className="text-sm mt-1">
             Test metric (SI) vs English (EN) unit submissions and conversions.
@@ -966,7 +966,7 @@ function InteractiveFormTest() {
               placeholder="Provider hint (optional)"
             />
 
-            <div className="rounded border border-blue-200 bg-blue-50 p-3">
+            <div className="rounded-sm border border-blue-200 bg-blue-50 p-3">
               <Text className="text-sm font-semibold">
                 Environment and PKCE callback
               </Text>
@@ -987,7 +987,7 @@ function InteractiveFormTest() {
           </div>
         )}
 
-        <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded">
+        <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-sm">
           <Text className="text-sm">
             {authMethod === "inline" &&
               "✅ Inline auth keeps you on this page with a login modal"}

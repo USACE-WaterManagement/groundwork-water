@@ -22,12 +22,12 @@ function normalizeMobileColumns(columns, timeseriesParams) {
 function TableMessage({ children, tone = "info" }) {
   const toneClass =
     tone === "error"
-      ? "gww-border-red-200 gww-bg-red-50 gww-text-red-800"
-      : "gww-border-slate-200 gww-bg-white gww-text-slate-600";
+      ? "gww:border-red-200 gww:bg-red-50 gww:text-red-800"
+      : "gww:border-slate-200 gww:bg-white gww:text-slate-600";
 
   return (
     <div
-      className={`gww-rounded gww-border gww-p-4 gww-text-center gww-text-sm ${toneClass}`}
+      className={`gww:rounded gww:border gww:p-4 gww:text-center gww:text-sm ${toneClass}`}
       role={tone === "error" ? "alert" : "status"}
     >
       {children}
@@ -291,17 +291,17 @@ export default function CWMSTable({
 
   return (
     <div
-      className={`gww-min-w-0 gww-max-w-full gww-rounded gww-border gww-border-slate-200 gww-bg-white ${tableClassName}`}
+      className={`gww:min-w-0 gww:max-w-full gww:rounded gww:border gww:border-slate-200 gww:bg-white ${tableClassName}`}
     >
-      <div className="gww-grid gww-gap-3 gww-border-b gww-border-slate-200 gww-p-3 md:gww-hidden">
+      <div className="gww:grid gww:gap-3 gww:border-b gww:border-slate-200 gww:p-3 gww:md:hidden">
         {mobileColumnSlots.map((_, slot) => (
           <label
             key={slot}
-            className="gww-grid gww-gap-1 gww-text-sm gww-text-slate-700"
+            className="gww:grid gww:gap-1 gww:text-sm gww:text-slate-700"
           >
             <span>Column {slot + 1}</span>
             <select
-              className="gww-w-full gww-rounded gww-border gww-border-slate-300 gww-px-2 gww-py-2"
+              className="gww:w-full gww:rounded gww:border gww:border-slate-300 gww:px-2 gww:py-2"
               value={mobileColumns[slot] || ""}
               onChange={(event) => {
                 const next = [...mobileColumns];
@@ -323,19 +323,19 @@ export default function CWMSTable({
         ref={parentRef}
         className={
           customMaxHeight
-            ? "gww-w-full gww-max-w-full gww-overflow-auto"
-            : "gww-w-full gww-max-w-full gww-overflow-auto gww-max-h-[65vh]"
+            ? "gww:w-full gww:max-w-full gww:overflow-auto"
+            : "gww:w-full gww:max-w-full gww:overflow-auto gww:max-h-[65vh]"
         }
         style={customMaxHeight ? { maxHeight: customMaxHeight } : undefined}
       >
-        <div className="gww-hidden gww-text-sm md:gww-block" role="table">
+        <div className="gww:hidden gww:text-sm gww:md:block" role="table">
           <div
-            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-medium gww-text-slate-500"
+            className="gww:sticky gww:top-0 gww:z-10 gww:grid gww:bg-slate-100 gww:text-left gww:font-medium gww:text-slate-500"
             role="row"
             style={desktopGridStyle}
           >
             <div
-              className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2"
+              className="gww:border-b gww:border-slate-200 gww:px-3 gww:py-2"
               role="columnheader"
             >
               {dateTimeTableColumnHeader}
@@ -343,7 +343,7 @@ export default function CWMSTable({
             {timeseriesParams.map((param) => (
               <div
                 key={param.tsid}
-                className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2 gww-text-right"
+                className="gww:border-b gww:border-slate-200 gww:px-3 gww:py-2 gww:text-right"
                 role="columnheader"
               >
                 {param.header}
@@ -351,7 +351,7 @@ export default function CWMSTable({
             ))}
           </div>
           <div
-            className="gww-relative"
+            className="gww:relative"
             role="rowgroup"
             style={{ height: `${totalSize}px`, minWidth: desktopGridStyle.minWidth }}
           >
@@ -367,7 +367,7 @@ export default function CWMSTable({
               return (
                 <div
                   key={date}
-                  className="gww-absolute gww-left-0 gww-grid gww-w-full gww-border-b gww-border-slate-100 odd:gww-bg-white even:gww-bg-slate-50"
+                  className="gww:absolute gww:left-0 gww:grid gww:w-full gww:border-b gww:border-slate-100 gww:odd:bg-white gww:even:bg-slate-50"
                   role="row"
                   style={{
                     ...desktopGridStyle,
@@ -375,13 +375,13 @@ export default function CWMSTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div className="gww-px-3 gww-py-2 gww-text-slate-900" role="cell">
+                  <div className="gww:px-3 gww:py-2 gww:text-slate-900" role="cell">
                     {dayjs(date).format(dateFormat)}
                   </div>
                   {values.map((value, index) => (
                     <div
                       key={timeseriesParams[index].tsid}
-                      className="gww-px-3 gww-py-2 gww-text-right gww-text-slate-900"
+                      className="gww:px-3 gww:py-2 gww:text-right gww:text-slate-900"
                       role="cell"
                     >
                       {value}
@@ -393,14 +393,14 @@ export default function CWMSTable({
           </div>
         </div>
 
-        <div className="gww-text-sm md:gww-hidden" role="table">
+        <div className="gww:text-sm gww:md:hidden" role="table">
           <div
-            className="gww-sticky gww-top-0 gww-z-10 gww-grid gww-bg-slate-100 gww-text-left gww-font-medium gww-text-slate-500"
+            className="gww:sticky gww:top-0 gww:z-10 gww:grid gww:bg-slate-100 gww:text-left gww:font-medium gww:text-slate-500"
             role="row"
             style={mobileGridStyle}
           >
             <div
-              className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2"
+              className="gww:border-b gww:border-slate-200 gww:px-3 gww:py-2"
               role="columnheader"
             >
               {dateTimeTableColumnHeader}
@@ -408,7 +408,7 @@ export default function CWMSTable({
             {visibleMobileParams.map((param) => (
               <div
                 key={param.tsid}
-                className="gww-border-b gww-border-slate-200 gww-px-3 gww-py-2 gww-text-right"
+                className="gww:border-b gww:border-slate-200 gww:px-3 gww:py-2 gww:text-right"
                 role="columnheader"
               >
                 {param.header}
@@ -416,7 +416,7 @@ export default function CWMSTable({
             ))}
           </div>
           <div
-            className="gww-relative"
+            className="gww:relative"
             role="rowgroup"
             style={{ height: `${totalSize}px`, minWidth: mobileGridStyle.minWidth }}
           >
@@ -432,7 +432,7 @@ export default function CWMSTable({
               return (
                 <div
                   key={date}
-                  className="gww-absolute gww-left-0 gww-grid gww-w-full gww-border-b gww-border-slate-100 odd:gww-bg-white even:gww-bg-slate-50"
+                  className="gww:absolute gww:left-0 gww:grid gww:w-full gww:border-b gww:border-slate-100 gww:odd:bg-white gww:even:bg-slate-50"
                   role="row"
                   style={{
                     ...mobileGridStyle,
@@ -440,13 +440,13 @@ export default function CWMSTable({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div className="gww-px-3 gww-py-2 gww-text-slate-900" role="cell">
+                  <div className="gww:px-3 gww:py-2 gww:text-slate-900" role="cell">
                     {dayjs(date).format(dateFormat)}
                   </div>
                   {visibleMobileIndexes.map((index) => (
                     <div
                       key={timeseriesParams[index].tsid}
-                      className="gww-px-3 gww-py-2 gww-text-right gww-text-slate-900"
+                      className="gww:px-3 gww:py-2 gww:text-right gww:text-slate-900"
                       role="cell"
                     >
                       {values[index]}

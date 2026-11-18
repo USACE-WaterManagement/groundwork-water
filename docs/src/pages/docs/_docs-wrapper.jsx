@@ -42,7 +42,7 @@ function DocsPage({
     <Container>
       {navigationButtons()}
       <div className="mb-5 flex min-w-0 flex-row flex-between">
-        <div className="flex min-w-0 flex-grow flex-col">{children}</div>
+        <div className="flex min-w-0 grow flex-col">{children}</div>
       </div>
       {navigationButtons()}
     </Container>

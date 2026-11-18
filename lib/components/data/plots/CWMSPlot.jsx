@@ -46,14 +46,14 @@ const getYAxisId = (timeseriesParam) => {
 function PlotMessage({ children, height, tone = "info" }) {
   const toneClass =
     tone === "error"
-      ? "gww-border-red-200 gww-bg-red-50 gww-text-red-800"
+      ? "gww:border-red-200 gww:bg-red-50 gww:text-red-800"
       : tone === "warning"
-        ? "gww-border-amber-200 gww-bg-amber-50 gww-text-amber-900"
-        : "gww-border-slate-200 gww-bg-white gww-text-slate-600";
+        ? "gww:border-amber-200 gww:bg-amber-50 gww:text-amber-900"
+        : "gww:border-slate-200 gww:bg-white gww:text-slate-600";
 
   return (
     <div
-      className={`gww-flex gww-items-center gww-justify-center gww-rounded gww-border gww-p-4 gww-text-center gww-text-sm ${toneClass}`}
+      className={`gww:flex gww:items-center gww:justify-center gww:rounded gww:border gww:p-4 gww:text-center gww:text-sm ${toneClass}`}
       role={tone === "error" ? "alert" : "status"}
       style={{ minHeight: height || 240 }}
     >
@@ -469,7 +469,7 @@ export default function CWMSPlot({
 
   return (
     <div
-      className={gwMerge("gww-h-full gww-w-full", className)}
+      className={gwMerge("gww:h-full gww:w-full", className)}
       style={{ height: plotHeight }}
     >
       {error ? (
@@ -478,19 +478,19 @@ export default function CWMSPlot({
         </PlotMessage>
       ) : isLoading ? (
         <div style={{ height: plotHeight }}>
-          <Skeleton className="gww-h-full gww-w-full" />
+          <Skeleton className="gww:h-full gww:w-full" />
         </div>
       ) : (
         <>
           {warning ? (
-            <div className="gww-mb-2">
+            <div className="gww:mb-2">
               <PlotMessage tone="warning">{warning}</PlotMessage>
             </div>
           ) : null}
           <div
             ref={plotElement}
             id="plot"
-            className="gww-h-full gww-w-full"
+            className="gww:h-full gww:w-full"
             style={{ height: plotHeight }}
           />
         </>

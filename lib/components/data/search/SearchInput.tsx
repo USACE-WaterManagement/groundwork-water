@@ -94,10 +94,10 @@ const getKindLabel = (value: unknown) => getStringValue(value).toLowerCase();
 const DefaultResultIcon = ({ item }: { item: SearchResultRecord }) => {
   const kind = getKindLabel(item.kind ?? item.type);
   if (kind.includes("project")) {
-    return <HiOutlineBuildingOffice2 className="gww-h-5 gww-w-5 gww-text-blue-700" />;
+    return <HiOutlineBuildingOffice2 className="gww:h-5 gww:w-5 gww:text-blue-700" />;
   }
 
-  return <HiOutlineMapPin className="gww-h-5 gww-w-5 gww-text-slate-500" />;
+  return <HiOutlineMapPin className="gww:h-5 gww:w-5 gww:text-slate-500" />;
 };
 
 const DefaultResult = <T,>({
@@ -114,23 +114,23 @@ const DefaultResult = <T,>({
   const kind = getStringValue(record.kind ?? record.type);
 
   return (
-    <div className="gww-flex gww-items-start gww-gap-3">
-      <div className="gww-mt-0.5 gww-flex-none">
+    <div className="gww:flex gww:items-start gww:gap-3">
+      <div className="gww:mt-0.5 gww:flex-none">
         <DefaultResultIcon item={record} />
       </div>
-      <div className="gww-min-w-0 gww-flex-1">
-        <div className="gww-flex gww-items-center gww-gap-2">
-          <span className="gww-truncate gww-font-medium gww-text-slate-900">
+      <div className="gww:min-w-0 gww:flex-1">
+        <div className="gww:flex gww:items-center gww:gap-2">
+          <span className="gww:truncate gww:font-medium gww:text-slate-900">
             {getResultLabel(item)}
           </span>
           {kind ? (
-            <Badge color="gray" className="gww-whitespace-nowrap">
+            <Badge color="gray" className="gww:whitespace-nowrap">
               {kind}
             </Badge>
           ) : null}
         </div>
         {description ? (
-          <div className="gww-mt-1 gww-text-sm gww-text-slate-600">{description}</div>
+          <div className="gww:mt-1 gww:text-sm gww:text-slate-600">{description}</div>
         ) : null}
       </div>
     </div>
@@ -376,7 +376,7 @@ const SearchInput = <T,>({
   const statusContent = (() => {
     if (effectiveErrorMessage) {
       return (
-        <div className="gww-px-4 gww-py-3 gww-text-sm gww-text-red-700">
+        <div className="gww:px-4 gww:py-3 gww:text-sm gww:text-red-700">
           {effectiveErrorMessage}
         </div>
       );
@@ -384,7 +384,7 @@ const SearchInput = <T,>({
 
     if (!canSearch) {
       return (
-        <div className="gww-px-4 gww-py-3 gww-text-sm gww-text-slate-500">
+        <div className="gww:px-4 gww:py-3 gww:text-sm gww:text-slate-500">
           {computedIdleMessage}
         </div>
       );
@@ -392,16 +392,16 @@ const SearchInput = <T,>({
 
     if (effectiveIsLoading) {
       return (
-        <div className="gww-space-y-2 gww-p-4">
-          <Skeleton className="gww-h-4 gww-w-full" />
-          <Skeleton className="gww-h-4 gww-w-4/5" />
+        <div className="gww:space-y-2 gww:p-4">
+          <Skeleton className="gww:h-4 gww:w-full" />
+          <Skeleton className="gww:h-4 gww:w-4/5" />
         </div>
       );
     }
 
     if (!hasResults) {
       return (
-        <div className="gww-px-4 gww-py-3 gww-text-sm gww-text-slate-500">
+        <div className="gww:px-4 gww:py-3 gww:text-sm gww:text-slate-500">
           {emptyMessage}
         </div>
       );
@@ -411,16 +411,16 @@ const SearchInput = <T,>({
   })();
 
   return (
-    <div ref={containerRef} className={gwMerge("gww-relative gww-w-full", className)}>
+    <div ref={containerRef} className={gwMerge("gww:relative gww:w-full", className)}>
       {label ? (
-        <label className="gww-mb-1 gww-block gww-text-sm gww-font-medium gww-left-5 gww-text-slate-700">
+        <label className="gww:mb-1 gww:block gww:text-sm gww:font-medium gww:left-5 gww:text-slate-700">
           {label}
         </label>
       ) : null}
-      <div className="gww-flex gww-flex-row gww-items-center">
-        <div className="gww-pointer-events-none gww-flex gww-items-center gww-pr-3">
+      <div className="gww:flex gww:flex-row gww:items-center">
+        <div className="gww:pointer-events-none gww:flex gww:items-center gww:pr-3">
           <HiMagnifyingGlass
-            className="gww-h-5 gww-w-5 gww-text-slate-400"
+            className="gww:h-5 gww:w-5 gww:text-slate-400"
             aria-hidden="true"
           />
         </div>
@@ -436,7 +436,7 @@ const SearchInput = <T,>({
           value={currentQuery}
           placeholder={placeholder}
           className={gwMerge(
-            "gww-w-full gww-rounded-md gww-border gww-border-slate-300 gww-pr-3 gww-bg-white gww-flex gww-text-slate-900 placeholder:gww-text-slate-400 focus:gww-border-blue-600 focus:gww-outline-none focus:gww-ring-2 focus:gww-ring-blue-200 disabled:gww-cursor-not-allowed disabled:gww-bg-slate-100",
+            "gww:w-full gww:rounded-md gww:border gww:border-slate-300 gww:pr-3 gww:bg-white gww:flex gww:text-slate-900 gww:placeholder:text-slate-400 gww:focus:border-blue-600 gww:focus:outline-hidden gww:focus:ring-2 gww:focus:ring-blue-200 gww:disabled:cursor-not-allowed gww:disabled:bg-slate-100",
             inputClassName,
           )}
           onFocus={() => {
@@ -458,7 +458,7 @@ const SearchInput = <T,>({
           id={listboxId}
           role="listbox"
           className={gwMerge(
-            "gww-absolute gww-z-20 gww-mt-1 gww-max-h-96 gww-w-full gww-overflow-auto gww-rounded-md gww-border gww-border-slate-200 gww-bg-white gww-shadow-lg",
+            "gww:absolute gww:z-20 gww:mt-1 gww:max-h-96 gww:w-full gww:overflow-auto gww:rounded-md gww:border gww:border-slate-200 gww:bg-white gww:shadow-lg",
             listClassName,
           )}
         >
@@ -477,8 +477,8 @@ const SearchInput = <T,>({
                     role="option"
                     aria-selected={isActive}
                     className={gwMerge(
-                      "gww-flex gww-w-full gww-items-start gww-border-t gww-border-slate-100 gww-px-4 gww-py-3 gww-text-left first:gww-border-t-0",
-                      isActive ? "gww-bg-blue-50" : "hover:gww-bg-slate-50",
+                      "gww:flex gww:w-full gww:items-start gww:border-t gww:border-slate-100 gww:px-4 gww:py-3 gww:text-left gww:first:border-t-0",
+                      isActive ? "gww:bg-blue-50" : "gww:hover:bg-slate-50",
                     )}
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => handleSelect(item)}

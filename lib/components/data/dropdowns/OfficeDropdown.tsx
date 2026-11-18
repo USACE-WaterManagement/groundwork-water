@@ -93,17 +93,17 @@ const OfficeDropdown = ({
   if (noData) return <div>No office data available</div>;
   if (cdaOffices.isError)
     return (
-      <Badge type="red" className="gww-my-2">
+      <Badge type="red" className="gww:my-2">
         Error loading office dropdown: {cdaOffices.error.message}
       </Badge>
     );
   return (
-    <div className="gww-w-[50%]">
+    <div className="gww:w-[50%]">
       {cdaOffices.isLoading ? (
-        <Skeleton className="gww-w-full" />
+        <Skeleton className="gww:w-full" />
       ) : (
         <Dropdown
-          className={"gww-w-5/6 gww-m-auto"}
+          className={"gww:w-5/6 gww:m-auto"}
           value={value}
           defaultValue={value === undefined ? filteredOffices[0]?.name : undefined}
           title="Select an office"
@@ -115,7 +115,7 @@ const OfficeDropdown = ({
             <option
               key={JSON.stringify(office)}
               value={office.name}
-              className="gww-pl-2"
+              className="gww:pl-2"
             >
               {office.longName}
             </option>

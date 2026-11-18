@@ -34,18 +34,18 @@ const CdaLatestValueCard = ({
 
   const noData = !isPending && !data;
 
-  const cls = gwMerge("gww-w-96", className);
+  const cls = gwMerge("gww:w-96", className);
 
   return (
     <Card className={cls} {...props}>
-      <div className="gww-flex gww-items-center gww-justify-between">
-        <p className="gww-font-lg gww-truncate gww-text-lg gww-font-medium gww-text-black">
+      <div className="gww:flex gww:items-center gww:justify-between">
+        <p className="gww-font-lg gww:truncate gww:text-lg gww:font-medium gww:text-black">
           {label ?? tsId}
         </p>
         {isPending ? (
-          <Skeleton className="gww-w-20" />
+          <Skeleton className="gww:w-20" />
         ) : isError || noData ? (
-          <span className="gww-text-lg">
+          <span className="gww:text-lg">
             <MdErrorOutline />
           </span>
         ) : data ? (
@@ -57,11 +57,11 @@ const CdaLatestValueCard = ({
           />
         ) : null}
       </div>
-      <div className="gww-mt-2 gww-flex gww-justify-between">
+      <div className="gww:mt-2 gww:flex gww:justify-between">
         {isPending ? (
-          <Skeleton className="gww-w-48" />
+          <Skeleton className="gww:w-48" />
         ) : isError ? (
-          <span className="gww-text-red-500">Error retrieving data</span>
+          <span className="gww:text-red-500">Error retrieving data</span>
         ) : noData ? (
           <span>No data found</span>
         ) : data ? (
@@ -82,9 +82,9 @@ interface CardTimestampProps {
 const CardTimestamp = ({ datetime }: CardTimestampProps) => {
   return (
     <div className="gww-sm:flex">
-      <p className="gww-flex gww-items-center gww-text-sm gww-text-gray-500">
+      <p className="gww:flex gww:items-center gww:text-sm gww:text-gray-500">
         <PiClockThin
-          className="gww-mr-1.5 gww-h-5 gww-w-5 gww-flex-shrink-0 gww-text-gray-600"
+          className="gww:mr-1.5 gww:h-5 gww:w-5 gww:shrink-0 gww:text-gray-600"
           aria-hidden="true"
         />
         {datetime ? (
@@ -144,14 +144,14 @@ const CardValue = ({ value, units, digits = 0, datum = "" }: CardValueProps) => 
       : "-";
 
   return (
-    <div className="gww-ml-2 gww-flex gww-flex-shrink-0">
-      <p className="gww-inline-flex gww-px-2 gww-text-lg gww-font-semibold gww-leading-5 gww-text-black">
+    <div className="gww:ml-2 gww:flex gww:shrink-0">
+      <p className="gww:inline-flex gww:px-2 gww:text-lg gww:font-semibold gww:leading-5 gww:text-black">
         {formattedValue}
-        <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+        <span className="gww:ml-1 gww:text-sm gww:font-normal gww:text-gray-400">
           {units}
         </span>
         {datum !== "" && typeof datum === "string" && (
-          <span className="gww-ml-1 gww-text-sm gww-font-normal gww-text-gray-400">
+          <span className="gww:ml-1 gww:text-sm gww:font-normal gww:text-gray-400">
             {datum}
           </span>
         )}

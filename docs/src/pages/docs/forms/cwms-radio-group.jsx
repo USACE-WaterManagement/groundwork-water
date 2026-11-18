@@ -356,7 +356,7 @@ function MyForm() {
       />
 
       {selectedMode === "Emergency" && (
-        <div className="p-4 bg-red-100 border border-red-400 rounded">
+        <div className="p-4 bg-red-100 border border-red-400 rounded-sm">
           Emergency mode activated!
         </div>
       )}
@@ -371,7 +371,7 @@ function MyForm() {
       </div>
       <PropsTable propsList={componentProps} />
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-sm">
         <Text className="font-semibold mb-2">Options Format:</Text>
         <Text className="text-sm mb-2">
           The <Code className="p-1">options</Code> prop accepts two formats:
@@ -401,7 +401,7 @@ function MyForm() {
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded">
+      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-sm">
         <Text className="font-semibold mb-2">Important Notes:</Text>
         <ul className="list-disc ml-5 space-y-1 text-sm">
           <li>

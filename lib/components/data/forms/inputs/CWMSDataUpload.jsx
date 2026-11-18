@@ -224,7 +224,7 @@ function CWMSDataUpload({
       : null);
 
   return (
-    <div className={gwMerge("gww-flex gww-min-w-0 gww-flex-col gww-gap-4", className)}>
+    <div className={gwMerge("gww:flex gww:min-w-0 gww:flex-col gww:gap-4", className)}>
       <Field>
         <Label htmlFor={inputId}>{label}</Label>
         <input
@@ -232,21 +232,21 @@ function CWMSDataUpload({
           id={inputId}
           name={name}
           type="file"
-          className="gww-sr-only"
+          className="gww:sr-only"
           accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           disabled={disabled}
           onChange={(event) => loadFile(event.target.files?.[0])}
         />
         <div
           className={gwMerge(
-            "gww-flex gww-min-h-36 gww-flex-col gww-items-center gww-justify-center gww-gap-3 gww-rounded-lg gww-border-2 gww-border-dashed gww-p-6 gww-text-center gww-transition-colors",
+            "gww:flex gww:min-h-36 gww:flex-col gww:items-center gww:justify-center gww:gap-3 gww:rounded-lg gww:border-2 gww:border-dashed gww:p-6 gww:text-center gww:transition-colors",
             disabled
-              ? "gww-cursor-not-allowed gww-border-slate-200 gww-bg-slate-100 gww-text-slate-500"
+              ? "gww:cursor-not-allowed gww:border-slate-200 gww:bg-slate-100 gww:text-slate-500"
               : isInvalid
-                ? "gww-border-red-400 gww-bg-red-50"
+                ? "gww:border-red-400 gww:bg-red-50"
                 : isDragging
-                  ? "gww-border-blue-600 gww-bg-blue-50"
-                  : "gww-border-slate-300 gww-bg-white hover:gww-border-slate-400",
+                  ? "gww:border-blue-600 gww:bg-blue-50"
+                  : "gww:border-slate-300 gww:bg-white gww:hover:border-slate-400",
           )}
           onDragOver={(event) => {
             event.preventDefault();
@@ -261,14 +261,14 @@ function CWMSDataUpload({
           aria-invalid={isInvalid}
         >
           <div>
-            <div className="gww-font-medium gww-text-slate-900">
+            <div className="gww:font-medium gww:text-slate-900">
               {isReading
                 ? "Reading workbook..."
                 : fileName || "Drag an .xlsx workbook here"}
             </div>
-            <div className="gww-mt-1 gww-text-sm gww-text-slate-600">{helperText}</div>
+            <div className="gww:mt-1 gww:text-sm gww:text-slate-600">{helperText}</div>
           </div>
-          <div className="gww-flex gww-flex-wrap gww-justify-center gww-gap-2">
+          <div className="gww:flex gww:flex-wrap gww:justify-center gww:gap-2">
             <Button
               type="button"
               color="secondary"
@@ -291,11 +291,11 @@ function CWMSDataUpload({
 
       {issues.length ? (
         <div
-          className="gww-rounded gww-border gww-border-red-200 gww-bg-red-50 gww-p-4 gww-text-sm gww-text-red-900"
+          className="gww:rounded gww:border gww:border-red-200 gww:bg-red-50 gww:p-4 gww:text-sm gww:text-red-900"
           role="alert"
         >
-          <div className="gww-font-semibold">Workbook validation failed</div>
-          <ul className="gww-mt-2 gww-list-disc gww-space-y-1 gww-pl-5">
+          <div className="gww:font-semibold">Workbook validation failed</div>
+          <ul className="gww:mt-2 gww:list-disc gww:space-y-1 gww:pl-5">
             {issues.map((issue) => (
               <li key={issue}>{issue}</li>
             ))}
@@ -303,7 +303,7 @@ function CWMSDataUpload({
         </div>
       ) : null}
       {validationMessage && !issues.length ? (
-        <div className="gww-text-sm gww-text-red-700" role="alert">
+        <div className="gww:text-sm gww:text-red-700" role="alert">
           {validationMessage}
         </div>
       ) : null}
@@ -311,22 +311,22 @@ function CWMSDataUpload({
       {model ? (
         <>
           <UsaceBox title="Upload summary">
-            <div className="gww-flex gww-flex-wrap gww-items-center gww-gap-2">
+            <div className="gww:flex gww:flex-wrap gww:items-center gww:gap-2">
               <Badge color="blue">{model.office}</Badge>
-              <span className="gww-break-all gww-font-mono gww-text-sm">
+              <span className="gww:break-all gww:font-mono gww:text-sm">
                 {model.tsid}
               </span>
               <Badge color="gray">{classifiedRows.length.toLocaleString()} rows</Badge>
               <Badge color="green">{newCount.toLocaleString()} new</Badge>
               <Badge color="yellow">{existingCount.toLocaleString()} existing</Badge>
             </div>
-            <div className="gww-mt-2 gww-text-sm gww-text-slate-600">
+            <div className="gww:mt-2 gww:text-sm gww:text-slate-600">
               {model.begin} through {model.end} · {unit} · {timezone}
             </div>
           </UsaceBox>
 
-          <div className="gww-flex gww-flex-wrap gww-items-end gww-gap-3">
-            <Field className="gww-min-w-64">
+          <div className="gww:flex gww:flex-wrap gww:items-end gww:gap-3">
+            <Field className="gww:min-w-64">
               <Label htmlFor={`${inputId}-filter`}>Rows used by form actions</Label>
               <Dropdown
                 id={`${inputId}-filter`}
@@ -377,7 +377,7 @@ function CWMSDataUpload({
 
           {existingError || deleteError ? (
             <div
-              className="gww-rounded gww-border gww-border-red-200 gww-bg-red-50 gww-p-3 gww-text-sm gww-text-red-900"
+              className="gww:rounded gww:border gww:border-red-200 gww:bg-red-50 gww:p-3 gww:text-sm gww:text-red-900"
               role="alert"
             >
               {(existingError || deleteError)?.message || "The CDA request failed."}
@@ -411,7 +411,7 @@ function CWMSDataUpload({
             />
           ) : null}
 
-          <div className="gww-min-w-0 gww-overflow-x-auto">
+          <div className="gww:min-w-0 gww:overflow-x-auto">
             <Table dense overflow stickyHeader overflowHeight="gww-max-h-[32rem]">
               <TableHead>
                 <TableRow>
@@ -443,7 +443,7 @@ function CWMSDataUpload({
               </TableBody>
             </Table>
             {filteredRows.length > maxPreviewRows ? (
-              <div className="gww-mt-2 gww-text-sm gww-text-slate-600">
+              <div className="gww:mt-2 gww:text-sm gww:text-slate-600">
                 Showing the first {maxPreviewRows.toLocaleString()} of{" "}
                 {filteredRows.length.toLocaleString()} selected rows.
               </div>

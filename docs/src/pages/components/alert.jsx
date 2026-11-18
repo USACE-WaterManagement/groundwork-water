@@ -48,7 +48,7 @@ export default function Alert({ className, title, message, status, ...props }) {
   return (
     <div className={`rounded-md ${cssStatus.bg} p-4 ${className}`} {...props}>
       <div className="flex">
-        <div className="flex-shrink-0">{cssStatus.icon}</div>
+        <div className="shrink-0">{cssStatus.icon}</div>
         <div className="ml-3">
           <h3 className={`text-sm font-medium ${cssStatus.text}`}>
             {title}: <span className="font-normal">{message}</span>

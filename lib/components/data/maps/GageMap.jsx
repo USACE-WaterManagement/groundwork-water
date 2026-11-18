@@ -52,7 +52,7 @@ function GageMap({ className }) {
   return (
     <div
       id="map"
-      className={gwMerge("map-container gww-w-full", className)}
+      className={gwMerge("map-container gww:w-full", className)}
       ref={mapElement}
     />
     //   className="map-container absolute top-0 bottom-0 w-96"
